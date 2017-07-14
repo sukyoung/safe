@@ -129,12 +129,15 @@ class Coverage(
 
   // Using static analysis, store function information.
   def updateFunction(cfgRoot: CFGNode): Unit = {
-    val cfgNodes = CFGCollector.collect(cfgRoot)
+    val cfgNodes = CFGCollector.collect(cfgRoot).filter({
+      case c: CFGFunction => c.isUser
+      case _ => true
+    })
     for (k <- cfgNodes) {
       k match {
-        case inst @ CFGConstruct(ir, block, fun, thisArg, arguments, asite) =>
+        case inst @ CFGConstruct(ir, block, fun, thisArg, arguments, asite) if block.func.isUser =>
           identifyFunction(inst, thisArg)
-        case inst @ CFGCall(ir, block, fun, thisArg, arguments, asite) =>
+        case inst @ CFGCall(ir, block, fun, thisArg, arguments, asite) if block.func.isUser =>
           identifyFunction(inst, thisArg)
         case _ =>
       }
@@ -151,8 +154,9 @@ class Coverage(
 
     var cstate = semantics.getState(cfgBlock) //stateManager.getOutputCState(cfgBlock, inst.id)
     var thisNames = List[String]()
-    for ((callContext, Dom(heap, _)) <- cstate) {
-      val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString()).value.locset
+    for ((callContext, Dom(heap, context)) <- cstate) {
+      // TODO MV Original: val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString()).value.locset
+      val lset = context.pureLocal.record.decEnvRec.GetBindingValue(thisArg.toString)._1.locset
       // Compute this object
       val thisObj = computeObject(heap, lset)
       val temp = thisNames ::: computeConstructorName(heap, thisObj)

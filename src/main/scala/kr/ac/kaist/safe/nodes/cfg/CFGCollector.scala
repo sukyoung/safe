@@ -21,6 +21,6 @@ object CFGCollector extends CFGNodeGeneralWalker[List[CFGNode]] {
   }
 
   def collect(node: CFGNode): List[CFGNode] =
-    walk(node)
+    walk(node).distinct
 
 }
