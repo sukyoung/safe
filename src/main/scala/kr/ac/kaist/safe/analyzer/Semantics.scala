@@ -1177,6 +1177,24 @@ class Semantics(
       val newExcSt = st.raiseException(excSetO ++ excSetP)
       (newSt, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_HAS_CONST, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val isDomIn = obj.fold(AbsBool.False) { obj => (obj contains IConstruct) }
+      val b1 =
+        if (AbsBool.True <= isDomIn) AbsBool.True
+        else AbsBool.Bot
+      val b2 =
+        if (AbsBool.False <= isDomIn) AbsBool.False
+        else AbsBool.Bot
+
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(b1 + b2))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
       (AbsState.Bot, AbsState.Bot)
