@@ -21,7 +21,6 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util.{ Coverage, NodeRelation => NR, NodeUtil => NU, Span }
 import kr.ac.kaist.safe.util.useful.{ Lists, Maps }
-import kr.ac.kaist.safe.util.useful.Options._
 
 class ConcolicSolver(coverage: Coverage) {
   var debug = false
@@ -65,7 +64,7 @@ class ConcolicSolver(coverage: Coverage) {
     primitiveConstraints = initialConstraints
     for (const <- initialConstraints) {
       if (const.objectRelated) {
-        val op = const.getOp.unwrap
+        val op = const.getOp.get
         val lhs = const.getLhs.getValue
         val rhs = const.getRhs.get.getLhs.getValue
         if (rhs.contains("i") || rhs.contains("this"))
@@ -75,8 +74,8 @@ class ConcolicSolver(coverage: Coverage) {
 
     for (const <- actualConstraints) {
       if (const.objectRelated) {
-        if (const.getOp.isSome) {
-          val op = const.getOp.unwrap
+        if (const.getOp.isDefined) {
+          val op = const.getOp.get
           val lhs = const.getLhs
           val rhs = const.getRhs.get.getLhs
           op.charAt(0) match {
@@ -116,8 +115,8 @@ class ConcolicSolver(coverage: Coverage) {
     // Make a object result based on temporary store.
     for (k <- objectTracking.keySet) {
       for (x <- objectTracking(k)) {
-        if (temp.get(x).isSome) {
-          if (objectResult.get(k).isSome) {
+        if (temp.get(x).isDefined) {
+          if (objectResult.get(k).isDefined) {
             if (temp(x) != objectResult(k))
               throw new ConcolicError("Cant' solve these constraints.")
           } else
@@ -132,7 +131,7 @@ class ConcolicSolver(coverage: Coverage) {
       Some(function.getObjects),
       function.getThisProperties
     )
-    if (tmp.isSome) {
+    if (tmp.isDefined) {
       primitiveResult = tmp.get.map(x => (x._1, x._2.intValue)).toMap
     }
 
@@ -192,7 +191,7 @@ class ConcolicSolver(coverage: Coverage) {
     var args = List[Expr]()
     if (hasArguments) {
       val (temp, additional) = assignArgs(constructor)
-      if (temp.isSome) args = temp.unwrap
+      if (temp.isDefined) args = temp.get
       stmts = stmts ::: additional
     }
 

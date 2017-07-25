@@ -21,7 +21,6 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util.useful.Lists
-import kr.ac.kaist.safe.util.useful.Options._
 
 import scala.collection.mutable.HashMap
 
@@ -55,7 +54,7 @@ class Coverage(
   var additional = List[Stmt]()
 
   var necessaries: List[SymbolicValue] = null
-  def isNecessary(value: String) = necessaries.map(_.toString).find(_ == value).isSome
+  def isNecessary(value: String) = necessaries.map(_.toString).find(_ == value).isDefined
 
   var inum = 0
   var report: List[SymbolicInfo] = null

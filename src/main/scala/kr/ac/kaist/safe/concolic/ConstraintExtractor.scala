@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.concolic
 
 import scala.collection.mutable.{ Queue, Stack }
 import kr.ac.kaist.safe.errors.error.ConcolicError
-import kr.ac.kaist.safe.util.useful.Options._
 
 class ConstraintExtractor {
   abstract class SymbolicTree
@@ -30,11 +29,11 @@ class ConstraintExtractor {
 
     def setParents(p: List[Node]) = parents = Some(p)
     def getParent = {
-      val temp = parents.unwrap
+      val temp = parents.get
       temp(0)
     }
     def changeParent(from: Node, to: Node) = {
-      var temp = parents.unwrap
+      var temp = parents.get
       for (i <- 0 until temp.length) {
         if (from.constraint == temp(i).constraint)
           temp = temp.updated(i, to)
@@ -88,7 +87,7 @@ class ConstraintExtractor {
         update(info)
       // New information should be built as a subtree of the original tree.
       else {
-        // Newly added branch information should be ended before updating exisiting information.
+        // Newly added branch information should be ended before updating existing information.
         if (info.getType == 2) newlyEnd += 1
         if (info.getType == 3) newlyEnd -= 1
         affected = affected :+ info
@@ -109,7 +108,6 @@ class ConstraintExtractor {
     }
 
     extract()
-
   }
 
   def extract(): Unit = {
@@ -134,8 +132,8 @@ class ConstraintExtractor {
         targetValues = targetValues.tail
         assignConstraints.find(_.getLhs == sv) match {
           case Some(x) =>
-            if (x.getRhs.isSome) {
-              val temp = x.getRhs.unwrap.getSymbolicValues ::: targetValues
+            if (x.getRhs.isDefined) {
+              val temp = x.getRhs.get.getSymbolicValues ::: targetValues
               targetValues = temp.distinct
             }
           case None =>
@@ -150,7 +148,7 @@ class ConstraintExtractor {
       necessaries = necessaries.filter(_.isInput)
     }
 
-    if (debug) { // TODO MV Original: if (debug) {
+    if (debug) {
       System.out.println("=================== Expanded Node ====================")
       System.out.println(expanded)
       System.out.println("======================================================")
@@ -161,12 +159,11 @@ class ConstraintExtractor {
   }
 
   def collect(node: Node): Unit = {
-    if (node.constraint.isSome)
-      constraints = node.constraint.unwrap :: constraints
-    if (node.parents.isNone)
-      return
-    else {
-      val parents = node.parents.unwrap
+    if (node.constraint.isDefined) {
+      constraints = node.constraint.get :: constraints
+    }
+    if (node.parents.isDefined) {
+      val parents = node.parents.get
       val target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents(0)
       collect(target)
     }
@@ -178,14 +175,14 @@ class ConstraintExtractor {
     var right: Node = null
     info.getType match {
       case 1 => // Statement
-        left = target.leftChild.unwrap.asInstanceOf[Node]
+        left = target.leftChild.get.asInstanceOf[Node]
         left.depth = target.depth + 1
         leaves.push(left)
 
         setPrevious(left)
       case 2 => // Branch 
-        left = target.leftChild.unwrap.asInstanceOf[Node]
-        right = target.rightChild.unwrap.asInstanceOf[Node]
+        left = target.leftChild.get.asInstanceOf[Node]
+        right = target.rightChild.get.asInstanceOf[Node]
         left.depth = target.depth + 1
         right.depth = target.depth + 1
 
@@ -202,7 +199,7 @@ class ConstraintExtractor {
         }
       case 3 => // End of branch
         var child: Node = null
-        if (target.leftChild.isNone && target.rightChild.isNone) {
+        if (target.leftChild.isEmpty && target.rightChild.isEmpty) {
           child = previous(0)
 
           var previousParent = child.getParent
@@ -211,15 +208,15 @@ class ConstraintExtractor {
           if (target.depth > depth) depth = target.depth
           child.depth = depth + 1
 
-          if (previousParent.leftChild.isSome) target.rightChild = Some(child)
+          if (previousParent.leftChild.isDefined) target.rightChild = Some(child)
           else target.leftChild = Some(child)
 
-          if (previousParent.leftChild.isSome) child.setParents(List(previousParent, target))
+          if (previousParent.leftChild.isDefined) child.setParents(List(previousParent, target))
           else child.setParents(List(target, previousParent))
         } else {
           child =
-            if (target.leftChild.isSome) target.leftChild.unwrap.asInstanceOf[Node]
-            else target.rightChild.unwrap.asInstanceOf[Node]
+            if (target.leftChild.isDefined) target.leftChild.get.asInstanceOf[Node]
+            else target.rightChild.get.asInstanceOf[Node]
         }
         child.depth = target.depth + 1
         leaves.push(child)
@@ -313,10 +310,10 @@ class ConstraintExtractor {
 
   def setPrevious(node: Node) = {
     previous = List()
-    if (node.leftChild.isSome)
-      previous = previous :+ node.leftChild.unwrap.asInstanceOf[Node]
-    if (node.rightChild.isSome)
-      previous = previous :+ node.rightChild.unwrap.asInstanceOf[Node]
+    if (node.leftChild.isDefined)
+      previous = previous :+ node.leftChild.get.asInstanceOf[Node]
+    if (node.rightChild.isDefined)
+      previous = previous :+ node.rightChild.get.asInstanceOf[Node]
   }
 
   def findProperPrevious(node: Node) = {
@@ -332,7 +329,7 @@ class ConstraintExtractor {
         temp.makeConstraint(info._id, info._lhs, info._op, info._rhs)
         temp.toString
       case 2 =>
-        negate(info.branchTaken, info).unwrap.toString
+        negate(info.branchTaken, info).get.toString
       case 3 =>
         ""
     }
@@ -340,7 +337,7 @@ class ConstraintExtractor {
     if (previous != null) {
       for (node <- previous) {
         val temp =
-          if (node.constraint.isSome) node.constraint.unwrap.toString
+          if (node.constraint.isDefined) node.constraint.get.toString
           else ""
         if (temp == cond)
           result = true
@@ -352,15 +349,15 @@ class ConstraintExtractor {
   def printTree(tree: SymbolicTree): Unit = {
     val node = tree.asInstanceOf[Node]
     System.out.println(node)
-    if (node.leftChild.isSome) {
+    if (node.leftChild.isDefined) {
       for (i <- 0 until node.depth)
         System.out.print("\t")
-      printTree(node.leftChild.unwrap)
+      printTree(node.leftChild.get)
     }
-    if (node.rightChild.isSome) {
+    if (node.rightChild.isDefined) {
       for (i <- 0 until node.depth)
         System.out.print("\t")
-      printTree(node.rightChild.unwrap)
+      printTree(node.rightChild.get)
     }
   }
 }

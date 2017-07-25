@@ -19,7 +19,6 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.useful.Options._
 
 /* Now, consider only binary operation and integer type.
  * Reference:
@@ -440,7 +439,7 @@ class SymbolicHelper(I: Interpreter) {
                 case EJSLogNot => Some("==")
                 case _ => None
               }
-              if (operation.isSome) {
+              if (operation.isDefined) {
                 val c = new SymbolicValue
                 c.makeSymbolicValue("0", "Number")
                 val info = new SymbolicInfo(true, None, operation, Some(symbolic_memory(v.uniqueName)), Some(c), branchTaken)
@@ -615,8 +614,8 @@ class SymbolicHelper(I: Interpreter) {
   def storeArguments(args: IRId, elems: List[Option[IRExpr]]) = {
     var arguments = List[Option[SymbolicValue]]()
     for (elem <- elems)
-      if (elem.isSome) {
-        val sv = symbolic_memory.get(elem.unwrap.asInstanceOf[IRId].uniqueName)
+      if (elem.isDefined) {
+        val sv = symbolic_memory.get(elem.get.asInstanceOf[IRId].uniqueName)
         arguments = arguments :+ sv
       }
     if (arguments.nonEmpty)

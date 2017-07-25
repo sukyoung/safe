@@ -20,7 +20,6 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.phase.InterpretConfig
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU }
-import kr.ac.kaist.safe.util.useful.Options._
 
 class Interpreter(config: InterpretConfig) extends IRWalker {
   /*
