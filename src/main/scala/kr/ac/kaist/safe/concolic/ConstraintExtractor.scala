@@ -119,14 +119,16 @@ class ConstraintExtractor {
       collect(expanded)
 
       // Extract only symbolic values that is necessary to explore a chosen branch.
-      var targetValues = constraints.filter(_.isBranchConstraint).foldLeft[List[SymbolicValue]](List())((list, constraint) => {
-        val temp = list ::: constraint.getSymbolicValues
-        temp.distinct
-      })
+      var targetValues = constraints.filter(_.isBranchConstraint).flatMap(_.getSymbolicValues.distinct)
+
+      //        .foldLeft[List[SymbolicValue]](List())((list, constraint) => {
+      //        val temp = list ::: constraint.getSymbolicValues
+      //        temp.distinct
+      //      })
       necessaries = List()
       val assignConstraints = constraints.filterNot(_.isBranchConstraint)
       while (targetValues.nonEmpty) {
-        var sv = targetValues.head
+        val sv = targetValues.head
         necessaries = necessaries :+ sv
 
         targetValues = targetValues.tail
@@ -148,7 +150,7 @@ class ConstraintExtractor {
       necessaries = necessaries.filter(_.isInput)
     }
 
-    if (debug) {
+    if (debug) { // TODO MV Original: if (debug) {
       System.out.println("=================== Expanded Node ====================")
       System.out.println(expanded)
       System.out.println("======================================================")
@@ -274,36 +276,38 @@ class ConstraintExtractor {
     }
   }
 
-  def negate(trueBranch: Boolean, info: SymbolicInfo): Option[ConstraintForm] = info._op match {
-    case Some(op) =>
-      val operator =
-        if (!trueBranch) op match {
-          case "<" => Some(">=")
-          case "<=" => Some(">")
-          case ">" => Some("<=")
-          case ">=" => Some("<")
-          case "==" => Some("!=")
-          case "!=" => Some("==")
-          case "===" => Some("!==")
-          case "!==" => Some("===")
-        }
-        else Some(op)
-      val cond = new ConstraintForm
-      cond.makeConstraint(None, info._lhs, operator, info._rhs)
-      cond.setBranchConstraint
-      Some(cond)
-    case None => info._lhs match {
-      case Some(lhs) =>
-        val operator = if (trueBranch) Some("!=") else Some("==")
-        // TODO: It should be "true" and "Boolean" instead of "0" and "Number"
-        val tmp = new SymbolicValue
-        tmp.makeSymbolicValue("0", "Number")
+  def negate(trueBranch: Boolean, info: SymbolicInfo): Option[ConstraintForm] = {
+    info._op match {
+      case Some(op) =>
+        val operator =
+          if (!trueBranch) op match {
+            case "<" => Some(">=")
+            case "<=" => Some(">")
+            case ">" => Some("<=")
+            case ">=" => Some("<")
+            case "==" => Some("!=")
+            case "!=" => Some("==")
+            case "===" => Some("!==")
+            case "!==" => Some("===")
+          }
+          else Some(op)
         val cond = new ConstraintForm
-        cond.makeConstraint(None, Some(lhs), operator, Some(tmp))
-        cond.setBranchConstraint
-        return Some(cond)
-      case None =>
-        throw new ConcolicError("The 'lhs' part in the information should be filled in.")
+        cond.makeConstraint(None, info._lhs, operator, info._rhs)
+        cond.setBranchConstraint()
+        Some(cond)
+      case None => info._lhs match {
+        case Some(lhs) =>
+          val operator = if (trueBranch) Some("!=") else Some("==")
+          // TODO: It should be "true" and "Boolean" instead of "0" and "Number"
+          val tmp = new SymbolicValue
+          tmp.makeSymbolicValue("0", "Number")
+          val cond = new ConstraintForm
+          cond.makeConstraint(None, Some(lhs), operator, Some(tmp))
+          cond.setBranchConstraint()
+          Some(cond)
+        case None =>
+          throw new ConcolicError("The 'lhs' part in the information should be filled in.")
+      }
     }
   }
 

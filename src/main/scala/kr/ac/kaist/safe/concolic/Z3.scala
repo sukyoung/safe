@@ -37,8 +37,11 @@ final class Z3 {
 
     val exprMap: MMap[String, IntExpr] = scala.collection.mutable.HashMap[String, IntExpr]()
     val solver: Solver = ctx.mkSolver
+    println(s"Solving constraints $mutConslist")
+    val mmutConsList = mutConslist
     while (mutConslist.nonEmpty) {
       val constraint: ConstraintForm = mutConslist.head
+      //      println(s"Solving constraint ${constraint.getLhs} ${constraint.op} ${constraint.getRhs}")
       mutConslist = mutConslist.drop(1)
       if (constraint.getOp.isDefined) {
         val op: String = constraint.getOp.get
@@ -151,26 +154,26 @@ final class Z3 {
       }
       var i: Int = 0
       while (i < inum) {
-        {
-          if (exprMap.contains("i" + i)) result.put("i" + i, model.getConstInterp(exprMap.get("i" + i).get).toString.toInt)
-          if (objects.contains(i)) {
-            if (objects(i).getConstructor == "Array") {
-              val length: String = objects(i).getProperties.head
-              var j: Int = 0
-              while (j < length.toInt) {
-                result.put("i" + i + "." + Integer.toString(j), model.getConstInterp(exprMap.get("i" + i + "." + Integer.toString(j)).get).toString.toInt)
-                j += 1
-                j - 1
-              }
-              result
-            } else {
-              val properties: List[String] = objects(i).properties
-              var j: Int = 0
-              while (j < properties.size) {
-                result.put("i" + i + "." + properties(j), model.getConstInterp(exprMap.get("i" + i + "." + properties(j)).get).toString.toInt)
-                j += 1
-                j - 1
-              }
+        if (exprMap.contains("i" + i)) {
+          result.put("i" + i, model.getConstInterp(exprMap.get("i" + i).get).toString.toInt)
+        }
+        if (objects.contains(i)) {
+          if (objects(i).getConstructor == "Array") {
+            val length: String = objects(i).getProperties.head
+            var j: Int = 0
+            while (j < length.toInt) {
+              result.put("i" + i + "." + Integer.toString(j), model.getConstInterp(exprMap.get("i" + i + "." + Integer.toString(j)).get).toString.toInt)
+              j += 1
+              j - 1
+            }
+            result
+          } else {
+            val properties: List[String] = objects(i).properties
+            var j: Int = 0
+            while (j < properties.size) {
+              result.put("i" + i + "." + properties(j), model.getConstInterp(exprMap.get("i" + i + "." + properties(j)).get).toString.toInt)
+              j += 1
+              j - 1
             }
           }
         }
@@ -180,7 +183,7 @@ final class Z3 {
       result
     } else {
       System.out.println(solver.check)
-      System.out.println("BUG, the constraints are not satisfiable.")
+      System.out.println(s"BUG, the constraints are not satisfiable: $mmutConsList")
       throw new TestFailedException
     }
   }

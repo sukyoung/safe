@@ -67,7 +67,8 @@ object ConcolicMain {
     ), HashSet[Concrete]())
     BuiltinGlobal.initHeap(initHeap, cfg)
 
-    val sens = CallSiteSensitivity(1)
+    val callSiteSens = 2
+    val sens = CallSiteSensitivity(callSiteSens)
     val initTP = sens.initTP
     val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
@@ -76,7 +77,7 @@ object ConcolicMain {
 
     //    val semantics = new Semantics(cfg, worklist)
     // TODO MV cfg == cfg2 ?
-    val tryAnalysisResult = Analyze.analyze(cfg, AnalyzeConfig())
+    val tryAnalysisResult = Analyze.analyze(cfg, AnalyzeConfig(callsiteSensitivity = callSiteSens))
     tryAnalysisResult.flatMap({
       case (cg2, iters, tp, semantics) =>
         // TODO MV Removed: val stateManager = new StateManager(cfg, semantics)

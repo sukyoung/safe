@@ -331,7 +331,8 @@ object DefaultHeap extends AbsHeapUtil {
     // Predicates
     ////////////////////////////////////////////////////////////////
     def hasConstruct(loc: Loc): AbsBool = {
-      val isDomIn = get(loc).fold(AbsBool.False) { obj => (obj contains IConstruct) }
+      val x = get(loc)
+      val isDomIn = x.fold(AbsBool.False) { obj => (obj contains IConstruct) }
       val b1 =
         if (AbsBool.True <= isDomIn) AbsBool.True
         else AbsBool.Bot

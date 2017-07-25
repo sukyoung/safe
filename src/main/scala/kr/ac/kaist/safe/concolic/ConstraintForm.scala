@@ -51,7 +51,7 @@ class ConstraintForm() {
     left || right
   }
 
-  var branchConstraint: Boolean = false
+  private var branchConstraint: Boolean = false
   def setBranchConstraint(): Unit = branchConstraint = true
   def isBranchConstraint: Boolean = branchConstraint
 

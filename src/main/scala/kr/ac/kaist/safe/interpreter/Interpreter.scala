@@ -74,7 +74,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
 
       walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]) ++ inputIR)
 
-      coverage.report = SH.report
+      coverage.report = SH.getReport
 
       //if (coverage.debug) 
       //SH.print
@@ -1011,6 +1011,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                   SH.executeStore(lhs, args(1).asInstanceOf[IRId].uniqueName, args.head, c, None, None, env)
               }
             case "<>Concolic<>ExecuteCondition" => {
+              val argHead = args.head
               val branchTaken = walkExpr(args.head) match {
                 case v: Val => Some(IH.toBoolean(v))
                 case _: JSError => None
@@ -1093,19 +1094,17 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case oer: ObjEnvRec => IH.valError2NormalCompletion(IH.putValue(lhs, oer.o, IS.strict))
                 case _: DeclEnvRec => IH.valError2NormalCompletion(IH.putValue(lhs, IS.GlobalObject, IS.strict))
               }
-            case "<>Global<>print" => walkExpr(args.head) match {
+            case NU.INTERNAL_PRINT => walkExpr(args.head) match {
               case v: Val =>
                 System.out.println(IH.toString(v))
                 IS.comp.setNormal(null)
               case err: JSError => IS.comp.setThrow(err, info.span)
             }
-            case "<>Global<>printIS" => {
+            case NU.INTERNAL_PRINT_IS =>
               //ID.prHeapEnv(IS)
               IH.valError2NormalCompletion(IH.putValue(lhs, IP.truePV, IS.strict))
-            }
-            case "<>Global<>getTickCount" => {
+            case NU.INTERNAL_GET_TICK_COUNT =>
               IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.mkIRNumIR(System.currentTimeMillis())), IS.strict))
-            }
             case NU.INTERNAL_ITER_INIT => walkExpr(args.head) match {
               // TODO case for null or undefined
               case v: JSObject =>
@@ -1146,7 +1145,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _ => IS.comp.setThrow(IP.typeError, info.span)
               }
             case x =>
-              println(s"x = $x")
+              println(s"x = $x") //TODO MV Debugging: remove print
               IS.comp.setThrow(IP.nyiError, info.span)
           }
 

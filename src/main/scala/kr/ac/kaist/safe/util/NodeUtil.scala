@@ -38,6 +38,11 @@ object NodeUtil {
   var keepComments = false
   private var comment: Option[Comment] = None
 
+  val PRINT_NAME = "print"
+  val INTERNAL_PRINT = internalAPIName(PRINT_NAME)
+  val INTERNAL_PRINT_IS = "_<>_printIS"
+  val INTERNAL_GET_TICK_COUNT = "_<>_getTickCount"
+
   val INTERNAL_SYMBOL = "<>"
   val GLOBAL_PREFIX = "<>Global<>"
   val GENERATED_STR = "<>generated String Literal"

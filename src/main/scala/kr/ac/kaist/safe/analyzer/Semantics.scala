@@ -471,6 +471,8 @@ class Semantics(
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[AllocSite], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
+    case (NodeUtil.INTERNAL_PRINT, List(expr), None) =>
+      (st, excSt)
     case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
       val (v, excSetV) = V(exprV, st)
       val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)

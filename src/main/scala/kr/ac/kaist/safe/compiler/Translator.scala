@@ -154,6 +154,7 @@ class Translator(program: Program) {
   private def defaultIRExpr: IRExpr = defaultIRId("_")
 
   // make expression statement with checking user id
+  //TODO MV Add flag to disallow concolic testing
   private def mkExprS(ast: ASTNode, id: IRId, e: IRExpr): IRExprStmt =
     if (containsUserId(e)) IRExprStmt(ast, id, e, true)
     else IRExprStmt(ast, id, e)
@@ -374,6 +375,23 @@ class Translator(program: Program) {
       // nested functions shadow parameters with the same names
       newParams, /*filterNot (p => fdNames contains p.lhs.originalName),*/
       newFds, paramsVds ++ newVds, newBody)
+  }
+
+  def isPrint(n: Expr) = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.PRINT_NAME)
+    case _ => false
+  }
+  def isPrintIS(n: Expr) = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.INTERNAL_PRINT_IS)
+    case _ => false
+  }
+  def isGetTickCount(n: Expr) = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.INTERNAL_GET_TICK_COUNT)
+    case _ => false
+  }
+  def isToObject(n: Expr) = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.toObjectName)
+    case _ => false
   }
 
   private def containsUserId(e: IRExpr): Boolean = e match {
@@ -969,7 +987,8 @@ class Translator(program: Program) {
                 EQUALS, IRVal("boolean")
               ),
               mkExprS(arg1, res, FALSE_BOOL),
-              Some(mkExprS(arg1, res, cond))
+              //TODO MV Not a 'valid' binary expression for concolic testing
+              Some(mkExprS(arg1, res, cond.copy(validConcolic = true)))
             )))
       )
       (
@@ -1145,6 +1164,22 @@ class Translator(program: Program) {
       val newone = freshId(arg, arg.span, "new1")
       val (ss, r) = walkExpr(arg, env, newone)
       (ss :+ IREval(e, res, r), res)
+
+    // _<>_print()
+    case FunApp(_, fun, List(arg)) if isPrint(fun) =>
+      val newone = freshId(arg, arg.span, "new1")
+      val (ss, r) = walkExpr(arg, env, newone)
+      (ss :+ IRInternalCall(e, res, NU.INTERNAL_PRINT, List(r)), res)
+
+    // _<>_printIS() TODO
+    //    case FunApp(info, fun, Nil) if isPrintIS(fun) =>
+    //      (List(IRInternalCall(e, info.span, res,
+    //        makeGId(e, NU.freshGlobalName("printIS")), res)), res)
+    //
+    //    // _<>_getTickCount()
+    //    case FunApp(info, fun, Nil) if isGetTickCount(fun) =>
+    //      (List(IRInternalCall(e, info.span, res,
+    //        makeGId(e, NU.freshGlobalName("getTickCount")), res)), res)
 
     case FunApp(info, Parenthesized(_, e), args) if e.isInstanceOf[LHS] =>
       walkExpr(FunApp(info, e.asInstanceOf[LHS], args), env, res)

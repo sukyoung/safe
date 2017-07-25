@@ -94,7 +94,6 @@ class Coverage(
   def setupCall() = CG.setupCall(target)
 
   def getConstraints = constraints
-  def getJavaConstraints: JList[ConstraintForm] = Lists.toJavaList(constraints)
 
   // Check whether testing a function continue or not.
   def continue: Boolean = {
@@ -224,7 +223,7 @@ class Coverage(
                         tinfo.addConstructors(List("Array"))
                         val arrayObj = computeObject(hh, lset)
                         var length = arrayObj("length").value.pvalue.toString
-                        if (length == "UInt" || length == "Top(number)") {
+                        if (length == "UInt") {
                           length = "0"
                         }
                         tinfo.setProperties(List(length))
@@ -250,7 +249,8 @@ class Coverage(
               if (func.isUser)
                 finfo.setCandidate()
               if (functionName.contains(".")) {
-                val thislset = state.heap.get(PredAllocSite.PURE_LOCAL)("@this").value.locset
+                val thislset = context.thisBinding.locset
+                // TODO MV Original: val thislset = state.heap.get(PredAllocSite.PURE_LOCAL)("@this").value.locset
                 val thisObj = computeObject(h_n, thislset)
 
                 val properties = computePropertyList(thisObj, true)

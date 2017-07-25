@@ -66,7 +66,11 @@ class SymbolicHelper(I: Interpreter) {
     case None => false //true
   }
 
-  var report = List[SymbolicInfo]()
+  private var report = List[SymbolicInfo]()
+  def getReport: List[SymbolicInfo] = report
+  def addToReport(info: SymbolicInfo): Unit = {
+    report :+= info
+  }
   // Type of information
   val STATEMENT = 1
   val BRANCH = 2
@@ -151,7 +155,7 @@ class SymbolicHelper(I: Interpreter) {
         val info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
         info.setType(STATEMENT)
 
-        report = report :+ info
+        addToReport(info)
 
         // When parameter is object
         coverage.functions(env.uniqueName).getObjectProperties(n) match {
@@ -162,30 +166,30 @@ class SymbolicHelper(I: Interpreter) {
               if (constructors.head == "Array") {
                 val length = props.head.toInt
                 for (p <- 0 until length) {
-                  var propValue = new SymbolicValue
+                  val propValue = new SymbolicValue
                   propValue.makeSymbolicValue(obj2str(symbol + index, p.toString), "Number")
                   symbolic_memory(obj2str(id.uniqueName, p.toString)) = propValue
 
-                  var propInputValue = new SymbolicValue
+                  val propInputValue = new SymbolicValue
                   propInputValue.makeSymbolicValue(obj2str(input_symbol + input_index, p.toString), "Number")
-                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+                  val info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
                   info.setType(STATEMENT)
 
-                  report = report :+ info
+                  addToReport(info)
                 }
               } else {
                 for (prop <- props) {
                   // Suppose types of properties could be only 'Number'
-                  var propValue = new SymbolicValue
+                  val propValue = new SymbolicValue
                   propValue.makeSymbolicValue(obj2str(symbol + index, prop), "Number")
                   symbolic_memory(obj2str(id.uniqueName, prop)) = propValue
 
-                  var propInputValue = new SymbolicValue
+                  val propInputValue = new SymbolicValue
                   propInputValue.makeSymbolicValue(obj2str(input_symbol + input_index, prop), "Number")
-                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+                  val info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
                   info.setType(STATEMENT)
 
-                  report = report :+ info
+                  addToReport(info)
                 }
               }
             }
@@ -298,7 +302,7 @@ class SymbolicHelper(I: Interpreter) {
                   index += 1
                   val info = new SymbolicInfo(false, Some(sid), Some(op.name), context._1, context._2, None)
                   info.setType(STATEMENT)
-                  report = report :+ info
+                  addToReport(info)
                 case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
               }
             }
@@ -321,7 +325,7 @@ class SymbolicHelper(I: Interpreter) {
                   index += 1
                   val info = new SymbolicInfo(false, Some(sid), None, Some(symbolic_memory(v)), None, None)
                   info.setType(STATEMENT)
-                  report = report :+ info
+                  addToReport(info)
                 case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
               }
             }
@@ -424,23 +428,25 @@ class SymbolicHelper(I: Interpreter) {
             if (context != null) {
               val info = new SymbolicInfo(true, None, Some(op.name), context._1, context._2, branchTaken)
               info.setType(BRANCH)
-              report = report :+ info
+              addToReport(info)
             }
         }
-        case IRUn(_, op, e) => e match {
-          case v: IRId => if (symbolic_memory.contains(v.uniqueName)) {
-            val operation: Option[String] = op.kind match {
-              case EJSPos => Some("!=")
-              case EJSNeg => Some("!=")
-              case EJSLogNot => Some("==")
-              case _ => None
-            }
-            if (operation.isSome) {
-              val c = new SymbolicValue
-              c.makeSymbolicValue("0", "Number")
-              val info = new SymbolicInfo(true, None, operation, Some(symbolic_memory(v.uniqueName)), Some(c), branchTaken)
-              info.setType(BRANCH)
-              report = report :+ info
+        case IRUn(_, op, e) => {
+          e match {
+            case v: IRId => if (symbolic_memory.contains(v.uniqueName)) {
+              val operation: Option[String] = op.kind match {
+                case EJSPos => Some("!=")
+                case EJSNeg => Some("!=")
+                case EJSLogNot => Some("==")
+                case _ => None
+              }
+              if (operation.isSome) {
+                val c = new SymbolicValue
+                c.makeSymbolicValue("0", "Number")
+                val info = new SymbolicInfo(true, None, operation, Some(symbolic_memory(v.uniqueName)), Some(c), branchTaken)
+                info.setType(BRANCH)
+                addToReport(info)
+              }
             }
           }
         }
@@ -450,7 +456,7 @@ class SymbolicHelper(I: Interpreter) {
             c.makeSymbolicValue("0", "Number")
             val info = new SymbolicInfo(true, None, Some("!="), Some(symbolic_memory(v.uniqueName)), Some(c), branchTaken)
             info.setType(BRANCH)
-            report = report :+ info
+            addToReport(info)
           }
         case IRLoad(info, obj, index) => findObjectName(obj) match {
           case Some(o) =>
@@ -458,7 +464,7 @@ class SymbolicHelper(I: Interpreter) {
             if (symbolic_memory.contains(id)) {
               val info = new SymbolicInfo(true, None, None, Some(symbolic_memory(id)), None, branchTaken)
               info.setType(BRANCH)
-              report = report :+ info
+              addToReport(info)
             }
           case None =>
             System.out.println("8 The object should be in object memory.")
@@ -472,7 +478,7 @@ class SymbolicHelper(I: Interpreter) {
     if (checkFocus(env)) {
       val info = new SymbolicInfo(true, None, None, None, None, None)
       info.setType(ENDBRANCH)
-      report = report :+ info
+      addToReport(info)
     }
   }
 
@@ -578,7 +584,7 @@ class SymbolicHelper(I: Interpreter) {
                       index += 1
                       val info = new SymbolicInfo(false, Some(sid), Some(op.name), context._1, context._2, None)
                       info.setType(STATEMENT)
-                      report = report :+ info
+                      addToReport(info)
                     case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
                   }
                 }
@@ -627,33 +633,33 @@ class SymbolicHelper(I: Interpreter) {
         val first = token(0).substring(0, token(0).length - 1)
         val second = token(1).substring(1, token(1).length)
 
-        var value = new SymbolicValue
+        val value = new SymbolicValue
         value.makeSymbolicValue(symbol + index, "Object")
         symbolic_memory("this") = value
 
-        var inputValue = new SymbolicValue
+        val inputValue = new SymbolicValue
         inputValue.makeSymbolicValue(this_symbol, "Object")
 
-        var info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
+        val info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
         info.setType(STATEMENT)
 
-        report = report :+ info
+        addToReport(info)
 
         // When parameter is object
         val thisProps: List[String] = coverage.functions(env.uniqueName).getThisProperties
         for (prop <- thisProps) {
-          var propValue = new SymbolicValue
+          val propValue = new SymbolicValue
           // Suppose types of properties could be only 'Number'
           propValue.makeSymbolicValue(obj2str(symbol + index, prop), "Number")
           symbolic_memory(obj2str("this", prop)) = propValue
 
-          var propInputValue = new SymbolicValue
+          val propInputValue = new SymbolicValue
           propInputValue.makeSymbolicValue(obj2str(this_symbol, prop), "Number")
 
-          var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+          val info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
           info.setType(STATEMENT)
 
-          report = report :+ info
+          addToReport(info)
         }
         index += 1
       }
@@ -727,7 +733,7 @@ class SymbolicHelper(I: Interpreter) {
           case Some(concreteValue) =>
             val info = new SymbolicInfo(false, Some(symbolic_memory(v2)), None, c2, None, None)
             info.setType(contextType)
-            report = report :+ info
+            addToReport(info)
           case None => throw new ConcolicError("Concrete value should exist.")
         }
         return (setInstanceType(symbolic_memory(v1), c1), c2)
@@ -783,7 +789,7 @@ class SymbolicHelper(I: Interpreter) {
       System.out.println("%6s => value: %2s, type: %6s".format(key, value.getValue, value.getTypes))
     System.out.println("======================================================")
     System.out.println("================== Symbolic Report ===================")
-    for (info <- report)
+    for (info <- getReport)
       System.out.println(info.toString)
     System.out.println("======================================================")
   }

@@ -17,13 +17,15 @@ import kr.ac.kaist.safe.util._
 
 // Expression
 abstract class IRExpr(
-  override val ast: ASTNode
+  override val ast: ASTNode,
+  val validConcolic: Boolean = true
 ) extends IRNode(ast)
 
 // Side-effect free expressions
 abstract class IROpApp(
-  override val ast: ASTNode
-) extends IRExpr(ast)
+  override val ast: ASTNode,
+  override val validConcolic: Boolean = true
+) extends IRExpr(ast, validConcolic)
 
 // Binary expression
 // Expr ::= e binop e
@@ -31,8 +33,9 @@ case class IRBin(
     override val ast: ASTNode,
     first: IRExpr,
     op: IROp,
-    second: IRExpr
-) extends IROpApp(ast) {
+    second: IRExpr,
+    override val validConcolic: Boolean = true
+) extends IROpApp(ast, validConcolic) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(first.toString(indent)).append(" ")
