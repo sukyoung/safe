@@ -1,0 +1,16 @@
+[0m[[0minfo[0m] [0mLoading global plugins from /Users/mvdcamme/.sbt/0.13/plugins[0m
+[0m[[0minfo[0m] [0mSet current project to unit (in build file:/Users/mvdcamme/PhD/Projects/Safe/tests/concolic_tests/jalangi_tests/unit/)[0m
+> run concolic tests/concolic_tests/jalangi_tests/unit/*.js
+[0m[[0minfo[0m] [0mUpdating {file:/Users/mvdcamme/PhD/Projects/Safe/tests/concolic_tests/jalangi_tests/unit/}unit...[0m
+[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.10.5 ...[0m
+[A[2K[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-compiler;2.10.5 ...[0m
+[A[2K[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-reflect;2.10.5 ...[0m
+[A[2K[0m[[0minfo[0m] [0mResolving org.scala-lang#jline;2.10.5 ...[0m
+[A[2K[0m[[0minfo[0m] [0mResolving org.fusesource.jansi#jansi;1.4 ...[0m
+[0m[[0minfo[0m] [0mDone updating.[0m
+java.lang.RuntimeException: No main class detected.
+	at scala.sys.package$.error(package.scala:27)
+[0m[[31mtrace[0m] [0mStack trace suppressed: run [34mlast compile:run[0m for the full output.[0m
+[0m[[31merror[0m] [0m(compile:[31mrun[0m) No main class detected.[0m
+[0m[[31merror[0m] [0mTotal time: 0 s, completed Jul 24, 2017 10:56:28 AM[0m
+> 

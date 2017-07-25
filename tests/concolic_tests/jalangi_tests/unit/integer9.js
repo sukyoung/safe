@@ -19,10 +19,10 @@
 function f(x, y) {
 	if ( 2*x === y) {
 			if (x > y + 10) {
-				_<>_print("Hello");
+				print("Hello");
 			}
 	} else {
-			_<>_print("else");
+			print("else");
 	}
 }
 f(0,0);

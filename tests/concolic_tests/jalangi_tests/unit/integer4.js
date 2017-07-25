@@ -18,13 +18,13 @@
 
 function f(a, b) {
 	if ((b === 3) == 1) {
-		_<>_print("1");
+		print("1");
 		if (a > 10) {
-			_<>_print("2");
+			print("2");
 		}
 	} else {
-		_<>_print("3");
+		print("3");
 	}
-	_<>_print("4");
+	print("4");
 }
 f(1,1);

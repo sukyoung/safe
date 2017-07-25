@@ -1,6 +1,6 @@
 function testme(a, b, c) {
 
-    _<>_print("a, b, c = "+a+", "+b+", "+c);
+    print("a, b, c = "+a+", "+b+", "+c);
 
     var x = 0, y = 0, z = 0;
 
@@ -18,9 +18,9 @@ function testme(a, b, c) {
     }
 
     if (x + y + z === 3) {
-        _<>_print("Sum is 3");
+        print("Sum is 3");
     } else {
-        _<>_print("Sum is not 3");
+        print("Sum is not 3");
     }
 }
 

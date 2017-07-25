@@ -29,13 +29,13 @@ var x = J$.readInput(1);
 
 function f(o, x) {
 	if (o.x) {
-			_<>_print("1: "+o.x);
+			print("1: "+o.x);
 	}
 
 	if (x > 10) {
-			_<>_print("> 10");
+			print("> 10");
 			if (x === 100) {
-				_<>_print("100");
+				print("100");
 			}
 	}
 }

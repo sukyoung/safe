@@ -5,10 +5,10 @@ function foo(x) {
     if (x > 100) {
         if (x == 200) {
             r = 0.3;
-						_<>_print("1");
+						print("1");
         } else {
             r = 4.2;
-						_<>_print("2");
+						print("2");
         }
     }
 }
@@ -17,12 +17,12 @@ function bar(x, y) {
     if (y > 0)
         if (y == x) {
             p.f = 2;
-						_<>_print("3");
+						print("3");
         } else {
-						_<>_print("4");
+						print("4");
         }
     else {
-				_<>_print("5");
+				print("5");
     }
 }
 

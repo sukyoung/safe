@@ -19,9 +19,9 @@
 
 function f(a) {
 	if (a === 3) {
-		_<>_print("Sum is 3");
+		print("Sum is 3");
 	} else {
-		_<>_print("Sum is not 3");
+		print("Sum is not 3");
 	}
 }
 f(1);

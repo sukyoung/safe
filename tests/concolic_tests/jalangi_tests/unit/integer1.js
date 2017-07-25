@@ -21,24 +21,24 @@ function main(a,b,c) {
 
 	if (a) {
 		x = -2;
-		_<>_print("4");
+		print("4");
 	}
 	if (b < 5) {
 		if (!a && c) {
 			y = 1;
 			if (a) {
 				y = 2*y;
-				_<>_print("9");
+				print("9");
 			}
-			_<>_print("1");
+			print("1");
 		}
 		z = 2;
 	}
 
 	if (x + y + z === 3) {
-		_<>_print("2");
+		print("2");
 	} else {
-		_<>_print("3");
+		print("3");
 	}
 }
 

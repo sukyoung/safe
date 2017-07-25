@@ -19,17 +19,17 @@
 function f(x, y) {
 	switch(x) {
 			case y:
-					_<>_print("This is y");
+					print("This is y");
 					break;
 			case 77:
 			case 88:
-					_<>_print("77 or 88");
+					print("77 or 88");
 					break;
 			case 909:
-					_<>_print("None");
+					print("None");
 					break;
 			default:
-					_<>_print("Default");
+					print("Default");
 					break;
 	}
 }

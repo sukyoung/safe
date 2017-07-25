@@ -18,11 +18,11 @@
 
 function f(v, w) {
 	if (v && w) {
-		_<>_print("1");
+		print("1");
 	} else {
-		_<>_print("2");
+		print("2");
 	}
-	_<>_print("3");
+	print("3");
 }
 
 f(1, false);

@@ -18,9 +18,9 @@
 
 function f(v, w) {
 	if (v || w) {
-		_<>_print("Then");
+		print("Then");
 	} else {
-		_<>_print("Else");
+		print("Else");
 	}
 }
 

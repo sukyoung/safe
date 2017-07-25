@@ -19,11 +19,11 @@
 function f(a, b) {
 	if ( (b === 3) == 0) {
 		if (a > 10) {
-			_<>_print("1");
+			print("1");
 		}
 	} else {
-		_<>_print("2");
+		print("2");
 	}
-	_<>_print("3");
+	print("3");
 }
 f(1,1);

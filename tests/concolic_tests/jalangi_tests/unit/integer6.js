@@ -18,14 +18,14 @@
 
 function f(a, b) {
 	if (7 - b*2 === 3) {
-		_<>_print("1");
+		print("1");
 	} else if (-b) {
-		_<>_print("2");
+		print("2");
 	} else if (+b) {
-		_<>_print("9");
+		print("9");
 	} else {
-		_<>_print("3");
+		print("3");
 	}
-	_<>_print("4");
+	print("4");
 }
 f(1,1);

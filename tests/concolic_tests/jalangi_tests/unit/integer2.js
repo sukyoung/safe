@@ -21,13 +21,13 @@ function f(a, b) {
 	b = 2*a - 2*a + 3*b;
 
 	if (b === 3) {
-			_<>_print("1");
+			print("1");
 	} else if (b === 7) {
-			_<>_print("9");
+			print("9");
 	} else {
-			_<>_print("2");
+			print("2");
 	}
-	_<>_print("3");
+	print("3");
 }
 
 f(1,1);
