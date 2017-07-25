@@ -210,7 +210,7 @@ class SymbolicHelper(I: Interpreter) {
       expr match {
         /* variable op varialbe */
         //TODO: extend the range to cover all expressions, first and second
-        case IRBin(_, first, op, second) => op.kind match {
+        case IRBin(_, first, op, second, true) => op.kind match {
           //TODO: find simple way to distinguish operation type
           // op is supported by the constraint solver
           case EJSInstOf => symbolic_memory -= id.uniqueName
@@ -351,7 +351,7 @@ class SymbolicHelper(I: Interpreter) {
     //TODO: need rewriter to modify the expressions syntatically accepted to the expressions supported by symbolic helper
     if (checkFocus(env)) {
       expr match {
-        case IRBin(_, first, op, second) => op.kind match {
+        case IRBin(_, first, op, second, true) => op.kind match {
           //TODO: find simple way to distinguish operation type
           case EJSInstOf =>
           case EJSIn =>
@@ -488,7 +488,7 @@ class SymbolicHelper(I: Interpreter) {
           val id = o + "." + prop
           expr match {
             //TODO: extend the range to cover all expressions, first and second
-            case IRBin(_, first, op, second) => op.kind match {
+            case IRBin(_, first, op, second, true) => op.kind match {
               //TODO: find simple way to distinguish operation type
               // op is supported by the constraint solver
               case EJSInstOf => symbolic_memory -= id
@@ -769,7 +769,7 @@ class SymbolicHelper(I: Interpreter) {
   }
 
   def toStr(expr: IRExpr): String = expr match {
-    case IRBin(_, first, op, second) =>
+    case IRBin(_, first, op, second, _) =>
       op.ast.toString() + toStr(expr)
     case IRLoad(_, obj, index) =>
       obj.originalName + "[" + toStr(index) + "]"

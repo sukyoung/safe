@@ -159,7 +159,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
 
   def walkExpr(e: IRExpr): ValError = try {
     e match {
-      case IRBin(_, first, op, second) => walkExpr(first) match {
+      case IRBin(_, first, op, second, _) => walkExpr(first) match {
         case v1: Val => walkExpr(second) match {
           case v2: Val => op.kind match {
             /*
@@ -905,7 +905,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               SH.storeVariable(args.head.asInstanceOf[IRId], args(1).asInstanceOf[IRId])
             case "<>Concolic<>ExecuteAssignment" =>
               val env = SH.getEnvironment(args(1).asInstanceOf[IRId])
-              var bs = IH.lookup(args(1).asInstanceOf[IRId])
+              val bs = IH.lookup(args(1).asInstanceOf[IRId])
               var loc = "Variable"
               bs match {
                 case der: DeclEnvRec => loc = "LocalVariable"
@@ -926,7 +926,8 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _: JSError => None
               }
               args.head match {
-                case IRBin(_, first, op, second) =>
+                case i @ IRBin(_, _, _, _, false) =>
+                case IRBin(_, first, op, second, true) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
                       var v1 = new SymbolicValue
@@ -943,7 +944,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                   }
                   val c2: Option[SymbolicValue] = walkExpr(second) match {
                     case v: Val =>
-                      var v2 = new SymbolicValue
+                      val v2 = new SymbolicValue
                       v match {
                         case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
                         case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
@@ -976,7 +977,8 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _: JSError => None
               }
               args.head match {
-                case IRBin(_, first, op, second) =>
+                case i @ IRBin(_, _, _, _, false) =>
+                case IRBin(_, first, op, second, true) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
                       var v1 = new SymbolicValue
@@ -1016,10 +1018,12 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _: JSError => None
               }
               args.head match {
-                case IRBin(_, first, op, second) =>
+                // MV: If the expression is not a 'valid' concolic expression, ignore it
+                case i @ IRBin(_, _, _, _, false) =>
+                case IRBin(_, first, op, second, true) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
-                      var v1 = new SymbolicValue
+                      val v1 = new SymbolicValue
                       v match {
                         case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
                         case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")

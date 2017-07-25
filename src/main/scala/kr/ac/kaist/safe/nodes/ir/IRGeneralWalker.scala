@@ -89,7 +89,7 @@ trait IRGeneralWalker[Result] {
   }
 
   def walk(node: IRExpr): Result = node match {
-    case IRBin(ast, first, op, second) =>
+    case IRBin(ast, first, op, second, _) =>
       join(walk(ast), walk(first), walk(op), walk(second))
     case IRUn(ast, op, expr) =>
       join(walk(ast), walk(op), walk(expr))

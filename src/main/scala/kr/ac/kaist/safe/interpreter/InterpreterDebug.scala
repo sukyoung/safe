@@ -38,7 +38,7 @@ object InterpreterDebug {
   }
 
   def prExpr(e: IRExpr): String = e match {
-    case IRBin(_, f, o, s) => prExpr(f) + (o.toString: String) + prExpr(s)
+    case IRBin(_, f, o, s, _) => prExpr(f) + (o.toString: String) + prExpr(s)
     case IRUn(_, o, expr) => (o.toString: String) + prExpr(expr)
     case id: IRId => getE(id.uniqueName)
     case _: IRThis => "this"

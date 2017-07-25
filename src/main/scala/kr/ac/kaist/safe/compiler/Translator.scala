@@ -154,7 +154,6 @@ class Translator(program: Program) {
   private def defaultIRExpr: IRExpr = defaultIRId("_")
 
   // make expression statement with checking user id
-  //TODO MV Add flag to disallow concolic testing
   private def mkExprS(ast: ASTNode, id: IRId, e: IRExpr): IRExprStmt =
     if (containsUserId(e)) IRExprStmt(ast, id, e, true)
     else IRExprStmt(ast, id, e)
@@ -395,7 +394,7 @@ class Translator(program: Program) {
   }
 
   private def containsUserId(e: IRExpr): Boolean = e match {
-    case IRBin(_, first, _, second) => containsUserId(first) || containsUserId(second)
+    case IRBin(_, first, _, second, _) => containsUserId(first) || containsUserId(second)
     case IRUn(_, _, expr) => containsUserId(expr)
     case IRLoad(_, _: IRUserId, _) => true
     case IRLoad(_, _, index) => containsUserId(index)
@@ -972,6 +971,7 @@ class Translator(program: Program) {
         args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InvalidInfixOpAppError(infix)) }
       val ((res11, cond: IRExpr), (res21, res22: IRExpr), ressRest) =
         ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InvalidInfixOpAppError(infix)) }
+      val invalidConcolicCond = ValidConcolicSetter.setValidConcolic(cond, false)
       val body = IRSeq(
         e,
         res11.asInstanceOf[List[IRStmt]] :+
@@ -983,12 +983,13 @@ class Translator(program: Program) {
               arg1,
               IRBin(
                 arg1,
-                IRUn(arg1, TYPEOF, cond),
-                EQUALS, IRVal("boolean")
+                IRUn(arg1, TYPEOF, invalidConcolicCond),
+                EQUALS,
+                IRVal("boolean")
               ),
               mkExprS(arg1, res, FALSE_BOOL),
               //TODO MV Not a 'valid' binary expression for concolic testing
-              Some(mkExprS(arg1, res, cond.copy(validConcolic = true)))
+              Some(mkExprS(arg1, res, invalidConcolicCond))
             )))
       )
       (

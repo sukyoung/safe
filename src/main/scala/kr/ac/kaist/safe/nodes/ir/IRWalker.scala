@@ -73,8 +73,8 @@ trait IRWalker {
   }
 
   def walk(node: IRExpr): IRExpr = node match {
-    case IRBin(ast, first, op, second) =>
-      IRBin(ast, walk(first), walk(op), walk(second))
+    case IRBin(ast, first, op, second, validConcolic) =>
+      IRBin(ast, walk(first), walk(op), walk(second), validConcolic)
     case IRUn(ast, op, expr) =>
       IRUn(ast, walk(op), walk(expr))
     case IRLoad(ast, obj, index) =>

@@ -141,7 +141,7 @@ class JSIRUnparser(program: IRNode) {
       elements.foreach(e => s.append(walk(e)).append(", "))
       s.append("]")
       s.toString
-    case IRBin(_, left, op, right) =>
+    case IRBin(_, left, op, right, _) =>
       val s: StringBuilder = new StringBuilder
       s.append(walk(left)).append(" ")
       s.append(walk(op)).append(" ")

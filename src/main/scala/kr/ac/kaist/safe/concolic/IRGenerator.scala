@@ -67,7 +67,7 @@ object IRGenerator {
   }
 
   def containsUserId(e: IRExpr): Boolean = e match {
-    case IRBin(_, first, _, second) => containsUserId(first) || containsUserId(second)
+    case IRBin(_, first, _, second, _) => containsUserId(first) || containsUserId(second)
     case IRUn(_, _, expr) => containsUserId(expr)
     case IRLoad(_, _: IRUserId, _) => true
     case IRLoad(_, _, index) => containsUserId(index)

@@ -214,7 +214,8 @@ final class Z3 {
         System.out.println("Unknown Exception: " + ex.getMessage)
         System.out.println("Stack trace: ")
         ex.printStackTrace(System.out)
-        None
+        throw ex
+        //TODO MV Original: None
       }
     }
   }

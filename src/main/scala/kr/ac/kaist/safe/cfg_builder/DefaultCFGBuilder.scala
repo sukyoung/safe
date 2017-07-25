@@ -475,7 +475,7 @@ class DefaultCFGBuilder(
         /* Insert assert instructions */
         trueBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
-          case IRBin(_, first, op, second) if op.isAssertOperator =>
+          case IRBin(_, first, op, second, _) if op.isAssertOperator =>
             falseBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
             falseBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
@@ -561,7 +561,7 @@ class DefaultCFGBuilder(
         /* Insert assert instruction */
         loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
-          case IRBin(_, first, op, second) if op.isAssertOperator =>
+          case IRBin(_, first, op, second, _) if op.isAssertOperator =>
             loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
             loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
@@ -621,7 +621,7 @@ class DefaultCFGBuilder(
       case IRLoad(_, obj, index) =>
         CFGLoad(expr, id2cfgExpr(obj), ir2cfgExpr(index))
       /* PEI : op \in {instanceof, in}, id lookup */
-      case IRBin(_, first, op, second) =>
+      case IRBin(_, first, op, second, _) =>
         CFGBin(expr, ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
       /* PEI : id lookup */
       case IRUn(_, op, expr) =>

@@ -132,7 +132,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     case id: IRId =>
       idMap.get(id).exists(isTypeofExpr)
     case IRUn(_, IROp(_, EJSTypeOf), _) => true
-    case IRBin(_, first, IROp(_, EJSEq), second) =>
+    case IRBin(_, first, IROp(_, EJSEq), second, _) =>
       isTypeofExpr(first) || isTypeofExpr(second)
     case _ => false
   }
@@ -167,8 +167,16 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteAssignment", e, Some(x))
      */
       case IRExprStmt(info, lhs, right, ref) =>
-        addIdToMap(lhs, right)
-        IRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
+        val validConcolic = right match {
+          case IRBin(_, _, _, _, validConcolic) => validConcolic
+          case _ => true
+        }
+        if (validConcolic) {
+          addIdToMap(lhs, right)
+          IRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
+        } else {
+          node
+        }
 
       /* x = x(x, x)
      * ==>
