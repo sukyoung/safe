@@ -116,13 +116,8 @@ class ConstraintExtractor {
       expanded = unvisited.dequeue
       collect(expanded)
 
-      // Extract only symbolic values that is necessary to explore a chosen branch.
+      // Extract only symbolic values that are necessary to explore a chosen branch.
       var targetValues = constraints.filter(_.isBranchConstraint).flatMap(_.getSymbolicValues.distinct)
-
-      //        .foldLeft[List[SymbolicValue]](List())((list, constraint) => {
-      //        val temp = list ::: constraint.getSymbolicValues
-      //        temp.distinct
-      //      })
       necessaries = List()
       val assignConstraints = constraints.filterNot(_.isBranchConstraint)
       while (targetValues.nonEmpty) {
@@ -164,7 +159,7 @@ class ConstraintExtractor {
     }
     if (node.parents.isDefined) {
       val parents = node.parents.get
-      val target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents(0)
+      val target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents.head
       collect(target)
     }
   }
@@ -174,13 +169,13 @@ class ConstraintExtractor {
     var left: Node = null
     var right: Node = null
     info.getType match {
-      case 1 => // Statement
+      case SymbolicInfoTypes.statement =>
         left = target.leftChild.get.asInstanceOf[Node]
         left.depth = target.depth + 1
         leaves.push(left)
 
         setPrevious(left)
-      case 2 => // Branch 
+      case SymbolicInfoTypes.branch =>
         left = target.leftChild.get.asInstanceOf[Node]
         right = target.rightChild.get.asInstanceOf[Node]
         left.depth = target.depth + 1
@@ -197,7 +192,7 @@ class ConstraintExtractor {
           //setPrevious(previousChild)
           findProperPrevious(previousChild)
         }
-      case 3 => // End of branch
+      case SymbolicInfoTypes.endBranch =>
         var child: Node = null
         if (target.leftChild.isEmpty && target.rightChild.isEmpty) {
           child = previous(0)
@@ -231,7 +226,7 @@ class ConstraintExtractor {
       throw new ConcolicError("All of adjacent leaves are not visited.")
 
     info.getType match {
-      case 1 => // Statement
+      case SymbolicInfoTypes.statement =>
         val cond = new ConstraintForm
         cond.makeConstraint(info._id, info._lhs, info._op, info._rhs)
         val left: Node = Node(true, Some(cond), None, None, target.depth + 1)
@@ -239,7 +234,7 @@ class ConstraintExtractor {
         left.setParents(List(target))
 
         leaves.push(left)
-      case 2 => // Branch 
+      case SymbolicInfoTypes.branch =>
         val depth = target.depth + 1
         // Put a true branch on the left side, and a false branch on the right side. 
         val visitNode = Node(true, negate(info.branchTaken, info), None, None, depth)
@@ -257,7 +252,7 @@ class ConstraintExtractor {
         branches.push(visitNode)
 
         unvisited += notvisitNode
-      case 3 => // End of branch
+      case SymbolicInfoTypes.endBranch =>
         val depth = cand1.depth
         // cand2 could be null because SymbolicHelper records only if-statements under certain conditions, however records every end-if-statements.
         val left: Node = Node(true, None, None, None, depth + 1)
@@ -324,13 +319,13 @@ class ConstraintExtractor {
   def matchPrevious(info: SymbolicInfo) = {
     // Transform the information to check equality. 
     val cond = info.getType match {
-      case 1 =>
+      case SymbolicInfoTypes.statement =>
         val temp = new ConstraintForm
         temp.makeConstraint(info._id, info._lhs, info._op, info._rhs)
         temp.toString
-      case 2 =>
+      case SymbolicInfoTypes.branch =>
         negate(info.branchTaken, info).get.toString
-      case 3 =>
+      case SymbolicInfoTypes.endBranch =>
         ""
     }
     var result = false
