@@ -88,8 +88,8 @@ class ConstraintExtractor {
       // New information should be built as a subtree of the original tree.
       else {
         // Newly added branch information should be ended before updating existing information.
-        if (info.getType == 2) newlyEnd += 1
-        if (info.getType == 3) newlyEnd -= 1
+        if (info.getType == SymbolicInfoTypes.branch) newlyEnd += 1
+        if (info.getType == SymbolicInfoTypes.endBranch) newlyEnd -= 1
         affected = affected :+ info
         insert(info)
       }
