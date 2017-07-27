@@ -38,7 +38,6 @@ final class Z3 {
     val exprMap: MMap[String, IntExpr] = scala.collection.mutable.HashMap[String, IntExpr]()
     val solver: Solver = ctx.mkSolver
     println(s"Solving constraints $mutConslist")
-    val mmutConsList = mutConslist
     while (mutConslist.nonEmpty) {
       val constraint: ConstraintForm = mutConslist.head
       //      println(s"Solving constraint ${constraint.getLhs} ${constraint.op} ${constraint.getRhs}")
@@ -164,26 +163,22 @@ final class Z3 {
             while (j < length.toInt) {
               result.put("i" + i + "." + Integer.toString(j), model.getConstInterp(exprMap.get("i" + i + "." + Integer.toString(j)).get).toString.toInt)
               j += 1
-              j - 1
             }
-            result
           } else {
             val properties: List[String] = objects(i).properties
             var j: Int = 0
             while (j < properties.size) {
               result.put("i" + i + "." + properties(j), model.getConstInterp(exprMap.get("i" + i + "." + properties(j)).get).toString.toInt)
               j += 1
-              j - 1
             }
           }
         }
         i += 1
-        i - 1
       }
       result
     } else {
       System.out.println(solver.check)
-      System.out.println(s"BUG, the constraints are not satisfiable: $mmutConsList")
+      System.out.println(s"BUG, the constraints are not satisfiable: $mutConslist")
       throw new TestFailedException
     }
   }
@@ -214,8 +209,8 @@ final class Z3 {
         System.out.println("Unknown Exception: " + ex.getMessage)
         System.out.println("Stack trace: ")
         ex.printStackTrace(System.out)
+        //TODO MV Remove throw, return something sensible instead
         throw ex
-        //TODO MV Original: None
       }
     }
   }
