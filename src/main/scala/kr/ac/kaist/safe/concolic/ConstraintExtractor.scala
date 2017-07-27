@@ -15,36 +15,6 @@ import scala.collection.mutable.{ Queue, Stack }
 import kr.ac.kaist.safe.errors.error.ConcolicError
 
 class ConstraintExtractor {
-  abstract class SymbolicTree
-  case class Node(visited: Boolean, content: Option[ConstraintForm], left: Option[SymbolicTree], right: Option[SymbolicTree], dep: Int) extends SymbolicTree {
-    var isVisit = visited
-    val constraint = content
-    var parents: Option[List[Node]] = None
-    var leftChild = left
-    var rightChild = right
-
-    var branchEnd: Node = null
-
-    var depth = dep
-
-    def setParents(p: List[Node]) = parents = Some(p)
-    def getParent = {
-      val temp = parents.get
-      temp(0)
-    }
-    def changeParent(from: Node, to: Node) = {
-      var temp = parents.get
-      for (i <- 0 until temp.length) {
-        if (from.constraint == temp(i).constraint)
-          temp = temp.updated(i, to)
-      }
-      parents = Some(temp)
-    }
-
-    def setBranchEnd(end: Node) = branchEnd = end
-
-    override def toString = "Node with a constraint: " + constraint + ", and with visited flag: " + isVisit
-  }
 
   // Initially expanded node would be root.
   var root: SymbolicTree = Node(true, None, None, None, 0)
@@ -53,7 +23,7 @@ class ConstraintExtractor {
   var leaves: Stack[Node] = null
   var unvisited: Queue[Node] = null
 
-  // To distinquish the newly generated information from the exisiting information.
+  // To distinquish the newly generated information from the existing information.
   var previous: List[Node] = null
   var branches: Stack[Node] = null
 
@@ -166,23 +136,21 @@ class ConstraintExtractor {
 
   def update(info: SymbolicInfo) = {
     val target = leaves.pop
-    var left: Node = null
-    var right: Node = null
     info.getType match {
       case SymbolicInfoTypes.statement =>
-        left = target.leftChild.get.asInstanceOf[Node]
-        left.depth = target.depth + 1
-        leaves.push(left)
+        val left = target.leftChild.get.asInstanceOf[Node]
+        val newLeft = left.incDepth
+        leaves.push(newLeft)
 
-        setPrevious(left)
+        setPrevious(newLeft)
       case SymbolicInfoTypes.branch =>
-        left = target.leftChild.get.asInstanceOf[Node]
-        right = target.rightChild.get.asInstanceOf[Node]
-        left.depth = target.depth + 1
-        right.depth = target.depth + 1
+        val left1 = target.leftChild.get.asInstanceOf[Node]
+        val right1 = target.rightChild.get.asInstanceOf[Node]
+        val left2 = left1.incDepth
+        val right2 = right1.incDepth
 
-        val child = if (!info.branchTaken) right else left
-        val previousChild = if (!info.branchTaken) left else right
+        val child = if (!info.branchTaken) right2 else left2
+        val previousChild = if (!info.branchTaken) left2 else right2
 
         child.isVisit = true
 
@@ -193,29 +161,37 @@ class ConstraintExtractor {
           findProperPrevious(previousChild)
         }
       case SymbolicInfoTypes.endBranch =>
-        var child: Node = null
-        if (target.leftChild.isEmpty && target.rightChild.isEmpty) {
-          child = previous(0)
+        val child1: Node = if (target.leftChild.isEmpty && target.rightChild.isEmpty) {
+          val child1 = previous.head
 
-          var previousParent = child.getParent
+          val previousParent = child1.getParent
+          val depth = if (target.depth > previousParent.depth) {
+            target.depth
+          } else {
+            previousParent.depth
+          }
+          val child2 = child1.incDepth
 
-          var depth = previousParent.depth
-          if (target.depth > depth) depth = target.depth
-          child.depth = depth + 1
+          if (previousParent.leftChild.isDefined) {
+            target.rightChild = Some(child2)
+          } else {
+            target.leftChild = Some(child2)
+          }
 
-          if (previousParent.leftChild.isDefined) target.rightChild = Some(child)
-          else target.leftChild = Some(child)
-
-          if (previousParent.leftChild.isDefined) child.setParents(List(previousParent, target))
-          else child.setParents(List(target, previousParent))
+          if (previousParent.leftChild.isDefined) {
+            child2.setParents(List(previousParent, target))
+          } else {
+            child2.setParents(List(target, previousParent))
+          }
+          child2
+        } else if (target.leftChild.isDefined) {
+          target.leftChild.get.asInstanceOf[Node]
         } else {
-          child =
-            if (target.leftChild.isDefined) target.leftChild.get.asInstanceOf[Node]
-            else target.rightChild.get.asInstanceOf[Node]
+          target.rightChild.get.asInstanceOf[Node]
         }
-        child.depth = target.depth + 1
-        leaves.push(child)
-        setPrevious(child)
+        val child2 = child1.incDepth
+        leaves.push(child2)
+        setPrevious(child2)
     }
   }
 
