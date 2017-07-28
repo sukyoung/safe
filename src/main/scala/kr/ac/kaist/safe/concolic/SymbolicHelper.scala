@@ -344,7 +344,8 @@ class SymbolicHelper(I: Interpreter) {
   }
 
   def executeCondition(expr: IRExpr, branchTaken: Option[Boolean], c1: Option[SymbolicValue], c2: Option[SymbolicValue], env: IRId) = {
-    //TODO: need rewriter to modify the expressions syntatically accepted to the expressions supported by symbolic helper
+    // TODO: need rewriter to modify the expressions syntactically accepted
+    // to the expressions supported by symbolic helper
     if (checkFocus(env)) {
       expr match {
         case IRBin(_, first, op, second, true) => op.kind match {

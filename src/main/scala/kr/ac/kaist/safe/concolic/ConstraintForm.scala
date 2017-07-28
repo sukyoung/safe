@@ -11,34 +11,44 @@
 
 package kr.ac.kaist.safe.concolic
 
+object ConstraintForm {
+
+  def makeConstraint(
+    id: Option[SymbolicValue],
+    left: Option[SymbolicValue],
+    operator: Option[String],
+    right: Option[SymbolicValue]
+  ): ConstraintForm = {
+    val newConstraintForm = new ConstraintForm
+    id match {
+      case Some(_id) =>
+        newConstraintForm.lhs = _id
+        newConstraintForm.op = Some("=")
+        val tmp = ConstraintForm.makeConstraint(None, left, operator, right)
+        newConstraintForm.rhs = Some(tmp)
+      // Conditional information
+      case None => left match {
+        case Some(_lhs) =>
+          newConstraintForm.lhs = _lhs
+          newConstraintForm.op = operator
+          newConstraintForm.rhs = right match {
+            case Some(_right) =>
+              val tmp = ConstraintForm.makeConstraint(None, Some(_right), None, None)
+              Some(tmp)
+            case None => None
+          }
+        case None =>
+      }
+    }
+    newConstraintForm
+  }
+}
+
 class ConstraintForm() {
   //var lhs: String = null
   var lhs: SymbolicValue = null
   var op: Option[String] = None
   var rhs: Option[ConstraintForm] = None
-
-  def makeConstraint(id: Option[SymbolicValue], left: Option[SymbolicValue], operator: Option[String], right: Option[SymbolicValue]): Unit = id match {
-    case Some(_id) =>
-      lhs = _id
-      op = Some("=")
-      val tmp = new ConstraintForm
-      tmp.makeConstraint(None, left, operator, right)
-      rhs = Some(tmp)
-    // Conditional information
-    case None => left match {
-      case Some(_lhs) =>
-        lhs = _lhs
-        op = operator
-        rhs = right match {
-          case Some(_right) =>
-            var tmp = new ConstraintForm
-            tmp.makeConstraint(None, Some(_right), None, None)
-            Some(tmp)
-          case None => None
-        }
-      case None =>
-    }
-  }
 
   def getLhs: SymbolicValue = lhs
   def getOp: Option[String] = op
