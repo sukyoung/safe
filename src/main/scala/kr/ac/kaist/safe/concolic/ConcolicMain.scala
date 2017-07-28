@@ -169,9 +169,9 @@ object ConcolicMain {
             if (coverage.isFirst) {
               extractor.initialize()
             }
-            val newConstraints = extractor.modify(coverage.report)
+            val ExtractedConstraintInformations(newConstraints, newNecessaries) = extractor.modify(coverage.report)
             coverage.constraints = newConstraints
-            coverage.necessaries = extractor.necessaries
+            coverage.necessaries = newNecessaries
 
           } while (coverage.continue)
           coverage.removeTarget()

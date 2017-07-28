@@ -14,6 +14,14 @@ package kr.ac.kaist.safe.concolic
 import scala.collection.mutable.{ Queue, Stack }
 import kr.ac.kaist.safe.errors.error.ConcolicError
 
+/**
+  * Represents a path constraint, in the form of a list of constraints, that was extracted, as well as all
+  * input SymbolicValues on which the branch-conditions in the path constraint (directly or indirectly) depend.
+  * @param constraints The path constraint.
+  * @param necessaries The input SymbolicValues required to compute the branch-conditions in the path constraint.
+  */
+case class ExtractedConstraintInformations(constraints: List[ConstraintForm], necessaries: List[SymbolicValue])
+
 class ConstraintExtractor {
 
   // Initially expanded node would be root.
@@ -22,11 +30,9 @@ class ConstraintExtractor {
   private var leaves: Stack[Node] = null
   private var unvisited: Queue[Node] = null
 
-  // To distinquish the newly generated information from the existing information.
+  // To distinguish the newly generated information from the existing information.
   private var previous: List[Node] = null
   private var branches: Stack[Node] = null
-
-  var necessaries: List[SymbolicValue] = null
 
   var debug = false
 
@@ -39,14 +45,11 @@ class ConstraintExtractor {
     * Given a list of reported path conditions, updates the symbolic tree to generate a new path constraint
     * (Not sure if this description is entirely correct).
     * @param report The path conditions that were encountered during interpretation of the program.
-    * @return A new path constraint, in the form of a list of ConstraintForms.
+    * @return An ExtractedConstraintInformations containing the new path constraint, in the form of a list of
+    *         ConstraintForms, and the list of necessary SymbolicValues.
     */
-  def modify(report: List[SymbolicInfo]): List[ConstraintForm] = {
-    if (debug) {
-      System.out.println("====================== Report ========================")
-      System.out.println(report.map(_.toString))
-      System.out.println("======================================================")
-    }
+  def modify(report: List[SymbolicInfo]): ExtractedConstraintInformations = {
+    printReport(report)
     var affected = List[SymbolicInfo]()
 
     leaves = Stack(root)
@@ -60,22 +63,27 @@ class ConstraintExtractor {
       // New information should be built as a subtree of the original tree.
       else {
         // Newly added branch information should be ended before updating existing information.
-        if (info.getType == SymbolicInfoTypes.branch) newlyEnd += 1
-        if (info.getType == SymbolicInfoTypes.endBranch) newlyEnd -= 1
+        info.getType match {
+          case SymbolicInfoTypes.branch =>
+            newlyEnd += 1
+          case SymbolicInfoTypes.endBranch =>
+            newlyEnd -= 1
+          case _ =>
+        }
         affected = affected :+ info
         insert(info)
       }
     }
-    //Remove a node from unvisited queue because it is visited by chance.
+    // Remove a node from unvisited queue because it is visited by chance.
     unvisited = unvisited.filterNot(_.isVisited).toQueue
     printAffectedAndSymbolicExecutionTree(affected, root)
     extract()
   }
 
-  def extract(): List[ConstraintForm] = {
+  def extract(): ExtractedConstraintInformations = {
     if (unvisited.isEmpty) {
       System.out.println("DONE")
-      Nil
+      ExtractedConstraintInformations(Nil, Nil)
     } else {
       // Take an unvisited node.
       val expanded: Node = unvisited.dequeue
@@ -84,13 +92,13 @@ class ConstraintExtractor {
 
       // Extract only symbolic values that are necessary to explore a chosen branch.
       var targetValues = constraints.filter(_.isBranchConstraint).flatMap(_.getSymbolicValues.distinct)
-      necessaries = List()
+      var necessaries: List[SymbolicValue] = List()
       val assignConstraints = constraints.filterNot(_.isBranchConstraint)
       while (targetValues.nonEmpty) {
         val sv = targetValues.head
+        targetValues = targetValues.tail
         necessaries = necessaries :+ sv
 
-        targetValues = targetValues.tail
         assignConstraints.find(_.getLhs == sv) match {
           case Some(x) =>
             if (x.getRhs.isDefined) {
@@ -108,7 +116,7 @@ class ConstraintExtractor {
       })*/
       necessaries = necessaries.filter(_.isInput)
       printExpandedNodeAndConstraints(expanded, constraints)
-      constraints
+      ExtractedConstraintInformations(constraints, necessaries)
     }
   }
 
@@ -270,7 +278,11 @@ class ConstraintExtractor {
         Some(cond)
       case None => info._lhs match {
         case Some(lhs) =>
-          val operator = if (trueBranch) Some("!=") else Some("==")
+          val operator = if (trueBranch) {
+            Some("!=")
+          } else {
+            Some("==")
+          }
           // TODO: It should be "true" and "Boolean" instead of "0" and "Number"
           val tmp = new SymbolicValue
           tmp.makeSymbolicValue("0", "Number")
@@ -309,7 +321,7 @@ class ConstraintExtractor {
       case SymbolicInfoTypes.endBranch =>
         ""
     }
-    var result = false // TODO MV What is the function of this variable?
+    var result = false // TODO MV What is the function of this variable? Check whether cond has already been generated?
     if (previous != null) {
       for (node <- previous) {
         val temp =
@@ -320,6 +332,18 @@ class ConstraintExtractor {
       }
     }
     result
+  }
+
+  /**
+    * If debugging is enabled, prints the list of SymbolicInfos reported during interpretation.
+    * @param report The list of SymbolicInfos that were reported.
+    */
+  def printReport(report: List[SymbolicInfo]): Unit = {
+    if (debug) {
+      System.out.println("====================== Report ========================")
+      System.out.println(report.map(_.toString))
+      System.out.println("======================================================")
+    }
   }
 
   /**
