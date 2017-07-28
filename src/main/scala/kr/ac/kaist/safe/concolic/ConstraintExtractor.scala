@@ -17,17 +17,14 @@ import kr.ac.kaist.safe.errors.error.ConcolicError
 class ConstraintExtractor {
 
   // Initially expanded node would be root.
-  var root: SymbolicTree = Node(true, None, None, None, 0)
-  var expanded: Node = null
+  private var root: Node = Node(true, None, None, None, 0)
 
-  var leaves: Stack[Node] = null
-  var unvisited: Queue[Node] = null
+  private var leaves: Stack[Node] = null
+  private var unvisited: Queue[Node] = null
 
   // To distinquish the newly generated information from the existing information.
-  var previous: List[Node] = null
-  var branches: Stack[Node] = null
-
-  var constraints: List[ConstraintForm] = null
+  private var previous: List[Node] = null
+  private var branches: Stack[Node] = null
 
   var necessaries: List[SymbolicValue] = null
 
@@ -38,18 +35,23 @@ class ConstraintExtractor {
     root = Node(true, None, None, None, 0)
   }
 
-  def modify(report: List[SymbolicInfo]) = {
+  /**
+    * Given a list of reported path conditions, updates the symbolic tree to generate a new path constraint
+    * (Not sure if this description is entirely correct).
+    * @param report The path conditions that were encountered during interpretation of the program.
+    * @return A new path constraint, in the form of a list of ConstraintForms.
+    */
+  def modify(report: List[SymbolicInfo]): List[ConstraintForm] = {
     if (debug) {
       System.out.println("====================== Report ========================")
       System.out.println(report.map(_.toString))
       System.out.println("======================================================")
     }
     var affected = List[SymbolicInfo]()
-    constraints = List[ConstraintForm]()
 
-    leaves = Stack(root.asInstanceOf[Node])
+    leaves = Stack(root)
     branches = Stack()
-    setPrevious(root.asInstanceOf[Node])
+    setPrevious(root)
     var newlyEnd = 0
     for (info <- report) {
       // Existing information just update the original tree.
@@ -64,27 +66,21 @@ class ConstraintExtractor {
         insert(info)
       }
     }
-
     //Remove a node from unvisited queue because it is visited by chance.
-    unvisited = unvisited.filterNot(_.isVisit).toQueue
-
-    if (debug) {
-      System.out.println("================== Affected Report ===================")
-      System.out.println(affected.map(_.toString))
-      System.out.println("======================================================")
-      System.out.println("============== Symbolic Execution Tree ===============")
-      printTree(root)
-      System.out.println("======================================================")
-    }
-
+    unvisited = unvisited.filterNot(_.isVisited).toQueue
+    printAffectedAndSymbolicExecutionTree(affected, root)
     extract()
   }
 
-  def extract(): Unit = {
-    if (unvisited.isEmpty) System.out.println("DONE")
-    else {
-      expanded = unvisited.dequeue
-      collect(expanded)
+  def extract(): List[ConstraintForm] = {
+    if (unvisited.isEmpty) {
+      System.out.println("DONE")
+      Nil
+    } else {
+      // Take an unvisited node.
+      val expanded: Node = unvisited.dequeue
+      // Collect all constraints belonging to this node or its ancestors in the symbolic tree.
+      val constraints: List[ConstraintForm] = collect(expanded)
 
       // Extract only symbolic values that are necessary to explore a chosen branch.
       var targetValues = constraints.filter(_.isBranchConstraint).flatMap(_.getSymbolicValues.distinct)
@@ -111,48 +107,57 @@ class ConstraintExtractor {
           list
       })*/
       necessaries = necessaries.filter(_.isInput)
-    }
-
-    if (debug) {
-      System.out.println("=================== Expanded Node ====================")
-      System.out.println(expanded)
-      System.out.println("======================================================")
-      System.out.println("==================== Constraints =====================")
-      System.out.println(constraints)
-      System.out.println("======================================================")
+      printExpandedNodeAndConstraints(expanded, constraints)
+      constraints
     }
   }
 
-  def collect(node: Node): Unit = {
-    if (node.constraint.isDefined) {
-      constraints = node.constraint.get :: constraints
+  /**
+    * Collects all constraints belonging to the given node and its ancestors in the symbolic tree.
+    * @param node The node from which to start collecting constraints in the symbolic tree.
+    * @return A list of all constraints that were collected.
+    */
+  def collect(node: Node): List[ConstraintForm] = {
+    def loop(node: Node, collected: List[ConstraintForm]): List[ConstraintForm] = {
+      val newCollected: List[ConstraintForm] = if (node.constraint.isDefined) {
+        node.constraint.get :: collected
+      } else {
+        collected
+      }
+      if (node.parents.isDefined) {
+        val parents = node.parents.get
+        val target = if (parents.length > 1 && !parents(1).isVisited) {
+          parents(1)
+        } else {
+          parents.head
+        }
+        loop(target, newCollected)
+      } else {
+        newCollected
+      }
     }
-    if (node.parents.isDefined) {
-      val parents = node.parents.get
-      val target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents.head
-      collect(target)
-    }
+    loop(node, Nil)
   }
 
   def update(info: SymbolicInfo) = {
     val target = leaves.pop
     info.getType match {
       case SymbolicInfoTypes.statement =>
-        val left = target.leftChild.get.asInstanceOf[Node]
+        val left = target.leftChild.get
         val newLeft = left.incDepth
         leaves.push(newLeft)
 
         setPrevious(newLeft)
       case SymbolicInfoTypes.branch =>
-        val left1 = target.leftChild.get.asInstanceOf[Node]
-        val right1 = target.rightChild.get.asInstanceOf[Node]
+        val left1 = target.leftChild.get
+        val right1 = target.rightChild.get
         val left2 = left1.incDepth
         val right2 = right1.incDepth
 
         val child = if (!info.branchTaken) right2 else left2
         val previousChild = if (!info.branchTaken) left2 else right2
 
-        child.isVisit = true
+        child.isVisited = true
 
         leaves.push(child)
         setPrevious(child)
@@ -170,12 +175,12 @@ class ConstraintExtractor {
           } else {
             previousParent.depth
           }
-          val child2 = child1.incDepth
+          val child2 = child1.changeDepth(depth)
 
           if (previousParent.leftChild.isDefined) {
-            target.rightChild = Some(child2)
+            target.setRightChild(Some(child2))
           } else {
-            target.leftChild = Some(child2)
+            target.setLeftChild(Some(child2))
           }
 
           if (previousParent.leftChild.isDefined) {
@@ -185,9 +190,9 @@ class ConstraintExtractor {
           }
           child2
         } else if (target.leftChild.isDefined) {
-          target.leftChild.get.asInstanceOf[Node]
+          target.leftChild.get
         } else {
-          target.rightChild.get.asInstanceOf[Node]
+          target.rightChild.get
         }
         val child2 = child1.incDepth
         leaves.push(child2)
@@ -198,7 +203,7 @@ class ConstraintExtractor {
   def insert(info: SymbolicInfo): Unit = {
     val cand1 = leaves.pop
     val target = cand1
-    if (!target.isVisit)
+    if (!target.isVisited)
       throw new ConcolicError("All of adjacent leaves are not visited.")
 
     info.getType match {
@@ -206,7 +211,7 @@ class ConstraintExtractor {
         val cond = new ConstraintForm
         cond.makeConstraint(info._id, info._lhs, info._op, info._rhs)
         val left: Node = Node(true, Some(cond), None, None, target.depth + 1)
-        target.leftChild = Some(left)
+        target.setLeftChild(Some(left))
         left.setParents(List(target))
 
         leaves.push(left)
@@ -218,8 +223,8 @@ class ConstraintExtractor {
         val left: Node = if (info.branchTaken) visitNode else notvisitNode
         val right: Node = if (info.branchTaken) notvisitNode else visitNode
 
-        target.leftChild = Some(left)
-        target.rightChild = Some(right)
+        target.setLeftChild(Some(left))
+        target.setRightChild(Some(right))
 
         left.setParents(List(target))
         right.setParents(List(target))
@@ -232,7 +237,7 @@ class ConstraintExtractor {
         val depth = cand1.depth
         // cand2 could be null because SymbolicHelper records only if-statements under certain conditions, however records every end-if-statements.
         val left: Node = Node(true, None, None, None, depth + 1)
-        cand1.leftChild = Some(left)
+        cand1.setLeftChild(Some(left))
         left.setParents(List(cand1))
 
         if (branches.nonEmpty) {
@@ -282,14 +287,14 @@ class ConstraintExtractor {
   def setPrevious(node: Node) = {
     previous = List()
     if (node.leftChild.isDefined)
-      previous = previous :+ node.leftChild.get.asInstanceOf[Node]
+      previous = previous :+ node.leftChild.get
     if (node.rightChild.isDefined)
-      previous = previous :+ node.rightChild.get.asInstanceOf[Node]
+      previous = previous :+ node.rightChild.get
   }
 
   def findProperPrevious(node: Node) = {
-    if (node.branchEnd != null)
-      previous = List(node.branchEnd)
+    if (node.branchEnd.isDefined)
+      previous = List(node.branchEnd.get)
   }
 
   def matchPrevious(info: SymbolicInfo) = {
@@ -304,7 +309,7 @@ class ConstraintExtractor {
       case SymbolicInfoTypes.endBranch =>
         ""
     }
-    var result = false
+    var result = false // TODO MV What is the function of this variable?
     if (previous != null) {
       for (node <- previous) {
         val temp =
@@ -317,18 +322,50 @@ class ConstraintExtractor {
     result
   }
 
-  def printTree(tree: SymbolicTree): Unit = {
-    val node = tree.asInstanceOf[Node]
-    System.out.println(node)
-    if (node.leftChild.isDefined) {
-      for (i <- 0 until node.depth)
-        System.out.print("\t")
-      printTree(node.leftChild.get)
+  /**
+    * If debugging is enabled, prints the list of affected SymbolicInfos and the symbolic execution tree.
+    * @param affected The list of affected SymbolicInfos to print.
+    * @param root The root of the symbolic execution tree to print.
+    */
+  def printAffectedAndSymbolicExecutionTree(affected: List[SymbolicInfo], root: Node): Unit = {
+    if (debug) {
+      System.out.println("================== Affected Report ===================")
+      System.out.println(affected.map(_.toString))
+      System.out.println("======================================================")
+      System.out.println("============== Symbolic Execution Tree ===============")
+      printTree(root)
+      System.out.println("======================================================")
     }
-    if (node.rightChild.isDefined) {
-      for (i <- 0 until node.depth)
-        System.out.print("\t")
-      printTree(node.rightChild.get)
+  }
+
+  /**
+    * If debugging is enabled, prints the expanded node and the given path condition.
+    * @param expanded The expanded node to print.
+    * @param constraints The path condition (in the form of a list of ConstraintForms) to print.
+    */
+  def printExpandedNodeAndConstraints(expanded: Node, constraints: List[ConstraintForm]): Unit = {
+    if (debug) {
+      System.out.println("=================== Expanded Node ====================")
+      System.out.println(expanded)
+      System.out.println("======================================================")
+      System.out.println("==================== Constraints =====================")
+      System.out.println(constraints)
+      System.out.println("======================================================")
     }
+  }
+
+  def printTree(tree: SymbolicTree): Unit = tree match {
+    case node: Node =>
+      System.out.println(node)
+      if (node.leftChild.isDefined) {
+        for (i <- 0 until node.depth)
+          System.out.print("\t")
+        printTree(node.leftChild.get)
+      }
+      if (node.rightChild.isDefined) {
+        for (i <- 0 until node.depth)
+          System.out.print("\t")
+        printTree(node.rightChild.get)
+      }
   }
 }

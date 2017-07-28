@@ -50,7 +50,7 @@ class CallGenerator(coverage: Coverage) {
       val token = target.substring(0, target.indexOf("<")).split('.')
       if (token.length > 3)
         throw new ConcolicError("Only a.x function forms are supported.")
-      val constructors = functions(target).getThisConstructors
+      val constructors: List[String] = functions(target).getThisConstructors
       //TODO: Handle multiple type
       val first = constructors.head
       val second = if (target.contains("prototype")) token(2) else token(1)
@@ -122,8 +122,8 @@ class CallGenerator(coverage: Coverage) {
     }
   }
 
-  def makeFunApp(target: String, isObject: Boolean): Option[FunApp] = {
-    makeArgs(target, isObject) match {
+  def makeFunApp(target: String, targetIsObjectMethod: Boolean): Option[FunApp] = {
+    makeArgs(target, targetIsObjectMethod) match {
       case Some(args) =>
         val fun = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, target, target))
         Some(NF.makeFunApp(dummySpan, fun, args))
@@ -132,48 +132,48 @@ class CallGenerator(coverage: Coverage) {
     }
   }
 
-  def makeArgs(target: String, isObject: Boolean): Option[List[Expr]] = {
+  def makeArgs(target: String, targetIsObjectMethod: Boolean): Option[List[Expr]] = {
     val irCollection: Set[IRNode] = IRCollector.collect(coverage.irRoot)
-    for (k <- irCollection) {
-      k match {
-        case IRFunctional(_, _, name, params, args, fds, vds, body) =>
-          if (name.uniqueName == target) {
-            val p = functions(target).params.size
-            // calculate the number of input to generate
-            if (!isObject)
-              coverage.setInputNumber(p)
-
-            //TODO: Handle multiple types in arugments
-            var args = List[Expr]()
-            for (n <- 0 until p)
-              functions(target).getObjectProperties(n) match {
-                case Some(props) =>
-                  if (n < input.size && !isObject)
-                    args = args :+ NF.makeVarRef(dummySpan, input("i" + n))
-                  else {
-                    val fresh = NU.freshName("a")
-                    val arg = NF.makeId(dummySpan, fresh, fresh)
-
-                    var addstmt: List[Stmt] = (new ConcolicSolver(coverage)).assignEmptyObject(arg)
-                    var constructors = functions(target).getObjectConstructors(n)
-                    if (constructors.nonEmpty) {
-                      addstmt = (new ConcolicSolver(coverage)).assignObject(false, n, arg, constructors(0), props, Map[String, Int](), true)
-                    }
-                    additional = additional ::: addstmt
-                    args = args :+ NF.makeVarRef(dummySpan, arg)
-                  }
-                case None =>
-                  args =
-                    if (n < input.size && !isObject)
-                      args :+ NF.makeVarRef(dummySpan, input("i" + n))
-                    else
-                      args :+ NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(5).toString))
-              }
-            return Some(args)
-          }
-        case _ =>
+    // Find the IRFunctional belonging to the target function.
+    val targetFunctional = irCollection.find({ case i: IRFunctional => i.name.uniqueName == target; case _ => false })
+    targetFunctional.map({ _ =>
+      // If target IRFunctional was found, do the following:
+      val p = functions(target).params.size
+      // Calculate the number of inputs to generate
+      if (!targetIsObjectMethod) {
+        coverage.setInputNumber(p)
       }
-    }
-    return None
+
+      //TODO: Handle multiple types in arguments
+      var args = List[Expr]()
+      for (n <- 0 until p)
+        functions(target).getObjectProperties(n) match {
+          case Some(props) =>
+            if (n < input.size && !targetIsObjectMethod)
+              args = args :+ NF.makeVarRef(dummySpan, input("i" + n))
+            else {
+              val fresh = NU.freshName("a")
+              val arg = NF.makeId(dummySpan, fresh, fresh)
+
+              var addstmt: List[Stmt] = (new ConcolicSolver(coverage)).assignEmptyObject(arg)
+              val constructors = functions(target).getObjectConstructors(n)
+              if (constructors.nonEmpty) {
+                addstmt = (new ConcolicSolver(coverage)).assignObject(false, n, arg, constructors(0), props, Map[String, Int](), true)
+              }
+              additional = additional ::: addstmt
+              args = args :+ NF.makeVarRef(dummySpan, arg)
+            }
+          case None =>
+            // No inputs were previously generated, so generate random arguments (between 0 and 5) instead
+            val maxRandomValue = 5
+            args = if (n < input.size && !targetIsObjectMethod) {
+              args :+ NF.makeVarRef(dummySpan, input("i" + n))
+            } else {
+              val randomValue = new Random().nextInt(maxRandomValue)
+              args :+ NF.makeIntLiteral(dummySpan, new BigInteger(randomValue.toString))
+            }
+        }
+      args
+    })
   }
 }
