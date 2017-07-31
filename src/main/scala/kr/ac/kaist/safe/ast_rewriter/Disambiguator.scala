@@ -119,7 +119,7 @@ class Disambiguator(program: Program) {
   // reset label environment
   private def resetLEnv(lenv: LabEnv): Unit = labEnv = lenv
 
-  // get environemt without id checking
+  // get environment without id checking
   private def getEnvNoCheck(id: Id): String = {
     val name = id.text
     env.find { case (n, _) => n.equals(name) } match {
@@ -131,7 +131,7 @@ class Disambiguator(program: Program) {
     }
   }
 
-  // get environemt with id checking
+  // get environment with id checking
   private def getEnvCheck(id: Id): String = {
     val name = id.text
     env.find { case (n, _) => n.equals(name) } match {
