@@ -99,7 +99,6 @@ class SymbolicHelper(I: Interpreter) {
 
     report = List[SymbolicInfo]()
 
-    System.out.println
     var target = coverage.target
     if (target != null && target.contains("@")) {
       target = target.substring(0, target.indexOf("@"))

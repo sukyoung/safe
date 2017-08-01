@@ -111,7 +111,7 @@ object ConcolicMain {
         do {
           var inputNumber = 0
           do {
-            System.out.println("Iterating in ConcolicMain")
+            System.out.println("\nIterating in ConcolicMain")
             var startTime = System.nanoTime
             val result = coverage.functions.get(coverage.target) match {
               case Some(f) =>
@@ -169,6 +169,7 @@ object ConcolicMain {
             if (coverage.isFirst) {
               extractor.initialize()
             }
+            println(s"Interpreter gathered report ${coverage.report}")
             val ExtractedConstraintInformations(newConstraints, newNecessaries) = extractor.modify(coverage.report)
             coverage.constraints = newConstraints
             coverage.necessaries = newNecessaries
