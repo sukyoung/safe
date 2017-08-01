@@ -146,6 +146,9 @@ object NodeUtil {
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val internalCallSet: Set[String] = HashSet(
+    INTERNAL_PRINT,
+    INTERNAL_PRINT_IS,
+    INTERNAL_GET_TICK_COUNT,
     INTERNAL_ADD_EVENT_FUNC,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
