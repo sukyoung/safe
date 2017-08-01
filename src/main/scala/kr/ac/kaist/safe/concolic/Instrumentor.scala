@@ -87,6 +87,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
 
   def executeCondition(info: ASTNode, e: IRExpr, env: IRId) =
     IRInternalCall(info, dummyId, CNU.freshConcolicName("ExecuteCondition"), List(e, env))
+
   def endCondition(info: ASTNode, env: IRId) =
     IRInternalCall(info, dummyId, CNU.freshConcolicName("EndCondition"), List(dummyId, env))
 
@@ -114,6 +115,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
   def fromParam(node: IRVarStmt) = node match {
     case IRVarStmt(info, lhs, fromparam) => fromparam
   }
+
   /* var x
    * ==>
    * var x;
@@ -123,27 +125,10 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     case IRVarStmt(info, lhs, fromparam) => walkVarStmt(info, lhs, IF.makeNumber(num.toString, num), env)
   }
 
-  /**
-   * Check whether the expression (or a subexpression thereof) relies on the typeof operator.
-   * @param expr The expression to check
-   * @return True if the expression uses the typeof operator, false otherwise.
-   */
-  def isTypeofExpr(expr: IRExpr): Boolean = expr match {
-    case id: IRId =>
-      idMap.get(id).exists(isTypeofExpr)
-    case IRUn(_, IROp(_, EJSTypeOf), _) => true
-    case IRBin(_, first, IROp(_, EJSEq), second, _) =>
-      isTypeofExpr(first) || isTypeofExpr(second)
-    case _ => false
-  }
-
-  private var idMap: Map[IRId, IRExpr] = Map()
-  private def addIdToMap(id: IRId, expr: IRExpr): Unit = {
-    idMap += (id -> expr)
-  }
-
   def walk(node: Any, env: IRId): Any = {
-    if (debug) println(node)
+    if (debug) {
+      println(node)
+    }
 
     node match {
       /* begin
@@ -167,16 +152,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteAssignment", e, Some(x))
      */
       case IRExprStmt(info, lhs, right, ref) =>
-        val validConcolic = right match {
-          case IRBin(_, _, _, _, validConcolic) => validConcolic
-          case _ => true
-        }
-        if (validConcolic) {
-          addIdToMap(lhs, right)
-          IRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
-        } else {
-          node
-        }
+        IRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
 
       /* x = x(x, x)
      * ==>
@@ -237,18 +213,14 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>EndCondition", e, None)
      */
       case IRIf(info, expr, trueB, falseB) =>
-        if (isTypeofExpr(expr)) {
-          node
-        } else {
-          // TODO MV Originally, this code checked whether the IRIf came from source (info.isFromSource)
-          // I assume here that every IRIf comes from source and have removed the else-branch.
-          // Original else-branch was: IRIf(info, expr, trueB, falseB)
-          IRSeq(info, List(
-            executeCondition(info, expr, env),
-            IRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt], falseB.map(walk(_, env).asInstanceOf[IRStmt])),
-            endCondition(info, env)
-          ))
-        }
+        // TODO MV Originally, this code checked whether the IRIf came from source (info.isFromSource)
+        // I assume here that every IRIf comes from source and have removed the else-branch.
+        // Original else-branch was: IRIf(info, expr, trueB, falseB)
+        IRSeq(info, List(
+          executeCondition(info, expr, env),
+          IRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt], falseB.map(walk(_, env).asInstanceOf[IRStmt])),
+          endCondition(info, env)
+        ))
 
       /* while (e) s
      * ==>

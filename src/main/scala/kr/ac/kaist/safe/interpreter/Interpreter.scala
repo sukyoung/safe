@@ -159,7 +159,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
 
   def walkExpr(e: IRExpr): ValError = try {
     e match {
-      case IRBin(_, first, op, second, _) => walkExpr(first) match {
+      case IRBin(_, first, op, second) => walkExpr(first) match {
         case v1: Val => walkExpr(second) match {
           case v2: Val => op.kind match {
             /*
@@ -926,8 +926,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _: JSError => None
               }
               args.head match {
-                case i @ IRBin(_, _, _, _, false) =>
-                case IRBin(_, first, op, second, true) =>
+                case IRBin(_, first, op, second) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
                       var v1 = new SymbolicValue
@@ -977,8 +976,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _: JSError => None
               }
               args.head match {
-                case i @ IRBin(_, _, _, _, false) =>
-                case IRBin(_, first, op, second, true) =>
+                case IRBin(_, first, op, second) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
                       var v1 = new SymbolicValue
@@ -1018,9 +1016,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _: JSError => None
               }
               args.head match {
-                // MV: If the expression is not a 'valid' concolic expression, ignore it
-                case i @ IRBin(_, _, _, _, false) =>
-                case IRBin(_, first, op, second, true) =>
+                case IRBin(_, first, op, second) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
                       val v1 = new SymbolicValue

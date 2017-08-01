@@ -52,7 +52,7 @@ object IRSimplifier extends IRWalker {
     case _ => false
   }
   def convertExpr(expr: IRExpr): (List[IRStmt], IRExpr) = expr match {
-    case IRBin(info, first, op, second, validConcolic) =>
+    case IRBin(info, first, op, second) =>
       val (names1, expr1) = convertExpr(first)
       val (names2, expr2) = convertExpr(second)
       val (expr1s, expr1e) =
@@ -73,7 +73,7 @@ object IRSimplifier extends IRWalker {
             secondname
           )
         } else (Nil, expr2)
-      (((names1 ++ names2) ++ expr1s) ++ expr2s, IRBin(info, expr1e, op, expr2e, validConcolic))
+      (((names1 ++ names2) ++ expr1s) ++ expr2s, IRBin(info, expr1e, op, expr2e))
 
     case IRUn(info, op, arg) =>
       val (names, expr) = convertExpr(arg)

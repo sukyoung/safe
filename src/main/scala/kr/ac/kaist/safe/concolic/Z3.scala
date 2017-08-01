@@ -178,7 +178,6 @@ final class Z3 {
       result
     } else {
       System.out.println(solver.check)
-      System.out.println(s"BUG, the constraints are not satisfiable: $mutConslist")
       throw new TestFailedException
     }
   }
@@ -199,19 +198,17 @@ final class Z3 {
         None
       }
     } catch {
-      case ex: Z3Exception => {
+      case ex: Z3Exception =>
         System.out.println("TEST CASE FAILED: " + ex.getMessage)
         System.out.println("Stack trace: ")
         ex.printStackTrace(System.out)
         None
-      }
-      case ex: Exception => {
+      case ex: TestFailedException =>
+        System.out.println(s"Error solving constraints $constraints")
+        None
+      case ex: Exception =>
         System.out.println("Unknown Exception: " + ex.getMessage)
-        System.out.println("Stack trace: ")
-        ex.printStackTrace(System.out)
-        //TODO MV Remove throw, return something sensible instead
-        throw ex
-      }
+        None
     }
   }
 }

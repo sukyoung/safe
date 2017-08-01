@@ -173,7 +173,7 @@ class CapturedVariableCollector(
     def walk(expr: IRExpr, locals: LocalNames): CapturedNames = expr match {
       case IRLoad(_, obj, index) =>
         walk(obj, locals) ++ walk(index, locals)
-      case IRBin(_, first, _, second, _) =>
+      case IRBin(_, first, _, second) =>
         walk(first, locals) ++ walk(second, locals)
       case IRUn(_, _, expr) => walk(expr, locals)
       case (id: IRId) => walk(id, locals)
