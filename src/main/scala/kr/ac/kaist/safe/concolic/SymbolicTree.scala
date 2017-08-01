@@ -14,11 +14,11 @@ package kr.ac.kaist.safe.concolic
 trait SymbolicTree
 
 case class Node(
-  var isVisited: Boolean,
+    var isVisited: Boolean,
     constraint: Option[ConstraintForm],
     var leftChild: Option[Node],
     var rightChild: Option[Node],
-    depth: Int,
+    var depth: Int,
     var parents: Option[List[Node]] = None,
     var branchEnd: Option[Node] = None
 ) extends SymbolicTree {
@@ -43,19 +43,10 @@ case class Node(
 
   override def toString = "Node with a constraint: " + constraint + ", and with visited flag: " + isVisited
 
-  private def copyMembers(newNode: Node): Unit = {
-    // We don't have to set the constraint-member, as that member is a constant
-    newNode.isVisited = isVisited
-    newNode.parents = parents
-    newNode.branchEnd = branchEnd
+  def changeDepth(newDepth: Int): Unit = {
+    depth = newDepth
   }
-
-  def changeDepth(newDepth: Int): Node = {
-    val newNode = this.copy(depth = newDepth)
-    copyMembers(newNode)
-    newNode
-  }
-  def incDepth: Node = {
+  def incDepth(): Unit = {
     changeDepth(depth + 1)
   }
 

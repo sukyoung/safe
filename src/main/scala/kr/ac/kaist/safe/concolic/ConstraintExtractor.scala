@@ -152,18 +152,17 @@ class ConstraintExtractor {
     info.getType match {
       case SymbolicInfoTypes.statement =>
         val left = target.leftChild.get
-        val newLeft = left.incDepth
-        leaves.push(newLeft)
-
-        setPrevious(newLeft)
+        left.incDepth()
+        leaves.push(left)
+        setPrevious(left)
       case SymbolicInfoTypes.branch =>
-        val left1 = target.leftChild.get
-        val right1 = target.rightChild.get
-        val left2 = left1.incDepth
-        val right2 = right1.incDepth
+        val left = target.leftChild.get
+        val right = target.rightChild.get
+        left.incDepth()
+        right.incDepth()
 
-        val child = if (!info.branchTaken) right2 else left2
-        val previousChild = if (!info.branchTaken) left2 else right2
+        val child = if (!info.branchTaken) right else left
+        val previousChild = if (!info.branchTaken) left else right
 
         child.isVisited = true
 
@@ -174,37 +173,37 @@ class ConstraintExtractor {
           findProperPrevious(previousChild)
         }
       case SymbolicInfoTypes.endBranch =>
-        val child1: Node = if (target.leftChild.isEmpty && target.rightChild.isEmpty) {
-          val child1 = previous.head
+        val child: Node = if (target.leftChild.isEmpty && target.rightChild.isEmpty) {
+          val child = previous.head
 
-          val previousParent = child1.getParent
+          val previousParent = child.getParent
           val depth = if (target.depth > previousParent.depth) {
             target.depth
           } else {
             previousParent.depth
           }
-          val child2 = child1.changeDepth(depth)
+          child.changeDepth(depth)
 
           if (previousParent.leftChild.isDefined) {
-            target.setRightChild(Some(child2))
+            target.setRightChild(Some(child))
           } else {
-            target.setLeftChild(Some(child2))
+            target.setLeftChild(Some(child))
           }
 
           if (previousParent.leftChild.isDefined) {
-            child2.setParents(List(previousParent, target))
+            child.setParents(List(previousParent, target))
           } else {
-            child2.setParents(List(target, previousParent))
+            child.setParents(List(target, previousParent))
           }
-          child2
+          child
         } else if (target.leftChild.isDefined) {
           target.leftChild.get
         } else {
           target.rightChild.get
         }
-        val child2 = child1.incDepth
-        leaves.push(child2)
-        setPrevious(child2)
+        child.incDepth()
+        leaves.push(child)
+        setPrevious(child)
     }
   }
 
