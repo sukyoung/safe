@@ -69,9 +69,9 @@ final class Z3 {
                       case '*' =>
                         solver.assert_(ctx.mkEq(exprMap.get(lhs).get, ctx.mkMul(exprMap.get(rhs).get, exprMap.get(v).get)))
                       case '/' =>
-                        solver.assert_(ctx.mkEq(exprMap.get(lhs).get, ctx.mkDiv(exprMap.get(rhs).asInstanceOf[ArithExpr], exprMap.get(v).asInstanceOf[ArithExpr])))
+                        solver.assert_(ctx.mkEq(exprMap.get(lhs).get, ctx.mkDiv(exprMap.get(rhs).get, exprMap.get(v).get)))
                       case '%' =>
-                        solver.assert_(ctx.mkEq(exprMap.get(lhs).get, ctx.mkMod(exprMap.get(rhs).asInstanceOf[IntExpr], exprMap.get(v).asInstanceOf[IntExpr])))
+                        solver.assert_(ctx.mkEq(exprMap.get(lhs).get, ctx.mkMod(exprMap.get(rhs).get, exprMap.get(v).get)))
                       case '&' =>
                         val x: BitVecExpr = ctx.mkInt2BV(1, exprMap.get(rhs).get)
                         val y: BitVecExpr = ctx.mkInt2BV(1, exprMap.get(v).get)
