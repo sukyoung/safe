@@ -41,7 +41,7 @@ case class JSObject(
    */
   def isInDomO(p: PName): Boolean = property.containsKey(p)
 
-  def getProp(x: PName): ObjectProp = property.get(x)
+  def getProp(x: PName): Option[ObjectProp] = property.get(x)
   def putProp(x: PName, op: ObjectProp): Unit = property.put(x, op)
 
   def isDataProp(x: PName): Boolean = {
@@ -81,8 +81,11 @@ case class JSObject(
   def getOwnProperty(x: PName): ObjectProp = {
     val v = property.get(x)
     // 1. If O doesn't have an own property with name P, return undefined.
-    if (v == null) null // null means undefined.
-    else v.copy
+    if (v.isEmpty) {
+      null // null means undefined.
+    } else {
+      v.get.copy()
+    }
   }
 
   /*
@@ -149,8 +152,9 @@ case class JSObject(
         if (desc.set.isEmpty || I.IH.isUndef(desc.set.get)) false
         else true
       } else desc.isWritable
-    } else if (proto == IP.nullObj) extensible
-    else {
+    } else if (proto == IP.nullObj) {
+      extensible
+    } else {
       val (inherited, _) = proto.getProperty(x)
       // 6. If inherited is undefined, return the value of the [[Extensible]] internal property of O.
       if (inherited == null) extensible
@@ -332,7 +336,7 @@ case class JSObject(
         }
       }
       // c. Return true.
-      return IP.truePV
+      IP.truePV
     } else {
       // 5. Return true, if every field in Desc is absent.
       if (op.areAllAttributesAbsent) return IP.truePV

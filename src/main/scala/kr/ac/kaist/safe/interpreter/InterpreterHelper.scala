@@ -237,7 +237,7 @@ class InterpreterHelper(I: Interpreter) {
     }
     false
   }
-  def isInDomS(s: Store, x: Var): Boolean = s.containsKey(x)
+  def isInDomS(s: Store, x: Var): Boolean = s.contains(x)
 
   /*
    * 10.2.1.1.2 CreateMutableBinding(N,D)
@@ -248,13 +248,17 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
-          else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
+          if (x.isInstanceOf[IRUserId]) {
+            I.IS.GlobalObject.putProp(x.originalName, mkDataProp(IP.undefV, true, true,
+              mutable && deletable))
+          } else {
+            I.IS.GlobalObject.declEnvRec.s += x.originalName -> new StoreValue(IP.undefV, false, true, true)
+          }
           return env
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
             // createBindingToDeclarative()
-            s.put(x.originalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
+            s += x.originalName -> new StoreValue(IP.undefV, false, mutable, mutable && deletable)
             return env
           case ObjEnvRec(_) =>
             env = rest
@@ -267,18 +271,22 @@ class InterpreterHelper(I: Interpreter) {
   def createBinding(env: Env, x: IRId, mutable: Boolean, deletable: Boolean): Unit = {
     env match {
       case EmptyEnv() =>
-        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
-        else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
+        if (x.isInstanceOf[IRUserId]) {
+          I.IS.GlobalObject.putProp(x.originalName, mkDataProp(IP.undefV, true, true,
+            mutable && deletable))
+        } else {
+          I.IS.GlobalObject.declEnvRec.s += x.originalName -> new StoreValue(IP.undefV, false, true, true)
+        }
       case ConsEnv(envRec, rest) => envRec match {
         case DeclEnvRec(s) =>
           // createBindingToDeclarative()
-          s.put(x.originalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
+          s += x.originalName -> new StoreValue(IP.undefV, false, mutable, mutable && deletable)
       }
     }
   }
   // Create a variable to declarative environment
   def createBindingToDeclarative(declEnvRec: DeclEnvRec, x: IRId, mutable: Boolean, deletable: Boolean): Unit = {
-    declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
+    declEnvRec.s += x.originalName -> new StoreValue(IP.undefV, false, mutable, mutable && deletable)
   }
 
   // Create and set at once
@@ -288,11 +296,11 @@ class InterpreterHelper(I: Interpreter) {
       env match {
         case EmptyEnv() =>
           if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.putProp(x.originalName, mkDataProp(v, true, true, mutable && deletable))
-          else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(v, true, true, true))
+          else I.IS.GlobalObject.declEnvRec.s += x.originalName -> new StoreValue(v, true, true, true)
           return v
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
-            s.put(x.originalName, new StoreValue(v, true, mutable, mutable && deletable))
+            s += x.originalName -> new StoreValue(v, true, mutable, mutable && deletable)
             return v
           case ObjEnvRec(_) =>
             env = rest
@@ -311,17 +319,27 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if (debug > 0) System.out.println("setBinding:x=" + x + " v=" + v)
-          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.getProp(originalName).value = Some(v)
-          else I.IS.GlobalObject.declEnvRec.s.get(originalName).setValue(v)
+          if (debug > 0) {
+            System.out.println("setBinding:x=" + x + " v=" + v)
+          }
+          if (x.isInstanceOf[IRUserId]) {
+            I.IS.GlobalObject.getProp(originalName).get.value = Some(v)
+          } else {
+            I.IS.GlobalObject.declEnvRec.s(originalName).setValue(v)
+          }
           return v
         case ConsEnv(er, rest) => er match {
           case DeclEnvRec(s) =>
             // setBindingToDeclarative()
-            val sv = s.get(originalName)
-            if (sv == null) throw new InterpreterError("setBinding:x=" + x + " v=" + v, I.IS.span)
-            if (sv.mutable || ignoreImmutable) s.get(originalName).setValue(v)
-            else if (strict) return IP.typeError
+            val sv = s(originalName)
+            if (sv == null) {
+              throw new InterpreterError("setBinding:x=" + x + " v=" + v, I.IS.span)
+            }
+            if (sv.mutable || ignoreImmutable) {
+              s(originalName).setValue(v)
+            } else if (strict) {
+              return IP.typeError
+            }
             return v
           case ObjEnvRec(_) =>
             env = rest
@@ -335,15 +353,15 @@ class InterpreterHelper(I: Interpreter) {
     val originalName = x.originalName
     env match {
       case EmptyEnv() =>
-        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.getProp(originalName).value = Some(v)
-        else I.IS.GlobalObject.declEnvRec.s.get(originalName).setValue(v)
+        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.getProp(originalName).get.value = Some(v)
+        else I.IS.GlobalObject.declEnvRec.s(originalName).setValue(v)
         v
       case ConsEnv(envRec, rest) => envRec match {
         case DeclEnvRec(s) =>
           // setBindingToDeclarative()
-          val sv = s.get(originalName)
+          val sv = s(originalName)
           if (sv == null) throw new InterpreterError("setBinding:x=" + x + " v=" + v, I.IS.span)
-          if (sv.mutable || ignoreImmutable) s.get(originalName).setValue(v)
+          if (sv.mutable || ignoreImmutable) s(originalName).setValue(v)
           else if (strict) return IP.typeError
           v
       }
@@ -352,9 +370,9 @@ class InterpreterHelper(I: Interpreter) {
   // Set a variable of declarative environment
   def setBindingToDeclarative(declEnvRec: DeclEnvRec, x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
     val originalName = x.originalName
-    val sv = declEnvRec.s.get(originalName)
+    val sv = declEnvRec.s(originalName)
     if (sv == null) throw new InterpreterError("setBindingToDeclarative:x=" + x + " v=" + v, I.IS.span)
-    if (sv.mutable || ignoreImmutable) declEnvRec.s.get(originalName).setValue(v)
+    if (sv.mutable || ignoreImmutable) declEnvRec.s(originalName).setValue(v)
     else if (strict) return IP.typeError
     v
   }
@@ -366,7 +384,7 @@ class InterpreterHelper(I: Interpreter) {
    */
   def getBindingValue(er: EnvRec, x: Var): ValError = er match {
     case DeclEnvRec(s) =>
-      val sv = s.get(x)
+      val sv = s(x)
       if (sv.init || sv.mutable) sv.value
       else {
         if (I.IS.strict) IP.referenceError(x + " from getBindingValue")
@@ -414,15 +432,22 @@ class InterpreterHelper(I: Interpreter) {
         case EmptyEnv() =>
           x match {
             case _: IRUserId =>
-              if (I.IS.GlobalObject.isInDomO(originalName)) return I.IS.globalObjEnvRec
+              if (I.IS.GlobalObject.isInDomO(originalName)) {
+                return I.IS.globalObjEnvRec
+              }
             case _: IRTmpId =>
-              if (I.IS.GlobalObject.declEnvRec.s.containsKey(originalName)) return I.IS.GlobalObject.declEnvRec
+              if (I.IS.GlobalObject.declEnvRec.s.contains(originalName)) {
+                return I.IS.GlobalObject.declEnvRec
+              }
           }
           return I.IS.nullObjEnvRec
         case ConsEnv(er, rest) => er match {
           case DeclEnvRec(s) =>
-            if (s.containsKey(originalName)) return er
-            else env = rest
+            if (s.contains(originalName)) {
+              return er
+            } else {
+              env = rest
+            }
           case ObjEnvRec(o) =>
             val obj = o.getProperty(originalName)._2
             if (obj != IP.nullObj) return er
@@ -456,7 +481,7 @@ class InterpreterHelper(I: Interpreter) {
     val prop = propTable
     prop.put("@i", numProp(0))
     prop.put("length", numProp(pn.size))
-    for (i <- 0 until pn.size) prop.put(i.toString, strProp(pn(i)))
+    for (i <- pn.indices) prop.put(i.toString, strProp(pn(i)))
     newObj(prop)
   }
   def collectProps(obj: JSObject): List[PName] = {
@@ -465,8 +490,8 @@ class InterpreterHelper(I: Interpreter) {
   }
   def next(o: JSObject, n: Int, obj: JSObject): Int = {
     if (!o.isInDomO(n.toString)) {
-      if (n >= toInt(o.property.get("length"))) n else next(o, n + 1, obj)
-    } else if (obj != IP.nullObj && obj.isEnumerable(toStr(o.property.get(n.toString)))) n
+      if (n >= toInt(o.property.get("length").get)) n else next(o, n + 1, obj)
+    } else if (obj != IP.nullObj && obj.isEnumerable(toStr(o.property.get(n.toString).get))) n
     else next(o, n + 1, obj)
   }
 
@@ -626,7 +651,7 @@ class InterpreterHelper(I: Interpreter) {
           else return IP.truePV
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
-            val sv = s.get(x)
+            val sv = s(x)
             if (sv != null) {
               if (sv.configurable) {
                 s.remove(x)
@@ -675,7 +700,7 @@ class InterpreterHelper(I: Interpreter) {
    * 9.3 ToNumber
    */
   def modulo(x: Double, y: Long): Long = {
-    var result = math.abs(x.toLong) % math.abs(y)
+    val result = math.abs(x.toLong) % math.abs(y)
     if (math.signum(x) < 0) return math.signum(y) * (math.abs(y) - result)
     math.signum(y) * result
   }
@@ -1057,7 +1082,7 @@ class InterpreterHelper(I: Interpreter) {
   ////////////////////////////////////////////////////////////////////////////////
 
   def newDeclEnv(): DeclEnvRec = {
-    val newEnv = new DeclEnvRec(new Store)
+    val newEnv = new DeclEnvRec(newStore)
     I.IS.env = new ConsEnv(newEnv, I.IS.env)
     newEnv
   }
@@ -1077,7 +1102,7 @@ class InterpreterHelper(I: Interpreter) {
    * 10.6 Arguments Object
    */
   def newArgObj(fun: JSFunction, np: Int, o: JSObject, b: Boolean): JSObject = {
-    val na = toInt(o.property.get("length"))
+    val na = toInt(o.property.get("length").get)
     var prop = o.property
     if (na < np)
       for (i <- na until np) {

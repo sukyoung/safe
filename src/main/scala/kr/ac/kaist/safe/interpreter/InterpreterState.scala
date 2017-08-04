@@ -38,7 +38,7 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
     GlobalObject.init()
     ObjectConstructor.init()
     ObjectPrototype.init()
-    objectProps = Sets.toSet(ObjectPrototype.property.map.keySet)
+    objectProps = ObjectPrototype.property.map.keySet.toSet
     FunctionConstructor.init()
     FunctionPrototype.init()
     ArrayConstructor.init()
@@ -75,8 +75,8 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
     val notYetImplemented = Set("JSON", "decodeURIComponent", "encodeURIComponent", "encodeURI",
       "<>Global<>global", "decodeURI", "Exception")
     val predefNames = new Predefined(config).all.toSet.diff(notYetImplemented)
-    val interpNames = Sets.toSet[String](ObjectPrototype.property.map.keySet).diff(objectProps) ++
-      Sets.toSet[String](GlobalObject.property.map.keySet)
+    val interpNames = ObjectPrototype.property.map.keySet.diff(objectProps) ++
+      GlobalObject.property.map.keySet
     if (!interpNames.subsetOf(predefNames)) {
       System.out.println("The following names are defined in the initial heap of the interpreter\n"
         + "but not in the list of predefined names:\n  ")

@@ -205,8 +205,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
       // Optimized.
       val it = o.property.unorderedEntrySet.iterator
       while (it.hasNext) {
-        val pair = it.next
-        val (p, desc) = (pair.getKey, pair.getValue)
+        val (p, desc) = it.next
         desc.configurable match {
           case Some(true) => desc.configurable = Some(false)
           case _ =>
@@ -223,8 +222,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
       // Optimized.
       val it = o.property.unorderedEntrySet.iterator
       while (it.hasNext) {
-        val pair = it.next
-        val (p, desc) = (pair.getKey, pair.getValue)
+        val (p, desc) = it.next
         if (I.IH.isDataDescriptor(desc)) desc.writable match {
           case Some(true) => desc.writable = Some(false)
           case _ =>

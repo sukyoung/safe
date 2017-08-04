@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe
 
-import java.util.HashMap
+import scala.collection.mutable.{ Map => MMap }
 
 import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterHelper => IH, InterpreterPredefine => IP }
 import kr.ac.kaist.safe.interpreter.objects._
@@ -119,7 +119,9 @@ package object interpreter {
    * its scope.
    */
   case class DeclEnvRec(s: Store) extends EnvRec
-  type Store = HashMap[Var, StoreValue]
+  type Store = MMap[Var, StoreValue]
+  def Store = MMap[Var, StoreValue]()
+  def newStore: Store = Store
   class StoreValue(var value: ValError, var init: Boolean,
       var mutable: Boolean, var configurable: Boolean) extends BindingValue {
     def setValue(v: ValError) { value = v; init = true; }
@@ -197,45 +199,48 @@ package object interpreter {
     }
   }
   class PropTable {
-    val map = new HashMap[PName, ObjectProp]
-    val order = new HashMap[Int, PName]
-    val index = new HashMap[PName, Int]
+    val map = MMap[PName, ObjectProp]()
+    val order = MMap[Int, PName]()
+    val index = MMap[PName, Int]()
     var count = 0
     def clear(): Unit = {
-      map.clear
-      order.clear
-      index.clear
+      map.clear()
+      order.clear()
+      index.clear()
       count = 0
     }
-    def containsKey(key: PName): Boolean = map.containsKey(key)
-    def containsValue(value: ObjectProp): Boolean = map.containsValue(value)
-    def get(key: PName): ObjectProp = map.get(key)
+    def containsKey(key: PName): Boolean = map.contains(key)
+    def containsValue(value: ObjectProp): Boolean = map.exists(_ == value)
+    def get(key: PName): Option[ObjectProp] = map.get(key)
     def isEmpty: Boolean = map.isEmpty
     def keys(): List[PName] = {
       var l = List[PName]()
       val i = order.keySet.iterator
-      while (i.hasNext) l ::= order.get(i.next)
+      while (i.hasNext) l ::= order(i.next)
       l.reverse
     }
-    def unorderedEntrySet() = map.entrySet
+    def unorderedEntrySet: Set[(PName, ObjectProp)] = map.toSet
     def put(key: PName, value: ObjectProp): ObjectProp = {
-      if (!map.containsKey(key)) {
+      if (!map.contains(key)) {
         order.put(count, key)
         index.put(key, count)
         count += 1
       }
       map.put(key, value)
+      value
     }
     def remove(key: PName): ObjectProp = {
-      order.remove(index.get(key))
+      order.remove(index(key))
       index.remove(key)
+      val old = map(key)
       map.remove(key)
+      old
     }
     def size(): Int = map.size
     def values(): List[ObjectProp] = {
       var l = List[ObjectProp]()
       val i = order.keySet.iterator
-      while (i.hasNext) l ::= map.get(order.get(i.next))
+      while (i.hasNext) l ::= map(order(i.next))
       l.reverse
     }
   }

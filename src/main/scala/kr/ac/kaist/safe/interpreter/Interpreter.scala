@@ -126,12 +126,12 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
         case EmptyEnv() => true
         case ConsEnv(first, rest) => first match {
           case DeclEnvRec(store) =>
-            val set: Set[String] = kr.ac.kaist.safe.util.useful.Sets.toSet(store.keySet())
+            val set: Set[String] = store.keySet.toSet
             val resultsNames = set.filter(_.startsWith(resultPrefix))
             val resultsZipped: Set[(String, StoreValue, String, StoreValue)] = resultsNames.map((resultName: String) => {
-              val resultValue = store.get(resultName)
+              val resultValue = store(resultName)
               val expectedName: String = expectPrefix + resultName.stripPrefix(resultPrefix)
-              val expectedValue = store.get(expectedName)
+              val expectedValue = store(expectedName)
               (resultName, resultValue, expectedName, expectedValue)
             })
             val firstEnvMatches = resultsZipped.forall({
@@ -1116,7 +1116,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               val (e1, e2) = (args.head, args(1))
               walkExpr(e1) match {
                 case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
-                  case v2: JSObject => v2.isInDomO(IH.next(v2, IH.toInt(v2.property.get("@i")), v1).toString) match {
+                  case v2: JSObject => v2.isInDomO(IH.next(v2, IH.toInt(v2.property.get("@i").get), v1).toString) match {
                     // (H, A, tb), x = true
                     case true => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.getIRBool(true)), IS.strict))
                     // (H, A, tb), x = true
@@ -1133,10 +1133,10 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               walkExpr(e1) match {
                 case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
                   case v2: JSObject =>
-                    val i = IH.next(v2, IH.toInt(v2.property.get("@i")), v1)
+                    val i = IH.next(v2, IH.toInt(v2.property.get("@i").get), v1)
                     v2.putProp("@i", IH.numProp(i + 1))
                     // (H', A, tb), x = H(v2).@property("i")
-                    IH.valError2NormalCompletion(IH.putValue(lhs, IH.toVal(v2.property.get(i.toString)), IS.strict))
+                    IH.valError2NormalCompletion(IH.putValue(lhs, IH.toVal(v2.property.get(i.toString).get), IS.strict))
                   case err: JSError => IS.comp.setThrow(err, info.span)
                   case _ => IS.comp.setThrow(IP.typeError, info.span)
                 }

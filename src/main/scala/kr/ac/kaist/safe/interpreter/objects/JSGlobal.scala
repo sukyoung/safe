@@ -70,7 +70,7 @@ class JSGlobal(I: Interpreter, proto: JSObject)
     property.put("URIError", I.IH.objProp(I.IS.URIErrorConstructor))
   }
 
-  val declEnvRec: DeclEnvRec = new DeclEnvRec(new Store)
+  val declEnvRec: DeclEnvRec = new DeclEnvRec(newStore)
   declEnvRec.s.put(NU.freshGlobalName("global"), new StoreValue(this, true, true, true))
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {

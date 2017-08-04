@@ -101,10 +101,10 @@ object InterpreterDebug {
   def toStringStore(s: Store) = {
     val sb: StringBuilder = new StringBuilder
     sb.append("{")
-    val i = s.entrySet().iterator()
-    while (i.hasNext()) {
-      val e = i.next()
-      sb.append("    " + getE(e.getKey())).append(" |-> ").append(e.getValue().value).append(", ")
+    val i = s.iterator
+    while (i.hasNext) {
+      val (key, storeValue) = i.next()
+      sb.append("    " + getE(key)).append(" |-> ").append(storeValue.value).append(", ")
     }
     sb.append("}")
     sb.toString
