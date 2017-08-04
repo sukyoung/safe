@@ -52,7 +52,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
   // Run
   ////////////////////////////////////////////////////////////////////////////////
 
-  def doit(program: IRRoot, coverage: Option[Coverage], printComp: Boolean = true) = {
+  def doit(program: IRRoot, coverage: Option[Coverage], printComp: Boolean = true): Completion = {
     def tsLab(l: IRId) = l.uniqueName
 
     // Set InterpreterState
@@ -77,8 +77,10 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
 
       //if (coverage.debug) 
       //SH.print
-    } else
+    } else {
+      println(IS.env)
       walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]))
+    }
     if (printComp) IS.lastComp.Type match {
       case CT.NORMAL =>
         if (IS.coverage.isEmpty) {
@@ -114,6 +116,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
     if (config.ECMASpecTest) {
       assert(checkResults, "Value of a computed result does not equal corresponding expected value")
     }
+    IS.lastComp
 
   }
 
