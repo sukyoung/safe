@@ -21,85 +21,72 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util.{ Coverage, EJSCompletionType, Span }
 
-////////////////////////////////////////////////////////////////////////////////
-// Concolic Test
-////////////////////////////////////////////////////////////////////////////////
-object ConcolicMain {
+/**
+  * Represents a combination of a ValError and the Span where this ValError was created.
+  * @param valError
+  * @param span The Span where this ValError was created.
+  */
+private case class ValErrorSpan(valError: ValError, span: Span)
 
-  private def init(): Unit = {
-    Utils.register(
-      DefaultUndef,
-      DefaultNull,
-      DefaultBool,
-      DefaultNumber,
-      StringSet(0),
-      DefaultLoc,
-      RecencyAAddr
-    )
+/**
+  * The values returned by exhaustively checking all constraints generated for a specific target.
+  * @param nrOfIterations The number of iterations it took the concolic tester to exhaust all constraints.
+  * @param jsExceptionsEncountered A set of all uncaught exceptions that were encountered during interpretation.
+  */
+private case class ConstraintsFinishedResult(nrOfIterations: Int, jsExceptionsEncountered: Set[ValErrorSpan]) {
+  /**
+    * Update the current result with a new Completion produced by running the interpreter:
+    * the number of iterations is incremented and if the Completion represents an uncaught exception,
+    * the set of uncaught exceptions that was encountered is updated to include this new exception.
+    * @param completion The Completion produced by the interpreter.
+    * @return A new, updated Result
+    */
+  def newCompletion(completion: Completion): ConstraintsFinishedResult = completion.Type match {
+    case EJSCompletionType.THROW =>
+      copy(
+        nrOfIterations = nrOfIterations + 1,
+        jsExceptionsEncountered = jsExceptionsEncountered + ValErrorSpan(completion.error, completion.span)
+      )
+    case _ =>
+      copy(nrOfIterations = nrOfIterations + 1)
   }
 
   /**
-   * Represents a combination of a ValError and the Span where this ValError was created.
-   * @param valError
-   * @param span The Span where this ValError was created.
-   */
-  case class ValErrorSpan(valError: ValError, span: Span)
-
-  /**
-   * The values returned by exhaustively checking all constraints generated for a specific target.
-   * @param nrOfIterations The number of iterations it took the concolic tester to exhaust all constraints.
-   * @param jsExceptionsEncountered A set of all uncaught exceptions that were encountered during interpretation.
-   */
-  case class ConstraintsFinishedResult(nrOfIterations: Int, jsExceptionsEncountered: Set[ValErrorSpan]) {
-    /**
-     * Update the current result with a new Completion produced by running the interpreter:
-     * the number of iterations is incremented and if the Completion represents an uncaught exception,
-     * the set of uncaught exceptions that was encountered is updated to include this new exception.
-     * @param completion The Completion produced by the interpreter.
-     * @return A new, updated Result
-     */
-    def newCompletion(completion: Completion): ConstraintsFinishedResult = completion.Type match {
-      case EJSCompletionType.THROW =>
-        copy(
-          nrOfIterations = nrOfIterations + 1,
-          jsExceptionsEncountered = jsExceptionsEncountered + ValErrorSpan(completion.error, completion.span)
-        )
-      case _ =>
-        copy(nrOfIterations = nrOfIterations + 1)
-    }
-
-    /**
-     * Combines this ConstraintsFinishedResult with another ConstraintsFinishedResult, adding up both
-     * iteration counts and taking the union of both sets of exceptions.
-     * @param other The other ConstraintsFinishedResult to be combined with.
-     * @return A new ConstraintsFinishedResult
-     */
-    def +(other: ConstraintsFinishedResult): ConstraintsFinishedResult = {
-      copy(nrOfIterations + other.nrOfIterations, jsExceptionsEncountered.union(other.jsExceptionsEncountered))
-    }
+    * Combines this ConstraintsFinishedResult with another ConstraintsFinishedResult, adding up both
+    * iteration counts and taking the union of both sets of exceptions.
+    * @param other The other ConstraintsFinishedResult to be combined with.
+    * @return A new ConstraintsFinishedResult
+    */
+  def +(other: ConstraintsFinishedResult): ConstraintsFinishedResult = {
+    copy(nrOfIterations + other.nrOfIterations, jsExceptionsEncountered.union(other.jsExceptionsEncountered))
   }
+}
+
+/**
+  * A class for performing the actual concolic testing of a program.
+  * @param coverage The Coverage to use.
+  * @param solver The ConcolicSolver to use.
+  * @param instrumentor The Instrumentor instrumenting the IR.
+  * @param interpreter The Interpreter to use.
+  * @param extractor The ConstraintExtractor generating new constraints.
+  * @param fir The filtered IR
+  * @param ir The IR to instrument and execute.
+  */
+private case class ProgramTester(coverage: Coverage,
+                                 solver: ConcolicSolver,
+                                 instrumentor: Instrumentor,
+                                 interpreter: Interpreter,
+                                 extractor: ConstraintExtractor,
+                                 fir: IRRoot,
+                                 ir: IRRoot) {
+
 
   /**
-   * Exhaustively check all constraints that can be generated for one single target.
-   * @param coverage The Coverage to use.
-   * @param solver The ConcolicSolver to use.
-   * @param instrumentor The Instrumentor instrumenting the IR.
-   * @param interpreter The Interpreter to use.
-   * @param extractor The ConstraintExtractor generating new constraints.
-   * @param fir The filtered IR
-   * @param ir The IR to instrument and execute.
-   * @return A ConstraintsFinishedResult that contains the number of iterations it took to test all constraints for
-   *         this target, as well as all uncaught exceptions encountered during the testing of all constraints.
-   */
-  private def goOverAllConstraints(
-    coverage: Coverage,
-    solver: ConcolicSolver,
-    instrumentor: Instrumentor,
-    interpreter: Interpreter,
-    extractor: ConstraintExtractor,
-    fir: IRRoot,
-    ir: IRRoot
-  ): ConstraintsFinishedResult = {
+    * Exhaustively check all constraints that can be generated for one single target.
+    * @return A ConstraintsFinishedResult that contains the number of iterations it took to test all constraints for
+    *         this target, as well as all uncaught exceptions encountered during the testing of all constraints.
+    */
+  private def goOverAllConstraints: ConstraintsFinishedResult = {
     @scala.annotation.tailrec
     def loop(currentResult: ConstraintsFinishedResult): ConstraintsFinishedResult = {
       System.out.println("\nIterating in ConcolicMain")
@@ -154,32 +141,13 @@ object ConcolicMain {
   }
 
   /**
-   * Exhaustively check all constraints that can be generated for all targets of the given IR.
-   * @param coverage The Coverage to use.
-   * @param solver The ConcolicSolver to use.
-   * @param instrumentor The Instrumentor instrumenting the IR.
-   * @param interpreter The Interpreter to use.
-   * @param extractor The ConstraintExtractor generating new constraints.
-   * @param fir The filtered IR
-   * @param ir The IR to instrument and execute.
-   * @return A ConstraintsFinishedResult that contains the number of iterations it took to test all constraints for
-   *         all targets in this IR, as well as all uncaught exceptions encountered during the testing of all
-   *         constraints.
-   */
-  private def testAllTargets(
-    coverage: Coverage,
-    solver: ConcolicSolver,
-    instrumentor: Instrumentor,
-    interpreter: Interpreter,
-    extractor: ConstraintExtractor,
-    fir: IRRoot,
-    ir: IRRoot
-  ): ConstraintsFinishedResult = {
+    * Exhaustively check all constraints that can be generated for all targets of the given IR.
+    */
+  def testAllTargets: ConstraintsFinishedResult = {
     @scala.annotation.tailrec
     def loop(currentResult: ConstraintsFinishedResult): ConstraintsFinishedResult = {
       coverage.removeTarget()
-      val newResult: ConstraintsFinishedResult =
-        goOverAllConstraints(coverage, solver, instrumentor, interpreter, extractor, fir, ir)
+      val newResult: ConstraintsFinishedResult = goOverAllConstraints
       if (coverage.existCandidate) {
         loop(currentResult + newResult)
       } else {
@@ -187,6 +155,24 @@ object ConcolicMain {
       }
     }
     loop(ConstraintsFinishedResult(0, Set()))
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Concolic Test
+////////////////////////////////////////////////////////////////////////////////
+object ConcolicMain {
+
+  private def init(): Unit = {
+    Utils.register(
+      DefaultUndef,
+      DefaultNull,
+      DefaultBool,
+      DefaultNumber,
+      StringSet(0),
+      DefaultLoc,
+      RecencyAAddr
+    )
   }
 
   private def reportErrors(uncaughtErrors: Set[ValErrorSpan]): Unit = {
@@ -240,8 +226,8 @@ object ConcolicMain {
           solver.debug = true
           extractor.debug = true
         }
-        val ConstraintsFinishedResult(_, uncaughtErrors) =
-          testAllTargets(coverage, solver, instrumentor, interpreter, extractor, fir, ir)
+        val tester = ProgramTester(coverage, solver, instrumentor, interpreter, extractor, fir, ir)
+        val ConstraintsFinishedResult(_, uncaughtErrors) = tester.testAllTargets
         reportErrors(uncaughtErrors)
         Success(return_code)
     })
