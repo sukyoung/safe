@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer
 
+import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
@@ -19,9 +20,12 @@ import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.parser.Parser
+import kr.ac.kaist.safe.phase._
 
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import scala.util.{ Success, Failure }
 
 class Semantics(
     cfg: CFG,
@@ -178,7 +182,11 @@ class Semantics(
           })
           (newSt, AbsState.Bot)
         }
-        case call: Call => CI(cp, call.callInst, st, AbsState.Bot)
+        case call: Call => call.callInst match {
+          // for Node.js
+          case (_: CFGLoadModule) => loadModule(cp, call.callInst, st, AbsState.Bot)
+          case _ => CI(cp, call.callInst, st, AbsState.Bot)
+        }
         case block: NormalBlock =>
           block.getInsts.foldRight((st, AbsState.Bot))((inst, states) => {
             val (oldSt, oldExcSt) = states
@@ -1057,6 +1065,103 @@ class Semantics(
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
       (AbsState.Bot, AbsState.Bot)
+  }
+
+  // for Node.js
+  // construct a CFG for a dynamically loaded module
+  // @loadModule(thisArg, [path])
+  def loadModule(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
+    val loc = Loc(i.asite)
+    val st1 = st.oldify(loc)
+    val (thisVal, _) = V(i.thisArg, st1)
+    val (argVal, _) = V(i.arguments, st1)
+    val firstArgVal = argVal.locset.getSingle match {
+      case ConOne(pathloc) =>
+        (st1.heap.get(pathloc)("0")).value
+      case _ =>
+        throw new Error("The second arguement for @loadModule is not a single array ")
+    }
+
+    // concrete path for the loaded source
+    val path: String = firstArgVal.pvalue.strval.gamma match {
+      // for now, we assume that a given path for the loaded module has a single concrete string
+      case ConFin(strset) if strset.size == 1 => strset.head
+      case ConFin(strset) if strset.size != 1 =>
+        throw new Error("Possible paths for loading the module are multiple : " + strset)
+      case ConInf() => throw new Error("Unknown path for the module to be loaded in Node.js")
+    }
+    if (thisVal.isBottom)
+      throw new Error("thisArg in @loadModule(thisArg, [path]) is the bottom value.")
+    else {
+      // construct an AST
+      val ast = Parser.moduleToAST(path) match {
+        case Success((program, excLog)) => {
+          // Report errors.
+          if (excLog.hasError) {
+            println(program.relFileName + ":")
+            println(excLog)
+          }
+          program
+        }
+        // for now, throw an exception when the parsing failed
+        case Failure(e) =>
+          throw ModelParseError(e.toString)
+      }
+      // rewrite AST
+      val safeConfig = SafeConfig(CmdCFGBuild, silent = true)
+      val astRewriteConfig = ASTRewriteConfig()
+      val rast = ASTRewrite(ast, safeConfig, astRewriteConfig).get
+
+      // construct an IR
+      val compileConfig = CompileConfig()
+      val ir = Compile(rast, safeConfig, compileConfig).get
+
+      // cfg build
+      val cfgBuildConfig = CFGBuildConfig()
+      val funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
+      val func = funCFG.getFunc(1).get
+
+      // add the cfg for the function to the current cfg
+      cfg.addFunction(func)
+
+      // draw call/return edges
+      val oldLocalEnv = st1.context.pureLocal
+      val tp = cp.tracePartition
+      val nCall = i.block
+      val cpAfterCall = ControlPoint(nCall.afterCall, tp)
+      val cpAfterCatch = ControlPoint(nCall.afterCatch, tp)
+      // note that we directly get scope environment from the caller without the function object of the callee.
+      val scopeValue = oldLocalEnv.outer
+      val newEnv = AbsLexEnv.newPureLocal(AbsLoc(loc))
+      val newRec = newEnv.record.decEnvRec
+      // no arguments
+      //.CreateMutableBinding(funCFG.argumentsName)
+      //.SetMutableBinding(funCFG.argumentsName, argVal)
+      val (newRec2, _) = newRec
+        .CreateMutableBinding("@scope")
+        .SetMutableBinding("@scope", scopeValue)
+      val entryCP = cp.next(func.entry, CFGEdgeCall)
+      val newTP = entryCP.tracePartition
+      val exitCP = ControlPoint(func.exit, newTP)
+      val exitExcCP = ControlPoint(func.exitExc, newTP)
+      addIPEdge(cp, entryCP, EdgeData(
+        OldASiteSet.Empty,
+        newEnv.copyWith(record = newRec2),
+        thisVal
+      ))
+      addIPEdge(exitCP, cpAfterCall, EdgeData(
+        st1.context.old,
+        oldLocalEnv,
+        st1.context.thisBinding
+      ))
+      addIPEdge(exitExcCP, cpAfterCatch, EdgeData(
+        st1.context.old,
+        oldLocalEnv,
+        st1.context.thisBinding
+      ))
+      // TODO: exception handling
+      (st1, excSt)
+    }
   }
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {

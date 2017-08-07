@@ -396,6 +396,21 @@ class DefaultCFGBuilder(
           lmap.updated(ThrowLabel, (ThrowLabel of lmap) + call + tailBlock)
           .updated(AfterCatchLabel, (AfterCatchLabel of lmap) + call.afterCatch)
         )
+      /* For Node.js : internal @LoadModule(this, [path]) */
+      case IRInternalCall(_, lhs, NodeUtil.INTERNAL_LOAD_MODULE, thisId :: args :: Nil) =>
+        val tailBlock: NormalBlock = getTail(blocks, func)
+        val thisE = ir2cfgExpr(thisId)
+        val f = tailBlock.func
+        val funref = CFGVarRef(stmt, CFGTempId("@loadModule", PureLocalVar))
+        val call = f.createCall(CFGLoadModule(stmt, _, funref, thisE, ir2cfgExpr(args), newASite), id2cfgId(lhs))
+        cfg.addEdge(tailBlock, call)
+
+        (
+          List(call.afterCall),
+          lmap.updated(ThrowLabel, (ThrowLabel of lmap) + call + tailBlock)
+          .updated(AfterCatchLabel, (AfterCatchLabel of lmap) + call.afterCatch)
+        )
+
       /* PEI : internal calls */
       case IRInternalCall(_, lhs, name, args) =>
         val tailBlock: NormalBlock = getTail(blocks, func)

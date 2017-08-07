@@ -135,6 +135,8 @@ object NodeUtil {
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val INTERNAL_GET_LOC = internalAPIName("getLoc")
+  // for Node.js
+  val INTERNAL_LOAD_MODULE = internalAPIName("loadModule")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
@@ -179,7 +181,9 @@ object NodeUtil {
     INTERNAL_ITER_HAS_NEXT,
     INTERNAL_ITER_NEXT,
     INTERNAL_ADD_EVENT_FUNC,
-    INTERNAL_GET_LOC
+    INTERNAL_GET_LOC,
+    // for Node.js
+    INTERNAL_LOAD_MODULE
   )
   def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
 

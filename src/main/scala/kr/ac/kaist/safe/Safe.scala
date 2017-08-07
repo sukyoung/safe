@@ -104,7 +104,10 @@ object Safe {
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
     ("testMode", BoolOption(c => c.testMode = true),
-      "switch on the test mode.")
+      "switch on the test mode."),
+    // for Node.js
+    ("nodejs", BoolOption(c => c.nodejs = true),
+      "analyzing a Node.js application.")
   )
 
   // indentation 
@@ -184,5 +187,7 @@ case class SafeConfig(
   var fileNames: List[String] = Nil,
   var silent: Boolean = false,
   var testMode: Boolean = false,
-  var html: Boolean = false // only turn on when HTML files are given.
+  var html: Boolean = false, // only turn on when HTML files are given.
+  // for Node.js
+  var nodejs: Boolean = false
 ) extends Config

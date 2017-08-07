@@ -30,7 +30,7 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
     config: ParseConfig
   ): Try[Program] = safeConfig.fileNames match {
     case Nil => Failure(NoFileError("parse"))
-    case _ => Parser.fileToAST(safeConfig.fileNames).map {
+    case _ => Parser.fileToAST(safeConfig.fileNames, safeConfig.nodejs).map {
       case (program, excLog) => {
         // Report errors.
         if (excLog.hasError) {
