@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.parser
 
 import java.io._
 import java.nio.charset.Charset
+import java.nio.file.{ Files, Paths }
 import scala.util.{ Try, Success, Failure }
 import xtc.parser.{ Result, ParseError, SemanticValue }
 import kr.ac.kaist.safe.errors.ExcLog
@@ -79,9 +80,9 @@ object Parser {
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fs match {
+  def fileToAST(fs: List[String], isNodeJS: Boolean = false): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
-      fileToStmts(file).flatMap {
+      fileToStmts(file, isNodeJS).flatMap {
         case (s, e) =>
           {
             val program = Program(s.info, List(s))
@@ -89,14 +90,18 @@ object Parser {
           }
       }
     case files =>
-      files.foldLeft(Try((List[SourceElements](), new ExcLog))) {
-        case (res, f) => fileToStmts(f).flatMap {
-          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
-        }
-      }.flatMap {
-        case (s, e) => {
-          val program = Program(NU.MERGED_SOURCE_INFO, s)
-          Try(program, e)
+      if (isNodeJS)
+        Failure(new Error("Cannot handle multiple input files"))
+      else {
+        files.foldLeft(Try((List[SourceElements](), new ExcLog))) {
+          case (res, f) => fileToStmts(f).flatMap {
+            case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
+          }
+        }.flatMap {
+          case (s, e) => {
+            val program = Program(NU.MERGED_SOURCE_INFO, s)
+            Try(program, e)
+          }
         }
       }
   }
@@ -111,6 +116,24 @@ object Parser {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ ss.body, ex + ee)) }
         }
       }.map { case (s, e) => (SourceElements(NU.MERGED_SOURCE_INFO, s, false), e) }
+  }
+
+  // for Node.js
+  // Used by loadModule(...) in analyzer/Semantics.scala
+  def moduleToAST(filename: String): Try[(Program, ExcLog)] = {
+    val sourcePath = Paths.get(filename).toAbsolutePath
+    // get original source string
+    val sourceString = new String(Files.readAllBytes(sourcePath))
+    // translate the original source to the one with a module wrapper
+    val translatedString = NodeJSUtil.moduleWrapper(sourceString, sourcePath.toString, sourcePath.getParent.toString, false)
+    // TODO : Source location adjustment
+    scriptToAST(List((sourcePath.toString, (0, 0), translatedString))).flatMap {
+      case (s, e) =>
+        {
+          val program = Program(s.info, List(s))
+          Try(program, e)
+        }
+    }
   }
 
   private def resultToAST[T <: ASTNode](
@@ -135,7 +158,7 @@ object Parser {
     new Span(file, loc, loc)
   }
 
-  private def fileToStmts(f: String): Try[(SourceElements, ExcLog)] = {
+  private def fileToStmts(f: String, isNodeJS: Boolean = false): Try[(SourceElements, ExcLog)] = {
     var fileName = new File(f).getCanonicalPath
     if (File.separatorChar == '\\') {
       // convert path string to linux style for windows
@@ -143,14 +166,31 @@ object Parser {
     }
     FileKind(fileName) match {
       case JSFile | JSErrFile => {
-        val fs = new FileInputStream(new File(f))
-        val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
-        val in = new BufferedReader(sr)
-        val pair = parsePgm(in, fileName, 0).flatMap {
-          case (p, e) => getInfoStmts(p).map((_, e))
+        // For Node.js : source translation for a module wrapper
+        if (isNodeJS) {
+          val sourcePath = Paths.get(f).toAbsolutePath
+          // get original source string
+          val sourceString = new String(Files.readAllBytes(sourcePath))
+          // translate the source with a module wrapper
+          val translatedString = NodeJSUtil.moduleWrapperCall(sourceString, sourcePath.toString, sourcePath.getParent.toString, true)
+          val sr = new StringReader(translatedString)
+          val in = new BufferedReader(sr)
+          // TODO : source location adjustment
+          val pair = parsePgm(in, fileName, 0).flatMap {
+            case (p, e) => getInfoStmts(p).map((_, e))
+          }
+          in.close; sr.close
+          pair
+        } else {
+          val fs = new FileInputStream(new File(f))
+          val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
+          val in = new BufferedReader(sr)
+          val pair = parsePgm(in, fileName, 0).flatMap {
+            case (p, e) => getInfoStmts(p).map((_, e))
+          }
+          in.close; sr.close; fs.close
+          pair
         }
-        in.close; sr.close; fs.close
-        pair
       }
       case HTMLFile => JSFromHTML.parseScripts(fileName)
       case JSONFile | JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))

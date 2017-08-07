@@ -281,3 +281,15 @@ case class CFGConstruct(
 ) extends CFGCallInst(ir, block, fun, thisArg, arguments) {
   override def toString: String = s"construct($fun, $thisArg, $arguments) @ $asite"
 }
+
+// for Node.js : @loadModule(this, arguments) - arguments[0] = source path
+case class CFGLoadModule(
+    override val ir: IRNode,
+    override val block: Call,
+    override val fun: CFGExpr,
+    override val thisArg: CFGExpr,
+    override val arguments: CFGExpr,
+    override var asite: AllocSite // XXX should be a value but for JS model for a while.
+) extends CFGCallInst(ir, block, fun, thisArg, arguments) {
+  override def toString: String = s"@loadModule($thisArg, $arguments) @ $asite"
+}
