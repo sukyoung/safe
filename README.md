@@ -66,6 +66,33 @@ Once you have built the framework, you can call it from any directory, on any Ja
 
 Still inside sbt, type **antRun test**.
 
+### JSCD: JavaScript Clone Detector
+
+JSCD is an open-source clone detector for JavaScript.
+
+====
+
+### Installation
+
+After [installing](#installation) SAFE, type **ant buildJSCD**.
+
+### Usage
+
+1. Configure the following parameters of ``bin/jscd_config``.
+```sh
+SRC_DIR='tests/clone_detector_tests/jquery'
+MIN_TOKENS='50 100'
+STRIDE='2'
+SIMILARITY='0.99 1.0'
+```
+
+2. To detect clones, type **bin/jsaf clone-detector**.
+3. To view the clone reports in xml format, type **bin/jscd_out2xml.sh**.
+4. To view the xml reports in a browser, use [Source-highlight](https://www.gnu.org/software/src-highlite/source-highlight.html) to highlight the source code with the following and open the reports in a browser.
+```sh
+source-highlight -s js --line-number-ref filename.js
+```
+
 ### CRES: Clone Refactor for ECMAScript
 
 ====

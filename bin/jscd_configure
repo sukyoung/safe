@@ -88,8 +88,9 @@ fi
 
 if [[ ! -e $JS_HOME/build ]];
 then
-	echo "Error: no $JS_HOME/build directory"
-	exit 0
+	# echo "Error: no $JS_HOME/build directory"
+	mkdir -p $JS_HOME/build
+	# exit 0
 fi
 
 check_var "DECKARD_DIR"
