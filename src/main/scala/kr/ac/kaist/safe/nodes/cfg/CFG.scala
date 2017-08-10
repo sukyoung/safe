@@ -20,7 +20,9 @@ import kr.ac.kaist.safe.util._
 
 class CFG(
     override val ir: IRNode,
-    globalVars: List[CFGId]
+    globalVars: List[CFGId],
+    // initial user address count to start (default count : 0)
+    initUserACount: Int = 0
 ) extends CFGNode(ir) {
   // cfg id
   val id: Int = CFG.getId
@@ -105,7 +107,7 @@ class CFG(
   }
 
   // user defined allocation site size
-  private var userASiteSize: Int = 0
+  private var userASiteSize: Int = initUserACount
   def getUserASiteSize: Int = userASiteSize
   def setUserASiteSize(size: Int): Unit = { userASiteSize = size }
   def newUserASite: UserAllocSite = {

@@ -26,7 +26,9 @@ import kr.ac.kaist.safe.util.NodeUtil._
 class DefaultCFGBuilder(
     ir: IRRoot,
     safeConfig: SafeConfig,
-    config: CFGBuildConfig
+    config: CFGBuildConfig,
+    // initial user address count to start (default count : 0)
+    initUserACount: Int = 0
 ) extends CFGBuilder(ir, safeConfig, config) {
   ////////////////////////////////////////////////////////////////
   // results
@@ -80,7 +82,7 @@ class DefaultCFGBuilder(
     ir match {
       case IRRoot(_, fds, vds, _) =>
         val globalVars: List[CFGId] = namesOfFunDecls(fds) ++ namesOfVars(vds)
-        val cfg = new CFG(ir, globalVars)
+        val cfg = new CFG(ir, globalVars, initUserACount)
         currentFunc = cfg.globalFunc
         (cfg, cvResult.excLog)
     }
