@@ -22,6 +22,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.cfg_builder.DotWriter
 
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
@@ -1069,32 +1070,34 @@ class Semantics(
 
   // for Node.js
   // construct a CFG for a dynamically loaded module
-  // @loadModule(thisArg, [path])
+  // @loadModule(thisArg, path)
   def loadModule(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     val loc = Loc(i.asite)
     val st1 = st.oldify(loc)
     val (thisVal, _) = V(i.thisArg, st1)
     val (argVal, _) = V(i.arguments, st1)
+    /*
     val firstArgVal = argVal.locset.getSingle match {
       case ConOne(pathloc) =>
         (st1.heap.get(pathloc)("0")).value
       case _ =>
         throw new Error("The second arguement for @loadModule is not a single array ")
-    }
+    }*/
 
     // concrete path for the loaded source
-    val path: String = firstArgVal.pvalue.strval.gamma match {
+    val path: String = argVal.pvalue.strval.gamma match {
       // for now, we assume that a given path for the loaded module has a single concrete string
       case ConFin(strset) if strset.size == 1 => strset.head
       case ConFin(strset) if strset.size != 1 =>
         throw new Error("Possible paths for loading the module are multiple : " + strset)
       case ConInf() => throw new Error("Unknown path for the module to be loaded in Node.js")
     }
+    val resolvedPath = NodeJSUtil.resolve(path)
     if (thisVal.isBottom)
-      throw new Error("thisArg in @loadModule(thisArg, [path]) is the bottom value.")
+      throw new Error("thisArg in @loadModule(thisArg, path) is the bottom value.")
     else {
       // construct an AST
-      val ast = Parser.moduleToAST(path) match {
+      val ast = Parser.moduleToAST(resolvedPath) match {
         case Success((program, excLog)) => {
           // Report errors.
           if (excLog.hasError) {
@@ -1118,11 +1121,18 @@ class Semantics(
 
       // cfg build
       val cfgBuildConfig = CFGBuildConfig()
-      val funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
+      val funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig, cfg.getUserASiteSize).get
+
+      // main function 
       val func = funCFG.getFunc(1).get
 
-      // add the cfg for the function to the current cfg
+      // add the cfg for the main function to the current cfg
       cfg.addFunction(func)
+
+      // add the cfgs for other functions to the current cfg
+      (2 until funCFG.getFId).foreach(fid => cfg.addFunction(funCFG.getFunc(fid).get))
+
+      cfg.setUserASiteSize(cfg.getUserASiteSize + funCFG.getUserASiteSize)
 
       // draw call/return edges
       val oldLocalEnv = st1.context.pureLocal
@@ -1159,6 +1169,7 @@ class Semantics(
         oldLocalEnv,
         st1.context.thisBinding
       ))
+      //println("cfg : " + DotWriter.drawGraph(cfg))
       // TODO: exception handling
       (st1, excSt)
     }

@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.phase._
 import scala.collection.immutable.{ HashMap, HashSet }
 
 object Initialize {
-  def apply(cfg: CFG, jsModel: Boolean): AbsState = {
+  def apply(cfg: CFG, jsModel: Boolean, nodeJS: Boolean = false): AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
@@ -35,13 +35,15 @@ object Initialize {
       PredAllocSite.PURE_LOCAL -> globalPureLocalEnv,
       PredAllocSite.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), HashSet[Concrete](), OldASiteSet.Empty, globalLocSet)
-
     val modeledHeap: AbsHeap =
       if (jsModel) {
         val model = HeapBuild.jscache getOrElse {
           // val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
           // ModelParser.parseFile(fileName).get
-          ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
+          if (nodeJS) // for Node.js
+            ModelParser.mergeJsModels(List(NodeUtil.jsModelsBase) ++ NodeJSUtil.getAllModelBase)
+          else
+            ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
         }
         model.funcs.foreach {
           case (_, func) => cfg.addJSModel(func)

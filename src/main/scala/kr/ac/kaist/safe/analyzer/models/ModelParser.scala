@@ -127,6 +127,19 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     mergeModel
   }
 
+  // for Node.js 
+  def mergeJsModels(dirs: List[String]): JSModel = {
+    val dirFileNames: List[(String, List[String])] = dirs.foldLeft[List[(String, List[String])]](List()) { case (li, dir) => li :+ (dir, new File(dir).list.toList) }
+    val mergeModel = dirFileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
+      case (model1, (dir, fileNames)) =>
+        fileNames.foldLeft(model1) {
+          case (model, fileName) =>
+            model + ModelParser.parseFile(dir + fileName).get
+        }
+    }
+    mergeModel
+  }
+
   //////////////////////////////////////////////////////////////////////////
   // Private Helper Functions
   //////////////////////////////////////////////////////////////////////////

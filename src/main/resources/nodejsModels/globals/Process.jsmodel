@@ -1,0 +1,12 @@
+Heap: {
+  #Global: {
+    "process": <#NodeJS.process, T, T, T>
+  },
+  #NodeJS.process: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype
+  }
+}
+
+Function: {}

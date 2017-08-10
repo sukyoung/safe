@@ -27,6 +27,7 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
   val name: String = "cfgBuilder"
   val help: String =
     "Builds a control flow graph for JavaScript source files."
+
   def apply(
     ir: IRRoot,
     safeConfig: SafeConfig,
@@ -34,6 +35,42 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
   ): Try[CFG] = {
     // Build CFG from IR.
     val cbResult = new DefaultCFGBuilder(ir, safeConfig, config)
+    val cfg = cbResult.cfg
+    val excLog = cbResult.excLog
+
+    // Report errors.
+    if (excLog.hasError) {
+      println(cfg.relFileName + ":")
+      println(excLog)
+    }
+
+    // Pretty print to file.
+    config.outFile.map(out => {
+      val (fw, writer) = Useful.fileNameToWriters(out)
+      writer.write(cfg.toString(0))
+      writer.close
+      fw.close
+      println("Dumped CFG to " + out)
+    })
+
+    // print dot file: {dotName}.gv, {dotName}.pdf
+    config.dotName.map(name => {
+      DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
+    })
+
+    Success(cfg)
+  }
+
+  // Node.js : used for dynamically constructing CFGs with different user address counts
+  def apply(
+    ir: IRRoot,
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig,
+    // initial user address count to start (default count : 0)
+    initUserCount: Int
+  ): Try[CFG] = {
+    // Build CFG from IR.
+    val cbResult = new DefaultCFGBuilder(ir, safeConfig, config, initUserCount)
     val cfg = cbResult.cfg
     val excLog = cbResult.excLog
 

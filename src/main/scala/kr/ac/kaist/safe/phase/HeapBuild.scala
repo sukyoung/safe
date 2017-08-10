@@ -41,7 +41,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
       DefaultLoc,
       config.aaddrType
     )
-    var initSt = Initialize(cfg, config.jsModel)
+    var initSt = Initialize(cfg, config.jsModel, safeConfig.nodejs)
 
     // handling snapshot mode
     config.snapshot.map(str =>
