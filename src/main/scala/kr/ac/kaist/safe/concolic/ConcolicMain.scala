@@ -73,7 +73,7 @@ private case class ConstraintsFinishedResult(nrOfIterations: Int, jsExceptionsEn
  * @param ir The IR to instrument and execute.
  */
 private case class ProgramTester(
-  coverage: Coverage,
+    coverage: Coverage,
     solver: ConcolicSolver,
     instrumentor: Instrumentor,
     interpreter: Interpreter,
@@ -147,12 +147,13 @@ private case class ProgramTester(
   def testAllTargets: ConstraintsFinishedResult = {
     @scala.annotation.tailrec
     def loop(currentResult: ConstraintsFinishedResult): ConstraintsFinishedResult = {
+      val tempResult: ConstraintsFinishedResult = goOverAllConstraints
+      val newResult = currentResult + tempResult
       coverage.removeTarget()
-      val newResult: ConstraintsFinishedResult = goOverAllConstraints
       if (coverage.existCandidate) {
-        loop(currentResult + newResult)
+        loop(newResult)
       } else {
-        currentResult
+        newResult
       }
     }
     loop(ConstraintsFinishedResult(0, Set()))
