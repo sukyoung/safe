@@ -55,8 +55,7 @@ import kr.ac.kaist.safe.util._
  *   [IREval]
  *   [IRWith]
  */
-
-class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
+class Instrumentor(program: IRRoot, coverage: Coverage) {
 
   var debug = false
 
@@ -66,27 +65,27 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
 
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("Instrumentor"))
 
-  def storeEnvironment(info: ASTNode, v: IRId, env: IRId): IRInternalCall =
-    IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreEnvironment"), List(v, env))
+  private def storeEnvironment(ast: ASTNode, v: IRId, env: IRId): IRInternalCall =
+    IRInternalCall(ast, dummyId, CNU.freshConcolicName("StoreEnvironment"), List(v, env))
 
-  def storeThis(info: ASTNode, env: IRId): IRInternalCall =
-    IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreThis"), List(dummyId, env))
+  private def storeThis(ast: ASTNode, env: IRId): IRInternalCall =
+    IRInternalCall(ast, dummyId, CNU.freshConcolicName("StoreThis"), List(dummyId, env))
 
-  def storeVariable(info: ASTNode, lhs: IRId, rhs: IRId): IRInternalCall =
-    IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreVariable"), List(lhs, rhs))
+  private def storeVariable(ast: ASTNode, lhs: IRId, rhs: IRId): IRInternalCall =
+    IRInternalCall(ast, dummyId, CNU.freshConcolicName("StoreVariable"), List(lhs, rhs))
 
-  def executeAssignment(
-    info: ASTNode,
+  private def executeAssignment(
+    ast: ASTNode,
     e: IRExpr,
     v: IRId,
     env: IRId
   ): IRSeq =
-    IRSeq(info, List(
-      storeEnvironment(info, v, env),
-      IRInternalCall(info, dummyId, CNU.freshConcolicName("ExecuteAssignment"), List(e, v))
+    IRSeq(ast, List(
+      storeEnvironment(ast, v, env),
+      IRInternalCall(ast, dummyId, CNU.freshConcolicName("ExecuteAssignment"), List(e, v))
     ))
 
-  def executeStore(
+  private def executeStore(
     ast: ASTNode,
     obj: IRId,
     index: IRId,
@@ -98,13 +97,13 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
       IRInternalCall(ast, obj, CNU.freshConcolicName("ExecuteStore"), List(rhs, index))
     ))
 
-  def executeCondition(ast: ASTNode, e: IRExpr, env: IRId): IRInternalCall =
+  private def executeCondition(ast: ASTNode, e: IRExpr, env: IRId): IRInternalCall =
     IRInternalCall(ast, dummyId, CNU.freshConcolicName("ExecuteCondition"), List(e, env))
 
-  def endCondition(ast: ASTNode, env: IRId): IRInternalCall =
+  private def endCondition(ast: ASTNode, env: IRId): IRInternalCall =
     IRInternalCall(ast, dummyId, CNU.freshConcolicName("EndCondition"), List(dummyId, env))
 
-  def walkVarStmt(
+  private def walkVarStmt(
     ast: ASTNode,
     v: IRId,
     n: EJSNumber,
@@ -112,17 +111,17 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
   ): IRInternalCall =
     IRInternalCall(ast, v, CNU.freshConcolicName("WalkVarStmt"), List(IRVal(n), env))
 
-  def walkFunctional(info: ASTNode, node: IRFunctional): IRFunctional = node match {
-    case IRFunctional(ast, i, name, params, args, fds, vds, body) =>
+  private def walkFunctional(ast: ASTNode, node: IRFunctional): IRFunctional = node match {
+    case IRFunctional(astFun, i, name, params, args, fds, vds, body) =>
       var n = 0
-      val varstmt = vds.foldLeft[List[IRStmt]](List(storeThis(info, name)))((list, vd) => {
+      val varstmt = vds.foldLeft[List[IRStmt]](List(storeThis(ast, name)))((list, vd) => {
         if (vd.fromParam) {
           n += 1
           list :+ walkVarStmt(vd, n - 1, name)
         } else
           list
       })
-      IRFunctional(ast, i, name, params,
+      IRFunctional(astFun, i, name, params,
         args.map(walk(_, name).asInstanceOf[IRStmt]),
         fds.map(walk(_, name).asInstanceOf[IRFunDecl]),
         vds,
@@ -130,8 +129,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     //vds.filter(fromParam(_)).map(walkVarStmt(_, name))++body.map(walk(_, name).asInstanceOf[IRStmt]))
   }
 
-  def fromParam(node: IRVarStmt): Boolean = node match {
-    case IRVarStmt(info, lhs, fromparam) => fromparam
+  private def fromParam(node: IRVarStmt): Boolean = node match {
+    case IRVarStmt(ast, lhs, fromparam) => fromparam
   }
 
   /* var x
@@ -139,11 +138,16 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
    * var x;
    * walkVarStmt(x);
    */
-  def walkVarStmt(node: IRVarStmt, num: Int, env: IRId): IRStmt = node match {
-    case IRVarStmt(info, lhs, fromparam) => walkVarStmt(info, lhs, IF.makeNumber(num.toString, num), env)
+  private def walkVarStmt(node: IRVarStmt, num: Int, env: IRId): IRStmt = node match {
+    case IRVarStmt(ast, lhs, fromparam) => walkVarStmt(ast, lhs, IF.makeNumber(num.toString, num), env)
   }
 
-  def walk(node: Any, env: IRId): Any = {
+  private def walkRoot(root: IRRoot, env: IRId): IRRoot = {
+    IRRoot(root.ast, root.fds.map(walk(_, env).asInstanceOf[IRFunDecl]),
+      root.vds, root.irs.map(walk(_, env).asInstanceOf[IRStmt]))
+  }
+
+  def walk(node: IRNode, env: IRId): IRNode = {
     if (debug) {
       println(node)
     }
@@ -156,10 +160,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * SymbolicExecutor should perform "Initialize()"
      * when it encounters SIRRoot.
      */
-      case IRRoot(info, fds, vds, irs) =>
-        IRRoot(info, fds.map(walk(_, env).asInstanceOf[IRFunDecl]),
-          vds,
-          irs.map(walk(_, env).asInstanceOf[IRStmt]))
+      case r: IRRoot =>
+        walkRoot(r, env)
 
       /* x = e
      * ==>
@@ -167,10 +169,10 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * EXECUTE_ASSIGNMENT(x, e);
      *
      * x = e
-     * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteAssignment", e, Some(x))
+     * SIRInternalCall(ast, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteAssignment", e, Some(x))
      */
-      case IRExprStmt(info, lhs, right, ref) =>
-        IRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
+      case IRExprStmt(ast, lhs, right, ref) =>
+        IRSeq(ast, List(node.asInstanceOf[IRStmt], executeAssignment(ast, right, lhs, env)))
 
       /* x = x(x, x)
      * ==>
@@ -179,8 +181,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * EXECUTE_RECURSIVE(x);
      *
      */
-      case IRCall(info, lhs, fun, thisB, args) =>
-        IRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
+      case IRCall(ast, lhs, fun, thisB, args) =>
+        IRSeq(ast, List(storeEnvironment(ast, lhs, env), node.asInstanceOf[IRStmt]))
 
       /* x = function f (x, x) {s*}
      * ==>
@@ -191,8 +193,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      *
      * SymbolicExecutor should perform "CHECK_FOCUS()"
      */
-      case IRFunExpr(info, lhs, ftn) =>
-        IRFunExpr(info, lhs, walkFunctional(info, ftn).asInstanceOf[IRFunctional])
+      case IRFunExpr(ast, lhs, ftn) =>
+        IRFunExpr(ast, lhs, walkFunctional(ast, ftn).asInstanceOf[IRFunctional])
 
       /* function f (x, x) {s*}
      * ==>
@@ -204,21 +206,21 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      *
      * SymbolicExecutor should perform "CHECK_FOCUS()"
      */
-      case IRFunDecl(info, ftn) =>
-        IRFunDecl(info, walkFunctional(info, ftn).asInstanceOf[IRFunctional])
+      case IRFunDecl(ast, ftn) =>
+        IRFunDecl(ast, walkFunctional(ast, ftn).asInstanceOf[IRFunctional])
 
-      case IRFunctional(info, i, name, params, args, fds, vds, body) =>
+      case IRFunctional(ast, i, name, params, args, fds, vds, body) =>
         node
 
       /* return e?
      * ==>
      * return e?
      */
-      case IRReturn(info, expr) =>
+      case IRReturn(ast, expr) =>
         node
 
-      case IRSeq(info, stmts) =>
-        IRSeq(info, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
+      case IRSeq(ast, stmts) =>
+        IRSeq(ast, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
 
       /* if (e) then s (else s)?
      * ==>
@@ -226,18 +228,18 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * if (e) then s (else s)?
      * END_CONDITION(e);
      *
-     * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
+     * SIRInternalCall(ast, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
      * if (e) then s (else s?)
-     * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>EndCondition", e, None)
+     * SIRInternalCall(ast, "<>Concolic<>Instrumentor", "<>Concolic<>EndCondition", e, None)
      */
-      case IRIf(info, expr, trueB, falseB) =>
-        // TODO MV Originally, this code checked whether the IRIf came from source (info.isFromSource)
+      case IRIf(ast, expr, trueB, falseB) =>
+        // TODO MV Originally, this code checked whether the IRIf came from source (ast.isFromSource)
         // I assume here that every IRIf comes from source and have removed the else-branch.
-        // Original else-branch was: IRIf(info, expr, trueB, falseB)
-        IRSeq(info, List(
-          executeCondition(info, expr, env),
-          IRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt], falseB.map(walk(_, env).asInstanceOf[IRStmt])),
-          endCondition(info, env)
+        // Original else-branch was: IRIf(ast, expr, trueB, falseB)
+        IRSeq(ast, List(
+          executeCondition(ast, expr, env),
+          IRIf(ast, expr, walk(trueB, env).asInstanceOf[IRStmt], falseB.map(walk(_, env).asInstanceOf[IRStmt])),
+          endCondition(ast, env)
         ))
 
       /* while (e) s
@@ -250,19 +252,19 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * EXECUTE_CONDITION(e);
      *
      * while (e) {
-     *   SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
+     *   SIRInternalCall(ast, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
      *   s
      * }
-     * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
+     * SIRInternalCall(ast, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
      *
      * SymbolicExecutor should perform "CHECK_LOOP()"
      * and "EXECUTE_CONDITION(e)" when it encounters SIRWhile.
      */
       //TODO: Report condition only once
-      case IRWhile(info, cond, body, breakLabel, contLabel) =>
+      case IRWhile(ast, cond, body, breakLabel, contLabel) =>
         //coverage.printCondition(cond)
-        IRWhile(info, cond,
-          IRSeq(info, List(executeCondition(info, cond, env), walk(body, env).asInstanceOf[IRStmt])),
+        IRWhile(ast, cond,
+          IRSeq(ast, List(executeCondition(ast, cond, env), walk(body, env).asInstanceOf[IRStmt])),
           breakLabel, contLabel)
 
       /* x[x] = e
@@ -271,33 +273,33 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * EXECUTE_STORE(x, x, e);
      *
      * x[x] = e
-     * SIRInternalCall(info, x, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteStore",e, Some(x))
+     * SIRInternalCall(ast, x, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteStore",e, Some(x))
      */
-      case IRStore(info, obj, index, rhs) =>
+      case IRStore(ast, obj, index, rhs) =>
         //println("Instrumentor: "+new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(node.asInstanceOf[IRStore]).doit)
         index match {
-          case id: IRId => IRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, id, rhs, env)))
-          case IRVal(EJSString(str)) => IRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, IF.dummyIRId(str), rhs, env)))
-          case IRVal(EJSNumber(text, num)) => IRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, IF.dummyIRId(text), rhs, env)))
+          case id: IRId => IRSeq(ast, List(node.asInstanceOf[IRStmt], executeStore(ast, obj, id, rhs, env)))
+          case IRVal(EJSString(str)) => IRSeq(ast, List(node.asInstanceOf[IRStmt], executeStore(ast, obj, IF.dummyIRId(str), rhs, env)))
+          case IRVal(EJSNumber(text, num)) => IRSeq(ast, List(node.asInstanceOf[IRStmt], executeStore(ast, obj, IF.dummyIRId(text), rhs, env)))
         }
 
-      case IRArray(info, lhs, elems) =>
+      case IRArray(ast, lhs, elems) =>
         node
 
-      case IRArrayNumber(info, lhs, elements) =>
+      case IRArrayNumber(ast, lhs, elements) =>
         node
 
-      case IRBreak(info, label) =>
+      case IRBreak(ast, label) =>
         node
 
-      case IRLabelStmt(info, label, stmt) =>
-        IRLabelStmt(info, label, walk(stmt, env).asInstanceOf[IRStmt])
+      case IRLabelStmt(ast, label, stmt) =>
+        IRLabelStmt(ast, label, walk(stmt, env).asInstanceOf[IRStmt])
 
-      case IRThrow(info, expr) =>
+      case IRThrow(ast, expr) =>
         node
 
-      case IRTry(info, body, name, catchB, finallyB) =>
-        IRTry(info, walk(body, env).asInstanceOf[IRStmt], name,
+      case IRTry(ast, body, name, catchB, finallyB) =>
+        IRTry(ast, walk(body, env).asInstanceOf[IRStmt], name,
           catchB match {
             case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt])
             case None => None
@@ -307,19 +309,19 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
             case None => None
           })
 
-      case IRStmtUnit(info, stmts) =>
-        IRStmtUnit(info, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
+      case IRStmtUnit(ast, stmts) =>
+        IRStmtUnit(ast, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
 
-      case IRDelete(info, lhs, id) =>
+      case IRDelete(ast, lhs, id) =>
         node
 
-      case IRDeleteProp(info, lhs, obj, index) =>
+      case IRDeleteProp(ast, lhs, obj, index) =>
         node
 
-      case IRObject(info, lhs, members, proto) =>
+      case IRObject(ast, lhs, members, proto) =>
         node
 
-      case IRArgs(info, lhs, elems) =>
+      case IRArgs(ast, lhs, elems) =>
         node
 
       /* Instrument Global<>toNumber internal function to store new variable in symbolic memory. */
@@ -332,15 +334,15 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
       }
       //node
 
-      case IRNew(info, lhs, fun, args) =>
-        IRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
+      case IRNew(ast, lhs, fun, args) =>
+        IRSeq(ast, List(storeEnvironment(ast, lhs, env), node.asInstanceOf[IRStmt]))
       //node
 
-      case IREval(info, lhs, arg) =>
+      case IREval(ast, lhs, arg) =>
         node
 
-      case IRWith(info, id, stmt) =>
-        IRWith(info, id, walk(stmt, env).asInstanceOf[IRStmt])
+      case IRWith(ast, id, stmt) =>
+        IRWith(ast, id, walk(stmt, env).asInstanceOf[IRStmt])
 
       case _ => node
     }
