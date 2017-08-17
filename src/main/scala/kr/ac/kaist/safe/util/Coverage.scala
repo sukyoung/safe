@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.util
 
-import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.DefaultState._
@@ -40,10 +39,10 @@ class Coverage(
 
   // To print condition expressions
   var conditions = List[IRNode]()
-  def printCondition(cond: IRNode) =
+  def printCondition(cond: IRNode): Unit =
     if (!conditions.contains(cond)) {
       conditions = conditions :+ cond
-      val ircode = new JSIRUnparser(cond).doit()
+      val ircode = new JSIRUnparser(cond).result
       System.out.println(ircode)
     }
 
@@ -53,7 +52,7 @@ class Coverage(
   var additional = List[Stmt]()
 
   var necessaries: List[SymbolicValue] = null
-  def isNecessary(value: String) = necessaries.map(_.toString).find(_ == value).isDefined
+  def isNecessary(value: String): Boolean = necessaries.map(_.toString).contains(value)
 
   var inum = 0
   var report: List[SymbolicInfo] = null
@@ -71,34 +70,35 @@ class Coverage(
   // To initialize when it first tests a function.
   var isFirst: Boolean = true
 
-  def setInput(result: Option[Map[String, (Id, List[Stmt])]]) = {
+  def setInput(result: Option[Map[String, (Id, List[Stmt])]]): Unit = {
     // Initialize
     input = Map[String, Id]()
     additional = List[Stmt]()
     result match {
       case Some(res) =>
-        for (key <- res.keySet) {
-          input += key -> res(key)._1
-          additional = additional ::: res(key)._2
+        for (entry <- res) {
+          val (key, (id, stmts)) = entry
+          input += key -> id
+          additional = additional ::: stmts
         }
       case None =>
     }
   }
-  def setInputNumber(n: Int) = {
+  def setInputNumber(n: Int): Unit = {
     inum = n
   }
 
   val CG: CallGenerator = new CallGenerator(this)
-  def setupCall() = CG.setupCall(target)
+  def setupCall(): Option[IRStmt] = CG.setupCall(target)
 
-  def getConstraints = constraints
+  def getConstraints: List[ConstraintForm] = constraints
 
   // Check whether testing a function continue or not.
   def continue: Boolean = {
     isFirst = false
     constraints.nonEmpty
   }
-  def existCandidate: Boolean = functions.exists({ case (_, x) => x.isCandidate })
+  def existCandidate: Boolean = functions.exists({ case (_, finfo) => finfo.isCandidate })
   def removeTarget(): Unit = {
     functions.get(target) match {
       case Some(info) =>
@@ -122,7 +122,10 @@ class Coverage(
     }
     isFirst = true
   }
-  def checkTarget(fun: String) = functions.get(fun) match { case Some(f) => f.isTarget; case None => false }
+  def checkTarget(fun: String): Boolean = functions.get(fun) match {
+    case Some(f) => f.isTarget
+    case None => false
+  }
 
   // Using static analysis, store function information.
   def updateFunction(cfgRoot: CFGNode): Unit = {
@@ -141,7 +144,7 @@ class Coverage(
     }
   }
 
-  def identifyFunction(inst: CFGInst, thisArg: CFGExpr) = {
+  def identifyFunction(inst: CFGInst, thisArg: CFGExpr): Unit = {
     val cfgBlock = inst.block
 
     var functionName: String = cfgBlock.func.name //null
@@ -152,8 +155,9 @@ class Coverage(
     var cstate = semantics.getState(cfgBlock) //stateManager.getOutputCState(cfgBlock, inst.id)
     var thisNames = List[String]()
     for ((callContext, Dom(heap, context)) <- cstate) {
-      // TODO MV Original: val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString()).value.locset
-      val lset = context.pureLocal.record.decEnvRec.GetBindingValue(thisArg.toString)._1.locset
+      val bindingValue = context.pureLocal.record.decEnvRec.GetBindingValue(thisArg.toString)
+      val (absValue, _) = bindingValue
+      val lset = absValue.locset
       // Compute this object
       val thisObj = computeObject(heap, lset)
       val temp = thisNames ::: computeConstructorName(heap, thisObj)
@@ -163,7 +167,7 @@ class Coverage(
 
     // To find other information of a function like argument type, it uses different heap, input states, because only successor nodes of input states can be entry nodes of functions.
     val finfo = new FunctionInfo
-    cstate = semantics.getState(cfgBlock) //TODO MV Originally: stateManager.getInputCState(cfgBlock, inst.id)
+    cstate = semantics.getState(cfgBlock)
     for ((callContext, state) <- cstate) {
       val controlPoint: ControlPoint = ControlPoint(cfgBlock, callContext)
 
@@ -177,33 +181,24 @@ class Coverage(
             val argvars = func.argVars // cfg.getArgVars(func)
             functionName = func.name
 
-            val whatisthiseven = semantics.getState(succBlock)
-            // TODO MV original: stateManagercase.getOutputCState(succCP._1, inst.id)) {
-            for ((tp, state @ Dom(heap, context)) <- whatisthiseven) {
-              val something = context.pureLocal.record.decEnvRec.GetBindingValue(func.argumentsName)
-              //              Utils.AbsLexEnv.getId(Loc(PredAllocSite.PURE_LOCAL), func.argumentsName, true)
-              //              val userLocs = heap.allUserLocKeys
-              //              state.lookup(func.argumentsName)
-              val aaa: AbsObject = heap.get(PredAllocSite.PURE_LOCAL)
-              val aab: AbsDataProp = aaa(func.argumentsName)
-              val aad: AbsValue = aab.value
-              //              TODO MV Original: val arglset = aad.locset
-              //             TODO MV New: val arglset = fuckingkutkloteding._1.locset
-              val arglset = something._1.locset
+            val tpStateMap = semantics.getState(succBlock)
+            for ((tp, state @ Dom(heap, context)) <- tpStateMap) {
+              val (funValue, _) = context.pureLocal.record.decEnvRec.GetBindingValue(func.argumentsName)
+              val arglset = funValue.locset
               // Number of an argument
               var i = 0
-              val h_n = argvars.foldLeft(heap)((hh, x) => {
-                val v_i = arglset.foldLeft[AbsValue](DefaultValue.Bot)((vv, argloc) => {
+              val hn = argvars.foldLeft(heap)((hh, x) => {
+                val vi = arglset.foldLeft[AbsValue](DefaultValue.Bot)((vv, argloc) => {
                   vv + hh.proto(argloc, Utils.AbsString.alpha(i.toString))
                 })
 
-                val v_i_types = v_i.typeKinds
-                for (t <- v_i_types) {
+                val viTypes = vi.typeKinds
+                for (t <- viTypes) {
                   val tinfo = new TypeInfo(t)
                   if (t == "Object") {
                     if (state </ DefaultState.Bot) {
                       // Compute object
-                      val lset = v_i.locset
+                      val lset = vi.locset
                       val obj = computeObject(hh, lset)
 
                       // TODO: WARNING, just use one location in location set.
@@ -239,7 +234,7 @@ class Coverage(
                 }
                 //finfo.setCandidate
                 i += 1
-                state.createMutableBinding(x, v_i)
+                state.createMutableBinding(x, vi)
                 state.heap
               })
 
@@ -248,8 +243,7 @@ class Coverage(
                 finfo.setCandidate()
               if (functionName.contains(".")) {
                 val thislset = context.thisBinding.locset
-                // TODO MV Original: val thislset = state.heap.get(PredAllocSite.PURE_LOCAL)("@this").value.locset
-                val thisObj = computeObject(h_n, thislset)
+                val thisObj = computeObject(hn, thislset)
 
                 val properties = computePropertyList(thisObj, true)
                 thisinfo.setProperties(properties)

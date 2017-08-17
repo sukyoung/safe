@@ -60,39 +60,57 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
 
   var debug = false
 
-  def doit = walk(program, IF.dummyIRId(CNU.freshConcolicName("Main"))).asInstanceOf[IRRoot]
+  lazy val result: IRRoot = doit
+
+  private def doit: IRRoot = walk(program, IF.dummyIRId(CNU.freshConcolicName("Main"))).asInstanceOf[IRRoot]
 
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("Instrumentor"))
 
-  def storeEnvironment(info: ASTNode, v: IRId, env: IRId) =
+  def storeEnvironment(info: ASTNode, v: IRId, env: IRId): IRInternalCall =
     IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreEnvironment"), List(v, env))
 
-  def storeThis(info: ASTNode, env: IRId) =
+  def storeThis(info: ASTNode, env: IRId): IRInternalCall =
     IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreThis"), List(dummyId, env))
 
-  def storeVariable(info: ASTNode, lhs: IRId, rhs: IRId) =
+  def storeVariable(info: ASTNode, lhs: IRId, rhs: IRId): IRInternalCall =
     IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreVariable"), List(lhs, rhs))
 
-  def executeAssignment(info: ASTNode, e: IRExpr, v: IRId, env: IRId) =
+  def executeAssignment(
+    info: ASTNode,
+    e: IRExpr,
+    v: IRId,
+    env: IRId
+  ): IRSeq =
     IRSeq(info, List(
       storeEnvironment(info, v, env),
       IRInternalCall(info, dummyId, CNU.freshConcolicName("ExecuteAssignment"), List(e, v))
     ))
 
-  def executeStore(info: ASTNode, obj: IRId, index: IRId, rhs: IRExpr, env: IRId) =
-    IRSeq(info, List(
-      storeEnvironment(info, obj, env),
-      IRInternalCall(info, obj, CNU.freshConcolicName("ExecuteStore"), List(rhs, index))
+  def executeStore(
+    ast: ASTNode,
+    obj: IRId,
+    index: IRId,
+    rhs: IRExpr,
+    env: IRId
+  ): IRSeq =
+    IRSeq(ast, List(
+      storeEnvironment(ast, obj, env),
+      IRInternalCall(ast, obj, CNU.freshConcolicName("ExecuteStore"), List(rhs, index))
     ))
 
-  def executeCondition(info: ASTNode, e: IRExpr, env: IRId) =
-    IRInternalCall(info, dummyId, CNU.freshConcolicName("ExecuteCondition"), List(e, env))
+  def executeCondition(ast: ASTNode, e: IRExpr, env: IRId): IRInternalCall =
+    IRInternalCall(ast, dummyId, CNU.freshConcolicName("ExecuteCondition"), List(e, env))
 
-  def endCondition(info: ASTNode, env: IRId) =
-    IRInternalCall(info, dummyId, CNU.freshConcolicName("EndCondition"), List(dummyId, env))
+  def endCondition(ast: ASTNode, env: IRId): IRInternalCall =
+    IRInternalCall(ast, dummyId, CNU.freshConcolicName("EndCondition"), List(dummyId, env))
 
-  def walkVarStmt(info: ASTNode, v: IRId, n: EJSNumber, env: IRId) =
-    IRInternalCall(info, v, CNU.freshConcolicName("WalkVarStmt"), List(IRVal(n), env))
+  def walkVarStmt(
+    ast: ASTNode,
+    v: IRId,
+    n: EJSNumber,
+    env: IRId
+  ): IRInternalCall =
+    IRInternalCall(ast, v, CNU.freshConcolicName("WalkVarStmt"), List(IRVal(n), env))
 
   def walkFunctional(info: ASTNode, node: IRFunctional): IRFunctional = node match {
     case IRFunctional(ast, i, name, params, args, fds, vds, body) =>
@@ -112,7 +130,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     //vds.filter(fromParam(_)).map(walkVarStmt(_, name))++body.map(walk(_, name).asInstanceOf[IRStmt]))
   }
 
-  def fromParam(node: IRVarStmt) = node match {
+  def fromParam(node: IRVarStmt): Boolean = node match {
     case IRVarStmt(info, lhs, fromparam) => fromparam
   }
 
@@ -328,5 +346,5 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     }
   }
 
-  def debugOn = debug = true
+  def debugOn(): Unit = debug = true
 }

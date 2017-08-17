@@ -522,7 +522,7 @@ class InterpreterHelper(I: Interpreter) {
   // 8. Types
   ////////////////////////////////////////////////////////////////////////////////
 
-  def typeOf(v: Val): Int = v match {
+  def typeOf(v: Val): EJSTypeEnum = v match {
     case PVal(IRVal(EJSUndef)) => EJSType.UNDEFINED
     case PVal(IRVal(EJSNull)) => EJSType.NULL
     case PVal(IRVal(_: EJSBool)) => EJSType.BOOLEAN
@@ -617,7 +617,7 @@ class InterpreterHelper(I: Interpreter) {
     if (typeOf(v) != EJSType.OBJECT) return (None, Some(IP.typeError))
     val obj: JSObject = v.asInstanceOf[JSObject]
     // 2. Let desc be the result of creating a new Property Descriptor that initially has no fields.
-    var op: ObjectProp = mkEmptyObjectProp
+    var op: ObjectProp = mkEmptyObjectProp()
     // 3 ~ 6
     if (obj.hasProperty("enumerable")) op.enumerable = Some(toBoolean(obj.get("enumerable")))
     if (obj.hasProperty("configurable")) op.configurable = Some(toBoolean(obj.get("configurable")))
@@ -975,11 +975,11 @@ class InterpreterHelper(I: Interpreter) {
     // 3. If x is undefined and y is null, return true.
     case (EJSType.UNDEFINED, EJSType.NULL) => true
     // 4. If Type(x) is Number and Type(y) is String,
-    case (typeOfX, EJSType.STRING) if EJSType.isNumber(typeOfX) =>
+    case (typeOfX, EJSType.STRING) if typeOfX.isNumber =>
       // return the result of the comparison x == ToNumber(y).
       abstractEqualityComparison(x, PVal(IRVal(toNumber(y))))
     // 5. If Type(x) is String and Type(y) is Number,
-    case (EJSType.STRING, typeOfY) if EJSType.isNumber(typeOfY) =>
+    case (EJSType.STRING, typeOfY) if typeOfY.isNumber =>
       // return the result of the comparison ToNumber(x) == y.
       abstractEqualityComparison(PVal(IRVal(toNumber(x))), y)
     // 6. If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
@@ -987,13 +987,13 @@ class InterpreterHelper(I: Interpreter) {
     // 7. If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
     case (typeOfX, EJSType.BOOLEAN) => abstractEqualityComparison(x, PVal(IRVal(toNumber(y))))
     // 8. If Type(x) is either String or Number and Type(y) is Object,
-    case (typeOfX, EJSType.OBJECT) if (EJSType.isString(typeOfX) || EJSType.isNumber(typeOfX)) =>
+    case (typeOfX, EJSType.OBJECT) if (typeOfX.isString || typeOfX.isNumber) =>
       // return the result of the comparison x == ToPrimitive(y).
-      abstractEqualityComparison(x, toPrimitive(y, EJSType.toString(typeOfX)))
+      abstractEqualityComparison(x, toPrimitive(y, typeOfX.toString))
     // 9. If Type(x) is either String or Number and Type(y) is Object,
-    case (EJSType.OBJECT, typeOfY) if (EJSType.isString(typeOfY) || EJSType.isNumber(typeOfY)) =>
+    case (EJSType.OBJECT, typeOfY) if (typeOfY.isString || typeOfY.isNumber) =>
       // return the result of the comparison ToPrimitive(x) == y.
-      abstractEqualityComparison(y, toPrimitive(x, EJSType.toString(typeOfY)))
+      abstractEqualityComparison(y, toPrimitive(x, typeOfY.toString))
     // 10. Return false.
     case _ => false
   }

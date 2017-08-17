@@ -36,7 +36,7 @@ class ConstraintExtractor {
 
   var debug = false
 
-  def initialize() = {
+  def initialize(): Unit = {
     unvisited = new Queue
     root = Node(true, None, None, None, 0)
   }
@@ -147,7 +147,7 @@ class ConstraintExtractor {
     loop(node, Nil)
   }
 
-  def update(info: SymbolicInfo) = {
+  def update(info: SymbolicInfo): Unit = {
     val target = leaves.pop
     info.getType match {
       case SymbolicInfoTypes.statement =>
@@ -215,7 +215,7 @@ class ConstraintExtractor {
 
     info.getType match {
       case SymbolicInfoTypes.statement =>
-        val cond = ConstraintForm.makeConstraint(info._id, info._lhs, info._op, info._rhs)
+        val cond = ConstraintForm.makeConstraint(info.id, info.lhs, info.op, info.rhs)
         val left: Node = Node(true, Some(cond), None, None, target.depth + 1)
         target.setLeftChild(Some(left))
         left.setParents(List(target))
@@ -256,7 +256,7 @@ class ConstraintExtractor {
   }
 
   def negate(trueBranch: Boolean, info: SymbolicInfo): Option[ConstraintForm] = {
-    info._op match {
+    info.op match {
       case Some(op) =>
         val operator =
           if (!trueBranch) op match {
@@ -270,10 +270,10 @@ class ConstraintExtractor {
             case "!==" => Some("===")
           }
           else Some(op)
-        val cond = ConstraintForm.makeConstraint(None, info._lhs, operator, info._rhs)
+        val cond = ConstraintForm.makeConstraint(None, info.lhs, operator, info.rhs)
         cond.setBranchConstraint()
         Some(cond)
-      case None => info._lhs match {
+      case None => info.lhs match {
         case Some(lhs) =>
           val operator = if (trueBranch) {
             Some("!=")
@@ -292,7 +292,7 @@ class ConstraintExtractor {
     }
   }
 
-  def setPrevious(node: Node) = {
+  def setPrevious(node: Node): Unit = {
     previous = List()
     if (node.leftChild.isDefined)
       previous = previous :+ node.leftChild.get
@@ -300,16 +300,16 @@ class ConstraintExtractor {
       previous = previous :+ node.rightChild.get
   }
 
-  def findProperPrevious(node: Node) = {
+  def findProperPrevious(node: Node): Unit = {
     if (node.branchEnd.isDefined)
       previous = List(node.branchEnd.get)
   }
 
-  def matchPrevious(info: SymbolicInfo) = {
+  def matchPrevious(info: SymbolicInfo): Boolean = {
     // Transform the information to check equality. 
     val cond: String = info.getType match {
       case SymbolicInfoTypes.statement =>
-        val temp = ConstraintForm.makeConstraint(info._id, info._lhs, info._op, info._rhs)
+        val temp = ConstraintForm.makeConstraint(info.id, info.lhs, info.op, info.rhs)
         temp.toString
       case SymbolicInfoTypes.branch =>
         negate(info.branchTaken, info).get.toString

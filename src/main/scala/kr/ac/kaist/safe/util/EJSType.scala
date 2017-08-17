@@ -11,28 +11,45 @@
 
 package kr.ac.kaist.safe.util
 
+trait EJSTypeEnum {
+  def isNumber: Boolean = false
+  def isString: Boolean = false
+  def isObject: Boolean = false
+}
+
 // Enumeration of JavaScript Type
 object EJSType {
-  def isNumber(t: Int): Boolean = t / 10 == 4 // 4x
-  def isString(t: Int): Boolean = t / 10 == 5 // 5x
-  def isObject(t: Int): Boolean = t / 10 == 6 // 6x
-  def toString(t: Int): String = t match {
-    case UNDEFINED => "Undefined"
-    case NULL => "Null"
-    case BOOLEAN => "Boolean"
-    case NUMBER => "Number"
-    case STRING => "String"
-    case OBJECT => "Object"
-    case OBJECT_FUNCTION => "Object"
+  case object UNDEFINED extends EJSTypeEnum {
+    override def toString: String = "Undefined"
   }
-
-  val UNDEFINED = 10
-  val NULL = 20
-  val BOOLEAN = 30
-  val NUMBER = 40
-  val NUMBER_INT = 41
-  val NUMBER_DOUBLE = 42
-  val STRING = 50
-  val OBJECT = 60
-  val OBJECT_FUNCTION = 61
+  case object NULL extends EJSTypeEnum {
+    override def toString: String = "Null"
+  }
+  case object BOOLEAN extends EJSTypeEnum {
+    override def toString: String = "Boolean"
+  }
+  case object NUMBER extends EJSTypeEnum {
+    override def toString: String = "Number"
+    override def isNumber: Boolean = true
+  }
+  case object NUMBER_INT extends EJSTypeEnum {
+    override def toString: String = "Number"
+    override def isNumber: Boolean = true
+  }
+  case object NUMBER_DOUBLE extends EJSTypeEnum {
+    override def toString: String = "Number"
+    override def isNumber: Boolean = true
+  }
+  case object STRING extends EJSTypeEnum {
+    override def toString: String = "String"
+    override def isString: Boolean = true
+  }
+  case object OBJECT extends EJSTypeEnum {
+    override def toString: String = "Object"
+    override def isObject: Boolean = true
+  }
+  case object OBJECT_FUNCTION extends EJSTypeEnum {
+    override def toString: String = "Object"
+    override def isObject: Boolean = true
+  }
 }

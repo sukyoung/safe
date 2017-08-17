@@ -22,13 +22,14 @@ case class Node(
     var parents: Option[List[Node]] = None,
     var branchEnd: Option[Node] = None
 ) extends SymbolicTree {
-  def setParents(p: List[Node]) = {
+
+  def setParents(p: List[Node]): Unit = {
     parents = Some(p)
   }
   def getParent: Node = {
     parents.get.head
   }
-  def changeParent(from: Node, to: Node) = {
+  def changeParent(from: Node, to: Node): Unit = {
     var temp = parents.get
     for (i <- temp.indices) {
       if (from.constraint == temp(i).constraint)
@@ -41,7 +42,8 @@ case class Node(
     branchEnd = Some(end)
   }
 
-  override def toString = "Node with a constraint: " + constraint + ", and with visited flag: " + isVisited
+  override def toString: String =
+    s"Node with a constraint: $constraint and with visited flag: $isVisited"
 
   def changeDepth(newDepth: Int): Unit = {
     depth = newDepth

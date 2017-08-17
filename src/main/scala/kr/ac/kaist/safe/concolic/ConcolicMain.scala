@@ -198,8 +198,10 @@ object ConcolicMain {
   /**
    * Working on a very simple concolic testing...
    */
-  def concolic(in: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int),
-               safeConfig: SafeConfig): Try[Int] = {
+  def concolic(
+    in: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int),
+    safeConfig: SafeConfig
+  ): Try[Int] = {
     val (cfg, _, _, _, _, _) = in
     cfg.ir match {
       case ir: IRRoot =>
@@ -223,7 +225,7 @@ object ConcolicMain {
             var fir = new IRFilter(ir).result
             fir = new IRSimplifier(fir).result
             val instrumentor = new Instrumentor(fir, coverage)
-            fir = instrumentor.doit
+            fir = instrumentor.result
             val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))
             val extractor = new ConstraintExtractor
             val solver = new ConcolicSolver(coverage)

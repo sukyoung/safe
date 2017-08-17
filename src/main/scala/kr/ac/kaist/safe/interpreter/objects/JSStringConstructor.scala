@@ -15,8 +15,8 @@ import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSStringConstructor(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "String", true, propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
+class JSStringConstructor(I: Interpreter, proto: JSObject)
+    extends JSFunction13(I, proto, "String", true, propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.5.3 Properties of the String Constructor
@@ -55,11 +55,11 @@ class JSStringConstructor(_I: Interpreter, _proto: JSObject)
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.StringFromCharCode => _fromCharCode(I.IH.arrayToList(argsObj))
+      case I.IS.StringFromCharCode => JSFromCharCode(I.IH.arrayToList(argsObj))
     }
   }
 
-  def _fromCharCode(chars: List[Val]): Unit = {
+  def JSFromCharCode(chars: List[Val]): Unit = {
     val str = chars.map((char: Val) => I.IH.toUint16(char).toChar).mkString
     I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(str)))
   }

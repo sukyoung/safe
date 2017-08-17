@@ -53,7 +53,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
   ////////////////////////////////////////////////////////////////////////////////
 
   def doit(program: IRRoot, coverage: Option[Coverage], printComp: Boolean = true): Completion = {
-    def tsLab(l: IRId) = l.uniqueName
+    def tsLab(l: IRId): String = l.uniqueName
 
     // Set InterpreterState
     IS.coverage = coverage
@@ -385,7 +385,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             val cov = IS.coverage.get
             val uid = u.getUID
             if (!cov.execSet.contains(uid)) {
-              if (cov_debug) System.out.println("    executing.." + uid + " @ " + ast.span)
+              if (covDebug) System.out.println("    executing.." + uid + " @ " + ast.span)
               cov.executed = cov.executed + 1
               cov.execSet += uid
             }
@@ -500,7 +500,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                         // 5. Let desc be the result of calling the [[GetProperty]] internal method of O with argument P.
                         //    This may be either an own or inherited accessor property descriptor
                         //    or an inherited data property descriptor.
-                        val desc = o.getProperty(v2str)._1
+                        val (desc, _) = o.getProperty(v2str)
                         // 6. If IsAccessorDescriptor(desc) is true, then
                         if (desc != null && IH.isAccessorDescriptor(desc)) {
                           // * IRStore 7
@@ -569,7 +569,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                         // 4. Let desc be the result of calling the [[GetProperty]] internal method of O with argument P.
                         //    This may be either an own or inherited accessor property descriptor
                         //    or an inherited data property descriptor.
-                        val desc = o.getProperty(v2str)._1
+                        val (desc, _) = o.getProperty(v2str)
                         // 5. If IsAccessorDescriptor(desc) is true, then
                         if (desc != null && IH.isAccessorDescriptor(desc)) {
                           // * IRStore 15
@@ -779,7 +779,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             case true => IS.env match {
               // Function Definition 2
               case EmptyEnv() =>
-                val p = IS.GlobalObject.getProperty(f)._1
+                val (p, _) = IS.GlobalObject.getProperty(f)
                 if (p == null) { IS.comp.setThrow(IP.typeError, ast.span); return node } // If _getProperty() returns undefined.
                 p.isConfigurable match {
                   // Function Definition 2-1
