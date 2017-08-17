@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-class ConcolicError(msg: String) extends Exception(msg) {
+case class ConcolicError(msg: String) extends Exception(msg) {
   override def toString: String = msg
 }
 

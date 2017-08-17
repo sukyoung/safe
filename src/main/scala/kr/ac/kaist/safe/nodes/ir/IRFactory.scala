@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -12,12 +12,9 @@
 package kr.ac.kaist.safe.nodes.ir
 
 import _root_.java.lang.{ Double => JDouble }
-import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.useful.Lists
 
 object IRFactory {
 

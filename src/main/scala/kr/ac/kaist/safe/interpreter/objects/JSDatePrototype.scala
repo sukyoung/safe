@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -58,7 +58,7 @@ class JSDatePrototype(I: Interpreter, proto: JSObject)
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     I.IS.tb match {
       case tb: JSDate => method match {
-        case I.IS.DatePrototypeToString => _toString()
+        case I.IS.DatePrototypeToString => DPtoString()
         // 15.9.5.3 - 15.9.5.7
         case I.IS.DatePrototypeValueOf => valueOf()
         case I.IS.DatePrototypeGetTime => getTime()
@@ -81,7 +81,7 @@ class JSDatePrototype(I: Interpreter, proto: JSObject)
         case I.IS.DatePrototypeGetTimezoneOffset => getTimezoneOffset()
         case I.IS.DatePrototypeSetTime => setTime(argsObj.get("0"))
         // 15.9.5.28 - 15.9.5.42
-        case I.IS.DatePrototypeToISOString => _toString()
+        case I.IS.DatePrototypeToISOString => DPtoString()
         // 15.9.5.44
       }
       case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
@@ -103,7 +103,7 @@ class JSDatePrototype(I: Interpreter, proto: JSObject)
     val timezone = "Z"
     I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(date + time + timezone)))
   }
-  def _toString(): Unit =
+  def DPtoString(): Unit =
     I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
       case PVal(IRVal(t: EJSNumber)) => toISOString(t)
       case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("NaN")))

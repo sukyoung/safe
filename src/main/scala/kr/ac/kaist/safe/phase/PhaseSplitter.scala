@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,28 +14,35 @@ package kr.ac.kaist.safe.phase
 import scala.util._
 import kr.ac.kaist.safe.SafeConfig
 
-class PhaseSplitter[Input, InputConfig <: Config, T](
-  phaseOb1j: PhaseObj[Input, InputConfig, T]
-)
-    extends PhaseObj[Input, InputConfig, (Input, T)] {
+/**
+  * Can be used to split Phases. A PhaseSplitter has a PhaseObj o. When the Splitter is applied, it passes its given
+  * input i to to the PhaseObj o, and returns a tuple consisting of both the output of o and the original input i.
+  * @param phaseObj The PhaseObj o to which to pass the input and from which to return the output.
+  * @tparam Input The type of input to pass to o.
+  * @tparam InputConfig THe type of the configuration parameter to pass to o.
+  * @tparam Result The type of the result of o.
+  */
+case class PhaseSplitter[Input, InputConfig <: Config, Result](phaseObj: PhaseObj[Input, InputConfig, Result])
+  extends PhaseObj[Input, InputConfig, (Input, Result)] {
 
   val name: String = "Splitter"
-  val help: String = "Splits an input."
-  val options = phaseOb1j.options
+  val help: String = "Passes a given input to a PhaseObject and returns a tuple consisting of the object's " +
+                     "output and the original input."
+  val options = phaseObj.options
 
-  val defaultConfig = phaseOb1j.defaultConfig
+  val defaultConfig = phaseObj.defaultConfig
 
   def apply(
     input: Input,
     safeConfig: SafeConfig,
     config: InputConfig
-  ): Try[(Input, T)] = {
-    val resultTry = phaseOb1j.apply(input, safeConfig, config)
+  ): Try[(Input, Result)] = {
+    val resultTry = phaseObj.apply(input, safeConfig, config)
     resultTry match {
       case Success(result) =>
         Success((input, result))
       case Failure(f) =>
-        Failure[(Input, T)](f)
+        Failure[(Input, Result)](f)
     }
   }
 

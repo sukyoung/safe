@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.concolic
 
 import com.microsoft.z3._
 import scala.collection.mutable.{ HashMap, Map => MMap }
-import kr.ac.kaist.safe.util.useful.Maps
 
 final class Z3 {
 
@@ -189,9 +188,9 @@ final class Z3 {
     thisProperties: List[String]
   ): Option[HashMap[String, Integer]] = {
     try {
-      val cfg: HashMap[String, String] = new HashMap[String, String]
+      val cfg: java.util.HashMap[String, String] = new java.util.HashMap[String, String]
       cfg.put("model", "true")
-      val ctx: Context = new Context(Maps.toJavaMap(cfg))
+      val ctx: Context = new Context(cfg)
       if (constraints.nonEmpty) {
         Some[HashMap[String, Integer]](this.ConstraintSolver(ctx, constraints, inum, objects.get, thisProperties))
       } else {

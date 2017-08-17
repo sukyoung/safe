@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -24,6 +24,34 @@ import spray.json._
 import DefaultJsonProtocol._
 
 object NodeProtocol extends DefaultJsonProtocol {
+
+  var test = false
+
+  implicit object SourceLocJsonFormat extends RootJsonFormat[SourceLoc] {
+
+    def write(loc: SourceLoc): JsValue = loc match {
+      case SourceLoc(line, col, off) => JsArray(JsNumber(line), JsNumber(col), JsNumber(off))
+    }
+
+    def read(value: JsValue): SourceLoc = value match {
+      case JsArray(Vector(JsNumber(line), JsNumber(col), JsNumber(off))) =>
+        SourceLoc(line.toInt, col.toInt, off.toInt)
+      case _ => throw SourceLocParseError(value)
+    }
+  }
+
+  implicit object SpanJsonFormat extends RootJsonFormat[Span] {
+
+    def write(span: Span): JsValue = span match {
+      case Span(name, begin, end) => JsArray(JsString(if (test) "" else name), begin.toJson, end.toJson)
+    }
+
+    def read(value: JsValue): Span = value match {
+      case JsArray(Vector(JsString(name), begin, end)) =>
+        Span(name, begin.convertTo[SourceLoc], end.convertTo[SourceLoc])
+      case _ => throw SpanParseError(value)
+    }
+  }
 
   def spanCommentToJs(span: Span, comment: Option[Comment]): JsValue = JsArray(
     span.toJson,
@@ -53,31 +81,5 @@ object NodeProtocol extends DefaultJsonProtocol {
     def write(ir: IRNode): JsValue = spanCommentToJs(ir.span, ir.comment)
 
     def read(value: JsValue): IRNode = IRRoot(value.convertTo[ASTNode], Nil, Nil, Nil)
-  }
-
-  implicit object SpanJsonFormat extends RootJsonFormat[Span] {
-
-    def write(span: Span): JsValue = span match {
-      case Span(name, begin, end) => JsArray(JsString(name), begin.toJson, end.toJson)
-    }
-
-    def read(value: JsValue): Span = value match {
-      case JsArray(Vector(JsString(name), begin, end)) =>
-        Span(name, begin.convertTo[SourceLoc], end.convertTo[SourceLoc])
-      case _ => throw SpanParseError(value)
-    }
-  }
-
-  implicit object SourceLocJsonFormat extends RootJsonFormat[SourceLoc] {
-
-    def write(loc: SourceLoc): JsValue = loc match {
-      case SourceLoc(line, col, off) => JsArray(JsNumber(line), JsNumber(col), JsNumber(off))
-    }
-
-    def read(value: JsValue): SourceLoc = value match {
-      case JsArray(Vector(JsNumber(line), JsNumber(col), JsNumber(off))) =>
-        SourceLoc(line.toInt, col.toInt, off.toInt)
-      case _ => throw SourceLocParseError(value)
-    }
   }
 }

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -200,12 +200,6 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
 case class LoopHead(func: CFGFunction) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
-
-  // break label block
-  var breakBlock: NormalBlock = _
-
-  // continue label block
-  var contBlock: NormalBlock = _
 
   // inst list
   override def getInsts: List[CFGNormalInst] = Nil

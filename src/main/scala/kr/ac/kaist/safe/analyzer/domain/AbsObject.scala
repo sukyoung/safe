@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -24,8 +24,27 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete object type
 ////////////////////////////////////////////////////////////////////////////////
-case class Object(amap: Map[String, DataProp], imap: Map[IName, IValue])
-
+case class Object(amap: Map[String, DataProp], imap: Map[IName, IValue]) {
+  def +(other: Object): Object = {
+    val newamap = this.amap.foldLeft(other.amap) {
+      case (map, (str, prop)) => {
+        map.get(str) match {
+          case Some(p) => map + (str -> (prop + p))
+          case None => map + (str -> prop)
+        }
+      }
+    }
+    val newimap = this.imap.foldLeft(other.imap) {
+      case (map, (name, value)) => {
+        map.get(name) match {
+          case Some(v) => map + (name -> (value + v))
+          case None => map + (name -> value)
+        }
+      }
+    }
+    Object(newamap, newimap)
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain
 ////////////////////////////////////////////////////////////////////////////////

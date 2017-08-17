@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -17,6 +17,10 @@ import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter }
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.json.CFGProtocol._
+
+import spray.json._
+import DefaultJsonProtocol._
 
 // CFGBuild phase
 case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
@@ -53,11 +57,6 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
       DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
     })
 
-    // print JSON file: {jsonName}.json
-    config.jsonName.map(name => {
-      // TODO write into s"$name.json" file
-    })
-
     Success(cfg)
   }
 
@@ -68,9 +67,7 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the resulting CFG will be written to the outfile."),
     ("dot", StrOption((c, s) => c.dotName = Some(s)),
-      "the resulting CFG will be drawn to the {name}.gv and {name}.pdf"),
-    ("json", StrOption((c, s) => c.jsonName = Some(s)),
-      "the resulting CFG will be dumped into the {name}.json")
+      "the resulting CFG will be drawn to the {name}.gv and {name}.pdf")
   )
 }
 
@@ -78,6 +75,5 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 case class CFGBuildConfig(
   var silent: Boolean = false,
   var outFile: Option[String] = None,
-  var dotName: Option[String] = None,
-  var jsonName: Option[String] = None
+  var dotName: Option[String] = None
 ) extends Config

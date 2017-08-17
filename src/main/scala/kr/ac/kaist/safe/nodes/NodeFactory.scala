@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,14 +11,12 @@
 
 package kr.ac.kaist.safe.nodes
 
-import _root_.java.util.{ List => JList }
 import _root_.java.math.BigInteger
 import scala.collection.mutable.{ HashMap => MHashMap, HashSet => MHashSet }
 
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span, UIDObject }
-import kr.ac.kaist.safe.util.useful.Lists
 
 object NodeFactory {
   def makeDummyAST(name: String): ASTNode = makeDummyAST(dummyASTInfo(name), name)
@@ -65,10 +63,10 @@ object NodeFactory {
     body: List[SourceElement], params: List[Id], strict: Boolean, bodyS: String) =
     new Functional(info, fds, vds, new SourceElements(info, body, strict), name, params, bodyS)
 
-  def makeFunDecl(span: Span, name: Id, params: JList[Id],
-    body: JList[SourceElement], strict: Boolean) = {
+  def makeFunDecl(span: Span, name: Id, params: List[Id],
+    body: List[SourceElement], strict: Boolean) = {
     val info = NU.makeASTNodeInfo(span)
-    val functional = makeEmptyFunctional(info, name, Nil, Nil, Lists.toList(body), Lists.toList(params), strict)
+    val functional = makeEmptyFunctional(info, name, Nil, Nil, body, params, strict)
     new FunDecl(info, functional, strict)
   }
 

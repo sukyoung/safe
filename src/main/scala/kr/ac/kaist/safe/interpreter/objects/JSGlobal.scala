@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -22,7 +22,6 @@ import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.parser._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU }
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.useful.Lists._
 
 class JSGlobal(I: Interpreter, proto: JSObject)
     extends JSObject(I, proto, "Global", true, propTable) {
@@ -132,7 +131,7 @@ class JSGlobal(I: Interpreter, proto: JSObject)
         I.IS.eval = true
         val oldCompletionValue = I.IS.comp.value
         I.IS.comp.value = null
-        I.walkIRs(toList(prog.fds) ++ toList(prog.vds) ++ toList(prog.irs))
+        I.walkIRs(prog.fds ++ prog.vds ++ prog.irs)
         I.IS.env = oldEnv
         I.IS.tb = oldTb
         I.IS.eval = oldEval

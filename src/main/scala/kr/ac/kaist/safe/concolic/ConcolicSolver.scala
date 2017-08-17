@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -18,9 +18,7 @@ import kr.ac.kaist.safe.errors.error.ConcolicError
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
-import kr.ac.kaist.safe.util.{ Coverage, NodeRelation => NR, NodeUtil => NU, Span }
-import kr.ac.kaist.safe.util.useful.{ Lists, Maps }
+import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
 
 class ConcolicSolver(coverage: Coverage) {
   var debug = false

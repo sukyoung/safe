@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -145,12 +145,12 @@ object NodeUtil {
   val INTERNAL_ITER_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
+  val INTERNAL_GET_LOC = internalAPIName("getLoc")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_PRINT,
     INTERNAL_PRINT_IS,
     INTERNAL_GET_TICK_COUNT,
     INTERNAL_ADD_EVENT_FUNC,
-    INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
     INTERNAL_EXTENSIBLE,
@@ -191,7 +191,9 @@ object NodeUtil {
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
     INTERNAL_ITER_HAS_NEXT,
-    INTERNAL_ITER_NEXT
+    INTERNAL_ITER_NEXT,
+    INTERNAL_ADD_EVENT_FUNC,
+    INTERNAL_GET_LOC
   )
   def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
 

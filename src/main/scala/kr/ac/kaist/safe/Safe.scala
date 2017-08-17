@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -75,7 +75,8 @@ object Safe {
     CmdCompile,
     CmdConcolic,
     CmdCFGBuild,
-    CmdCFGLoad,
+    CmdHeapBuild,
+    CmdJsonLoad,
     CmdAnalyze,
     CmdBugDetect,
     CmdInterpret,
@@ -92,6 +93,8 @@ object Safe {
     Compile,
     Concolic,
     CFGBuild,
+    HeapBuild,
+    JsonLoad,
     Analyze,
     BugDetect,
     Interpret,

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -15,7 +15,9 @@ package kr.ac.kaist.safe.analyzer.domain
 // concrete null type
 ////////////////////////////////////////////////////////////////////////////////
 sealed abstract class Null extends PValue
-case object Null extends Null
+case object Null extends Null {
+  override def toString: String = "null"
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // null abstract domain

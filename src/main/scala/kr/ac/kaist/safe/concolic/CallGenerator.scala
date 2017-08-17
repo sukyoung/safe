@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -19,7 +19,6 @@ import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU }
-import kr.ac.kaist.safe.util.{ NodeRelation => NR }
 
 import scala.collection.mutable.HashMap
 import scala.util.Random

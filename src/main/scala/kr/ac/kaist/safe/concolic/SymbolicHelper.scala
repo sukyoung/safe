@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -719,7 +719,7 @@ class SymbolicHelper(I: Interpreter) {
       return symbolic_memory(v2) + op.ast.toString() + res1
   }
   def makeContext(v1: String, v2: String, op: IROp, c1: Option[SymbolicValue], c2: Option[SymbolicValue],
-                  contextType: SymbolicInfoTypes.Type): (Option[SymbolicValue], Option[SymbolicValue]) = {
+    contextType: SymbolicInfoTypes.Type): (Option[SymbolicValue], Option[SymbolicValue]) = {
     if (symbolic_memory.contains(v1) && symbolic_memory.contains(v2)) {
       // only if linear constraints supported
       if (op.kind == EJSMul ||

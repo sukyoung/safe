@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.useful.Lists._
 
 abstract class JSFunction(
   I: Interpreter,
@@ -30,7 +29,7 @@ abstract class JSFunction(
     extends JSObject(I, proto, className, extensible, property) {
 
   // Make a IR list in advance
-  val codeIRs: List[IRStmt] = toList(code.fds) ++ toList(code.vds) ++ toList(code.args) ++ toList(code.body)
+  val codeIRs: List[IRStmt] = code.fds ++ code.vds ++ code.args ++ code.body
 
   ////////////////////////////////////////////////////////////////////////////////
   // 8. Types Table 9

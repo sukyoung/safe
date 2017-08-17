@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -18,8 +18,8 @@ import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, NodeRelation => NR, Span }
-import kr.ac.kaist.safe.util.useful.Lists
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
+
 
 object IRGenerator {
   val errors: ExcLog = new ExcLog
@@ -97,9 +97,13 @@ object IRGenerator {
       (List(), IF.makeStringIR(NU.unescapeJava(str)))
 
     case ObjectExpr(info, members) =>
-      val new_members = members.map(member2ir(_, env, freshId))
-      val stmts = new_members.foldLeft(List[IRStmt]())((l, p) => l ++ p._1)
-      (stmts :+ IF.makeObject(true, e, res, new_members.map(p => p._2)), res)
+      val newMembers = members.map(member2ir(_, env, freshId))
+      val stmts = newMembers.foldLeft(List[IRStmt]())({
+        case (l, (stmts, _)) => l ++ stmts
+      })
+      (stmts :+ IF.makeObject(true, e, res, newMembers.map({
+        case (_, field) => field
+      })), res)
     case Parenthesized(_, expr) => expr2ir(expr, env, res)
     case n @ New(info, lhs) =>
       val span = getSpan(info)
@@ -114,11 +118,12 @@ object IRGenerator {
       val (ftn, args) = lhs match {
         case FunApp(_, f, as) =>
           val newargs = as.map(a => freshId(a))
-          val results = as.zipWithIndex.map(a => (
-            newargs.apply(a._2),
-            expr2ir(a._1, env, newargs.apply(a._2))
-          ))
-          (f, results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) :+
+          val results = as.zipWithIndex.map({
+            case (arg, idx) => (newargs.apply(idx), expr2ir(arg, env, newargs.apply(idx)))
+          })
+          (f, results.foldLeft(List[IRStmt]())({
+            case (l, (id, (stmts, exp))) => l ++ stmts :+ mkExprS(e, id, exp)
+          }) :+
             IF.makeArray(false, e, arg, newargs.map(p => Some(p))))
       }
       val (ssl, rl) = expr2ir(ftn, env, fun1)
@@ -134,7 +139,8 @@ object IRGenerator {
     case AssignOpApp(info, lhs, Op(_, text), right: FunExpr) if text.equals("=") && lhs.isName =>
       val name = NU.getName(lhs)
       val (ss, r) = funexpr2ir(right, env, res, Some(name), null)
-      (lval2ir(e, lhs, env, ss, r)._1, r)
+      val (stmts, _) = lval2ir(e, lhs, env, ss, r)
+      (stmts, r)
 
     case AssignOpApp(info, lhs, op, right) if op.text.equals("=") =>
       val span = getSpan(info)
@@ -145,7 +151,8 @@ object IRGenerator {
           lval2ir(e, setUID(Bracket(info, obj, NF.makeStringLiteral(getSpan(member), member.text, "\"")), dot.getUID),
             env, ss, r)
         case vr: VarRef =>
-          (lval2ir(e, lhs, env, ss, r)._1, r)
+          val (stmts, _) = lval2ir(e, lhs, env, ss, r)
+          (stmts, r)
       }
     case VarRef(info, id) => (List(), IF.makeUId(id.text, id.uniqueName.get, true, id, false))
   }
@@ -202,7 +209,10 @@ object IRGenerator {
       }
   }
 
-  def funapp2ir(e: FunApp, env: Env, res: IRId, target: String): IRStmt = e match {
+  def funapp2ir(e: FunApp,
+                env: Env,
+                res: IRId,
+                target: String): IRStmt = e match {
     case FunApp(info, v @ VarRef(_, fid), args) =>
       val fspan = getSpan(v)
       val obj = freshId(v, "obj")
@@ -211,12 +221,11 @@ object IRGenerator {
       // TODO: A name of function can be locally declared?
       val fir = IF.makeUId(fid.text, fid.uniqueName.get, true, fid, false)
       val newargs = args.map(_ => freshId)
-      val results = args.zipWithIndex.map(a => (
-        newargs.apply(a._2),
-        expr2ir(a._1, env, newargs.apply(a._2))
-      ))
+      val results = args.zipWithIndex.map({
+        case (arg, idx) => (newargs.apply(idx), expr2ir(arg, env, newargs.apply(idx)))
+      })
       new IRStmtUnit(NF.makeDummyAST("forConcolic"), List(toObject(v, obj, fir)) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) ++
+        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ mkExprS(e, tp._1, tp._2._2)) ++
         List(
           IF.makeArgs(e, arg, newargs.map(p => Some(p))),
           getBase(v, fun, fir),
@@ -230,7 +239,6 @@ object IRGenerator {
       ), args), e.getUID), env, res, target)
 
     case FunApp(info, b @ Bracket(_, first, index), args) =>
-      val firstspan = getSpan(first)
       val obj1 = freshId(first, "obj1")
       val field1 = freshId(index, "field1")
       val obj = freshId(e, "obj")
@@ -244,7 +252,7 @@ object IRGenerator {
         expr2ir(a._1, env, newargs.apply(a._2))
       ))
       new IRStmtUnit(NF.makeDummyAST("forConcolic"), ((ssl :+ toObject(first, obj, rl)) ++ ssr) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) ++
+        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ mkExprS(e, tp._1, tp._2._2)) ++
         List(
           IF.makeArgs(e, arg, newargs.map(p => Some(p))),
           toObject(b, fun, IF.makeLoad(true, e, obj, rr)),
@@ -264,7 +272,7 @@ object IRGenerator {
       ))
 
       new IRStmtUnit(NF.makeDummyAST("forConcolic"), (ss :+ toObject(fun, obj, r)) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) ++
+        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ mkExprS(e, tp._1, tp._2._2)) ++
         List(
           IF.makeArgs(e, arg, newargs.map(p => Some(p))),
           IF.makeCall(true, e, res, obj, global, arg)

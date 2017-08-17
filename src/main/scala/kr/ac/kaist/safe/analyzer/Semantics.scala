@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -35,6 +35,8 @@ class Semantics(
 
   // control point maps to state
   protected val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MHashMap()
+  def getAllState: Map[CFGBlock, Map[TracePartition, AbsState]] =
+    cpToState.toMap map { case (block, mmap) => block -> mmap.toMap }
   def getState(block: CFGBlock): Map[TracePartition, AbsState] =
     cpToState.getOrElse(block, {
       val newMap = MHashMap[TracePartition, AbsState]()
@@ -58,24 +60,11 @@ class Semantics(
     else map(tp) = state
   }
 
-  // Interprocedural edges
-  case class EdgeData(old: OldASiteSet, env: AbsLexEnv, thisBinding: AbsValue) {
-    def +(other: EdgeData): EdgeData = EdgeData(
-      this.old + other.old,
-      this.env + other.env,
-      this.thisBinding + other.thisBinding
-    )
-    def <=(other: EdgeData): Boolean = {
-      this.old <= other.old &&
-        this.env <= other.env &&
-        this.thisBinding <= other.thisBinding
-    }
-    def </(other: EdgeData): Boolean = !(this <= other)
-  }
   type IPSucc = Map[ControlPoint, EdgeData]
   type IPSuccMap = Map[ControlPoint, IPSucc]
   private var ipSuccMap: IPSuccMap = HashMap()
   def getAllIPSucc: IPSuccMap = ipSuccMap
+  def setAllIPSucc(newMap: IPSuccMap): Unit = { ipSuccMap = newMap }
   def getInterProcSucc(cp: ControlPoint): Option[IPSucc] = ipSuccMap.get(cp)
 
   // Adds inter-procedural call edge from call-block cp1 to entry-block cp2.
@@ -1030,7 +1019,7 @@ class Semantics(
       }
       val st1 = st.varStore(lhs, boolV)
       val newExcSt = st.raiseException(excSet)
-      (st1, newExcSt)
+      (st1, excSt + newExcSt)
     }
     case (NodeUtil.INTERNAL_ITER_NEXT, List(_, expr @ CFGVarRef(_, id)), None) => {
       val heap = st.heap
@@ -1056,7 +1045,25 @@ class Semantics(
       val next = AbsValue(cur.add(AbsNumber(1)), locset)
       val st2 = st1.varStore(id, next)
       val newExcSt = st.raiseException(excSet)
-      (st2, newExcSt)
+      (st2, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)
+      val (curV, excSetC) = st.lookup(id)
+      val newSt = st.varStore(id, curV.locset + v.locset)
+      val newExcSt = st.raiseException(excSetV ++ excSetC)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val locset = v.pvalue.strval.gamma match {
+        case ConInf() => AbsLoc.Top
+        case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
+      }
+      val newSt = st.varStore(lhs, locset)
+      val newExcSt = st.raiseException(excSetV)
+      (newSt, excSt + newExcSt)
     }
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
@@ -1287,4 +1294,19 @@ class Semantics(
 
     (st2, excSt + newExcSt)
   }
+}
+
+// Interprocedural edges
+case class EdgeData(old: OldASiteSet, env: AbsLexEnv, thisBinding: AbsValue) {
+  def +(other: EdgeData): EdgeData = EdgeData(
+    this.old + other.old,
+    this.env + other.env,
+    this.thisBinding + other.thisBinding
+  )
+  def <=(other: EdgeData): Boolean = {
+    this.old <= other.old &&
+      this.env <= other.env &&
+      this.thisBinding <= other.thisBinding
+  }
+  def </(other: EdgeData): Boolean = !(this <= other)
 }

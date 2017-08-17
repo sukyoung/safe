@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,10 +11,13 @@
 
 package kr.ac.kaist.safe.concolic
 
+import kr.ac.kaist.safe.SafeConfig
+
 import scala.util._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.compiler.IRSimplifier
+import kr.ac.kaist.safe.errors.error.ConcolicError
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
@@ -195,42 +198,46 @@ object ConcolicMain {
   /**
    * Working on a very simple concolic testing...
    */
-  def concolic(ir: IRRoot, cfg: CFG): Try[Int] = {
-    init()
-    val returnCode = 0
-    IRGenerator.ignoreId = 0
+  def concolic(in: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int),
+               safeConfig: SafeConfig): Try[Int] = {
+    val (cfg, _, _, _, _, _) = in
+    cfg.ir match {
+      case ir: IRRoot =>
+        init()
+        val returnCode = 0
+        IRGenerator.ignoreId = 0
 
-    // TODO MV Removed
-    // Initialize AbsString cache
-    // kr.ac.kaist.safe.analyzer.domain.AbsString.initCache
+        val callSiteSens = 2
+        val sens = CallSiteSensitivity(callSiteSens)
+        val initTP = sens.initTP
+        val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
-    val callSiteSens = 2
-    val sens = CallSiteSensitivity(callSiteSens)
-    val initTP = sens.initTP
-    val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
-
-    val worklist = Worklist(cfg)
-    worklist.add(entryCP)
-    val tryAnalysisResult = Analyze.analyze(cfg, AnalyzeConfig(callsiteSensitivity = callSiteSens))
-    tryAnalysisResult.flatMap({
-      case (cg2, iters, tp, semantics) =>
-        val coverage = new Coverage(cfg, semantics)
-        coverage.updateFunction(cfg)
-        var fir = IRFilter.doit(ir)
-        fir = IRSimplifier.doit(fir)
-        val instrumentor = new Instrumentor(fir, coverage)
-        fir = instrumentor.doit
-        val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))
-        val extractor = new ConstraintExtractor
-        val solver = new ConcolicSolver(coverage)
-        if (coverage.debug) {
-          solver.debug = true
-          extractor.debug = true
-        }
-        val tester = ProgramTester(coverage, solver, instrumentor, interpreter, extractor, fir, ir)
-        val ConstraintsFinishedResult(_, uncaughtErrors) = tester.testAllTargets
-        reportErrors(uncaughtErrors)
-        Success(returnCode)
-    })
+        val worklist = Worklist(cfg)
+        worklist.add(entryCP)
+        val sem = new Semantics(cfg, worklist)
+        val tryAnalysisResult = Analyze.apply(in, safeConfig, AnalyzeConfig())
+        tryAnalysisResult.flatMap({
+          case (cg2, iters, tp, semantics) =>
+            val coverage = new Coverage(cfg, semantics)
+            coverage.updateFunction(cfg)
+            var fir = IRFilter.doit(ir)
+            fir = IRSimplifier.doit(fir)
+            val instrumentor = new Instrumentor(fir, coverage)
+            fir = instrumentor.doit
+            val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))
+            val extractor = new ConstraintExtractor
+            val solver = new ConcolicSolver(coverage)
+            if (coverage.debug) {
+              solver.debug = true
+              extractor.debug = true
+            }
+            val tester = ProgramTester(coverage, solver, instrumentor, interpreter, extractor, fir, ir)
+            val ConstraintsFinishedResult(_, uncaughtErrors) = tester.testAllTargets
+            reportErrors(uncaughtErrors)
+            Success(returnCode)
+        })
+      case _ =>
+        Failure[Int](ConcolicError(s"Concolic expected IRRoot, got ${cfg.ir} instead."))
+    }
   }
 }

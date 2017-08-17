@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -21,11 +21,14 @@ import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, TraceParti
 import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.phase.HeapBuildConfig
 
 class Console(
     val cfg: CFG,
     val worklist: Worklist,
-    val sem: Semantics
+    val sem: Semantics,
+    val config: HeapBuildConfig,
+    private var iter: Int = -1
 ) {
   ////////////////////////////////////////////////////////////////
   // private variables
@@ -33,8 +36,7 @@ class Console(
 
   private val reader = new ConsoleReader()
   private val out: PrintWriter = new PrintWriter(reader.getOutput)
-  private var iter: Int = -1
-  private var target: Target = TargetIter(0)
+  private var target: Target = TargetIter(iter + 1)
   private var cur: ControlPoint = _
   private var home: ControlPoint = _
   private var breakList: TreeSet[CFGBlock] = TreeSet()
@@ -195,7 +197,8 @@ object Console {
     CmdBreak,
     CmdBreakList,
     CmdBreakRemove,
-    CmdFindBot
+    CmdFindBot,
+    CmdDump
   )
   val cmdMap: Map[String, Command] = commands.foldLeft(
     Map[String, Command]()

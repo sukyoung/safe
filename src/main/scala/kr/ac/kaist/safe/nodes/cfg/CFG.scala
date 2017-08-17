@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -61,19 +61,17 @@ class CFG(
   ): CFGFunction = {
     val func: CFGFunction =
       new CFGFunction(ir, argumentsName, argVars, localVars, name, isUser)
-    func.id = getFId
-    fidCount += 1
-    funcs ::= func
-    if (isUser) userFuncs ::= func
-    funMap(func.id) = func
-    func
+    addFunction(func)
   }
 
   // add function - used when create cfg from json
-  def addFunction(func: CFGFunction): Unit = {
+  def addFunction(func: CFGFunction): CFGFunction = {
+    func.id = getFId
+    fidCount += 1
     funcs ::= func
     if (func.isUser) userFuncs ::= func
     funMap(func.id) = func
+    func
   }
 
   // add JS model

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -16,13 +16,13 @@ import scala.collection.immutable.HashSet
 
 object Utils {
   def register(
-    absUndef: AbsUndefUtil,
-    absNull: AbsNullUtil,
-    absBool: AbsBoolUtil,
-    absNumber: AbsNumberUtil,
-    absString: AbsStringUtil,
-    absLoc: AbsLocUtil,
-    aaddrType: AAddrType
+    absUndef: AbsUndefUtil = DefaultUndef,
+    absNull: AbsNullUtil = DefaultNull,
+    absBool: AbsBoolUtil = DefaultBool,
+    absNumber: AbsNumberUtil = DefaultNumber,
+    absString: AbsStringUtil = StringSet(0),
+    absLoc: AbsLocUtil = DefaultLoc,
+    aaddrType: AAddrType = RecencyAAddr
   ): Unit = {
     AbsUndef = absUndef
     AbsNull = absNull

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -28,8 +28,10 @@ import kr.ac.kaist.safe.nodes.ast.SourceElements
 import kr.ac.kaist.safe.util.NodeUtil._
 
 object JSFromHTML {
-  private def toList[T](jList: JList[T]): List[T] =
-    JavaConverters.asScalaBuffer(jList).toList
+  private def toList[T](jList: JList[T]): List[T] = {
+    import scala.collection.JavaConverters._
+    jList.asScala.toList
+  }
   // extract a JavaScript file name from a string such as "main.js?135895164373817"
   val fileNameRegexp = (".*/[^/\\:*?\"<>|]+").r // \ : * ? " < > | // file:///c:/~/~/main.js?121424324
   val bogus = (1, 1)

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -20,7 +20,6 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase._
-import kr.ac.kaist.safe.util.useful.Lists
 
 import scala.collection.mutable.HashMap
 

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -18,23 +18,25 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.LINE_SEP
 import java.io._
 import java.nio.charset.Charset
+import scala.io.Source
 import scala.collection.immutable.HashMap
 // Rename Success and Failure to avoid name conflicts with ParseResult
 import scala.util.{ Try, Success => Succ, Failure => Fail }
 import scala.util.parsing.combinator._
 
-case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
+case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) {
   def +(other: JSModel): JSModel = {
-    // 1. rearrange function id
+    // 1. rearrange function id in other.funcs
     val newFuncs = other.funcs.foldLeft(this.funcs) {
-      case (funList, cfgFunc) => {
+      case (funList, (body, cfgFunc)) => {
         cfgFunc.id = cfgFunc.id - this.fidMax
-        cfgFunc :: funList
+        (body, cfgFunc) :: funList
       }
     }
-    // 2. revise function id in other.heap
+    // 2. rearrange function id in other.heap
     val mdfHeapMap = other.heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
       case (heapMap, (loc, obj)) => {
         val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
@@ -57,18 +59,46 @@ case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
     val newHeap = this.heap + mdfHeap
     val newFidMax = this.fidMax + other.fidMax
     JSModel(newHeap, newFuncs, newFidMax)
+    // 4. rearrange function id again
+    // function id may be lost because of merging algorithm
   }
   // TODO Complete the toString function
-  /*
   override def toString: String = {
-    val return = "Heap: {\n"
-    heap.foldLeft() {
-      case ((loc, obj)) => {
-        
-      }
-    }
+    val s: StringBuilder = new StringBuilder
+    val S: String = "  "
+    val L = LINE_SEP
+    // heap
+    s.append(s"Heap: {$L")
+    s.append(heap.map.map {
+      case (loc, obj) => s"$S$loc: {$L" +
+        (obj.imap.map {
+          case (iname, iv) => s"$S$S$iname: $iv"
+        }.mkString(s",$L")) + ({
+          if (!obj.imap.isEmpty && !obj.amap.isEmpty) s",$L"
+          else ""
+        }) + (obj.amap.map {
+          case (name, v) => s"""$S$S"$name": $v"""
+        }).mkString(s",$L") + s"$L$S}"
+    }.mkString(s",$L"))
+    s.append(s"$L}$L$L")
+
+    // function map
+    s.append(s"Function: {")
+    s.append(
+      ({
+        if (funcs.isEmpty) ""
+        else {
+          s"$L" + funcs.zipWithIndex.map {
+            case ((body, _), idx) =>
+              s"""$S${idx + 1}: [\\\\$L$S$body\\\\]"""
+          }.mkString(s",$L")
+        }
+      })
+    )
+    s.append(s"$L}$L")
+
+    s.toString
   }
-  */
 }
 
 // Argument parser by using Scala RegexParsers.
@@ -212,7 +242,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     }
 
   // JavaScript function
-  private lazy val jsFun: Parser[CFGFunction] = """[\\""" ~> any <~ """\\]""" ^^ {
+  private lazy val jsFun: Parser[(String, CFGFunction)] = """[\\""" ~> any <~ """\\]""" ^^ {
     case fun => JSParser.stringToAST(fun) match {
       case Succ((pgm, log)) => {
         if (log.hasError) println(log)
@@ -231,7 +261,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         var funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
         var func = funCFG.getFunc(1).get
 
-        Succ(func)
+        Succ((fun, func))
       }
       case Fail(e) => {
         println(ModelParseError(e.toString))
@@ -239,14 +269,14 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       }
     }
   } ^? { case Succ(pgm) => pgm }
-  private lazy val jsFuncs: Parser[(List[CFGFunction], Map[Int, Int])] = "{" ~> (
+  private lazy val jsFuncs: Parser[(List[(String, CFGFunction)], Map[Int, Int])] = "{" ~> (
     repsepE((int <~ ":") ~! jsFun, ",")
   ) <~ "}" ^^ {
       case lst => {
         var fidMap = Map[Int, Int]()
         var size = 0
-        val result = lst.foldLeft(List[CFGFunction]()) {
-          case (funcs, mid ~ func) => {
+        val result = lst.foldLeft(List[(String, CFGFunction)]()) {
+          case (funcs, mid ~ ((body, func))) => {
             size += 1
             fidMap += (mid -> size)
             func.id = -mid
@@ -265,7 +295,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
               case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
               case _ =>
             })
-            func :: funcs
+            (body, func) :: funcs
           }
         }
         (result, fidMap)
@@ -278,12 +308,12 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       case heap ~ ((funcs, map)) => {
         // Check map whether it needs rewrite or not
         if (map.keySet == map.values.toSet) {
-          JSModel(heap, funcs, funcs.length)
+          JSModel(heap, funcs.sortBy { case (_, f) => -f.id }, funcs.length)
         } else {
-          val newFuncs = funcs.foldLeft(List[CFGFunction]()) {
-            case (funList, cfgFunc) => {
+          val newFuncs = funcs.foldLeft(List[(String, CFGFunction)]()) {
+            case (funList, (body, cfgFunc)) => {
               cfgFunc.id = -map(-cfgFunc.id)
-              cfgFunc :: funList
+              (body, cfgFunc) :: funList
             }
           }
           val newHeapMap = heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
