@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.util._
 
 class JSArrayConstructor(I: Interpreter, proto: JSObject)
     extends JSFunction13(I, proto, "Array", true,
-                         propTable, I.IH.dummyFtn(0), EmptyEnv(), true) {
+      propTable, I.IH.dummyFtn(0), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.4.3 Properties of the Array Constructor

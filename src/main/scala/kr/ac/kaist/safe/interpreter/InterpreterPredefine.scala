@@ -30,7 +30,7 @@ object InterpreterPredefine {
   val error = Error()
   val evalError = EvalError()
   val rangeError = RangeError()
-  def referenceError(x: Var) = ReferenceError(x)
+  def referenceError(x: Var): ReferenceError = ReferenceError(x)
   val syntaxError = SyntaxError()
   val typeError = TypeError()
   val uriError = URIError()

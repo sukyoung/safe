@@ -61,7 +61,7 @@ class JSIRUnparser(program: IRNode) {
     }
   }
 
-  var uniqId: Int = 0
+  private var uniqId: Int = 0
   def fresh: String = {
     uniqId += 1
     uniqId.toString

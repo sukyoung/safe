@@ -11,9 +11,8 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import edu.rice.cs.plt.tuple.{ Option => JOption }
 import java.text.DecimalFormat
-import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterPredefine => IP }
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.interpreter.objects._
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
@@ -27,13 +26,13 @@ class InterpreterHelper(I: Interpreter) {
   // Basic
   ////////////////////////////////////////////////////////////////////////////////
 
-  def isNaN(n: EJSNumber) = n.num.isNaN
-  def isPlusZero(n: EJSNumber) = java.lang.Double.doubleToLongBits(n.num) == 0x0000000000000000L
-  def isMinusZero(n: EJSNumber) = java.lang.Double.doubleToLongBits(n.num) == 0x8000000000000000L
-  def isZero(n: EJSNumber) = n.num == 0
-  def isPlusInfinity(n: EJSNumber) = n.num == Double.PositiveInfinity
-  def isMinusInfinity(n: EJSNumber) = n.num == Double.NegativeInfinity
-  def isInfinite(n: EJSNumber) = n.num.isInfinite
+  def isNaN(n: EJSNumber): Boolean = n.num.isNaN
+  def isPlusZero(n: EJSNumber): Boolean = java.lang.Double.doubleToLongBits(n.num) == 0x0000000000000000L
+  def isMinusZero(n: EJSNumber): Boolean = java.lang.Double.doubleToLongBits(n.num) == 0x8000000000000000L
+  def isZero(n: EJSNumber): Boolean = n.num == 0
+  def isPlusInfinity(n: EJSNumber): Boolean = n.num == Double.PositiveInfinity
+  def isMinusInfinity(n: EJSNumber): Boolean = n.num == Double.NegativeInfinity
+  def isInfinite(n: EJSNumber): Boolean = n.num.isInfinite
   def isUndef(id: IRId): Boolean = id.uniqueName.equals(NU.freshGlobalName("undefVar")) || id.uniqueName.equals("undefined")
   def isUndef(v: Val): Boolean = v match {
     case PVal(IRVal(EJSUndef)) => true
@@ -81,10 +80,10 @@ class InterpreterHelper(I: Interpreter) {
     if (s.startsWith("-")) s.drop(1)
     else if (s.startsWith("+")) "-" + s.drop(1)
     else "-" + s
-  def negate(n: EJSNumber): EJSNumber = mkIRNum(n.num.unary_-)
+  def negate(n: EJSNumber): EJSNumber = mkIRNum(-n.num)
 
-  def dummyInfo() = NU.makeASTNodeInfo(NU.dummySpan("forDummyInfo"))
-  def getIRBool(b: Boolean) = if (b) IP.trueV else IP.falseV
+  def dummyInfo(): ASTNodeInfo = NU.makeASTNodeInfo(NU.dummySpan("forDummyInfo"))
+  def getIRBool(b: Boolean): IRVal = if (b) IP.trueV else IP.falseV
   def dummyFtn(length: Int): IRFunctional = {
     val body: List[IRStmt] = (1 to length).map((_) => IF.dummyIRStmt(IF.dummyAST)).toList
     val params: List[IRId] = List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]
@@ -100,50 +99,61 @@ class InterpreterHelper(I: Interpreter) {
     IF.makeNumber(name, d)
   }
   def mkIRNumIR(d: Double): IRVal = IRVal(mkIRNum(d))
-  def mkEmptyObjectProp() = new ObjectProp(None, None, None, None, None, None)
+  def mkEmptyObjectProp(): ObjectProp = new ObjectProp(None, None, None, None, None, None)
   def mkDataProp(
     value: Val = IP.undefV,
     writable: Boolean = false,
     enumerable: Boolean = false,
     configurable: Boolean = false
-  ) = new ObjectProp(Some(value), None, None, Some(writable), Some(enumerable), Some(configurable))
+  ): ObjectProp = new ObjectProp(Some(value), None, None, Some(writable), Some(enumerable), Some(configurable))
   def mkDataProp(
     value: Option[Val],
     writable: Option[Boolean],
     enumerable: Boolean,
     configurable: Boolean
-  ) = new ObjectProp(value, None, None, writable, Some(enumerable), Some(configurable))
+  ): ObjectProp = new ObjectProp(value, None, None, writable, Some(enumerable), Some(configurable))
   def mkAccessorProp(
     get: Val = IP.undefV,
     set: Val = IP.undefV,
     enumerable: Boolean = false,
     configurable: Boolean = false
-  ) = new ObjectProp(None, Some(get), Some(set), None, Some(enumerable), Some(configurable))
+  ): ObjectProp = new ObjectProp(None, Some(get), Some(set), None, Some(enumerable), Some(configurable))
   def mkAccessorProp(
     get: Option[Val],
     set: Option[Val],
     enumerable: Boolean,
     configurable: Boolean
-  ) = new ObjectProp(None, get, set, None, Some(enumerable), Some(configurable))
-  def strProp(s: String) = mkDataProp(PVal(mkIRStrIR(s)))
-  def boolProp(b: Boolean) = mkDataProp(PVal(getIRBool(b)))
-  def numProp(d: Double) = mkDataProp(PVal(mkIRNumIR(d)))
+  ): ObjectProp = new ObjectProp(None, get, set, None, Some(enumerable), Some(configurable))
+  def strProp(s: String): ObjectProp = mkDataProp(PVal(mkIRStrIR(s)))
+  def boolProp(b: Boolean): ObjectProp = mkDataProp(PVal(getIRBool(b)))
+  def numProp(d: Double): ObjectProp = mkDataProp(PVal(mkIRNumIR(d)))
   /*
    * 15.1 The Global Object
    * Unless otherwise specified, the standard built-in properties of the global
    * object have attributes {[[Writable]]: true, [[Enumerable]]: false,
    * [[Configurable]]: true}
    */
-  def objProp(o: JSObject) = mkDataProp(o, true, false, true)
-  def strPropTable(s: String): PropTable = { val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", strProp(s)); prop }
-  def boolPropTable(b: Boolean): PropTable = { val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", boolProp(b)); prop }
-  def numPropTable(d: Double): PropTable = { val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", numProp(d)); prop }
+  def objProp(o: JSObject): ObjectProp = mkDataProp(o, true, false, true)
+  def strPropTable(s: String): PropTable = {
+    val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", strProp(s))
+    prop
+  }
+  def boolPropTable(b: Boolean): PropTable = {
+    val prop = new PropTable
+    prop.put(IP.varPrefix + "PrimitiveValue", boolProp(b))
+    prop
+  }
+  def numPropTable(d: Double): PropTable = {
+    val prop = new PropTable
+    prop.put(IP.varPrefix + "PrimitiveValue", numProp(d))
+    prop
+  }
   def inherit(o1: JSObject, o2: JSObject): Boolean = {
-    var o1_pt = o1
+    var o1Pt = o1
     while (true) {
-      if (o1_pt == IP.nullObj) return false
-      else if (o1_pt.equals(o2)) return true
-      o1_pt = o1_pt.proto
+      if (o1Pt == IP.nullObj) return false
+      else if (o1Pt.equals(o2)) return true
+      o1Pt = o1Pt.proto
     }
     false
   }
@@ -449,7 +459,7 @@ class InterpreterHelper(I: Interpreter) {
               env = rest
             }
           case ObjEnvRec(o) =>
-            val obj = o.getProperty(originalName)._2
+            val (_, obj) = o.getProperty(originalName)
             if (obj != IP.nullObj) return er
             else env = rest
         }
@@ -617,7 +627,7 @@ class InterpreterHelper(I: Interpreter) {
     if (typeOf(v) != EJSType.OBJECT) return (None, Some(IP.typeError))
     val obj: JSObject = v.asInstanceOf[JSObject]
     // 2. Let desc be the result of creating a new Property Descriptor that initially has no fields.
-    var op: ObjectProp = mkEmptyObjectProp()
+    val op: ObjectProp = mkEmptyObjectProp()
     // 3 ~ 6
     if (obj.hasProperty("enumerable")) op.enumerable = Some(toBoolean(obj.get("enumerable")))
     if (obj.hasProperty("configurable")) op.configurable = Some(toBoolean(obj.get("configurable")))
@@ -1086,7 +1096,7 @@ class InterpreterHelper(I: Interpreter) {
     I.IS.env = new ConsEnv(newEnv, I.IS.env)
     newEnv
   }
-  def popEnv() = I.IS.env match {
+  def popEnv(): Unit = I.IS.env match {
     case EmptyEnv() =>
     case ce: ConsEnv => I.IS.env = ce.rest
   }

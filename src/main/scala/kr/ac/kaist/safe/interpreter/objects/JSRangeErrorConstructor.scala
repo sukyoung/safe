@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
 class JSRangeErrorConstructor(I: Interpreter, proto: JSObject)
     extends JSFunction13(I, proto, "Function", true,
-                         propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
+      propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.11.7.5 Properties of the NativeError Constructors

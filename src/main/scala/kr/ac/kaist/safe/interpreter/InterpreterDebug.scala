@@ -18,23 +18,24 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 object InterpreterDebug {
 
-  var uniq_id = 0
-  def fresh(id: String) = {
-    uniq_id += 1
+  private var uniqId = 0
+  def fresh(id: String): String = {
+    uniqId += 1
     val stringarr = id.split(NU.INTERNAL_SYMBOL)
-    stringarr.update(stringarr.length - 1, uniq_id.toString)
+    stringarr.update(stringarr.length - 1, uniqId.toString)
     stringarr.foldLeft("")((s, a) => s + NU.INTERNAL_SYMBOL + a)
   }
   type TmpIdEnv = List[(String, String)]
   var tmpEnv = Nil.asInstanceOf[TmpIdEnv]
-  def addE(uniq: String, new_uniq: String) = tmpEnv = (uniq, new_uniq) :: tmpEnv
+  def addE(uniq: String, newUniq: String): Unit = tmpEnv = (uniq, newUniq) :: tmpEnv
   // def getE(uniq: String): String = uniq
-  def getE(uniq: String): String = tmpEnv.find(p => p._1.equals(uniq)) match {
+  def getE(uniq: String): String = tmpEnv.find({ case (str, _) => str.equals(uniq) }) match {
     case None =>
-      val new_uniq = if (NU.isInternal(uniq) && !NU.isGlobalName(uniq)) fresh(uniq) else uniq
-      addE(uniq, new_uniq)
-      new_uniq
-    case Some((_, new_uniq)) => new_uniq
+      val newUniq = if (NU.isInternal(uniq) && !NU.isGlobalName(uniq)) fresh(uniq) else uniq
+      addE(uniq, newUniq)
+      newUniq
+    case Some((_, newUniq)) =>
+      newUniq
   }
 
   def prExpr(e: IRExpr): String = e match {
@@ -98,7 +99,7 @@ object InterpreterDebug {
     case ObjEnvRec(l) => "Loc("+l.n+")"
   }
   */
-  def toStringStore(s: Store) = {
+  def toStringStore(s: Store): String = {
     val sb: StringBuilder = new StringBuilder
     sb.append("{")
     val i = s.iterator

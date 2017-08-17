@@ -16,8 +16,7 @@ import scala.collection.mutable.{ HashMap, Map => MMap }
 
 final class Z3 {
 
-  class TestFailedException extends Exception("Check FAILED") {
-  }
+  case class TestFailedException() extends Exception("Check FAILED")
 
   var debug: Boolean = false
 

@@ -22,19 +22,20 @@ object SymbolicInfoTypes extends Enumeration {
 }
 
 class SymbolicInfo(
-  var cond: Boolean,
-  var id: Option[SymbolicValue],
-  var op: Option[String],
-  var lhs: Option[SymbolicValue],
-  var rhs: Option[SymbolicValue],
-  var branch: Option[Boolean]) {
+    var cond: Boolean,
+    var id: Option[SymbolicValue],
+    var op: Option[String],
+    var lhs: Option[SymbolicValue],
+    var rhs: Option[SymbolicValue],
+    var branch: Option[Boolean]
+) {
 
   // for conditional branch
   val isCond = cond
   val branchTaken = branch match { case Some(b) => b; case None => true }
 
   private var infoType: SymbolicInfoTypes.Type = SymbolicInfoTypes.undefined
-  def setType(t: SymbolicInfoTypes.Type) = infoType = t
+  def setType(t: SymbolicInfoTypes.Type): Unit = infoType = t
   def getType: SymbolicInfoTypes.Type = infoType
 
   def unpackSymbolicOption(x: Option[SymbolicValue]): String = x match {
@@ -55,5 +56,5 @@ class SymbolicInfo(
     if (x.isEmpty) y
     else x + " = " + y
   }
-  override def equals(another: Any) = this.toString == another.asInstanceOf[SymbolicInfo].toString
+  override def equals(another: Any): Boolean = this.toString == another.asInstanceOf[SymbolicInfo].toString
 }

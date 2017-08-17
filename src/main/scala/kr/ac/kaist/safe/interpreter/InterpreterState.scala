@@ -32,7 +32,7 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
   var coverage: Option[Coverage] = None
   var objectProps = Set[String]()
 
-  def init() {
+  def init(): Unit = {
     // Set properties
     GlobalObject.init()
     ObjectConstructor.init()
@@ -70,7 +70,7 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
     checkPredefined(config)
   }
 
-  def checkPredefined(config: InterpretConfig) {
+  def checkPredefined(config: InterpretConfig): Unit = {
     val notYetImplemented = Set("JSON", "decodeURIComponent", "encodeURIComponent", "encodeURI",
       "<>Global<>global", "decodeURI", "Exception")
     val predefNames = new Predefined(config).all.toSet.diff(notYetImplemented)

@@ -13,35 +13,35 @@ package kr.ac.kaist.safe.concolic
 
 class SymbolicValue {
   var value: String = null
-  def getValue = value
+  def getValue: String = value
   // Types from analysis part
   var types: List[String] = null
-  def getTypes = types
+  def getTypes: List[String] = types
   // Types from execution part
   var instance: String = null
-  def setInstance(_instance: String) = instance = _instance
-  def getInstance = instance
+  def setInstance(newInstance: String): Unit = instance = newInstance
+  def getInstance: String = instance
   var fromConcrete: Boolean = false
 
-  def makeSymbolicValue(_type: String) = types = List(_type)
-  def makeSymbolicValue(_types: List[String]) = types = _types
-  def makeSymbolicValue(_value: String, _type: String) = {
-    value = _value
-    types = List(_type)
+  def makeSymbolicValue(newType: String): Unit = types = List(newType)
+  def makeSymbolicValue(newTypes: List[String]): Unit = types = newTypes
+  def makeSymbolicValue(newValue: String, newType: String): Unit = {
+    value = newValue
+    types = List(newType)
   }
-  def makeSymbolicValue(_value: String, _types: List[String]) = {
-    value = _value
-    types = _types
+  def makeSymbolicValue(newValue: String, newTypes: List[String]): Unit = {
+    value = newValue
+    types = newTypes
   }
-  def makeSymbolicValueFromConcrete(_type: String) = {
-    types = List(_type)
-    instance = _type
+  def makeSymbolicValueFromConcrete(newType: String): Unit = {
+    types = List(newType)
+    instance = newType
     fromConcrete = true
   }
-  def makeSymbolicValueFromConcrete(_value: String, _type: String) = {
-    value = _value
-    types = List(_type)
-    instance = _type
+  def makeSymbolicValueFromConcrete(newValue: String, newType: String): Unit = {
+    value = newValue
+    types = List(newType)
+    instance = newType
     fromConcrete = true
   }
 
@@ -65,6 +65,6 @@ class SymbolicValue {
   }
 
   override def toString: String = value
-  override def equals(another: Any) = this.toString == another.asInstanceOf[SymbolicValue].toString
+  override def equals(another: Any): Boolean = this.toString == another.asInstanceOf[SymbolicValue].toString
 }
 

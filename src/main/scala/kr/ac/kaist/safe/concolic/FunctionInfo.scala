@@ -16,7 +16,7 @@ import scala.collection.mutable.Map
 class FunctionInfo() {
   /* STORE FUNCTION INFORMATION */
   var params = Map[Int, List[TypeInfo]]()
-  def storeParameter(n: Int, t: TypeInfo) = {
+  def storeParameter(n: Int, t: TypeInfo): Unit = {
     val temp = params.get(n) match {
       case Some(ts) =>
         if (ts.map(_.paramType).contains(t.paramType)) {
@@ -33,9 +33,9 @@ class FunctionInfo() {
     params(n) = temp
   }
 
-  var thisObject: TypeInfo = null
-  def getThisObject = thisObject
-  def setThisObject(x: TypeInfo) = thisObject = x
+  private var thisObject: TypeInfo = null
+  def getThisObject: TypeInfo = thisObject
+  def setThisObject(x: TypeInfo): Unit = thisObject = x
 
   /* USE FUNCTION INFORMATION */
   def getType(n: Int): List[String] = params(n).map(_.paramType)
@@ -59,7 +59,7 @@ class FunctionInfo() {
   /* CHECK FOR CONCOLIC TESTING */
   var depth: Int = 0
   def initDepth(): Unit = depth = 0
-  def checkRecursive(limit: Int) = {
+  def checkRecursive(limit: Int): Boolean = {
     val res = if (depth < limit) true else false
     depth += 1
     res

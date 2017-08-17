@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.nodes.ir._
 
 class JSBooleanConstructor(I: Interpreter, proto: JSObject)
     extends JSFunction13(I, proto, "Function", true,
-                         propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
+      propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.6.3 Properties of the Boolean Constructor

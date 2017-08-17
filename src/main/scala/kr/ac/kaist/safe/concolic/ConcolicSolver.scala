@@ -57,8 +57,8 @@ class ConcolicSolver(coverage: Coverage) {
         case None =>
       }
     }
-    var actualConstraints = constraints.drop(init)
-    var initialConstraints = constraints diff actualConstraints
+    val actualConstraints = constraints.drop(init)
+    val initialConstraints = constraints diff actualConstraints
     primitiveConstraints = initialConstraints
     for (const <- initialConstraints) {
       if (const.objectRelated) {
@@ -130,7 +130,7 @@ class ConcolicSolver(coverage: Coverage) {
       function.getThisProperties
     )
     if (tmp.isDefined) {
-      primitiveResult = tmp.get.map(x => (x._1, x._2.intValue)).toMap
+      primitiveResult = tmp.get.map({ case (str, int) => (str, int.intValue) }).toMap
     }
 
     // Build actual result combined object related result and primitive realted one.
@@ -183,7 +183,15 @@ class ConcolicSolver(coverage: Coverage) {
     NF.makeExprStmt(dummySpan, assign)
   }
 
-  def assignObject(isThis: Boolean, argnum: Int, arg: Id, constructor: String, props: List[String], res: Map[String, Int], hasArguments: Boolean): List[Stmt] = {
+  def assignObject(
+    isThis: Boolean,
+    argnum: Int,
+    arg: Id,
+    constructor: String,
+    props: List[String],
+    res: Map[String, Int],
+    hasArguments: Boolean
+  ): List[Stmt] = {
     var stmts = List[Stmt]()
     // Generate appropriate arguments for object constructor.
     var args = List[Expr]()
@@ -285,7 +293,7 @@ class ConcolicSolver(coverage: Coverage) {
     return (None, additional)
   }
 
-  def printResult(function: FunctionInfo, num: Int) = {
+  def printResult(function: FunctionInfo, num: Int): Unit = {
     System.out.println("======================= Result =======================")
     for (i <- 0 until num by 1) {
       function.getObjectProperties(i) match {
