@@ -12,16 +12,20 @@
 package kr.ac.kaist.safe.compiler
 
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
+import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
-/* Move IRBin, IRUn, and IRLoad out of IRExpr.
+/*
+ * Move IRBin, IRUn, and IRLoad out of IRExpr.
  */
 
-object IRSimplifier extends IRWalker {
+class IRSimplifier(program: IRRoot) extends IRWalker {
 
-  def doit(program: IRRoot) = walk(program).asInstanceOf[IRRoot]
+  lazy val result = doit
+
+  private def doit: IRRoot = walk(program)
 
   def convert(expr: Option[IRExpr]): (List[IRStmt], Option[IRExpr]) = expr match {
     case Some(e) =>
@@ -30,22 +34,23 @@ object IRSimplifier extends IRWalker {
     case _ => (Nil, None)
   }
   def convertListOptExpr(elems: List[Option[IRExpr]]): (List[IRStmt], List[Option[IRExpr]]) =
-    elems.foldLeft((List[IRStmt](), List[Option[IRExpr]]()))((p, oe) => {
-      val (ns, oee) = convert(oe)
-      (p._1 ++ ns, p._2 :+ oee)
+    elems.foldLeft((List[IRStmt](), List[Option[IRExpr]]()))({
+      case ((stmts, irexps), oe) =>
+        val (ns, oee) = convert(oe)
+        (stmts ++ ns, irexps :+ oee)
     })
 
   def convertFunctional(f: IRFunctional): IRFunctional = f match {
     case IRFunctional(ast, i, name, params, args, fds, vds, body) =>
-      val newFds: List[IRFunDecl] = fds.map(walk(_).asInstanceOf[IRFunDecl])
+      val newFds: List[IRFunDecl] = fds.map(walk)
       IRFunctional(ast, i, name, params,
-        args.map(walk(_).asInstanceOf[IRStmt]),
+        args.map(walk),
         newFds,
         vds,
-        body.map(walk(_).asInstanceOf[IRStmt]))
+        body.map(walk))
   }
 
-  def dummyAst(span: Span) = NF.makeNoOp(span, "IRSimplifier.dummyAst")
+  def dummyAst(span: Span): NoOp = NF.makeNoOp(span, "IRSimplifier.dummyAst")
   def freshId(span: Span): IRTmpId = IF.makeTId(NF.makeDummyAST(span), NU.freshName("temp"))
   def needMore(expr: IRExpr): Boolean = expr match {
     case _: IRBin | _: IRUn | _: IRLoad => true
@@ -116,7 +121,7 @@ object IRSimplifier extends IRWalker {
 
   override def walk(node: IRRoot): IRRoot = node match {
     case IRRoot(info, fds, vds, irs) =>
-      val newFds: List[IRFunDecl] = fds.map((fd: IRFunDecl) => walk(fd).asInstanceOf[IRFunDecl])
+      val newFds: List[IRFunDecl] = fds.map((fd: IRFunDecl) => walk(fd))
       IRRoot(info, newFds, vds, irs.map(walk))
   }
 
@@ -138,11 +143,13 @@ object IRSimplifier extends IRWalker {
       IRSeq(ast, names :+ IRDeleteProp(ast, lhs, obj, newindex))
 
     case IRObject(ast, lhs, members, proto) =>
-      val (names, newmembers) = members.foldLeft((List[IRStmt](), List[IRMember]()))((p, m) => {
-        val (ns, mm) = convert(m)
-        (p._1 ++ ns, p._2 :+ mm)
+      val (names, newMembers) = members.foldLeft((List[IRStmt](), List[IRMember]()))({
+        case ((stmts, members), m) => {
+          val (ns, mm) = convert(m)
+          (stmts ++ ns, members :+ mm)
+        }
       })
-      IRSeq(ast, names :+ IRObject(ast, lhs, newmembers, proto))
+      IRSeq(ast, names :+ IRObject(ast, lhs, newMembers, proto))
 
     case IRArray(ast, lhs, elems) =>
       val (names, newelems) = convertListOptExpr(elems)
@@ -169,7 +176,7 @@ object IRSimplifier extends IRWalker {
       IRSeq(ast, names :+ IREval(ast, lhs, newarg))
 
     case IRStmtUnit(ast, stmts) =>
-      IRStmtUnit(ast, stmts.map(walk(_).asInstanceOf[IRStmt]))
+      IRStmtUnit(ast, stmts.map(walk))
 
     case IRStore(ast, obj, index, rhs) =>
       val (namesi, newindex) = convertExpr(IRLoad(ast, obj, index))
@@ -188,10 +195,10 @@ object IRSimplifier extends IRWalker {
     case IRReturn(ast, None) => node
 
     case IRWith(ast, id, stmt) =>
-      IRWith(ast, id, walk(stmt).asInstanceOf[IRStmt])
+      IRWith(ast, id, walk(stmt))
 
     case IRLabelStmt(ast, label, stmt) =>
-      IRLabelStmt(ast, label, walk(stmt).asInstanceOf[IRStmt])
+      IRLabelStmt(ast, label, walk(stmt))
 
     case IRVarStmt(ast, lhs, fromparam) => node
 
@@ -200,34 +207,35 @@ object IRSimplifier extends IRWalker {
       IRSeq(ast, names :+ IRThrow(ast, newexpr))
 
     case IRSeq(ast, stmts) =>
-      IRSeq(ast, stmts.map(walk(_).asInstanceOf[IRStmt]))
+      IRSeq(ast, stmts.map(walk))
 
     case IRIf(ast, expr, trueB, falseB) =>
       val (names, newexpr) = convertExpr(expr)
       val newfalseB = falseB match {
-        case Some(stmt) => Some(walk(stmt).asInstanceOf[IRStmt])
+        case Some(stmt) => Some(walk(stmt))
         case None => None
       }
-      IRSeq(ast, names :+ IRIf(ast, newexpr, walk(trueB).asInstanceOf[IRStmt],
+      IRSeq(ast, names :+ IRIf(ast, newexpr, walk(trueB),
         newfalseB))
 
     case IRWhile(ast, cond, body, breakLabel, contLabel) =>
       val (names, newcond) = convertExpr(cond)
       IRSeq(ast, names :+ IRWhile(ast, newcond,
-        IRSeq(ast, walk(body).asInstanceOf[IRStmt] +: names),
+        IRSeq(ast, walk(body) +: names),
         breakLabel, contLabel))
 
     case IRTry(info, body, name, catchB, finallyB) =>
       val newcatchB = catchB match {
-        case Some(stmt) => Some(walk(stmt).asInstanceOf[IRStmt])
+        case Some(stmt) => Some(walk(stmt))
         case None => None
       }
       val newfinallyB = finallyB match {
-        case Some(stmt) => Some(walk(stmt).asInstanceOf[IRStmt])
+        case Some(stmt) => Some(walk(stmt))
         case None => None
       }
-      IRTry(info, walk(body).asInstanceOf[IRStmt], name, newcatchB, newfinallyB)
+      IRTry(info, walk(body), name, newcatchB, newfinallyB)
 
-    case _ => super.walk(node)
+    case _ =>
+      super.walk(node)
   }
 }

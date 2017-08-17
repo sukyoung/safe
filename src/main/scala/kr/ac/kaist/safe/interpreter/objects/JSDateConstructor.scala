@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSDateConstructor(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "Function", true, propTable, _I.IH.dummyFtn(7), EmptyEnv(), true) {
+class JSDateConstructor(I: Interpreter, proto: JSObject)
+    extends JSFunction13(I, proto, "Function", true, propTable, I.IH.dummyFtn(7), EmptyEnv(), true) {
 
   val DH: JSDateHelper = new JSDateHelper(I.IH)
 
@@ -36,8 +36,15 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
    * 15.9.3 The Date Constructor
    * 15.9.3.1 new Date(year, month[, date[, hours[, minutes[, seconds[, ms]]]]])
    */
-  def construct(year: Val, month: Val, date: Val,
-    hours: Val, minutes: Val, seconds: Val, ms: Val): JSDate = {
+  def construct(
+    year: Val,
+    month: Val,
+    date: Val,
+    hours: Val,
+    minutes: Val,
+    seconds: Val,
+    ms: Val
+  ): JSDate = {
     val (y, m) = (I.IH.toNumber(year), I.IH.toNumber(month))
     val dt = if (!I.IH.isUndef(date)) I.IH.toNumber(date) else I.IH.mkIRNum(1)
     val h = if (!I.IH.isUndef(hours)) I.IH.toNumber(hours) else I.IH.mkIRNum(0)
@@ -54,7 +61,7 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
    */
   def construct(value: Val): JSDate = {
     val V = I.IH.toPrimitive(value, "Number") match {
-      case v @ PVal(IRVal(_: EJSString)) => __parse(v)
+      case v @ PVal(IRVal(_: EJSString)) => JSParseAux(v)
       case v => I.IH.toNumber(v)
     }
     new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(DH.timeClip(V).num))
@@ -62,12 +69,12 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
   /*
    * 15.9.3.3 new Date()
    */
-  def construct(): JSDate =
-    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(__now.num))
+  def construct: JSDate =
+    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(JSNowAux.num))
 
   override def construct(argsObj: JSObject): JSDate = {
     argsObj.get("length") match {
-      case PVal(IRVal(n: EJSNumber)) if n.num == 0 => construct()
+      case PVal(IRVal(n: EJSNumber)) if n.num == 0 => construct
       case PVal(IRVal(n: EJSNumber)) if n.num == 1 => construct(argsObj.get("0"))
       case PVal(IRVal(n: EJSNumber)) if n.num >= 2 => construct(
         argsObj.get("0"),
@@ -83,8 +90,8 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.DateParse => _parse(argsObj.get("0"))
-      case I.IS.DateUTC => _utc(
+      case I.IS.DateParse => JSParse(argsObj.get("0"))
+      case I.IS.DateUTC => JSUtc(
         argsObj.get("0"),
         argsObj.get("1"),
         argsObj.get("2"),
@@ -93,20 +100,20 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
         argsObj.get("5"),
         argsObj.get("6")
       )
-      case I.IS.DateNow => _now()
+      case I.IS.DateNow => JSNow()
     }
   }
 
   override def call(tb: Val, argsObj: JSObject): Unit = {
-    I.IS.DatePrototype.toISOString(__now)
+    I.IS.DatePrototype.toISOString(JSNowAux)
   }
 
   /*
    * 15.9.4.2 Date.parse(string)
    */
-  def _parse(string: Val): Unit =
-    I.IS.comp.setReturn(PVal(IRVal(__parse(string))))
-  def __parse(string: Val): EJSNumber = {
+  def JSParse(string: Val): Unit =
+    I.IS.comp.setReturn(PVal(IRVal(JSParseAux(string))))
+  def JSParseAux(string: Val): EJSNumber = {
     /*
      * "YYYY-MM-DDTHH:mm:ss.sss"
      * This format includes date-only forms:
@@ -373,8 +380,15 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
   /*
    * 15.9.4.3 Date.UTC(year, month[, date[, hours[, minutes[, seconds[, ms]]]]])
    */
-  def _utc(year: Val, month: Val, date: Val,
-    hours: Val, minutes: Val, seconds: Val, ms: Val): Unit = {
+  def JSUtc(
+    year: Val,
+    month: Val,
+    date: Val,
+    hours: Val,
+    minutes: Val,
+    seconds: Val,
+    ms: Val
+  ): Unit = {
     val (y, m) = (I.IH.toNumber(year), I.IH.toNumber(month))
     val dt = if (!I.IH.isUndef(date)) I.IH.toNumber(date) else I.IH.mkIRNum(1)
     val h = if (!I.IH.isUndef(hours)) I.IH.toNumber(hours) else I.IH.mkIRNum(0)
@@ -394,11 +408,11 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
   /*
    * 15.9.4.4 Date.now()
    */
-  def __now(): EJSNumber = {
+  def JSNowAux: EJSNumber = {
     // TODO: Check whether java.util.Calendar.getInstance.getTimeInMillis gives
     //       the JavaScript time value
     val date = new java.util.Date()
     I.IH.mkIRNum(date.getTime)
   }
-  def _now(): Unit = I.IS.comp.setReturn(PVal(IRVal(__now)))
+  def JSNow(): Unit = I.IS.comp.setReturn(PVal(IRVal(JSNowAux)))
 }

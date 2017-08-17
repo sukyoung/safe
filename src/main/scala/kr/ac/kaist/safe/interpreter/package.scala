@@ -49,13 +49,12 @@ package object interpreter {
       case (PVal(IRVal(EJSUndef)), PVal(IRVal(EJSUndef))) => true
       case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
       case (PVal(IRVal(b1: EJSBool)), PVal(IRVal(b2: EJSBool))) => b1.bool == b2.bool
-      case (PVal(IRVal(n1: EJSNumber)), PVal(IRVal(n2: EJSNumber))) => {
+      case (PVal(IRVal(n1: EJSNumber)), PVal(IRVal(n2: EJSNumber))) =>
         if (n1.num == 0 && n2.num == 0)
           //IH.isPlusZero(n1) == IH.isPlusZero(n2)
           java.lang.Double.doubleToLongBits(n1.num) == java.lang.Double.doubleToLongBits(n2.num)
         else
           n1.num == n2.num
-      }
       case (PVal(IRVal(s1: EJSString)), PVal(IRVal(s2: EJSString))) => s1.str.equals(s2.str)
       case (o1: JSObject, o2: JSObject) => o1.eq(o2)
       case _ => false
@@ -120,11 +119,20 @@ package object interpreter {
    */
   case class DeclEnvRec(s: Store) extends EnvRec
   type Store = MMap[Var, StoreValue]
-  def Store = MMap[Var, StoreValue]()
+  def Store: Store = MMap[Var, StoreValue]()
   def newStore: Store = Store
-  class StoreValue(var value: ValError, var init: Boolean,
-      var mutable: Boolean, var configurable: Boolean) extends BindingValue {
-    def setValue(v: ValError) { value = v; init = true; }
+
+  class StoreValue(
+    var value: ValError,
+    var init: Boolean,
+    var mutable: Boolean,
+    var configurable: Boolean
+  )
+      extends BindingValue {
+    def setValue(v: ValError): Unit = {
+      value = v
+      init = true
+    }
   }
 
   /*
@@ -270,12 +278,29 @@ package object interpreter {
   case class Throw(e: ValError, sp: Span) extends Abrupt
   */
   class Completion() {
-    def setNormal(): Unit = { Type = CT.NORMAL }
-    def setNormal(v: Val): Unit = { Type = CT.NORMAL; value = v }
-    def setBreak(l: IRId): Unit = { Type = CT.BREAK; label = l }
-    def setBreak(v: Val, l: IRId): Unit = { Type = CT.BREAK; value = v; label = l }
-    def setReturn(): Unit = { Type = CT.RETURN }
-    def setReturn(v: Val): Unit = { Type = CT.RETURN; value = v }
+    def setNormal(): Unit = {
+      Type = CT.NORMAL
+    }
+    def setNormal(v: Val): Unit = {
+      Type = CT.NORMAL
+      value = v
+    }
+    def setBreak(l: IRId): Unit = {
+      Type = CT.BREAK
+      label = l
+    }
+    def setBreak(v: Val, l: IRId): Unit = {
+      Type = CT.BREAK
+      value = v
+      label = l
+    }
+    def setReturn(): Unit = {
+      Type = CT.RETURN
+    }
+    def setReturn(v: Val): Unit = {
+      Type = CT.RETURN
+      value = v
+    }
     def setThrow(e: ValError, sp: Span): Unit = {
       Type = CT.THROW
       error = e

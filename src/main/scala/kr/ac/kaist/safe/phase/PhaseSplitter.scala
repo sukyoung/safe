@@ -15,19 +15,19 @@ import scala.util._
 import kr.ac.kaist.safe.SafeConfig
 
 /**
-  * Can be used to split Phases. A PhaseSplitter has a PhaseObj o. When the Splitter is applied, it passes its given
-  * input i to to the PhaseObj o, and returns a tuple consisting of both the output of o and the original input i.
-  * @param phaseObj The PhaseObj o to which to pass the input and from which to return the output.
-  * @tparam Input The type of input to pass to o.
-  * @tparam InputConfig THe type of the configuration parameter to pass to o.
-  * @tparam Result The type of the result of o.
-  */
+ * Can be used to split Phases. A PhaseSplitter has a PhaseObj o. When the Splitter is applied, it passes its given
+ * input i to to the PhaseObj o, and returns a tuple consisting of both the output of o and the original input i.
+ * @param phaseObj The PhaseObj o to which to pass the input and from which to return the output.
+ * @tparam Input The type of input to pass to o.
+ * @tparam InputConfig THe type of the configuration parameter to pass to o.
+ * @tparam Result The type of the result of o.
+ */
 case class PhaseSplitter[Input, InputConfig <: Config, Result](phaseObj: PhaseObj[Input, InputConfig, Result])
-  extends PhaseObj[Input, InputConfig, (Input, Result)] {
+    extends PhaseObj[Input, InputConfig, (Input, Result)] {
 
   val name: String = "Splitter"
   val help: String = "Passes a given input to a PhaseObject and returns a tuple consisting of the object's " +
-                     "output and the original input."
+    "output and the original input."
   val options = phaseObj.options
 
   val defaultConfig = phaseObj.defaultConfig

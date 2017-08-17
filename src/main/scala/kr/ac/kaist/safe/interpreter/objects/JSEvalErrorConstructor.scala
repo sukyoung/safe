@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
 class JSEvalErrorConstructor(I: Interpreter, proto: JSObject)
     extends JSFunction13(I, proto, "Function", true,

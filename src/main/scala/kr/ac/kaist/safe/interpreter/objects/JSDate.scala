@@ -14,10 +14,10 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 
 class JSDate(
-  _I: Interpreter,
-  _proto: JSObject,
-  _className: String,
-  _extensible: Boolean,
-  _property: PropTable
+  I: Interpreter,
+  proto: JSObject,
+  className: String,
+  extensible: Boolean,
+  property: PropTable
 )
-    extends JSObject(_I, _proto, _className, _extensible, _property)
+    extends JSObject(I, proto, className, extensible, property)

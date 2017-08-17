@@ -15,14 +15,14 @@ import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.util.regexp._
 
 class JSRegExp(
-  _I: Interpreter,
-  _proto: JSObject,
-  _className: String,
-  _extensible: Boolean,
-  _property: PropTable,
-  var _match: (String, Int) => MatchResult,
+  I: Interpreter,
+  proto: JSObject,
+  className: String,
+  extensible: Boolean,
+  property: PropTable,
+  var JSMatch: (String, Int) => MatchResult,
   var pattern: String,
   var flags: String,
   var nCapturingParens: Int
 )
-    extends JSObject(_I, _proto, _className, _extensible, _property)
+    extends JSObject(I, proto, className, extensible, property)

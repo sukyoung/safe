@@ -1178,7 +1178,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                       /*
                        * 10.4.3 Entering Function Code
                        */
-                      IH.call(ast.ast, v1, o2, f)
+                      IH.call(ast.info, v1, o2, f)
                       if (IS.comp.Type == CT.NORMAL) valueToAssign = IP.undefV
                       else if (IS.comp.Type == CT.RETURN) valueToAssign = IS.comp.value
                     case _ =>

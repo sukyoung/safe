@@ -12,12 +12,11 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSMath(_I: Interpreter, _proto: JSObject)
-    extends JSObject(_I, _proto, "Math", false, propTable) {
+class JSMath(I: Interpreter, proto: JSObject)
+    extends JSObject(I, proto, "Math", false, propTable) {
   /*
    * 15.8 The Math Object
    */
@@ -60,24 +59,24 @@ class JSMath(_I: Interpreter, _proto: JSObject)
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: List[EJSNumber] = I.IH.arrayToList(argsObj).map(x => I.IH.toNumber(x))
     val y: EJSNumber = method match {
-      case I.IS.MathAbs => _abs(args.head)
-      case I.IS.MathAcos => _acos(args.head)
-      case I.IS.MathAsin => _asin(args.head)
-      case I.IS.MathAtan => _atan(args.head)
-      case I.IS.MathAtan2 => _atan2(args.head, args(1))
-      case I.IS.MathCeil => _ceil(args.head)
-      case I.IS.MathCos => _cos(args.head)
-      case I.IS.MathExp => _exp(args.head)
-      case I.IS.MathFloor => _floor(args.head)
-      case I.IS.MathLog => _log(args.head)
-      case I.IS.MathMax => _max(args)
-      case I.IS.MathMin => _min(args)
-      case I.IS.MathPow => _pow(args.head, args(1))
-      case I.IS.MathRandom => _random()
-      case I.IS.MathRound => _round(args.head)
-      case I.IS.MathSin => _sin(args.head)
-      case I.IS.MathSqrt => _sqrt(args.head)
-      case I.IS.MathTan => _tan(args.head)
+      case I.IS.MathAbs => JSAbs(args.head)
+      case I.IS.MathAcos => JSAcos(args.head)
+      case I.IS.MathAsin => JSAsin(args.head)
+      case I.IS.MathAtan => JSAtan(args.head)
+      case I.IS.MathAtan2 => JSAtan2(args.head, args(1))
+      case I.IS.MathCeil => JSCeil(args.head)
+      case I.IS.MathCos => JSCos(args.head)
+      case I.IS.MathExp => JSExp(args.head)
+      case I.IS.MathFloor => JSFloor(args.head)
+      case I.IS.MathLog => JSLog(args.head)
+      case I.IS.MathMax => JSMax(args)
+      case I.IS.MathMin => JSMin(args)
+      case I.IS.MathPow => JSMow(args.head, args(1))
+      case I.IS.MathRandom => JSRandom()
+      case I.IS.MathRound => JSRound(args.head)
+      case I.IS.MathSin => JSSin(args.head)
+      case I.IS.MathSqrt => JSSqrt(args.head)
+      case I.IS.MathTan => JSTan(args.head)
     }
     I.IS.comp.setReturn(PVal(IRVal(y)))
   }
@@ -85,26 +84,26 @@ class JSMath(_I: Interpreter, _proto: JSObject)
   /*
    * 15.8.2 Function Properties of the Math Object
    */
-  def _abs(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.abs(x.num))
-  def _acos(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.acos(x.num))
-  def _asin(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.asin(x.num))
-  def _atan(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.atan(x.num))
-  def _atan2(y: EJSNumber, x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.atan2(y.num, x.num))
-  def _ceil(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.ceil(x.num))
-  def _cos(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.cos(x.num))
-  def _exp(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.exp(x.num))
-  def _floor(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.floor(x.num))
-  def _log(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.log(x.num))
-  def _max(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
+  def JSAbs(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.abs(x.num))
+  def JSAcos(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.acos(x.num))
+  def JSAsin(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.asin(x.num))
+  def JSAtan(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.atan(x.num))
+  def JSAtan2(y: EJSNumber, x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.atan2(y.num, x.num))
+  def JSCeil(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.ceil(x.num))
+  def JSCos(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.cos(x.num))
+  def JSExp(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.exp(x.num))
+  def JSFloor(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.floor(x.num))
+  def JSLog(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.log(x.num))
+  def JSMax(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
     xs.foldRight(xs.head.num)((x, y) => scala.math.max(x.num, y))
   )
-  def _min(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
+  def JSMin(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
     xs.foldRight(xs.head.num)((x, y) => scala.math.min(x.num, y))
   )
-  def _pow(x: EJSNumber, y: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.pow(x.num, y.num))
-  def _random(): EJSNumber = I.IH.mkIRNum(scala.math.random)
-  def _round(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.round(x.num))
-  def _sin(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.sin(x.num))
-  def _sqrt(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.sqrt(x.num))
-  def _tan(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.tan(x.num))
+  def JSMow(x: EJSNumber, y: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.pow(x.num, y.num))
+  def JSRandom(): EJSNumber = I.IH.mkIRNum(scala.math.random)
+  def JSRound(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.round(x.num))
+  def JSSin(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.sin(x.num))
+  def JSSqrt(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.sqrt(x.num))
+  def JSTan(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.tan(x.num))
 }

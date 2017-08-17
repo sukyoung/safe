@@ -20,10 +20,9 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
-
 object IRGenerator {
   val errors: ExcLog = new ExcLog
-  def signal(error: SafeError) = errors.signal(error)
+  def signal(error: SafeError): Unit = errors.signal(error)
 
   val dummySpan = NU.dummySpan("forConcolic")
   def freshId(ast: ASTNode): IRTmpId = freshId(ast, "temp")
@@ -31,17 +30,17 @@ object IRGenerator {
     IF.makeTId(ast, NU.freshName(n), false)
   def freshId(span: Span, n: String): IRTmpId =
     IF.makeTId(NU.makeASTNodeInfo(span), NU.freshName(n))
-  def freshId(): IRTmpId = freshId(dummySpan, "temp")
+  def freshId: IRTmpId = freshId(dummySpan, "temp")
 
   val globalName = NU.INTERNAL_GLOBAL
   val global = IF.makeTId(NU.makeASTNodeInfo(NU.dummySpan("global")), globalName, true)
   var ignoreId = 0
-  def varIgn(ast: ASTNode, span: Span) = {
+  def varIgn(ast: ASTNode, span: Span): IRTmpId = {
     ignoreId += 1
     IF.makeTId(ast, NU.ignoreName + ignoreId)
   }
-  def getSpan(n: ASTNode) = n.info.span
-  def getSpan(n: ASTNodeInfo) = n.span
+  def getSpan(n: ASTNode): Span = n.info.span
+  def getSpan(n: ASTNodeInfo): Span = n.span
 
   def setUID[A <: ASTNode](n: A, uid: Long): A = { n.setUID(uid); n }
 
@@ -49,16 +48,16 @@ object IRGenerator {
 
   val argName = "arguments"
 
-  def isObject(ast: ASTNode, lhs: IRId, id: IRId) =
+  def isObject(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
     IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.INTERNAL_IS_OBJ, true), id)
 
-  def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr) =
+  def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr): IRInternalCall =
     IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.INTERNAL_TO_OBJ, true), arg)
 
-  def getBase(ast: ASTNode, lhs: IRId, f: IRId) =
+  def getBase(ast: ASTNode, lhs: IRId, f: IRId): IRInternalCall =
     IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.INTERNAL_GET_BASE, true), f)
 
-  def funexprId(span: Span, lhs: Option[String]) = {
+  def funexprId(span: Span, lhs: Option[String]): Id = {
     val uniq = lhs match {
       case None => NU.funexprName(span)
       case Some(name) => name + NU.funexprName(span)
@@ -77,12 +76,21 @@ object IRGenerator {
 
   def mkExprS(ast: ASTNode, id: IRId, e: IRExpr): IRExprStmt =
     mkExprS(ast, ast.info.span, id, e)
-  def mkExprS(ast: ASTNode, span: Span, id: IRId, e: IRExpr) =
-    if (containsUserId(e)) IF.makeExprStmt(ast, id, e, true)
-    else IF.makeExprStmt(ast, id, e)
+  def mkExprS(
+    ast: ASTNode,
+    span: Span,
+    id: IRId,
+    e: IRExpr
+  ): IRExprStmt =
+    if (containsUserId(e)) {
+      IF.makeExprStmt(ast, id, e, true)
+    } else {
+      IF.makeExprStmt(ast, id, e)
+    }
 
   def expr2ir(e: Expr, env: Env, res: IRId): (List[IRStmt], IRExpr) = e match {
-    case n: Null => (List(), IF.makeNull(n))
+    case n: Null =>
+      (List(), IF.makeNull(n))
 
     case b @ Bool(info, isBool) =>
       (List(), if (isBool) IF.makeBoolIR(true) else IF.makeBoolIR(false))
@@ -104,7 +112,8 @@ object IRGenerator {
       (stmts :+ IF.makeObject(true, e, res, newMembers.map({
         case (_, field) => field
       })), res)
-    case Parenthesized(_, expr) => expr2ir(expr, env, res)
+    case Parenthesized(_, expr) =>
+      expr2ir(expr, env, res)
     case n @ New(info, lhs) =>
       val span = getSpan(info)
       val objspan = getSpan(lhs)
@@ -157,7 +166,13 @@ object IRGenerator {
     case VarRef(info, id) => (List(), IF.makeUId(id.text, id.uniqueName.get, true, id, false))
   }
 
-  def lval2ir(ast: ASTNode, lhs: Expr, env: Env, stmts: List[IRStmt], e: IRExpr): (List[IRStmt], IRExpr) = lhs match {
+  def lval2ir(
+    ast: ASTNode,
+    lhs: Expr,
+    env: Env,
+    stmts: List[IRStmt],
+    e: IRExpr
+  ): (List[IRStmt], IRExpr) = lhs match {
     case Bracket(info, first, index) =>
       val span = getSpan(info)
       val firstspan = getSpan(first)
@@ -175,7 +190,7 @@ object IRGenerator {
       (stmts :+ mkExprS(ast, irid, e), irid)
   }
 
-  def member2ir(m: Member, env: Env, res: IRId) = {
+  def member2ir(m: Member, env: Env, res: IRId): (List[IRStmt], IRField) = {
     val span = getSpan(m.info)
     m match {
       case Field(_, prop, expr) =>
@@ -184,11 +199,18 @@ object IRGenerator {
     }
   }
 
-  def prop2ir(prop: Property) = prop match {
-    case PropId(info, id) => IF.makeNGId(id.text, prop)
+  def prop2ir(prop: Property): IRUserId = prop match {
+    case PropId(info, id) =>
+      IF.makeNGId(id.text, prop)
   }
 
-  def funexpr2ir(e: Expr, env: Env, res: IRId, lhs: Option[String], target: String): (List[IRStmt], IRExpr) = e match {
+  def funexpr2ir(
+    e: Expr,
+    env: Env,
+    res: IRId,
+    lhs: Option[String],
+    target: String
+  ): (List[IRStmt], IRExpr) = e match {
     case FunExpr(info, f @ Functional(_, fds, vds, body, name, params, _)) =>
       if (name.text.equals("")) {
         dummyFtn(0) match {
@@ -209,12 +231,13 @@ object IRGenerator {
       }
   }
 
-  def funapp2ir(e: FunApp,
-                env: Env,
-                res: IRId,
-                target: String): IRStmt = e match {
+  def funapp2ir(
+    e: FunApp,
+    env: Env,
+    res: IRId,
+    target: String
+  ): IRStmt = e match {
     case FunApp(info, v @ VarRef(_, fid), args) =>
-      val fspan = getSpan(v)
       val obj = freshId(v, "obj")
       val arg = freshId(e, argName)
       val fun = freshId(fid, "fun")
@@ -225,7 +248,9 @@ object IRGenerator {
         case (arg, idx) => (newargs.apply(idx), expr2ir(arg, env, newargs.apply(idx)))
       })
       new IRStmtUnit(NF.makeDummyAST("forConcolic"), List(toObject(v, obj, fir)) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ mkExprS(e, tp._1, tp._2._2)) ++
+        results.foldLeft(List[IRStmt]())({
+          case (l, (id, (stmts, irexp))) => l ++ stmts :+ mkExprS(e, id, irexp)
+        }) ++
         List(
           IF.makeArgs(e, arg, newargs.map(p => Some(p))),
           getBase(v, fun, fir),
@@ -247,12 +272,14 @@ object IRGenerator {
       val (ssl, rl) = expr2ir(first, env, obj1)
       val (ssr, rr) = expr2ir(index, env, field1)
       val newargs = args.map(_ => freshId)
-      val results = args.zipWithIndex.map(a => (
-        newargs.apply(a._2),
-        expr2ir(a._1, env, newargs.apply(a._2))
-      ))
+      val results = args.zipWithIndex.map({
+        case (arg, idx) =>
+          (newargs.apply(idx), expr2ir(arg, env, newargs.apply(idx)))
+      })
       new IRStmtUnit(NF.makeDummyAST("forConcolic"), ((ssl :+ toObject(first, obj, rl)) ++ ssr) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ mkExprS(e, tp._1, tp._2._2)) ++
+        results.foldLeft(List[IRStmt]())({
+          case (l, (id, (stmts, irexp))) => l ++ stmts :+ mkExprS(e, id, irexp)
+        }) ++
         List(
           IF.makeArgs(e, arg, newargs.map(p => Some(p))),
           toObject(b, fun, IF.makeLoad(true, e, obj, rr)),
@@ -260,19 +287,20 @@ object IRGenerator {
         ))
 
     case FunApp(info, fun, args) =>
-      val fspan = getSpan(fun)
       val obj1 = freshId(fun, "obj1")
       val obj = freshId(fun, "obj")
       val arg = freshId(e, argName)
       val (ss, r) = funexpr2ir(fun, env, obj1, None, target)
       val newargs = args.map(_ => freshId)
-      val results = args.zipWithIndex.map(a => (
-        newargs.apply(a._2),
-        expr2ir(a._1, env, newargs.apply(a._2))
-      ))
-
+      val results = args.zipWithIndex.map({
+        case (arg, idx) =>
+          (newargs.apply(idx), expr2ir(arg, env, newargs.apply(idx)))
+      })
       new IRStmtUnit(NF.makeDummyAST("forConcolic"), (ss :+ toObject(fun, obj, r)) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ mkExprS(e, tp._1, tp._2._2)) ++
+        results.foldLeft(List[IRStmt]())({
+          case (l, (id, (stmts, irexp))) =>
+            l ++ stmts :+ mkExprS(e, id, irexp)
+        }) ++
         List(
           IF.makeArgs(e, arg, newargs.map(p => Some(p))),
           IF.makeCall(true, e, res, obj, global, arg)

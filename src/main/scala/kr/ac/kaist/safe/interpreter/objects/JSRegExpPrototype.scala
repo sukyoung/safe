@@ -17,8 +17,8 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.regexp._
 
-class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSRegExp(_I, _proto, "RegExp", true, propTable, (s: String, i: Int) => None, "", "", 0) {
+class JSRegExpPrototype(I: Interpreter, proto: JSObject)
+    extends JSRegExp(I, proto, "RegExp", true, propTable, (s: String, i: Int) => None, "", "", 0) {
   def init(): Unit = {
     /*
      * 15.10.6 Properties of the RegExp Prototype Object
@@ -31,13 +31,13 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.RegExpPrototypeExec => _exec(argsObj.get("0"))
-      case I.IS.RegExpPrototypeTest => _test(argsObj.get("0"))
-      case I.IS.RegExpPrototypeToString => _toString()
+      case I.IS.RegExpPrototypeExec => JSExec(argsObj.get("0"))
+      case I.IS.RegExpPrototypeTest => JSTest(argsObj.get("0"))
+      case I.IS.RegExpPrototypeToString => JSToString()
     }
   }
 
-  def _exec(string: Val): Unit = {
+  def JSExec(string: Val): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case r: JSRegExp =>
         val s: String = I.IH.toString(string) // puppy 1
@@ -47,7 +47,7 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
         if (!I.IH.toBoolean(global))
           i = 0
 
-        val (a, lastIdx, idx, length) = JSRegExpSolver.exec(r._match, s, i)
+        val (a, lastIdx, idx, length) = JSRegExpSolver.exec(r.JSMatch, s, i)
 
         val rtn = a match {
           case None => {
@@ -80,13 +80,13 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _test(string: Val): Unit = {
-    _exec(string)
+  def JSTest(string: Val): Unit = {
+    JSExec(string)
     if (I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[JSObject]) I.IS.comp.setReturn(IP.truePV)
     else I.IS.comp.setReturn(IP.falsePV)
   }
 
-  def _toString(): Unit = { // puppy 5
+  def JSToString(): Unit = { // puppy 5
     I.IH.toObject(I.IS.tb) match {
       case r: JSRegExp =>
         val source: String = I.IH.toString(r.get("source"))

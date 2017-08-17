@@ -14,8 +14,8 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
-class JSFunctionConstructor(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv(), true) {
+class JSFunctionConstructor(I: Interpreter, proto: JSObject)
+    extends JSFunction13(I, proto, "Function", true, propTable, IP.undefFtn, EmptyEnv(), true) {
   def init(): Unit = {
     // 15.3.2 Properties of the Function Constructor
     property.put("length", I.IH.numProp(1))

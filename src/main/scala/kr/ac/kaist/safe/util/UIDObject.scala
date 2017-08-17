@@ -16,8 +16,10 @@ class UIDObject {
   private var uid: Long = UIDObject.getUId
   override def hashCode: Int = uid.asInstanceOf[Int] ^ (uid >>> 32).asInstanceOf[Int]
 
-  def getUID = uid
-  def setUID(newUID: Long) = uid = newUID
+  def getUID: Long = uid
+  def setUID(newUID: Long): Unit = {
+    uid = newUID
+  }
 }
 
 object UIDObject {

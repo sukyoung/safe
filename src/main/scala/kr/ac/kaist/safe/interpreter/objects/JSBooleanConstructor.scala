@@ -12,12 +12,11 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 
-class JSBooleanConstructor(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "Function", true,
-      propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
+class JSBooleanConstructor(I: Interpreter, proto: JSObject)
+    extends JSFunction13(I, proto, "Function", true,
+                         propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.6.3 Properties of the Boolean Constructor

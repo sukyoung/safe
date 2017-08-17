@@ -12,11 +12,10 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 
-class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSObject(_I, _proto, "Object", true, propTable) {
+class JSObjectPrototype(I: Interpreter, proto: JSObject)
+    extends JSObject(I, proto, "Object", true, propTable) {
   def init(): Unit = {
     // 15.2.4 Properties of the Object Prototype Object
     property.put("constructor", I.IH.objProp(I.IS.ObjectConstructor))
@@ -39,12 +38,14 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 1)
     method match {
-      case I.IS.ObjectPrototypeToString => _toString()
+      case I.IS.ObjectPrototypeToString =>
+        JStoString()
       /*
       case IS.ObjectPrototypeToLocaleString => toLocaleString()
       case IS.ObjectPrototypeValueOf => valueOf()
       */
-      case I.IS.ObjectPrototypeHasOwnProperty => _hasOwnProperty(args(0))
+      case I.IS.ObjectPrototypeHasOwnProperty =>
+        JSHasOwnProperty(args(0))
       /*
       case IS.ObjectPrototypeIsPrototypeOf => isPrototypeOf(args(0))
       case IS.ObjectPrototypePropertyIsEnumerable => propertyIsEnumerable(args(0))
@@ -57,7 +58,7 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
   ////////////////////////////////////////////////////////////////////////////////
 
   // 15.2.4.2 toString()
-  def _toString(): Unit = I.IS.tb match {
+  def JStoString(): Unit = I.IS.tb match {
     case tb if I.IH.isUndef(tb) => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object Undefined]")))
     case tb if I.IH.isNull(tb) => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object Null]")))
     case tb =>
@@ -76,7 +77,7 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
   */
 
   // 15.2.4.5 hasOwnProperty(v)
-  def _hasOwnProperty(v: Val): Unit = {
+  def JSHasOwnProperty(v: Val): Unit = {
     val p: String = I.IH.toString(v)
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>

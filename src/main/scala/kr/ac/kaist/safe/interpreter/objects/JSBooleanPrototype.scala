@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSBoolean(_I, _proto, "Boolean", true, propTable) {
+class JSBooleanPrototype(I: Interpreter, proto: JSObject)
+    extends JSBoolean(I, proto, "Boolean", true, propTable) {
   def init(): Unit = {
     /*
      * 15.6.3 Properties of the Boolean Constructor
@@ -31,15 +31,15 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.BooleanPrototypeToString => _toString()
-      case I.IS.BooleanPrototypeValueOf => _valueOf()
+      case I.IS.BooleanPrototypeToString => JSToString()
+      case I.IS.BooleanPrototypeValueOf => JSValueOf()
     }
   }
 
   /*
    * 15.6.4.2 Boolean.prototype.toString ( )
    */
-  def _toString(): Unit = {
+  def JSToString(): Unit = {
     I.IS.tb match {
       case PVal(IRVal(EJSBool(b))) =>
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(b.toString)))
@@ -54,7 +54,7 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
   /*
    * 15.6.4.3 Boolean.prototype.valueOf ( )
    */
-  def _valueOf(): Unit = {
+  def JSValueOf(): Unit = {
     I.IS.tb match {
       case b @ PVal(IRVal(EJSBool(_))) =>
         I.IS.comp.setReturn(b)

@@ -14,8 +14,8 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
-class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv()) {
+class JSFunctionPrototype(I: Interpreter, proto: JSObject)
+    extends JSFunction13(I, proto, "Function", true, propTable, IP.undefFtn, EmptyEnv()) {
   def init(): Unit = {
     // 15.3.4 Properties of the Function Prototype Object
     property.put("length", I.IH.numProp(0))
@@ -35,9 +35,9 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 2)
     method match {
-      case I.IS.FunctionPrototypeToString => _toString()
-      case I.IS.FunctionPrototypeApply => _apply(args(0), args(1))
-      case I.IS.FunctionPrototypeCall => _call(args(0), I.IH.arrayToList(argsObj).drop(1))
+      case I.IS.FunctionPrototypeToString => JSToString()
+      case I.IS.FunctionPrototypeApply => JSApply(args(0), args(1))
+      case I.IS.FunctionPrototypeCall => JSCall(args(0), I.IH.arrayToList(argsObj).drop(1))
       //case I.IS.FunctionPrototypeBind => bind(IS, args(0), args(1))
     }
   }
@@ -50,16 +50,18 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
    * The Function prototype object is itself a Function object (its [[Class]] is "Function") that,
    * when invoked, accepts any arguments and returns undefined.
    */
-  override def call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(IP.undefV)
+  override def call(tb: Val, argsObj: JSObject): Unit = {
+    I.IS.comp.setReturn(IP.undefV)
+  }
 
   // 15.3.4.2 toString()
-  def _toString(): Unit = {
+  def JSToString(): Unit = {
     if (!I.IH.isCallable(I.IS.tb)) I.IS.comp.setThrow(IP.typeError, I.IS.span)
     else I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object Function]")))
   }
 
   // 15.3.4.3 Function.prototype.apply (thisArg, argArray)
-  def _apply(thisArg: Val, argArray: Val): Unit = {
+  def JSApply(thisArg: Val, argArray: Val): Unit = {
     if (!I.IH.isCallable(I.IS.tb)) I.IS.comp.setThrow(IP.typeError, I.IS.span)
     else {
       val func: JSFunction = I.IS.tb.asInstanceOf[JSFunction]
@@ -90,16 +92,18 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
             val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
             func.call(thisArg, argsList)
-          case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
+          case _ =>
+            I.IS.comp.setThrow(IP.typeError, I.IS.span)
         }
       }
     }
   }
 
   // 15.3.4.4 Function.prototype.call (thisArg [ , arg1 [ , arg2, ... ] ] )
-  def _call(thisArg: Val, args: List[Val]): Unit = {
-    if (!I.IH.isCallable(I.IS.tb)) I.IS.comp.setThrow(IP.typeError, I.IS.span)
-    else {
+  def JSCall(thisArg: Val, args: List[Val]): Unit = {
+    if (!I.IH.isCallable(I.IS.tb)) {
+      I.IS.comp.setThrow(IP.typeError, I.IS.span)
+    } else {
       val func: JSFunction = I.IS.tb.asInstanceOf[JSFunction]
 
       val prop: PropTable = propTable

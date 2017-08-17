@@ -220,8 +220,8 @@ object ConcolicMain {
           case (cg2, iters, tp, semantics) =>
             val coverage = new Coverage(cfg, semantics)
             coverage.updateFunction(cfg)
-            var fir = IRFilter.doit(ir)
-            fir = IRSimplifier.doit(fir)
+            var fir = new IRFilter(ir).result
+            fir = new IRSimplifier(fir).result
             val instrumentor = new Instrumentor(fir, coverage)
             fir = instrumentor.doit
             val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))

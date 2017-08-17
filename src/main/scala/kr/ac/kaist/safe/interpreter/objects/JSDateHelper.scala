@@ -143,8 +143,8 @@ class JSDateHelper(IH: InterpreterHelper) {
   val minutesPerHour: Int = 60
   val secondsPerMinute: Int = 60
   val msPerSecond: Int = 1000
-  val msPerMinute: Int = 60000 // = _msPerSecond * _secondsPerMinute
-  val msPerHour: Int = 3600000 // = _msPerMinute * _minutesPerHour
+  val msPerMinute: Int = 60000 // = msPerSecond * secondsPerMinute
+  val msPerHour: Int = 3600000 // = msPerMinute * minutesPerHour
   def hourFromTime(t: EJSNumber): EJSNumber = if (IH.isNaN(t)) IP.NaN else
     IH.mkIRNum(modulo(scala.math.floor(t.num / msPerHour), hoursPerDay))
   def minFromTime(t: EJSNumber): EJSNumber = if (IH.isNaN(t)) IP.NaN else
@@ -162,7 +162,12 @@ class JSDateHelper(IH: InterpreterHelper) {
     case n if IH.isZero(n) || IH.isInfinite(n) => n
     case n => IH.mkIRNum(math.signum(n.num) * math.floor(math.abs(n.num)))
   }
-  def makeTime(hour: EJSNumber, min: EJSNumber, sec: EJSNumber, ms: EJSNumber): EJSNumber =
+  def makeTime(
+    hour: EJSNumber,
+    min: EJSNumber,
+    sec: EJSNumber,
+    ms: EJSNumber
+  ): EJSNumber =
     if (IH.isNaN(hour) || IH.isNaN(min) || IH.isNaN(sec) || IH.isNaN(ms)) IP.NaN
     else if (IH.isInfinite(hour) || IH.isInfinite(min) || IH.isInfinite(sec) || IH.isInfinite(ms)) IP.NaN
     else {
@@ -173,7 +178,14 @@ class JSDateHelper(IH: InterpreterHelper) {
   /*
    * 15.9.1.12 MakeDay(year, month, date)
    */
-  def lessYMD(y1: EJSNumber, m1: EJSNumber, d1: EJSNumber, y2: EJSNumber, m2: EJSNumber, d2: EJSNumber): Boolean =
+  def lessYMD(
+    y1: EJSNumber,
+    m1: EJSNumber,
+    d1: EJSNumber,
+    y2: EJSNumber,
+    m2: EJSNumber,
+    d2: EJSNumber
+  ): Boolean =
     if (y1.num != y2.num) y1.num < y2.num
     else if (m1.num != m2.num) m1.num < m2.num
     else d1.num < d2.num

@@ -12,12 +12,12 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{ InterpreterHelper => IH, InterpreterPredefine => IP }
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSNumber(_I, _proto, "Number", true, propTable) {
+class JSNumberPrototype(I: Interpreter, proto: JSObject)
+    extends JSNumber(I, proto, "Number", true, propTable) {
   def init(): Unit = {
     /*
      * 15.7.4 Properties of the Number Prototype Object
@@ -35,18 +35,18 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.NumberPrototypeToString => argsObj.get("length") match {
-        case PVal(IRVal(n: EJSNumber)) if n.num == 0 => _toString(None)
-        case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => _toString(Some(argsObj.get("0")))
+        case PVal(IRVal(n: EJSNumber)) if n.num == 0 => JSToString(None)
+        case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => JSToString(Some(argsObj.get("0")))
       }
       // 15.7.4.3
-      case I.IS.NumberPrototypeValueOf => _valueOf()
+      case I.IS.NumberPrototypeValueOf => JSValueOf()
       // 15.7.4.5
       // 15.7.4.6
       // 15.7.4.7
     }
   }
 
-  def _toString(radix: Option[Val]): Unit = {
+  def JSToString(radix: Option[Val]): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSNumber =>
         val r: Int = radix match {
@@ -79,7 +79,7 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _valueOf(): Unit = {
+  def JSValueOf(): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSNumber => I.IS.comp.setReturn(o.get(IP.pvpn))
       case o: JSObject => I.IS.comp.setThrow(IP.typeError, I.IS.span)

@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 
-class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSArray(_I, _proto, "Array", true, propTable) {
+class JSArrayPrototype(I: Interpreter, proto: JSObject)
+    extends JSArray(I, proto, "Array", true, propTable) {
   def init(): Unit = {
     /*
      * 15.4.4 Properties of the Array Prototype Object
@@ -45,22 +45,22 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
    */
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.ArrayPrototypeToString => _toString(argsObj)
+      case I.IS.ArrayPrototypeToString => JSToString(argsObj)
       // 15.4.4.3
-      case I.IS.ArrayPrototypeConcat => _concat(I.IH.arrayToList(argsObj))
-      case I.IS.ArrayPrototypeJoin => _join(argsObj.get("0"))
-      case I.IS.ArrayPrototypePop => _pop()
-      case I.IS.ArrayPrototypePush => _push(I.IH.arrayToList(argsObj))
-      case I.IS.ArrayPrototypeReverse => _reverse()
+      case I.IS.ArrayPrototypeConcat => JSConcat(I.IH.arrayToList(argsObj))
+      case I.IS.ArrayPrototypeJoin => JSJoin(argsObj.get("0"))
+      case I.IS.ArrayPrototypePop => JSPop()
+      case I.IS.ArrayPrototypePush => JSPush(I.IH.arrayToList(argsObj))
+      case I.IS.ArrayPrototypeReverse => JSReverse()
       // 15.4.4.9
-      case I.IS.ArrayPrototypeSlice => _slice(argsObj.get("0"), argsObj.get("1"))
-      case I.IS.ArrayPrototypeSort => _sort(argsObj.get("0"))
-      case I.IS.ArrayPrototypeSplice => _splice(argsObj.get("0"), argsObj.get("1"), I.IH.arrayToList(argsObj).drop(2))
+      case I.IS.ArrayPrototypeSlice => JSSlice(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.ArrayPrototypeSort => JSSort(argsObj.get("0"))
+      case I.IS.ArrayPrototypeSplice => JSSplice(argsObj.get("0"), argsObj.get("1"), I.IH.arrayToList(argsObj).drop(2))
       // 15.4.4.13 - 15.4.4.22
     }
   }
 
-  def _toString(argsObj: JSObject): Unit = {
+  def JSToString(argsObj: JSObject): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case array: JSObject =>
         val func: JSFunction = array.get("join") match {
@@ -77,7 +77,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _concat(args: List[Val]): Unit = {
+  def JSConcat(args: List[Val]): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)
@@ -110,7 +110,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _join(separator: Val): Unit = {
+  def JSJoin(separator: Val): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val len = I.IH.toUint32(o.get("length"))
@@ -134,7 +134,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _pop(): Unit = {
+  def JSPop(): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val len = I.IH.toUint32(o.get("length"))
@@ -153,7 +153,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _push(args: List[Val]): Unit = {
+  def JSPush(args: List[Val]): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         var n = I.IH.toUint32(o.get("length"))
@@ -167,7 +167,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _reverse(): Unit = {
+  def JSReverse(): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val len: Long = I.IH.toUint32(o.get("length"))
@@ -195,7 +195,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _slice(start: Val, end: Val): Unit = {
+  def JSSlice(start: Val, end: Val): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)
@@ -223,7 +223,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _sort(comparefn: Val): Unit = {
+  def JSSort(comparefn: Val): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSArray =>
         val len = I.IH.toUint32(o.get("length"))
@@ -315,7 +315,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _splice(start: Val, deleteCount: Val, items: List[Val]): Unit = {
+  def JSSplice(start: Val, deleteCount: Val, items: List[Val]): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)

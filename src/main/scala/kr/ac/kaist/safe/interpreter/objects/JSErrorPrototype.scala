@@ -14,8 +14,8 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
-class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSErrorObject(_I, _proto, "Error", true, propTable) {
+class JSErrorPrototype(I: Interpreter, proto: JSObject)
+    extends JSErrorObject(I, proto, "Error", true, propTable) {
   def init(): Unit = {
     /*
      * 15.11.4 Properties of the Error Prototype Object
@@ -28,11 +28,11 @@ class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.ErrorPrototypeToString => _toString()
+      case I.IS.ErrorPrototypeToString => JSToString()
     }
   }
 
-  def _toString(): Unit = {
+  def JSToString(): Unit = {
     I.IS.tb match {
       case o: JSObject =>
         val name: String = o.get("name") match {
@@ -43,10 +43,15 @@ class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
           case msg if I.IH.isUndef(msg) => ""
           case msg => I.IH.toString(msg)
         }
-        if (name == "") I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(msg)))
-        else if (msg == "") I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(name)))
-        else I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(name + ": " + msg)))
-      case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
+        if (name == "") {
+          I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(msg)))
+        } else if (msg == "") {
+          I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(name)))
+        } else {
+          I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(name + ": " + msg)))
+        }
+      case _ =>
+        I.IS.comp.setThrow(IP.typeError, I.IS.span)
     }
   }
 }

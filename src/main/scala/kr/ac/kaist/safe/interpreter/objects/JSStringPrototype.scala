@@ -20,8 +20,8 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.regexp._
 
-class JSStringPrototype(_I: Interpreter, _proto: JSObject)
-    extends JSString(_I, _proto, "String", true, propTable) {
+class JSStringPrototype(I: Interpreter, proto: JSObject)
+    extends JSString(I, proto, "String", true, propTable) {
   def init(): Unit = {
     /*
      * 15.5.4 Properties of the String Prototype Object
@@ -51,21 +51,21 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
 
   override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.StringPrototypeToString => _toString()
-      case I.IS.StringPrototypeValueOf => _valueOf()
-      case I.IS.StringPrototypeCharAt => _charAt(argsObj.get("0"))
-      case I.IS.StringPrototypeCharCodeAt => _charCodeAt(argsObj.get("0"))
-      case I.IS.StringPrototypeConcat => _concat(I.IH.arrayToList(argsObj))
+      case I.IS.StringPrototypeToString => JSToString()
+      case I.IS.StringPrototypeValueOf => JSValueOf()
+      case I.IS.StringPrototypeCharAt => JSCharAt(argsObj.get("0"))
+      case I.IS.StringPrototypeCharCodeAt => JSCharCodeAt(argsObj.get("0"))
+      case I.IS.StringPrototypeConcat => JSConcat(I.IH.arrayToList(argsObj))
       // 15.5.4.7
       // 15.5.4.8
       // 15.5.4.9
-      case I.IS.StringPrototypeMatch => _match(argsObj.get("0"))
-      case I.IS.StringPrototypeReplace => _replace(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.StringPrototypeMatch => JSMatch(argsObj.get("0"))
+      case I.IS.StringPrototypeReplace => JSReplace(argsObj.get("0"), argsObj.get("1"))
       // 15.5.4.12
-      case I.IS.StringPrototypeSlice => _slice(argsObj.get("0"), argsObj.get("1"))
-      case I.IS.StringPrototypeSplit => _split(argsObj.get("0"), argsObj.get("1"))
-      case I.IS.StringPrototypeSubstring => _substring(argsObj.get("0"), argsObj.get("1"))
-      case I.IS.StringPrototypeToLowerCase => _toLowerCase()
+      case I.IS.StringPrototypeSlice => JSSlice(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.StringPrototypeSplit => JSSplit(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.StringPrototypeSubstring => JSSubstring(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.StringPrototypeToLowerCase => JSToLowerCase()
       // 15.5.4.17
       // 15.5.4.18
       // 15.5.4.19
@@ -73,7 +73,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _toString(): Unit = {
+  def JSToString(): Unit = {
     // Equivalent to valueOf
     I.IH.toObject(I.IS.tb) match {
       case o: JSString =>
@@ -84,7 +84,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _valueOf(): Unit = {
+  def JSValueOf(): Unit = {
     // Equivalent to toString
     I.IH.toObject(I.IS.tb) match {
       case o: JSString => I.IS.comp.setReturn(o.get(IP.pvpn))
@@ -93,7 +93,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _charAt(pos: Val): Unit = {
+  def JSCharAt(pos: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -107,7 +107,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _charCodeAt(pos: Val): Unit = {
+  def JSCharCodeAt(pos: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -121,7 +121,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _concat(args: List[Val]): Unit = {
+  def JSConcat(args: List[Val]): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -131,8 +131,8 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  // _replace method has a code clone of _match method.
-  def _match(regexp: Val): Unit = {
+  // JSReplace method has a code clone of JSMatch method.
+  def JSMatch(regexp: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -146,7 +146,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           // TODO: Env?
           val oldTb: Val = I.IS.tb
           I.IS.tb = rx
-          val result: Unit = I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
+          val result: Unit = I.IS.RegExpPrototype.JSExec(PVal(I.IH.mkIRStrIR(s)))
           I.IS.tb = oldTb
           result
         } else {
@@ -160,7 +160,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             // TODO: Env?
             val oldTb: Val = I.IS.tb
             I.IS.tb = rx
-            I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
+            I.IS.RegExpPrototype.JSExec(PVal(I.IH.mkIRStrIR(s)))
             if (I.IS.comp.Type == CT.RETURN) {
               I.IS.comp.value match {
                 case PVal(IRVal(EJSNull)) =>
@@ -201,8 +201,8 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  // _replace method has a code clone of _match method.
-  def _replace(searchValue: Val, replaceValue: Val): Unit = {
+  // JSReplace method has a code clone of JSMatch method.
+  def JSReplace(searchValue: Val, replaceValue: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -213,7 +213,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
               // TODO: Env?
               val oldTb: Val = I.IS.tb
               I.IS.tb = sv
-              I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
+              I.IS.RegExpPrototype.JSExec(PVal(I.IH.mkIRStrIR(s)))
               if (I.IS.comp.Type == CT.RETURN) {
                 I.IS.comp.value match {
                   case PVal(IRVal(EJSNull)) =>
@@ -245,7 +245,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                 // TODO: Env?
                 val oldTb: Val = I.IS.tb
                 I.IS.tb = sv
-                I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
+                I.IS.RegExpPrototype.JSExec(PVal(I.IH.mkIRStrIR(s)))
                 if (I.IS.comp.Type == CT.RETURN) {
                   I.IS.comp.value match {
                     case PVal(IRVal(EJSNull)) =>
@@ -358,7 +358,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _slice(start: Val, end: Val): Unit = {
+  def JSSlice(start: Val, end: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -376,10 +376,10 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _split(separator: Val, limit: Val): Unit = {
+  def JSSplit(separator: Val, limit: Val): Unit = {
     def splitMatch(s: String, q: Int, r: Any): MatchResult = {
       r match {
-        case r: JSRegExp => r._match(s, q)
+        case r: JSRegExp => r.JSMatch(s, q)
         case r: String =>
           val rl: Int = r.length
           val sl: Int = s.length
@@ -478,7 +478,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _substring(start: Val, end: Val): Unit = {
+  def JSSubstring(start: Val, end: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
@@ -495,7 +495,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def _toLowerCase(): Unit = {
+  def JSToLowerCase(): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
       case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)

@@ -144,7 +144,10 @@ object DefaultValue extends AbsValueUtil {
       typeKindsSet.filter({
         case (value, _) =>
           !value.isBottom
-      }).map(_._2)
+      }).map({
+        case (_, default) =>
+          default
+      })
     }
 
     def getThis(h: AbsHeap): AbsLoc = {

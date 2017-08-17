@@ -21,19 +21,19 @@ object ConstraintForm {
   ): ConstraintForm = {
     val newConstraintForm = new ConstraintForm
     id match {
-      case Some(_id) =>
-        newConstraintForm.lhs = _id
+      case Some(id) =>
+        newConstraintForm.lhs = id
         newConstraintForm.op = Some("=")
         val tmp = ConstraintForm.makeConstraint(None, left, operator, right)
         newConstraintForm.rhs = Some(tmp)
       // Conditional information
       case None => left match {
-        case Some(_lhs) =>
-          newConstraintForm.lhs = _lhs
+        case Some(lhs) =>
+          newConstraintForm.lhs = lhs
           newConstraintForm.op = operator
           newConstraintForm.rhs = right match {
-            case Some(_right) =>
-              val tmp = ConstraintForm.makeConstraint(None, Some(_right), None, None)
+            case Some(right) =>
+              val tmp = ConstraintForm.makeConstraint(None, Some(right), None, None)
               Some(tmp)
             case None => None
           }
@@ -57,7 +57,7 @@ class ConstraintForm() {
   def objectRelated: Boolean = {
     if (lhs == null) return false
     val left = lhs.isObject || lhs.isNull
-    val right = rhs.map(_.objectRelated).getOrElse(false)
+    val right = rhs.exists(_.objectRelated)
     left || right
   }
 
@@ -65,7 +65,7 @@ class ConstraintForm() {
   def setBranchConstraint(): Unit = branchConstraint = true
   def isBranchConstraint: Boolean = branchConstraint
 
-  def getSymbolicValues(): List[SymbolicValue] = {
+  def getSymbolicValues: List[SymbolicValue] = {
     val result = List(getLhs)
     getRhs match {
       case Some(x) => result ::: x.getSymbolicValues

@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
-import kr.ac.kaist.safe.util.{ EJSType, EJSCompletionType => CT, NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ EJSType, EJSCompletionType => CT }
 
 /*
  * 8.6.2 Object Internal Properties and Methods
@@ -24,11 +24,11 @@ import kr.ac.kaist.safe.util.{ EJSType, EJSCompletionType => CT, NodeUtil => NU 
  *     [[DefaultValue]], [[DefineOwnProperty]]
  */
 case class JSObject(
-    val I: Interpreter,
-    var proto: JSObject,
-    var className: String,
-    var extensible: Boolean,
-    var property: PropTable
+  I: Interpreter,
+  var proto: JSObject,
+  var className: String,
+  var extensible: Boolean,
+  var property: PropTable
 ) extends Val {
   ////////////////////////////////////////////////////////////////////////////////
   // Basic
@@ -237,19 +237,23 @@ case class JSObject(
   def delete(x: PName, b: Boolean): ValError = {
     val desc = getOwnProperty(x)
     // 2. If desc is undefined, then return true.
-    if (desc == null) return IP.truePV
-    else if (desc.isConfigurable) {
+    if (desc == null) {
+      IP.truePV
+    } else if (desc.isConfigurable) {
       property.remove(x)
-      return IP.truePV
-    } else if (b) IP.typeError
-    else IP.falsePV
+      IP.truePV
+    } else if (b) {
+      IP.typeError
+    } else {
+      IP.falsePV
+    }
   }
 
   /*
    * 8.12.8 [[DefaultValue]](hint)
    */
   def defaultValue(hint: String): PVal = {
-    def getString(): Option[PVal] = {
+    def getString: Option[PVal] = {
       val toString: Val = get("toString")
       if (I.IH.isCallable(toString)) {
         val args: JSObject = I.IS.ArrayConstructor.construct(Nil)
@@ -262,7 +266,7 @@ case class JSObject(
         else None
       } else None
     }
-    def getValue(): Option[PVal] = {
+    def getValue: Option[PVal] = {
       val valueOf = get("valueOf")
       if (I.IH.isCallable(valueOf)) {
         val args: JSObject = I.IS.ArrayConstructor.construct(Nil)
