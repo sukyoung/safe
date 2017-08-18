@@ -281,8 +281,7 @@ class ConstraintExtractor {
             Some("==")
           }
           // TODO: It should be "true" and "Boolean" instead of "0" and "Number"
-          val tmp = new SymbolicValue
-          tmp.makeSymbolicValue("0", "Number")
+          val tmp = new SymbolicValue("0", "Number")
           val cond = ConstraintForm.makeConstraint(None, Some(lhs), operator, Some(tmp))
           cond.setBranchConstraint()
           Some(cond)

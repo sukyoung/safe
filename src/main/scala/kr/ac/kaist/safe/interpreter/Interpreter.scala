@@ -916,14 +916,13 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               }
               val c: Option[SymbolicValue] = walkExpr(args(1).asInstanceOf[IRId]) match {
                 case v: Val =>
-                  var x = new SymbolicValue
-                  v match {
-                    case PVal(IRVal(EJSUndef)) => x.makeSymbolicValueFromConcrete("Undefined")
-                    case PVal(IRVal(EJSNull)) => x.makeSymbolicValueFromConcrete("Null")
-                    case PVal(IRVal(_: EJSBool)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                    case PVal(IRVal(_: EJSNumber)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                    case PVal(IRVal(_: EJSString)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                    case o: JSObject => x.makeSymbolicValueFromConcrete("Object")
+                  val x = v match {
+                    case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                    case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                    case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                    case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                    case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                    case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                   }
                   Some(x)
                 case _: JSError => None
@@ -932,28 +931,26 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case IRBin(_, first, op, second) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
-                      var v1 = new SymbolicValue
-                      v match {
-                        case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
-                        case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")
-                        case PVal(IRVal(_: EJSBool)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                        case PVal(IRVal(_: EJSNumber)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                        case PVal(IRVal(_: EJSString)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                        case o: JSObject => v1.makeSymbolicValueFromConcrete("Object")
+                      val v1 = v match {
+                        case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                        case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                        case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                        case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                        case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                        case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                       }
                       Some(v1)
                     case _: JSError => None
                   }
                   val c2: Option[SymbolicValue] = walkExpr(second) match {
                     case v: Val =>
-                      val v2 = new SymbolicValue
-                      v match {
-                        case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
-                        case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
-                        case PVal(IRVal(_: EJSBool)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                        case PVal(IRVal(_: EJSNumber)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                        case PVal(IRVal(_: EJSString)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                        case o: JSObject => v2.makeSymbolicValueFromConcrete("Object")
+                      val v2 = v match {
+                        case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                        case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                        case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                        case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                        case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                        case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                       }
                       Some(v2)
                     case _: JSError => None
@@ -966,14 +963,13 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               val env = SH.getEnvironment(lhs)
               val c: Option[SymbolicValue] = walkExpr(args.head) match {
                 case v: Val =>
-                  var x = new SymbolicValue
-                  v match {
-                    case PVal(IRVal(EJSUndef)) => x.makeSymbolicValueFromConcrete("Undefined")
-                    case PVal(IRVal(EJSNull)) => x.makeSymbolicValueFromConcrete("Null")
-                    case PVal(IRVal(_: EJSBool)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                    case PVal(IRVal(_: EJSNumber)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                    case PVal(IRVal(_: EJSString)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                    case o: JSObject => x.makeSymbolicValueFromConcrete("Object")
+                  val x = v match {
+                    case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                    case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                    case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                    case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                    case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                    case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                   }
                   Some(x)
                 case _: JSError => None
@@ -982,28 +978,26 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case IRBin(_, first, op, second) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
-                      var v1 = new SymbolicValue
-                      v match {
-                        case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
-                        case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")
-                        case PVal(IRVal(_: EJSBool)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                        case PVal(IRVal(_: EJSNumber)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                        case PVal(IRVal(_: EJSString)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                        case o: JSObject => v1.makeSymbolicValueFromConcrete("Object")
+                      val v1 = v match {
+                        case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                        case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                        case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                        case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                        case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                        case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                       }
                       Some(v1)
                     case _: JSError => None
                   }
                   val c2: Option[SymbolicValue] = walkExpr(second) match {
                     case v: Val =>
-                      var v2 = new SymbolicValue
-                      v match {
-                        case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
-                        case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
-                        case PVal(IRVal(_: EJSBool)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                        case PVal(IRVal(_: EJSNumber)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                        case PVal(IRVal(_: EJSString)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                        case o: JSObject => v2.makeSymbolicValueFromConcrete("Object")
+                      val v2 = v match {
+                        case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                        case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                        case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                        case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                        case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                        case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                       }
                       Some(v2)
                     case _: JSError => None
@@ -1022,28 +1016,26 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case IRBin(_, first, op, second) =>
                   val c1: Option[SymbolicValue] = walkExpr(first) match {
                     case v: Val =>
-                      val v1 = new SymbolicValue
-                      v match {
-                        case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
-                        case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")
-                        case PVal(IRVal(_: EJSBool)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                        case PVal(IRVal(_: EJSNumber)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                        case PVal(IRVal(_: EJSString)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                        case o: JSObject => v1.makeSymbolicValueFromConcrete("Object")
+                      val v1 = v match {
+                        case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                        case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                        case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                        case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                        case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                        case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                       }
                       Some(v1)
                     case _: JSError => None
                   }
                   val c2: Option[SymbolicValue] = walkExpr(second) match {
                     case v: Val =>
-                      var v2 = new SymbolicValue
-                      v match {
-                        case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
-                        case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
-                        case PVal(IRVal(_: EJSBool)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
-                        case PVal(IRVal(_: EJSNumber)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
-                        case PVal(IRVal(_: EJSString)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
-                        case o: JSObject => v2.makeSymbolicValueFromConcrete("Object")
+                      val v2 = v match {
+                        case PVal(IRVal(EJSUndef)) => SymbolicValue.makeSymbolicValueFromConcrete("Undefined")
+                        case PVal(IRVal(EJSNull)) => SymbolicValue.makeSymbolicValueFromConcrete("Null")
+                        case PVal(IRVal(_: EJSBool)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                        case PVal(IRVal(_: EJSNumber)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                        case PVal(IRVal(_: EJSString)) => SymbolicValue.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                        case o: JSObject => SymbolicValue.makeSymbolicValueFromConcrete("Object")
                       }
                       Some(v2)
                     case _: JSError => None

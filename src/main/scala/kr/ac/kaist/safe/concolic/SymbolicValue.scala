@@ -11,60 +11,67 @@
 
 package kr.ac.kaist.safe.concolic
 
-class SymbolicValue {
-  var value: String = null
-  def getValue: String = value
-  // Types from analysis part
-  var types: List[String] = null
+/**
+ *
+ * @param optValue
+ * @param types Types from analysis part
+ * @param optInstance Types from execution part
+ */
+class SymbolicValue(
+  private var optValue: Option[String],
+  private var types: List[String],
+  private var optInstance: Option[String]) {
+  def getValue: Option[String] = optValue
   def getTypes: List[String] = types
-  // Types from execution part
-  var instance: String = null
-  def setInstance(newInstance: String): Unit = instance = newInstance
-  def getInstance: String = instance
-  var fromConcrete: Boolean = false
+  def setInstance(newInstance: String): Unit = optInstance = Some(newInstance)
+  def getInstance: Option[String] = optInstance
+  def fromConcrete: Boolean = optInstance.isDefined
 
-  def makeSymbolicValue(newType: String): Unit = types = List(newType)
-  def makeSymbolicValue(newTypes: List[String]): Unit = types = newTypes
-  def makeSymbolicValue(newValue: String, newType: String): Unit = {
-    value = newValue
-    types = List(newType)
-  }
-  def makeSymbolicValue(newValue: String, newTypes: List[String]): Unit = {
-    value = newValue
-    types = newTypes
-  }
-  def makeSymbolicValueFromConcrete(newType: String): Unit = {
-    types = List(newType)
-    instance = newType
-    fromConcrete = true
-  }
-  def makeSymbolicValueFromConcrete(newValue: String, newType: String): Unit = {
-    value = newValue
-    types = List(newType)
-    instance = newType
-    fromConcrete = true
+  def this(value: String, typ: String) = {
+    this(Some(value), List(typ), None)
   }
 
-  def isObject: Boolean = {
-    if (instance == null)
+  def this(value: String, types: List[String]) = {
+    this(Some(value), types, None)
+  }
+
+  def isObject: Boolean = optInstance match {
+    case Some("Object") =>
+      true
+    case _ =>
       false
-    else
-      instance.equals("Object")
   }
-  def isNull: Boolean = {
-    if (instance == null)
+  def isNull: Boolean = optInstance match {
+    case Some("Null") =>
+      true
+    case _ =>
       false
-    else
-      instance.equals("Null")
   }
 
-  def isInput(): Boolean = {
-    if (value == null)
-      return false
-    value.contains("i") || value.contains("this")
+  def isInput(): Boolean = optValue match {
+    case Some(value) =>
+      value.contains("i") || value.contains("this")
+    case None =>
+      false
   }
 
-  override def toString: String = value
+  override def toString: String = optValue match {
+    case Some(value) =>
+      value
+    case None =>
+      "null"
+  }
   override def equals(another: Any): Boolean = this.toString == another.asInstanceOf[SymbolicValue].toString
+}
+
+object SymbolicValue {
+
+  def makeSymbolicValueFromConcrete(typ: String): SymbolicValue = {
+    new SymbolicValue(None, List(typ), Some(typ))
+  }
+
+  def makeSymbolicValueFromConcrete(value: String, typ: String): SymbolicValue = {
+    new SymbolicValue(Some(value), List(typ), Some(typ))
+  }
 }
 

@@ -63,8 +63,8 @@ class ConcolicSolver(coverage: Coverage) {
     for (const <- initialConstraints) {
       if (const.objectRelated) {
         val op = const.getOp.get
-        val lhs = const.getLhs.getValue
-        val rhs = const.getRhs.get.getLhs.getValue
+        val lhs = const.getLhs.getValue.get
+        val rhs = const.getRhs.get.getLhs.getValue.get
         if (rhs.contains("i") || rhs.contains("this"))
           objectTracking += rhs -> List(lhs)
       }
@@ -82,16 +82,16 @@ class ConcolicSolver(coverage: Coverage) {
               if (lhs.fromConcrete || rhs.fromConcrete) {
                 if (lhs.isNull)
                   // rhs should be object in this case
-                  temp += rhs.getValue -> "null"
+                  temp += rhs.getValue.orNull -> "null"
                 else if (rhs.isNull)
-                  temp += lhs.getValue -> "null"
+                  temp += lhs.getValue.orNull -> "null"
               } // Tracking
               else {
                 if (op.charAt(0) == '=' && op.length <= 1) {
-                  if (rhs.getValue.contains("s")) {
+                  if (rhs.getValue.get.contains("s")) {
                     for (k <- objectTracking.keySet)
-                      if (objectTracking(k).contains(rhs.getValue))
-                        objectTracking += rhs.getValue -> (objectTracking(k) :+ lhs.getValue)
+                      if (objectTracking(k).contains(rhs.getValue.get))
+                        objectTracking += rhs.getValue.orNull -> (objectTracking(k) :+ lhs.getValue.get)
                   }
                 }
               }
@@ -100,9 +100,9 @@ class ConcolicSolver(coverage: Coverage) {
                 if (lhs.fromConcrete || rhs.fromConcrete) {
                   if (lhs.isNull)
                     // rhs should be object in this case
-                    temp += rhs.getValue -> "!null"
+                    temp += rhs.getValue.orNull -> "!null"
                   else if (rhs.isNull)
-                    temp += lhs.getValue -> "!null"
+                    temp += lhs.getValue.orNull -> "!null"
                 } else
                   throw new ConcolicError("Wrong constraint form")
           }
@@ -139,7 +139,7 @@ class ConcolicSolver(coverage: Coverage) {
       val arg = NF.makeId(dummySpan, fresh, fresh)
       //TODO: Handle multiple type
       val thisNames = function.getThisConstructors
-      result += "this" -> (arg, assignObject(true, 0, arg, thisNames(0), function.getThisProperties, primitiveResult, true))
+      result += "this" -> (arg, assignObject(true, 0, arg, thisNames.head, function.getThisProperties, primitiveResult, true))
     }
     for (i <- 0 until num by 1) {
       val fresh = NU.freshName("a")
@@ -157,7 +157,7 @@ class ConcolicSolver(coverage: Coverage) {
             //TODO: Handle multiple type
             val constructors = function.getObjectConstructors(i)
             if (constructors.nonEmpty)
-              stmts = assignObject(false, i, arg, constructors(0), props, primitiveResult, true)
+              stmts = assignObject(false, i, arg, constructors.head, props, primitiveResult, true)
 
             result += "i" + i -> (arg, stmts)
           }
@@ -207,12 +207,12 @@ class ConcolicSolver(coverage: Coverage) {
 
     if (constructor == "Array") {
       val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.text, arg.text))
-      var lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, "length", "length"))
+      val lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, "length", "length"))
       var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(props.head))
       stmts = stmts :+ NF.makeExprStmt(dummySpan, NF.makeAssignOpApp(dummySpan, lhs,
         NF.makeOp(dummySpan, "="),
         rhs))
-      for (p <- 0 until props(0).toInt) {
+      for (p <- 0 until props.head.toInt) {
         val elem = NF.makeBracket(dummySpan, ref, NF.makeIntLiteral(dummySpan, new BigInteger(p.toString)))
         rhs = NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(10).toString))
         if (res.contains("i" + argnum + "." + p))
@@ -229,7 +229,7 @@ class ConcolicSolver(coverage: Coverage) {
         if (isThis)
           key = "this."
         if (res.contains(key + p) && coverage.isNecessary(key + p)) {
-          var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(res(key + p).toString))
+          val rhs = NF.makeIntLiteral(dummySpan, new BigInteger(res(key + p).toString))
           list :+ NF.makeExprStmt(
             dummySpan,
             NF.makeAssignOpApp(
@@ -271,7 +271,7 @@ class ConcolicSolver(coverage: Coverage) {
                   var addstmt: List[Stmt] = assignEmptyObject(arg)
                   val temp = constructorFunction.getObjectConstructors(n)
                   if (temp.nonEmpty) {
-                    val argumentConstructor = temp(0)
+                    val argumentConstructor = temp.head
                     // To prevent recursive generation, put a limit.
                     val hasArguments =
                       if (argumentConstructor == constructor) false
@@ -290,7 +290,7 @@ class ConcolicSolver(coverage: Coverage) {
         case _ =>
       }
     }
-    return (None, additional)
+    (None, additional)
   }
 
   def printResult(function: FunctionInfo, num: Int): Unit = {
@@ -302,9 +302,9 @@ class ConcolicSolver(coverage: Coverage) {
             System.out.println("%6s => %6s".format("i" + i, "null"))
           else {
             if (i < primitiveResult.size) {
-              var constructors = function.getObjectConstructors(i)
-              if (constructors(0) == "Array") {
-                for (p <- 0 until props(0).toInt)
+              val constructors = function.getObjectConstructors(i)
+              if (constructors.head == "Array") {
+                for (p <- 0 until props.head.toInt)
                   System.out.println("%6s => %6s".format("i" + i + "." + p, primitiveResult("i" + i + "." + p).toString))
               } else {
                 for (p <- props)
