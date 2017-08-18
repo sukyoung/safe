@@ -123,7 +123,7 @@ class JSArray(
       // a. Let index be ToUint32(P).
       val index = I.IH.toUint32(PVal(I.IH.mkIRStrIR(P)))
       // b. Reject if index >= oldLen and oldLenDesc.[[Writable]] is false.
-      if (!(index >= oldLen && oldLenDesc.writable.get)) {
+      if (index >= oldLen && (!oldLenDesc.writable.get)) {
         if (Throw) {
           return IP.typeError
         } else {
