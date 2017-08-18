@@ -120,13 +120,13 @@ class SymbolicHelper(I: Interpreter) {
                 if (constructors.head == "Array") {
                   val length: Int = props.head.toInt
                   for (p <- 0 until length) {
-                    val propValue = new SymbolicValue(obj2str(sv.getValue, p.toString), "Number")
+                    val propValue = new SymbolicValue(obj2str(sv.getValue.get, p.toString), "Number")
                     symbolicMemory(obj2str(id.uniqueName, p.toString)) = propValue
                   }
                 } else {
                   for (prop <- props) {
                     // Suppose types of properties could be only 'Number'
-                    val propValue = new SymbolicValue(obj2str(sv.getValue, prop), "Number")
+                    val propValue = new SymbolicValue(obj2str(sv.getValue.get, prop), "Number")
                     symbolicMemory(obj2str(id.uniqueName, prop)) = propValue
                   }
                 }

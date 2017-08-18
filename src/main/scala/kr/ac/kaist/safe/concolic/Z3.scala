@@ -42,11 +42,11 @@ final class Z3 {
       mutConslist = mutConslist.drop(1)
       if (constraint.getOp.isDefined) {
         val op: String = constraint.getOp.get
-        val lhs: String = constraint.getLhs.getValue
+        val lhs: String = constraint.getLhs.getValue.get
         exprMap.put(lhs, ctx.mkIntConst(lhs))
         if (constraint.getRhs.isDefined) {
           val c: ConstraintForm = constraint.getRhs.get
-          val rhs: String = c.getLhs.getValue
+          val rhs: String = c.getLhs.getValue.get
           if (rhs.contains("s") || rhs.contains("i") || rhs.contains("this")) exprMap.put(rhs, ctx.mkIntConst(rhs))
           else exprMap.put(rhs, ctx.mkInt(rhs.toInt))
           op.charAt(0) match {
@@ -55,7 +55,7 @@ final class Z3 {
               else {
                 if (c.getOp.isDefined) {
                   if (c.getRhs.isDefined) {
-                    val v: String = c.getRhs.get.getLhs.getValue
+                    val v: String = c.getRhs.get.getLhs.getValue.get
                     if (v.contains("s") || v.contains("i") || v.contains("this")) exprMap.put(v, ctx.mkIntConst(v))
                     else exprMap.put(v, ctx.mkInt(v.toInt))
                     val constraint_op: String = c.getOp.get

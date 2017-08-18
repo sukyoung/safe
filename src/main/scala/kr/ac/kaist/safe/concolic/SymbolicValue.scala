@@ -18,9 +18,11 @@ package kr.ac.kaist.safe.concolic
  * @param optInstance Types from execution part
  */
 class SymbolicValue(
-  private var optValue: Option[String],
-  private var types: List[String],
-  private var optInstance: Option[String]) {
+    private var optValue: Option[String],
+    private var types: List[String],
+    private var optInstance: Option[String]
+) {
+
   def getValue: Option[String] = optValue
   def getTypes: List[String] = types
   def setInstance(newInstance: String): Unit = optInstance = Some(newInstance)
@@ -48,7 +50,7 @@ class SymbolicValue(
       false
   }
 
-  def isInput(): Boolean = optValue match {
+  def isInput: Boolean = optValue match {
     case Some(value) =>
       value.contains("i") || value.contains("this")
     case None =>

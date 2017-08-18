@@ -39,7 +39,8 @@ class SymbolicInfo(
   def getType: SymbolicInfoTypes.Type = infoType
 
   def unpackSymbolicOption(x: Option[SymbolicValue]): String = x match {
-    case Some(xx) => xx.getValue
+    case Some(xx) =>
+      xx.getValue.getOrElse("null")
     case None => ""
   }
   def unpackStringOption(x: Option[String]): String = x match {
