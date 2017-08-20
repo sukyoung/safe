@@ -147,5 +147,10 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
   override def display(cfg: CFG): Unit = ()
 }
 
+// cloneDetect
+case object CmdCloneDetect extends CommandObj("cloneDetect", CmdBase >> CloneDetect) {
+  override def display(res: Int): Unit = ()
+}
+
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

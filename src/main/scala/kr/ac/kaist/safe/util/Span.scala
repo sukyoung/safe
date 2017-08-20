@@ -15,6 +15,8 @@ import java.io.File
 import java.io.IOException
 import java.io.Serializable
 import java.lang.StringBuilder
+
+import kr.ac.kaist.safe.clone_detector.vgen.CharVector
 import xtc.tree.Location
 import kr.ac.kaist.safe.nodes.Node
 
@@ -23,6 +25,8 @@ case class Span(
     begin: SourceLoc = SourceLoc(),
     end: SourceLoc = SourceLoc()
 ) {
+  val cvec: CharVector = new CharVector
+
   def addLines(line: Int, offset: Int): Span =
     Span(fileName, begin.addLines(line, offset), end.addLines(line, offset))
 

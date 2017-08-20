@@ -26,3 +26,5 @@ lib/xtc.jar
 lib/debugger/webix.js
 lib/debugger/css/webix.css
 doc/safe.pdf
+lib/deckard
+build/
