@@ -4874,7 +4874,9 @@ Function: {
   }
   \\],
   98: [\\
-  function () {
+  function test () {
+    // TODO
+    return @BoolTop;
   }
   \\],
   99: [\\
