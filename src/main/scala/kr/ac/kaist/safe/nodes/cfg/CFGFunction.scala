@@ -122,4 +122,10 @@ case class CFGFunction(
     s.append(pre).append("}").append(LINE_SEP)
     s.toString
   }
+
+  def simpleName: String = {
+    val arr = name.split(NodeUtil.INTERNAL_SYMBOL)
+    if (arr.head.isEmpty) arr.tail.head
+    else arr.head
+  }
 }

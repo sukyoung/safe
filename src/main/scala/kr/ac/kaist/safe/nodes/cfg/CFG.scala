@@ -13,8 +13,10 @@ package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.immutable.HashSet
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Loc
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
@@ -126,6 +128,37 @@ class CFG(
   // get all locations
   def getAllASiteSet: Set[AllocSite] =
     (1 to userASiteSize).foldLeft(predASiteSet)(_ + UserAllocSite(_))
+
+  // find block from a given string
+  def findBlock(str: String): Try[CFGBlock] = {
+    val idPattern = "(-?\\d+):(\\d+)".r
+    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
+    str match {
+      case idPattern(fidStr, bidStr) => {
+        val fid = fidStr.toInt
+        val bid = bidStr.toInt
+        getFunc(fid) match {
+          case Some(func) => func.getBlock(bid) match {
+            case Some(block) => Success(block)
+            case None => Failure(NoBlockIdError(fid, bid))
+          }
+          case None => Failure(NoFuncIdError(fid))
+        }
+      }
+      case spPattern(fidStr, sp) => {
+        val fid = fidStr.toInt
+        getFunc(fid) match {
+          case Some(func) => Success(sp match {
+            case "entry" => func.entry
+            case "exit" => func.exit
+            case _ => func.exitExc
+          })
+          case None => Failure(NoFuncIdError(fid))
+        }
+      }
+      case _ => Failure(IllFormedBlockStr)
+    }
+  }
 }
 
 object CFG {

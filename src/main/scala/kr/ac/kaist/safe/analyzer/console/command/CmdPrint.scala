@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.analyzer.ControlPoint //, Worklist }
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.html_debugger._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.errors.error.IllFormedBlockStr
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.cfg_builder.DotWriter
 
@@ -25,7 +26,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     println("usage: " + name + " state(-all) ({keyword})")
     println("       " + name + " heap(-all) ({keyword})")
     println("       " + name + " context ({keyword})")
-    println("       " + name + " block")
+    println("       " + name + " block ({fid}:{bid})")
     println("       " + name + " loc {LocName} ({keyword})")
     println("       " + name + " func ({functionID})")
     println("       " + name + " worklist")
@@ -36,6 +37,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
+    val idPattern = "(\\d+):(\\d+)".r
+    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
     args match {
       case Nil => help
       case subcmd :: rest => subcmd match {
@@ -76,6 +79,18 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           }
         case "block" => rest match {
           case Nil => println(c.getCurCP.block.toString(0))
+          case subcmd :: Nil => c.cfg.findBlock(subcmd) match {
+            case Success(block) => println(block.toString(0))
+            case Failure(e) => e match {
+              case IllFormedBlockStr => {
+                println("usage: print block {fid}:{bid}")
+                println("       print block {fid}:entry")
+                println("       print block {fid}:exit")
+                println("       print block {fid}:exitExc")
+              }
+              case _ => println(s"* ${e.getMessage}")
+            }
+          }
           case _ => help
         }
         case "loc" => rest match {
@@ -100,14 +115,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             c.cfg.getAllFuncs.reverse.foreach {
               case func =>
                 val fid = func.id
-                val name = func.name
+                val name = func.simpleName
                 println(s"[$fid] $name")
             }
           case fidStr :: Nil if fidStr.forall(_.isDigit) =>
             val fid = fidStr.toInt
             c.cfg.getFunc(fid) match {
               case Some(func) =>
-                val name = func.name
+                val name = func.simpleName
                 val span = func.span
                 println(s"* function name: $name")
                 println(s"* span info.   : $span")

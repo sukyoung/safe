@@ -77,7 +77,9 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
       CallSiteContext((call :: callsiteList).take(depth), depth)
     case _ => this
   }
-  override def toString: String = callsiteList.mkString("Call[", ", ", "]")
+  override def toString: String = callsiteList
+    .map(call => s"${call.func.id}:${call.id}")
+    .mkString("Call[", ", ", "]")
 }
 
 class CallSiteSensitivity(depth: Int) extends Sensitivity {

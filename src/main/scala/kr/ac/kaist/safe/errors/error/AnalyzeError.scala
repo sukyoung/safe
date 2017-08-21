@@ -61,3 +61,13 @@ case object LocTopGammaError extends AnalyzeError(
 case class UserAllocSiteError(u: UserAllocSite) extends AnalyzeError({
   s"[UserAllocSiteError]: $u."
 })
+
+case class NoBlockIdError(fid: Int, bid: Int) extends AnalyzeError({
+  s"unknown bid in function[$fid]: $bid"
+})
+
+case class NoFuncIdError(fid: Int) extends AnalyzeError({
+  s"unknown fid: $fid"
+})
+
+case object IllFormedBlockStr extends AnalyzeError("")
