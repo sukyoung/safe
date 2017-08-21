@@ -226,7 +226,7 @@ object ConcolicMain {
             fir = new IRSimplifier(fir).result
             val instrumentor = new Instrumentor(fir, coverage)
             fir = instrumentor.result
-            val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))
+            val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER), safeConfig)
             val extractor = new ConstraintExtractor
             val solver = new ConcolicSolver(coverage)
             if (coverage.debug) {

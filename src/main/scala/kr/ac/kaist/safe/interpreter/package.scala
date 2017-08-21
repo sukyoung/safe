@@ -344,4 +344,11 @@ package object interpreter {
   class URIErrorException extends Exception
   class NYIErrorException extends Exception
   class ThrowException(var error: ValError) extends Exception
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // ECMA Spec testing
+  ////////////////////////////////////////////////////////////////////////////////
+
+  val logIncorrectTestsFileName = "ecma_violations.txt"
+  val logErrorTestsFileName = "ecma_errors.txt"
 }

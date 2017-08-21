@@ -31,18 +31,17 @@ object Interpret extends PhaseObj[IRRoot, InterpretConfig, Unit] {
       case "webapp-bug-detector" => InterpreterModes.WEBAPP_BUG_DETECTOR
       case _ => InterpreterModes.OTHER
     }),
-      "The mode to interpret the program in: html, html-sparse, webapp-bug-detector"),
+      "The mode to interpret the program in: html, html-sparse, webapp-bug-detector. Currently not supported."),
     ("tizen", BoolOption((c: InterpretConfig) => c.tizens = true),
-      "Interpret a Tizen application."),
+      "Interpret a Tizen application. Currently not supported."),
     ("jquery", BoolOption((c: InterpretConfig) => c.jquery = true),
-      //TODO MV
-      "TODO MV no idea what this option does."),
+      "Currently not supported."),
     ("ecma", BoolOption((c: InterpretConfig) => c.ECMASpecTest = true),
-      "Interpret a Tizen application.")
+      "Verify the interpreter's correctness by running ECMA spec tests.")
   )
 
   def apply(input: IRRoot, safeConfig: SafeConfig, config: InterpretConfig): Try[Unit] = {
-    val interpreter = new Interpreter(config)
+    val interpreter = new Interpreter(config, safeConfig)
     Success(interpreter.doit(input, None))
   }
 
@@ -59,5 +58,5 @@ case class InterpretConfig(
   var mode: InterpreterModes.Mode = InterpreterModes.OTHER,
   var tizens: Boolean = false,
   var jquery: Boolean = false,
-  var ECMASpecTest: Boolean = true
+  var ECMASpecTest: Boolean = false
 ) extends Config

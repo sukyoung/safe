@@ -11,17 +11,17 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import edu.rice.cs.plt.tuple.{ Option => JOption }
-import kr.ac.kaist.safe.concolic._
-import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterPredefine => IP }
-import kr.ac.kaist.safe.interpreter.objects._
-import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
-import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.phase.InterpretConfig
-import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU }
+import java.io.{ File, FileWriter }
 
-class Interpreter(config: InterpretConfig) extends IRWalker {
+import kr.ac.kaist.safe.SafeConfig
+import kr.ac.kaist.safe.concolic._
+import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterPredefine => IP }
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF, _ }
+import kr.ac.kaist.safe.phase.InterpretConfig
+import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU, _ }
+
+class Interpreter(config: InterpretConfig, safeConfig: SafeConfig) extends IRWalker {
   /*
    * TODO:
    * - Regular expressions
@@ -71,15 +71,14 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
         System.out.println(new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(coverage.inputIR.unwrap).doit)
       System.out.println*/
 
-      walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]) ++ inputIR)
+      checkForExceptionssWalkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]) ++ inputIR)
 
       coverage.report = SH.getReport
 
       //if (coverage.debug) 
       //SH.print
     } else {
-      println(IS.env)
-      walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]))
+      checkForExceptionssWalkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]))
     }
     if (printComp) IS.lastComp.Type match {
       case CT.NORMAL =>
@@ -114,38 +113,32 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
         }
     }
     if (config.ECMASpecTest) {
-      assert(checkResults, "Value of a computed result does not equal corresponding expected value")
+      ECMASpecChecker.doECMASpecTest(IS, safeConfig.fileNames.head)
+      println("ECMA spec completed successfully")
     }
     IS.lastComp
-
   }
 
-  def checkResults: Boolean = {
-    val resultPrefix = "__result"
-    val expectPrefix = "__expect"
-    @scala.annotation.tailrec
-    def loopEnvs(env: Env): Boolean = {
-      env match {
-        case EmptyEnv() => true
-        case ConsEnv(first, rest) => first match {
-          case DeclEnvRec(store) =>
-            val set: Set[String] = store.keySet.toSet
-            val resultsNames = set.filter(_.startsWith(resultPrefix))
-            val resultsZipped: Set[(String, StoreValue, String, StoreValue)] = resultsNames.map((resultName: String) => {
-              val resultValue = store(resultName)
-              val expectedName: String = expectPrefix + resultName.stripPrefix(resultPrefix)
-              val expectedValue = store(expectedName)
-              (resultName, resultValue, expectedName, expectedValue)
-            })
-            val firstEnvMatches = resultsZipped.forall({
-              case (_, resultValue, _, expectedValue) =>
-                resultValue.value == expectedValue.value
-            })
-            firstEnvMatches && loopEnvs(rest)
-        }
+  /**
+   * Executes the given IR statements and, if the ECMA specification flag is enabled and an uncaught exception thrown,
+   * writes part of the execution stack to the file with name [[logErrorTestsFileName]].
+   * @param irs The list of IR statements to execute.
+   */
+  private def checkForExceptionssWalkIRs(irs: List[IRStmt]): Unit = {
+    if (config.ECMASpecTest) {
+      try {
+        walkIRs(irs)
+      } catch {
+        case exc: Exception =>
+          // First 5 frames of the execution stack
+          val top5Frames = exc.getStackTrace.take(5)
+          val fw = new FileWriter(new File(logErrorTestsFileName), true)
+          fw.write(exc.getMessage + ":\n\t" + top5Frames.mkString("\n\t") + "\n\n")
+          fw.close()
       }
+    } else {
+      walkIRs(irs)
     }
-    loopEnvs(IS.env)
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -1139,7 +1132,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _ => IS.comp.setThrow(IP.typeError, ast.span)
               }
             case x =>
-              println(s"x = $x") //TODO MV Debugging: remove print
               IS.comp.setThrow(IP.nyiError, ast.span)
           }
 
@@ -1187,6 +1179,9 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               case err: JSError =>
                 IS.comp.setThrow(err, ast.span)
             }
+          }
+          if (config.ECMASpecTest) {
+            ECMASpecChecker.doECMASpecTest(IS, safeConfig.fileNames.head)
           }
           IS.env = oldEnv
           IS.tb = oldTb
