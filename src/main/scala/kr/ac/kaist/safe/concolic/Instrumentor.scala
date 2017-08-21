@@ -233,9 +233,6 @@ class Instrumentor(program: IRRoot, coverage: Coverage) {
      * SIRInternalCall(ast, "<>Concolic<>Instrumentor", "<>Concolic<>EndCondition", e, None)
      */
       case IRIf(ast, expr, trueB, falseB) =>
-        // TODO MV Originally, this code checked whether the IRIf came from source (ast.isFromSource)
-        // I assume here that every IRIf comes from source and have removed the else-branch.
-        // Original else-branch was: IRIf(ast, expr, trueB, falseB)
         IRSeq(ast, List(
           executeCondition(ast, expr, env),
           IRIf(ast, expr, walk(trueB, env).asInstanceOf[IRStmt], falseB.map(walk(_, env).asInstanceOf[IRStmt])),

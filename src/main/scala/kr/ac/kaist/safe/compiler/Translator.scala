@@ -1012,7 +1012,6 @@ class Translator(program: Program) {
                 IRVal("boolean")
               ),
               mkExprS(arg1, res, FALSE_BOOL),
-              //TODO MV Not a 'valid' binary expression for concolic testing
               Some(mkExprS(arg1, res, cond))
             )))
       )

@@ -4,15 +4,15 @@ function foo(a) {
     if (a > 100) {
         if (a == 200) {
             r++;
-            print("1");
+            _<>_print("1");
         } else {
-            print("2");
+            _<>_print("2");
         }
     } else {
-        print("3");
+        _<>_print("3");
     }
 }
 
 foo(0);
 
-print("4");
+_<>_print("4");

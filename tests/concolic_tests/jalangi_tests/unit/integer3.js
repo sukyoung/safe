@@ -19,13 +19,13 @@
 function f(a, b) {
 	b = 3*b + 1*a - 0*a;
 	if (b === 3) {
-			print("1");
+			_<>_print("1");
 	} else if (b === 7) {
-			print("2");
+			_<>_print("2");
 	} else {
-			print("3");
+			_<>_print("3");
 	}
-	print("4");
+	_<>_print("4");
 }
 
 f(1,1);

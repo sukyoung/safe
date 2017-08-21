@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2014, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=funapp4
+CONCOLIC_TESTS_DIR=${JS_HOME}/tests/concolic_tests
+concolic
+concolic_out_WCIequals=\
+\n\
+\n\
+\n\
+Current target function: null\n\
+DONE\n\
+Target should be function type\n\
+\n\
+\n\
+Current target function: f\n\
+\n\
+\n\
+Current target function: f\n\
+DONE\n\

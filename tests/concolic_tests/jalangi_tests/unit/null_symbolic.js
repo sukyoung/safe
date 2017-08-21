@@ -18,7 +18,7 @@
  
 function f(o) {
 	if (o !== null && o !== undefined) {
-			print("1: "+o.x);
+			_<>_print("1: "+o.x);
 	}
 }
 f({});

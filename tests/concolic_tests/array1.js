@@ -1,7 +1,4 @@
 function Triangle(p1, p2, p3) {
-    if (p1[0] < 0) {
-        1 instanceof 5;
-    }
 }
 
 function createVector(x,y,z) {

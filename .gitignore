@@ -27,8 +27,3 @@ lib/debugger/webix.js
 lib/debugger/css/webix.css
 doc/safe.pdf
 .idea
-test.dot
-test.gv
-test.pdf
-interpreter_test.js
-run_tests.sh

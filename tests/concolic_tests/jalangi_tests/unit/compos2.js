@@ -20,20 +20,20 @@ var x, y = 1, z;
 
 function f1(x) {
     if (x>0){
-				print("1");
+				_<>_print("1");
         z = 2;
     } else {
-				print("2");
+				_<>_print("2");
         z = -4;
     }
 }
 
 function f2(x) {
     if (x==10){
-				print("3");
+				_<>_print("3");
         z = 5;
     } else {
-				print("4");
+				_<>_print("4");
         y = -1;
     }
 }
@@ -43,7 +43,7 @@ function main(x) {
     f1(x);
     f2(x);
     if (y + z > 3) {
-				print("5");
+				_<>_print("5");
     }
 }
 

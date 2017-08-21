@@ -19,4 +19,4 @@ function getType(a, b, c)
 
 var ret = getType(1, 1, 1);
 
-print(ret);
+_<>_print(ret);

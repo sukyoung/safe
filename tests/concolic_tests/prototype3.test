@@ -1,0 +1,46 @@
+################################################################################
+#    Copyright (c) 2014, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=prototype3
+CONCOLIC_TESTS_DIR=${JS_HOME}/tests/concolic_tests
+concolic
+concolic_out_WCIequals=\
+\n\
+\n\
+\n\
+Current target function: null\n\
+DONE\n\
+Target should be function type\n\
+\n\
+\n\
+Current target function: HandlerTask\n\
+DONE\n\
+\n\
+\n\
+Current target function: Packet\n\
+DONE\n\
+\n\
+\n\
+Current target function: Scheduler\n\
+DONE\n\
+\n\
+\n\
+Current target function: TaskControlBlock\n\
+\n\
+\n\
+Current target function: TaskControlBlock\n\
+DONE\n\
+\n\
+\n\
+Current target function: TaskControlBlock.prototype.checkPriorityAdd<>funexpr\n\
+\n\
+\n\
+Current target function: TaskControlBlock.prototype.checkPriorityAdd<>funexpr\n\
+DONE\n\
+\n\
+\n\
+Current target function: TaskControlBlock.prototype.markAsRunnable<>funexpr\n\
+DONE\n\

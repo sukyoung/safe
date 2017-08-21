@@ -367,7 +367,7 @@ object DefaultObject extends AbsObjectUtil {
       case ObjMap(amap, imap) =>
         imap.get(in) match {
           case None => AbsBool.False
-          case Some(_) => AbsBool.True //TODO MV Original: AbsBool.Top
+          case Some(_) => AbsBool.Top //TODO MV Original: AbsBool.Top, later became AbsBool.True
         }
     }
 

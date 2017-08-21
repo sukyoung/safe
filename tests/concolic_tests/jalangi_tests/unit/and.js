@@ -18,8 +18,8 @@
 
 function f(x, y) {
 	if (x > 0 && y > 0) {
-			print("1");
+			_<>_print("1");
 	}
-	print("2");
+	_<>_print("2");
 }
 f(0,0);

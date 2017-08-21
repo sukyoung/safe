@@ -3,12 +3,12 @@ function foo(r, s) {
     s.f = 2;
     if (r.f != 1) {
         if (x === 100) {
-						print("1");
+						_<>_print("1");
         } else {
-						print("2");
+						_<>_print("2");
         }
     } else {
-				print("3");
+				_<>_print("3");
     }
 }
 
