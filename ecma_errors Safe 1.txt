@@ -1,0 +1,45 @@
+A list of all ECMA specification tests for which a run-time exception was thrown by the interpreter in the Safe 1.0 framework.
+
+
+Value Some(false) of __expect1 does not match value Some(true) of __result1:
+	kr.ac.kaist.jsaf.interpreter.ECMASpecChecker$.doECMASpecTest(ECMASpecChecker.scala:28)
+	kr.ac.kaist.jsaf.interpreter.Interpreter.walk(Interpreter.scala:1193)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:356)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:355)
+	scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+
+Value Some(false) of __expect1 does not match value Some(true) of __result1:
+	kr.ac.kaist.jsaf.interpreter.ECMASpecChecker$.doECMASpecTest(ECMASpecChecker.scala:28)
+	kr.ac.kaist.jsaf.interpreter.Interpreter.walk(Interpreter.scala:1193)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:356)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:355)
+	scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+
+null:
+	kr.ac.kaist.jsaf.interpreter.Interpreter.walk(Interpreter.scala:887)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:356)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:355)
+	scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	scala.collection.immutable.List.foreach(List.scala:76)
+
+Value Some(undefined) of __expect1 does not match value Some(true) of __result1:
+	kr.ac.kaist.jsaf.interpreter.ECMASpecChecker$.doECMASpecTest(ECMASpecChecker.scala:28)
+	kr.ac.kaist.jsaf.interpreter.Interpreter.walk(Interpreter.scala:1193)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:356)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:355)
+	scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+
+Value Some(false) of __expect1 does not match value Some(true) of __result1:
+	kr.ac.kaist.jsaf.interpreter.ECMASpecChecker$.doECMASpecTest(ECMASpecChecker.scala:28)
+	kr.ac.kaist.jsaf.interpreter.Interpreter.walk(Interpreter.scala:1193)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:356)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:355)
+	scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+
+Value Some(false) of __expect1 does not match value Some(true) of __result1:
+	kr.ac.kaist.jsaf.interpreter.ECMASpecChecker$.doECMASpecTest(ECMASpecChecker.scala:28)
+	kr.ac.kaist.jsaf.interpreter.Interpreter.walk(Interpreter.scala:1193)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:356)
+	kr.ac.kaist.jsaf.interpreter.Interpreter$$anonfun$walkIRs$1.apply(Interpreter.scala:355)
+	scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+

@@ -1,0 +1,44 @@
+A list of all ECMA specification tests for which a run-time exception was thrown by the interpreter in the Safe 2.0 framework.
+
+key not found: p3:
+	scala.collection.MapLike.default$(MapLike.scala:232)
+	scala.collection.MapLike.default(MapLike.scala:231)
+	scala.collection.mutable.HashMap.apply(HashMap.scala:65)
+	kr.ac.kaist.safe.interpreter.InterpreterHelper.delete(InterpreterHelper.scala:664)
+	kr.ac.kaist.safe.interpreter.Interpreter.walk(Interpreter.scala:429)
+
+key not found: p3:
+	scala.collection.MapLike.default$(MapLike.scala:232)
+	scala.collection.MapLike.default(MapLike.scala:231)
+	scala.collection.mutable.HashMap.apply(HashMap.scala:65)
+	kr.ac.kaist.safe.interpreter.InterpreterHelper.delete(InterpreterHelper.scala:664)
+	kr.ac.kaist.safe.interpreter.Interpreter.walk(Interpreter.scala:429)
+
+key not found: p3:
+	scala.collection.MapLike.default$(MapLike.scala:232)
+	scala.collection.MapLike.default(MapLike.scala:231)
+	scala.collection.mutable.HashMap.apply(HashMap.scala:65)
+	kr.ac.kaist.safe.interpreter.InterpreterHelper.delete(InterpreterHelper.scala:664)
+	kr.ac.kaist.safe.interpreter.Interpreter.walk(Interpreter.scala:429)
+
+IRInternalValue(Id(ASTNodeInfo(tests/test262/12.14/12.14-14.js:1:22-29,None),@Global,Some(@Global),false),@Global) (of class kr.ac.kaist.safe.nodes.ir.IRInternalValue):
+	kr.ac.kaist.safe.interpreter.Interpreter.walkExpr(Interpreter.scala:309)
+	kr.ac.kaist.safe.interpreter.Interpreter.walk(Interpreter.scala:409)
+	kr.ac.kaist.safe.interpreter.Interpreter.$anonfun$walkIRs$1(Interpreter.scala:347)
+	kr.ac.kaist.safe.interpreter.Interpreter.$anonfun$walkIRs$1$adapted(Interpreter.scala:346)
+	scala.collection.immutable.List.foreach(List.scala:376)
+
+IRInternalValue(Id(ASTNodeInfo(tests/test262/12.14/12.14-15.js:1:22-29,None),@Global,Some(@Global),false),@Global) (of class kr.ac.kaist.safe.nodes.ir.IRInternalValue):
+	kr.ac.kaist.safe.interpreter.Interpreter.walkExpr(Interpreter.scala:309)
+	kr.ac.kaist.safe.interpreter.Interpreter.walk(Interpreter.scala:409)
+	kr.ac.kaist.safe.interpreter.Interpreter.$anonfun$walkIRs$1(Interpreter.scala:347)
+	kr.ac.kaist.safe.interpreter.Interpreter.$anonfun$walkIRs$1$adapted(Interpreter.scala:346)
+	scala.collection.immutable.List.foreach(List.scala:376)
+
+IRInternalValue(Id(ASTNodeInfo(tests/test262/12.14/12.14-16.js:1:22-29,None),@Global,Some(@Global),false),@Global) (of class kr.ac.kaist.safe.nodes.ir.IRInternalValue):
+	kr.ac.kaist.safe.interpreter.Interpreter.walkExpr(Interpreter.scala:309)
+	kr.ac.kaist.safe.interpreter.Interpreter.walk(Interpreter.scala:409)
+	kr.ac.kaist.safe.interpreter.Interpreter.$anonfun$walkIRs$1(Interpreter.scala:347)
+	kr.ac.kaist.safe.interpreter.Interpreter.$anonfun$walkIRs$1$adapted(Interpreter.scala:346)
+	scala.collection.immutable.List.foreach(List.scala:376)
+
