@@ -14,25 +14,25 @@ package kr.ac.kaist.safe.interpreter
 import kr.ac.kaist.safe.errors.error.ECMASpecTestFailedError
 
 /**
-  * Assuming the ECMA specification tests (from the tests262/ folder) are being interpreted,
-  * ECMASpecChecker relies on the format employed by these tests to verify the correctness of the interpreter.
-  *
-  * Specifically, variables in these tests are of the form "__resultX" and "__expectX" where the value of __resultX
-  * should be equal to the corresponding "expected" variable. ECMASpecChecker looks for all variables in the environment
-  * and all properties of the global object of the interpreter that have this format, and then checks whether their
-  * values are equal.
-  */
+ * Assuming the ECMA specification tests (from the tests262/ folder) are being interpreted,
+ * ECMASpecChecker relies on the format employed by these tests to verify the correctness of the interpreter.
+ *
+ * Specifically, variables in these tests are of the form "__resultX" and "__expectX" where the value of __resultX
+ * should be equal to the corresponding "expected" variable. ECMASpecChecker looks for all variables in the environment
+ * and all properties of the global object of the interpreter that have this format, and then checks whether their
+ * values are equal.
+ */
 object ECMASpecChecker {
 
   /**
-    * Verifies correctness of the interpreter by checking whether all variables and global object properties
-    * with a name of the form "__resultX" have the same value as their complementary variable of the form
-    * "__expectX".
-    * If not, the name of the current test being run is written to the file [[logIncorrectTestsFileName]] and
-    * messages are printed in the console to indicate the exact error.
-    * @param IS The current InterpreterState.
-    * @param fileName The name of the file being executed.
-    */
+   * Verifies correctness of the interpreter by checking whether all variables and global object properties
+   * with a name of the form "__resultX" have the same value as their complementary variable of the form
+   * "__expectX".
+   * If not, the name of the current test being run is written to the file [[logIncorrectTestsFileName]] and
+   * messages are printed in the console to indicate the exact error.
+   * @param IS The current InterpreterState.
+   * @param fileName The name of the file being executed.
+   */
   def doECMASpecTest(IS: InterpreterState, fileName: String): Unit = {
     val errorMessages = findUnexpectedValuesForECMA(IS)
     if (errorMessages.nonEmpty) {
@@ -47,23 +47,23 @@ object ECMASpecChecker {
   }
 
   /**
-    * Verifies correctness of the interpreter by checking whether all variables and global object properties
-    * with a name of the form "__resultX" have the same value as their complementary variable of the form
-    * "__expectX".
-    * @param IS The current InterpreterState whose environment and global object will be browsed.
-    * @return A boolean indicating whether the interpreter is correct (true) or not (false).
-    */
+   * Verifies correctness of the interpreter by checking whether all variables and global object properties
+   * with a name of the form "__resultX" have the same value as their complementary variable of the form
+   * "__expectX".
+   * @param IS The current InterpreterState whose environment and global object will be browsed.
+   * @return A boolean indicating whether the interpreter is correct (true) or not (false).
+   */
   def isECMASpecTestOk(IS: InterpreterState): Boolean = {
     findUnexpectedValuesForECMA(IS).isEmpty
   }
 
   /**
-    * Verifies correctness of the interpreter by checking whether all variables and global object properties
-    * with a name of the form "__resultX" have the same value as their complementary variable of the form
-    * "__expectX". Returns a list of messages: one message for each case where the value of the "result" variable
-    * did NOT match the value of the "expect" variable.
-    * @param IS The current InterpreterState whose environment and global object will be browsed.
-    * @return A list of messages indicating problems with the test.
+   * Verifies correctness of the interpreter by checking whether all variables and global object properties
+   * with a name of the form "__resultX" have the same value as their complementary variable of the form
+   * "__expectX". Returns a list of messages: one message for each case where the value of the "result" variable
+   * did NOT match the value of the "expect" variable.
+   * @param IS The current InterpreterState whose environment and global object will be browsed.
+   * @return A list of messages indicating problems with the test.
    */
   def findUnexpectedValuesForECMA(IS: InterpreterState): List[String] = {
     val resultPrefix = "__result"
