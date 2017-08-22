@@ -19,8 +19,8 @@ import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.NodeUtil._
+import kr.ac.kaist.safe.util._
 
 // default CFG builder
 class DefaultCFGBuilder(

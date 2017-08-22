@@ -36,7 +36,7 @@ sealed abstract class EJSOp(
   }
 }
 object EJSOp {
-  def apply(name: String): EJSOp = name match {
+  def apply(name: String, isUnaryOperator: Boolean): EJSOp = name match {
     case "*" => EJSMul
     case "/" => EJSDiv
     case "%" => EJSRem
@@ -67,8 +67,8 @@ object EJSOp {
     case "delete" => EJSDelete
     case "void" => EJSVoid
     case "typeof" => EJSTypeOf
-    case "+" => EJSPos
-    case "-" => EJSNeg
+    case "+" => if (isUnaryOperator) EJSPos else EJSAdd
+    case "-" => if (isUnaryOperator) EJSNeg else EJSSub
     case _ => EJSEtc
   }
 }

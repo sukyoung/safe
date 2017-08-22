@@ -13,12 +13,10 @@ package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.BASE_DIR
-import kr.ac.kaist.safe.LINE_SEP
-import java.io.BufferedWriter
-import java.io.IOException
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
+
 import scala.collection.immutable.{ HashMap, HashSet }
 
 object NodeUtil {
@@ -26,11 +24,24 @@ object NodeUtil {
   // local mutable (TODO have to handle)
   ////////////////////////////////////////////////////////////////
 
+  // For use only when there is no hope of attaching a true span.
+  def dummySpan(villain: String): Span = {
+    val name = if (villain.length != 0) villain else "dummySpan"
+    val sl = new SourceLoc(0, 0, 0)
+    new Span(name, sl, sl)
+  }
+  val dummySpan: Span = dummySpan("")
+
   var iid = 0
   var nodesPrintId = 0
   var nodesPrintIdEnv: Map[String, String] = HashMap()
   var keepComments = false
   private var comment: Option[Comment] = None
+
+  val PRINT_NAME = "print"
+  val INTERNAL_PRINT = internalAPIName(PRINT_NAME)
+  val INTERNAL_PRINT_IS = "_<>_printIS"
+  val INTERNAL_GET_TICK_COUNT = "_<>_getTickCount"
 
   val INTERNAL_SYMBOL = "<>"
   val GLOBAL_PREFIX = "<>Global<>"
@@ -136,6 +147,10 @@ object NodeUtil {
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val INTERNAL_GET_LOC = internalAPIName("getLoc")
   val internalCallSet: Set[String] = HashSet(
+    INTERNAL_PRINT,
+    INTERNAL_PRINT_IS,
+    INTERNAL_GET_TICK_COUNT,
+    INTERNAL_ADD_EVENT_FUNC,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
@@ -262,6 +277,14 @@ object NodeUtil {
     INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getIId)
   // unique name generation for global names
   def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
+  def getOriginalName(n: String): String =
+    if (isGlobalName(n)) n.drop(10)
+    else {
+      if (!isInternal(n)) n
+      else n.drop(2).dropRight(kr.ac.kaist.safe.SIGNIFICANT_BITS)
+    }
+  val toObjectName = freshGlobalName("toObject")
+  val ignoreName = freshGlobalName("ignore")
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
 
   def isInternalAPI(s: String): Boolean =
@@ -414,11 +437,70 @@ object NodeUtil {
       result
     } else new ASTNodeInfo(span, None)
 
+  def getName(lhs: LHS): String = lhs match {
+    case VarRef(_, id) => id.text
+    case Dot(_, front, id) => getName(front) + "." + id.text
+    case _: This => "this"
+    case _ => ""
+  }
+
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
   def unescape(s: String): String = s.replaceAll("\\\\", "")
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
+
+  def unescapeJava(s: String): String =
+    if (-1 == s.indexOf('\\')) s
+    else {
+      val length = s.length
+      val buf = new StringBuilder(length)
+      var i = 0
+      while (i < length) {
+        var c = s.charAt(i)
+        if ('\\' != c) {
+          buf.append(c)
+          i += 1
+        } else {
+          i += 1
+          if (i >= length) {
+            throw new IllegalArgumentException("incomplete escape sequence")
+          }
+          c = s.charAt(i)
+          c match {
+            case '"' => buf.append('"')
+            case '\'' => buf.append('\'')
+            case '\\' => buf.append('\\')
+            case 'b' => buf.append('\b')
+            case 'f' => buf.append('\f')
+            case 'n' => buf.append('\n')
+            case 'r' => buf.append('\r')
+            case 't' => buf.append('\t')
+            case 'v' => buf.append('\u000b')
+            case 'x' =>
+              i += 2
+              if (i >= length) {
+                throw new IllegalArgumentException("incomplete universal character" +
+                  " name " + s.substring(i - 1))
+              }
+              val n = Integer.parseInt(s.substring(i - 1, i + 1), 16)
+              buf.append(n.asInstanceOf[Char])
+            case 'u' =>
+              i += 4
+              if (i >= length) {
+                throw new IllegalArgumentException("incomplete universal character" +
+                  " name " + s.substring(i - 3))
+              }
+              val n = Integer.parseInt(s.substring(i - 3, i + 1), 16)
+              buf.append(n.asInstanceOf[Char])
+            case c if lineTerminating(c) =>
+            case _ => buf.append(c)
+          }
+          i += 1
+        }
+      }
+      buf.toString
+    }
 
   def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
 

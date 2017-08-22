@@ -73,11 +73,13 @@ object Safe {
     CmdParse,
     CmdASTRewrite,
     CmdCompile,
+    CmdConcolic,
     CmdCFGBuild,
     CmdHeapBuild,
     CmdJsonLoad,
     CmdAnalyze,
     CmdBugDetect,
+    CmdInterpret,
     CmdHelp
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
@@ -89,11 +91,13 @@ object Safe {
     Parse,
     ASTRewrite,
     Compile,
+    Concolic,
     CFGBuild,
     HeapBuild,
     JsonLoad,
     Analyze,
     BugDetect,
+    Interpret,
     Help
   )
 

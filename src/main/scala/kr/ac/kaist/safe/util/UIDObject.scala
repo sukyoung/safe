@@ -13,8 +13,13 @@ package kr.ac.kaist.safe.util
 
 // Object with a unique identifier.
 class UIDObject {
-  var uid: Long = UIDObject.getUId
+  private var uid: Long = UIDObject.getUId
   override def hashCode: Int = uid.asInstanceOf[Int] ^ (uid >>> 32).asInstanceOf[Int]
+
+  def getUID: Long = uid
+  def setUID(newUID: Long): Unit = {
+    uid = newUID
+  }
 }
 
 object UIDObject {

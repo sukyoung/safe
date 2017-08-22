@@ -101,7 +101,7 @@ case class IRArray(
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
     s.append("[")
-    elements.foreach(e => s.append(e.fold("") { _.toString(indent) }).append(", "))
+    elements.foreach(e => s.append(e.map({ _.toString(indent) }).getOrElse("")).append(", "))
     s.append("]")
     s.toString
   }
@@ -135,7 +135,7 @@ case class IRArgs(
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
     s.append("[")
-    elements.foreach(e => s.append(e.fold("") { _.toString(indent) }).append(", "))
+    elements.foreach(e => s.append(e.map({ _.toString(indent) }).getOrElse("")).append(", "))
     s.append("]")
     s.toString
   }

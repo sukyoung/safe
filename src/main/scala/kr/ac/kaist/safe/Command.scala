@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe
 
+import scala.collection.parallel.Splitter
 import scala.util.Try
 import scala.collection.immutable.HashMap
 import kr.ac.kaist.safe.phase._
@@ -81,6 +82,11 @@ case object CmdCompile extends CommandObj("compile", CmdASTRewrite >> Compile) {
   override def display(ir: IRRoot): Unit = println(ir.toString(0))
 }
 
+// concolic
+case object CmdConcolic extends CommandObj("concolic", CmdHeapBuild >> Concolic) {
+  override def display(result: Int): Unit = println(result)
+}
+
 // cfgBuild
 case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
@@ -146,6 +152,9 @@ case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, Ha
 case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect) {
   override def display(cfg: CFG): Unit = ()
 }
+
+// interpret
+case object CmdInterpret extends CommandObj("interpret", CmdCompile >> Interpret)
 
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

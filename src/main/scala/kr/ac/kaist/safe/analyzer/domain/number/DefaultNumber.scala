@@ -94,7 +94,8 @@ object DefaultNumber extends AbsNumberUtil {
       case (PosInf, NegInf) => Inf
       case (NegInf, PosInf) => Inf
       case (UIntConst(a), UIntConst(b)) if a == b => this
-      case (UIntConst(_), UIntConst(_)) => UInt
+      case x @ (UIntConst(_), UIntConst(_)) =>
+        UInt
       case (NUIntConst(a), NUIntConst(b)) if a == b => this
       case (NUIntConst(_), NUIntConst(_)) => NUInt
       case _ => Top

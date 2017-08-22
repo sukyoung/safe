@@ -40,8 +40,8 @@ class Translator(program: Program) {
   private val DEBUG = false
 
   // default operators
-  private val PLUS = IROp(NU.TEMP_AST, EJSEtcAdd)
-  private val MINUS = IROp(NU.TEMP_AST, EJSEtcSub)
+  private def PLUS(isUnOp: Boolean): IROp = IROp(NU.TEMP_AST, if (isUnOp) EJSPos else EJSAdd)
+  private def MINUS(isUnOp: Boolean): IROp = IROp(NU.TEMP_AST, if (isUnOp) EJSNeg else EJSSub)
   private val TYPEOF = IROp(NU.TEMP_AST, EJSTypeOf)
   private val EQUALS = IROp(NU.TEMP_AST, EJSEq)
   private val STRICT_EQ = IROp(NU.TEMP_AST, EJSSEq)
@@ -102,16 +102,31 @@ class Translator(program: Program) {
   }
 
   // make a user id
-  private def makeUId(originalName: String, uniqueName: String, isGlobal: Boolean,
-    ast: ASTNode, span: Span, isWith: Boolean): IRUserId =
+  private def makeUId(
+    originalName: String,
+    uniqueName: String,
+    isGlobal: Boolean,
+    ast: ASTNode,
+    span: Span,
+    isWith: Boolean
+  ): IRUserId =
     IRUserId(ast, originalName, uniqueName, isGlobal, isWith)
-  private def makeUId(originalName: String, uniqueName: String, isGlobal: Boolean,
-    ast: ASTNode, isWith: Boolean): IRUserId =
+  private def makeUId(
+    originalName: String,
+    uniqueName: String,
+    isGlobal: Boolean,
+    ast: ASTNode,
+    isWith: Boolean
+  ): IRUserId =
     IRUserId(ast, originalName, uniqueName, isGlobal, isWith)
 
   // make a withRewriter-generated id
-  private def makeWId(originalName: String, uniqueName: String, isGlobal: Boolean,
-    ast: ASTNode): IRUserId =
+  private def makeWId(
+    originalName: String,
+    uniqueName: String,
+    isGlobal: Boolean,
+    ast: ASTNode
+  ): IRUserId =
     IRUserId(ast, originalName, uniqueName, isGlobal, true)
 
   // make a non-global user id
@@ -159,7 +174,14 @@ class Translator(program: Program) {
     else IRExprStmt(ast, id, e)
 
   // make load statement
-  private def makeLoadStmt(fromSource: Boolean, ast: ASTNode, span: Span, lhs: IRId, obj: IRId, index: IRExpr): IRExprStmt =
+  private def makeLoadStmt(
+    fromSource: Boolean,
+    ast: ASTNode,
+    span: Span,
+    lhs: IRId,
+    obj: IRId,
+    index: IRExpr
+  ): IRExprStmt =
     IRExprStmt(ast, lhs,
       IRLoad(ast, obj, index), false)
 
@@ -376,6 +398,23 @@ class Translator(program: Program) {
       newFds, paramsVds ++ newVds, newBody)
   }
 
+  def isPrint(n: Expr): Boolean = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.PRINT_NAME)
+    case _ => false
+  }
+  def isPrintIS(n: Expr): Boolean = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.INTERNAL_PRINT_IS)
+    case _ => false
+  }
+  def isGetTickCount(n: Expr): Boolean = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.INTERNAL_GET_TICK_COUNT)
+    case _ => false
+  }
+  def isToObject(n: Expr): Boolean = n match {
+    case VarRef(info, Id(_, id, _, _)) => id.equals(NU.toObjectName)
+    case _ => false
+  }
+
   private def containsUserId(e: IRExpr): Boolean = e match {
     case IRBin(_, first, _, second) => containsUserId(first) || containsUserId(second)
     case IRUn(_, _, expr) => containsUserId(expr)
@@ -403,13 +442,6 @@ class Translator(program: Program) {
     case Parenthesized(_, e) => getAndArgs(e)
     case InfixOpApp(_, l, op, r) if op.text.equals("&&") => getAndArgs(l) ++ getAndArgs(r)
     case _ => List(expr)
-  }
-
-  private def getName(lhs: LHS): String = lhs match {
-    case VarRef(_, id) => id.text
-    case Dot(_, front, id) => getName(front) + "." + id.text
-    case _: This => "this"
-    case _ => ""
   }
 
   private def containsLhs(res: IRExpr, lhs: Expr, env: Env): Boolean = {
@@ -549,8 +581,7 @@ class Translator(program: Program) {
       val (ss2, r2) = walkExpr(right, env, freshId(right, right.span, "new2"))
       val lab1 = freshId(s, "label1")
       val lab2 = freshId(s, "label2")
-      val ifStmts = ((IRIf(s, r1,
-        IRBreak(s, lab1), None)) :: ss2) :+
+      val ifStmts = (IRIf(s, r1, IRBreak(s, lab1), None) :: ss2) :+
         IRIf(s, r2, IRBreak(s, lab1), None)
       val body1 = falseB match {
         case None => IRSeq(s, ifStmts :+ IRBreak(s, lab2))
@@ -792,7 +823,12 @@ class Translator(program: Program) {
       IRNoOp(s, desc)
   }
 
-  private def walkFunExpr(e: Expr, env: Env, res: IRId, lhs: Option[String]): (List[IRFunExpr], IRId) = e match {
+  private def walkFunExpr(
+    e: Expr,
+    env: Env,
+    res: IRId,
+    lhs: Option[String]
+  ): (List[IRFunExpr], IRId) = e match {
     case FunExpr(info, f @ Functional(_, fds, vds, body, name, params, _)) =>
       val id = if (name.text.equals("")) funexprId(info.span, lhs) else name
       val NEW_NAME = makeUId(id.text, id.uniqueName.get, false,
@@ -819,7 +855,7 @@ class Translator(program: Program) {
       val stmts = exprs.dropRight(1).foldLeft(List[IRStmt]())((l, e) => {
         val tmp = freshId
         val (ss, r) = walkExpr(e, env, tmp)
-        l ++ ss :+ (mkExprS(e, tmp, r))
+        l ++ ss :+ mkExprS(e, tmp, r)
       })
       val (ss2, r2) = walkExpr(exprs.last, env, res)
       (stmts ++ ss2, r2)
@@ -848,8 +884,7 @@ class Translator(program: Program) {
       val (ss3, r3) = walkExpr(falseB, env, res)
       val lab1 = freshId(e, "label1")
       val lab2 = freshId(e, "label2")
-      val ifStmts = ((IRIf(e, ra,
-        IRBreak(e, lab1), None)) :: ssb) :+
+      val ifStmts = (IRIf(e, ra, IRBreak(e, lab1), None) :: ssb) :+
         IRIf(e, rb, IRBreak(e, lab1), None)
       val body1 = IRSeq(e, ifStmts ++ makeList(falseB, ss3, r3, res) :+
         IRBreak(e, lab2))
@@ -868,7 +903,7 @@ class Translator(program: Program) {
         Some(makeSeq(falseBranch, ss3, r3, res))), res)
 
     case AssignOpApp(_, lhs, Op(_, text), right: FunExpr) if text.equals("=") && lhs.isName =>
-      val name = getName(lhs)
+      val name = NU.getName(lhs)
       val (ss, r) = walkFunExpr(right, env, res, Some(name))
       if (containsLhs(r, lhs, env))
         walkLval(e, lhs, env, ss, r, false)
@@ -886,7 +921,7 @@ class Translator(program: Program) {
         val y = freshId(right, right.span, "y")
         val oldVal = freshId(lhs, lhs.span, OLD_NAME)
         val (ss, r) = walkExpr(right, env, y)
-        val bin = IRBin(e, oldVal, IROp(NU.TEMP_AST, EJSOp(op.text.substring(0, op.text.length - 1))), r)
+        val bin = IRBin(e, oldVal, IROp(NU.TEMP_AST, EJSOp(op.text.substring(0, op.text.length - 1), false)), r)
         (walkLval(e, lhs, addE(env, OLD_NAME, oldVal), ss, bin, true) match { case (stmts, _) => stmts }, bin)
       }
 
@@ -898,7 +933,7 @@ class Translator(program: Program) {
         (
           walkLval(e, lhs, addE(env, OLD_NAME, oldVal), List(toNumber(lhs, newVal, oldVal)),
             IRBin(e, newVal,
-              if (op.text.equals("++")) PLUS else MINUS,
+              if (op.text.equals("++")) PLUS(false) else MINUS(false),
               ONE_NUM), true) match { case (stmts, _) => stmts },
           newVal
         )
@@ -914,7 +949,7 @@ class Translator(program: Program) {
         val oldVal = freshId(right, rightspan, OLD_NAME)
         val newVal = freshId(right, rightspan, "new")
         val bin = IRBin(e, newVal,
-          if (opText.equals("++")) PLUS else MINUS,
+          if (opText.equals("++")) PLUS(false) else MINUS(false),
           ONE_NUM)
         (walkLval(e, right, addE(env, OLD_NAME, oldVal),
           List(toNumber(right, newVal, oldVal)),
@@ -949,7 +984,7 @@ class Translator(program: Program) {
       } else {
         val y = freshId(right, right.span, "y")
         val (ss, r) = walkExpr(right, env, y)
-        (ss, IRUn(e, IROp(NU.TEMP_AST, EJSOp(opText)), r))
+        (ss, IRUn(e, IROp(NU.TEMP_AST, EJSOp(opText, true)), r))
       }
 
     case infix @ InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
@@ -973,7 +1008,8 @@ class Translator(program: Program) {
               IRBin(
                 arg1,
                 IRUn(arg1, TYPEOF, cond),
-                EQUALS, IRVal("boolean")
+                EQUALS,
+                IRVal("boolean")
               ),
               mkExprS(arg1, res, FALSE_BOOL),
               Some(mkExprS(arg1, res, cond))
@@ -1025,9 +1061,9 @@ class Translator(program: Program) {
       val (ss2, r2) = walkExpr(right, env, z)
       ss2 match {
         case Nil =>
-          (ss1, IRBin(e, r1, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
+          (ss1, IRBin(e, r1, IROp(NU.TEMP_AST, EJSOp(op.text, false)), r2))
         case _ =>
-          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
+          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.TEMP_AST, EJSOp(op.text, false)), r2))
       }
 
     case VarRef(_, id @ Id(_, name, _, _)) if NU.isInternalValue(name) =>
@@ -1152,6 +1188,22 @@ class Translator(program: Program) {
       val newone = freshId(arg, arg.span, "new1")
       val (ss, r) = walkExpr(arg, env, newone)
       (ss :+ IREval(e, res, r), res)
+
+    // _<>_print()
+    case FunApp(_, fun, List(arg)) if isPrint(fun) =>
+      val newone = freshId(arg, arg.span, "new1")
+      val (ss, r) = walkExpr(arg, env, newone)
+      (ss :+ IRInternalCall(e, res, NU.INTERNAL_PRINT, List(r)), res)
+
+    // _<>_printIS() TODO
+    //    case FunApp(info, fun, Nil) if isPrintIS(fun) =>
+    //      (List(IRInternalCall(e, info.span, res,
+    //        makeGId(e, NU.freshGlobalName("printIS")), res)), res)
+    //
+    //    // _<>_getTickCount()
+    //    case FunApp(info, fun, Nil) if isGetTickCount(fun) =>
+    //      (List(IRInternalCall(e, info.span, res,
+    //        makeGId(e, NU.freshGlobalName("getTickCount")), res)), res)
 
     case FunApp(info, Parenthesized(_, e), args) if e.isInstanceOf[LHS] =>
       walkExpr(FunApp(info, e.asInstanceOf[LHS], args), env, res)
@@ -1302,8 +1354,15 @@ class Translator(program: Program) {
   /*
    * AST2IR_CC : List[Case] * Option[List[Stmt]] * List[Case] -> Env -> List[Option[Expr] * IRId] -> IRStmt
    */
-  private def walkCase(ast: ASTNode, switchSpan: Span, backCases: List[Case], defCase: Option[List[Stmt]],
-    frontCases: List[Case], env: Env, caseEnv: CaseEnv): IRStmt =
+  private def walkCase(
+    ast: ASTNode,
+    switchSpan: Span,
+    backCases: List[Case],
+    defCase: Option[List[Stmt]],
+    frontCases: List[Case],
+    env: Env,
+    caseEnv: CaseEnv
+  ): IRStmt =
     (backCases, defCase, frontCases) match {
       case (head :: tail, _, _) =>
         val Case(info, condExpr, body) = head
@@ -1352,7 +1411,12 @@ class Translator(program: Program) {
   /*
    * AST2IR_SC : List[Option[Expr] * IRId] -> Env -> IRStmt
    */
-  private def walkScond(ast: ASTNode, switchSpan: Span, caseEnv: CaseEnv, env: Env): IRStmt =
+  private def walkScond(
+    ast: ASTNode,
+    switchSpan: Span,
+    caseEnv: CaseEnv,
+    env: Env
+  ): IRStmt =
     caseEnv match {
       case (Some(expr), label) :: tail =>
         val span = expr.span // span is a position of the expression
@@ -1368,8 +1432,14 @@ class Translator(program: Program) {
   /*
    * AST2IR_LVAL : Expr -> Env -> List[IRStmt] -> IRExpr -> boolean -> List[IRStmt] * IRExpr
    */
-  private def walkLval(ast: ASTNode, lhs: Expr, env: Env, stmts: List[IRStmt], e: IRExpr,
-    keepOld: Boolean): (List[IRStmt], IRExpr) = lhs match {
+  private def walkLval(
+    ast: ASTNode,
+    lhs: Expr,
+    env: Env,
+    stmts: List[IRStmt],
+    e: IRExpr,
+    keepOld: Boolean
+  ): (List[IRStmt], IRExpr) = lhs match {
     case Parenthesized(_, expr) =>
       walkLval(ast, expr, env, stmts, e, keepOld)
     case VarRef(_, id) =>

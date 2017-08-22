@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.nodes.ast
 
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 // SourceElement ::= Stmt
 abstract class Stmt(

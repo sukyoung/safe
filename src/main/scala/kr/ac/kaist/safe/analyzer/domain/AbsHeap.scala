@@ -45,6 +45,7 @@ object Heap {
 // heap abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
+
   // lookup
   def get(loc: Loc): AbsObject
   def get(locSet: AbsLoc): AbsObject
@@ -73,6 +74,7 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
   def canPutVar(x: String): AbsBool
 
   // proto
+  def proto(loc: Loc, absStr: AbsString): AbsValue
   def protoBase(loc: Loc, absStr: AbsString): AbsLoc
 
   // store
@@ -114,6 +116,7 @@ object DefaultHeap extends AbsHeapUtil {
   def apply(map: Map[Loc, AbsObject], absSet: Set[Concrete]): AbsHeap = HeapMap(map, absSet)
 
   sealed abstract class Dom extends AbsHeap {
+
     def gamma: ConSet[Heap] = ConInf() // TODO more precise
 
     def getSingle: ConSingle[Heap] = ConMany() // TODO more precise

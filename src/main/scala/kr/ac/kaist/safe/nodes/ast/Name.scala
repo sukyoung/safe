@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.nodes.ast
 
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.SIGNIFICANT_BITS
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 abstract class Name(
   override val info: ASTNodeInfo

@@ -153,8 +153,9 @@ class Semantics(
   }
 
   def C(cp: ControlPoint, st: AbsState): (AbsState, AbsState) = {
-    if (st.isBottom) (AbsState.Bot, AbsState.Bot)
-    else {
+    if (st.isBottom) {
+      (AbsState.Bot, AbsState.Bot)
+    } else {
       val h = st.heap
       val ctx = st.context
       val old = ctx.old
@@ -459,6 +460,16 @@ class Semantics(
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[AllocSite], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
+    case (NodeUtil.INTERNAL_PRINT, List(expr), None) =>
+      (st, excSt)
+    case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)
+      val (curV, excSetC) = st.lookup(id)
+      val newSt = st.varStore(id, curV.locset + v.locset)
+      val newExcSt = st.raiseException(excSetV ++ excSetC)
+      (newSt, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
       val (v, excSetO) = V(exprO, st)
       val (p, excSetP) = V(exprP, st)

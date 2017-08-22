@@ -33,7 +33,7 @@ object CFGExprProtocol extends DefaultJsonProtocol {
     def write(op: EJSOp): JsValue = JsString(op.name)
 
     def read(value: JsValue): EJSOp = value match {
-      case JsString(name) => EJSOp(name)
+      case JsString(name) => EJSOp(name, false)
       case _ => throw EJSOpParseError(value)
     }
   }

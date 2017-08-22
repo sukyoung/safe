@@ -1,4 +1,5 @@
 import scalariform.formatter.preferences._
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys._
 import java.io.File
 
 lazy val checkCopyrights = taskKey[Unit]("Checks copyrights of source files")
@@ -72,6 +73,9 @@ lazy val root = (project in file(".")).
     test262Test <<= (testOnly in Test).toTask(s" -- -n Test262Test") dependsOn compile,
     benchTest <<= (testOnly in Test).toTask(s" -- -n BenchTest") dependsOn compile
   )
+
+// Exclude the Z3 file from auto-formatting because this file uses the Microsoft Z3 library which defines methods that have an underscore character in their name, such as "assert_".
+excludeFilter in (Compile, format) := ("Z3.scala": FileFilter)
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
                                    "-language:postfixOps",

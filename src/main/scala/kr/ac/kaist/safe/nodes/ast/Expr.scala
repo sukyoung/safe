@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.nodes.ast
 
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 abstract class Expr(
     override val info: ASTNodeInfo
