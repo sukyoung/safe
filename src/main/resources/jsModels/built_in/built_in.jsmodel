@@ -1716,21 +1716,23 @@ Function: {
     // 15. If the [[Class]] internal property of Target is "Function", then
     //      a. Let L be the length property of Target minus the length of A.
     //      b. Set the length own property of F to either 0 or L, whichever is larger.
+    var len = 0;
+    if (@Class(this) === "Function") {
+      var L = this.length - A.length;
+      if (L > 0) len = L;
+    }
     // 16. Else set the length own property of F to 0.
     // 17. Set the attributes of the length own property of F to the values specified in 15.3.5.1.
     @DefineOwnProperty(F, "length", {
-      value: 0,
+      value: len,
       writable: false,
       enumerable: false,
       configurable: false
     });
-    if (@Class(this) === "Function") {
-      var L = this.length - A.length;
-      if (L > 0) F.length = L;
-    }
     // 18. Set the [[Extensible]] internal property of F to true.
     @Extensible(F, true);
     // 20. Call the [[DefineOwnProperty]] internal method of F with arguments "caller", PropertyDescriptor {[[Get]]: thrower, [[Set]]: thrower, [[Enumerable]]: false, [[Configurable]]: false}, and false.
+    // TODO
     // 21. Call the [[DefineOwnProperty]] internal method of F with arguments "arguments", PropertyDescriptor {[[Get]]: thrower, [[Set]]: thrower, [[Enumerable]]: false, [[Configurable]]: false}, and false.
     // TODO
     // 22. Return F.
@@ -5308,21 +5310,7 @@ Function: {
       args[j+i] = arguments[j];
     }
     // 5. Return the result of calling the [[Construct]] internal method of target providing args as the arguments.
-    // NOTE: [[Construct]] definition
-    // 1. Let obj be a newly created native ECMAScript object.
-    var obj = {};
-    // 2. Set all the internal methods of obj as specified in 8.12.
-    // 3. Set the [[Class]] internal property of obj to "Object".
-    // 4. Set the [[Extensible]] internal property of obj to true.
-    // 5. Let proto be the value of calling the [[Get]] internal property of F with argument "prototype".
-    // 6. If Type(proto) is Object, set the [[Prototype]] internal property of obj to proto.
-    // 7. If Type(proto) is not Object, set the [[Prototype]] internal property of obj to the standard built-in Object prototype object as described in 15.2.4.
-    // 8. Let result be the result of calling the [[Call]] internal property of F, providing obj as the this value and providing the argument list passed into [[Construct]] as args.
-    var result = @Call(target, obj, args);
-    // 9. If Type(result) is Object then return result.
-    if (typeof result === 'object') return result;
-    // 10. Return obj.
-    return obj;
+    return @Construct(target, this, args);
   }
   \\]
 
