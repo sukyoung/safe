@@ -113,8 +113,6 @@ object DefaultState extends AbsStateUtil {
     def oldify(loc: Loc): AbsState = loc match {
       case Recency(_, Recent) =>
         Dom(this.heap.oldify(loc), this.context.oldify(loc))
-      case Concrete(_) =>
-        Dom(this.heap.oldify(loc), this.context.oldify(loc))
       case _ => this
     }
 

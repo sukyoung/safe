@@ -55,8 +55,7 @@ object ConfigProtocol extends DefaultJsonProtocol {
 
     val map: Map[AAddrType, Int] = Map(
       NormalAAddr -> 0,
-      RecencyAAddr -> 1,
-      ConcreteAAddr -> 2
+      RecencyAAddr -> 1
     )
     val imap: Map[Int, AAddrType] = map.map(_.swap)
 

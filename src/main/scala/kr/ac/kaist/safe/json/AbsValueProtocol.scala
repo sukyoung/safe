@@ -140,13 +140,11 @@ object AbsValueProtocol extends DefaultJsonProtocol {
 
     def write(loc: Loc): JsValue = loc match {
       case Recency(loc, tag) => JsArray(loc.toJson, tag.toJson)
-      case Concrete(loc) => JsArray(loc.toJson)
       case _ => loc.asInstanceOf[AllocSite].toJson
     }
 
     def read(value: JsValue): Loc = value match {
       case JsArray(Vector(loc, tag)) => Recency(loc.convertTo[Loc], tag.convertTo[RecencyTag])
-      case JsArray(Vector(loc)) => Concrete(loc.convertTo[Loc])
       case _ => value.convertTo[AllocSite]
     }
   }

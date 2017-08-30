@@ -71,7 +71,6 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
     ("aaddrType", StrOption((c, s) => s match {
       case "normal" => c.aaddrType = NormalAAddr
       case "recency" => c.aaddrType = RecencyAAddr
-      case "concrete" => c.aaddrType = ConcreteAAddr
       case str => throw NoChoiceError(s"there is no address abstraction type with name '$str'.")
     }), "address abstraction type."),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),
