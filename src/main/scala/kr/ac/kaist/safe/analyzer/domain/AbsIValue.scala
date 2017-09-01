@@ -40,6 +40,15 @@ case object IScope extends IName {
 case object IHasInstance extends IName {
   override def toString: String = s"[[HasInstance]]" // TODO
 }
+case object ITargetFunction extends IName {
+  override def toString: String = s"[[TargetFunction]]"
+}
+case object IBoundThis extends IName {
+  override def toString: String = s"[[BoundThis]]"
+}
+case object IBoundArgs extends IName {
+  override def toString: String = s"[[BoundArgs]]"
+}
 
 abstract class IValue {
   def +(other: IValue): IValue = {
