@@ -1054,6 +1054,147 @@ class Semantics(
       val newExcSt = st.raiseException(excSetV)
       (newSt, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_TARGET_FUN, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(ITargetFunction, AbsIValueUtil(p))
+          h.update(loc, newObj)
+        }
+      }
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_TARGET_FUN, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(ITargetFunction).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_BOUND_THIS, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(IBoundThis, AbsIValueUtil(p))
+          h.update(loc, newObj)
+        }
+      }
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_BOUND_THIS, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IBoundThis).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_BOUND_ARGS, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(IBoundArgs, AbsIValueUtil(p))
+          h.update(loc, newObj)
+        }
+      }
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_BOUND_ARGS, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IBoundArgs).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val locset = v.pvalue.strval.gamma match {
+        case ConInf() => AbsLoc.Top
+        case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
+      }
+      val newSt = st.varStore(lhs, locset)
+      val newExcSt = st.raiseException(excSetV)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_CALL, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+
+      val obj = st.heap.get(p.locset)
+      val fidset = obj(ICall).fidset
+
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(ICall, AbsIValueUtil(fidset))
+          h.update(loc, newObj)
+        }
+      }
+
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_CONSTRUCT, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+
+      val obj = st.heap.get(p.locset)
+      val cidset = obj(IConstruct).fidset
+
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(IConstruct, AbsIValueUtil(cidset))
+          h.update(loc, newObj)
+        }
+      }
+
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_HAS_CONST, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val isDomIn = obj.fold(AbsBool.False) { obj => (obj contains IConstruct) }
+      val b1 =
+        if (AbsBool.True <= isDomIn) AbsBool.True
+        else AbsBool.Bot
+      val b2 =
+        if (AbsBool.False <= isDomIn) AbsBool.False
+        else AbsBool.Bot
+
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(b1 + b2))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
       (AbsState.Bot, AbsState.Bot)
