@@ -62,6 +62,7 @@ object NodeUtil {
   val INTERNAL_PROTO = internalAPIName("Prototype")
   val INTERNAL_EXTENSIBLE = internalAPIName("Extensible")
   val INTERNAL_CALL = internalAPIName("Call")
+  val INTERNAL_CONSTRUCT = internalAPIName("Construct")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // 8.12.1 [[GetOwnProperty]] (P)
@@ -88,6 +89,12 @@ object NodeUtil {
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
   // 15.2.3.4 Object.getOwnPropertyNames ( O )
   val INTERNAL_GET_OWN_PROP_NAMES = internalAPIName("getOwnPropertyNames")
+  // 15.3.4.5 Function.prototype.bind
+  val INTERNAL_TARGET_FUN = internalAPIName("TargetFunction")
+  // 15.3.4.5 [[BoundThis]]
+  val INTERNAL_BOUND_THIS = internalAPIName("BoundThis")
+  // 15.3.4.5 [[BoundArgs]]
+  val INTERNAL_BOUND_ARGS = internalAPIName("BoundArgs")
   // 15.5.2.1 new String (value)
   val INTERNAL_STR_OBJ = internalAPIName("StrObj")
   // 15.6.2.1 new Boolean (value)
@@ -135,12 +142,14 @@ object NodeUtil {
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val INTERNAL_GET_LOC = internalAPIName("getLoc")
+  val INTERNAL_HAS_CONST = internalAPIName("HasConstruct")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
     INTERNAL_EXTENSIBLE,
     INTERNAL_CALL,
+    INTERNAL_CONSTRUCT,
     INTERNAL_GET_BASE,
     INTERNAL_GET_OWN_PROP,
     INTERNAL_DEF_OWN_PROP,
@@ -179,7 +188,11 @@ object NodeUtil {
     INTERNAL_ITER_HAS_NEXT,
     INTERNAL_ITER_NEXT,
     INTERNAL_ADD_EVENT_FUNC,
-    INTERNAL_GET_LOC
+    INTERNAL_GET_LOC,
+    INTERNAL_TARGET_FUN,
+    INTERNAL_BOUND_THIS,
+    INTERNAL_BOUND_ARGS,
+    INTERNAL_HAS_CONST
   )
   def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
 

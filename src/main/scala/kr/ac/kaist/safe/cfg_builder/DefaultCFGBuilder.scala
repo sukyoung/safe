@@ -383,6 +383,19 @@ class DefaultCFGBuilder(
         val key: String = label.uniqueName
         val bs: Set[CFGBlock] = lmap.getOrElse(NamedLabel(key), HashSet()) ++ blocks.toSet
         (Nil, lmap.updated(NamedLabel(key), bs))
+      /* PEI : internal @Construct */
+      case IRInternalCall(_, lhs, NodeUtil.INTERNAL_CONSTRUCT, fun :: thisId :: args :: Nil) =>
+        val tailBlock: NormalBlock = getTail(blocks, func)
+        val thisE = ir2cfgExpr(thisId)
+        val f = tailBlock.func
+        val call = f.createCall(CFGConstruct(stmt, _, ir2cfgExpr(fun), thisE, ir2cfgExpr(args), newASite), id2cfgId(lhs))
+        cfg.addEdge(tailBlock, call)
+
+        (
+          List(call.afterCall),
+          lmap.updated(ThrowLabel, (ThrowLabel of lmap) + call + tailBlock)
+          .updated(AfterCatchLabel, (AfterCatchLabel of lmap) + call.afterCatch)
+        )
       /* PEI : internal @Call */
       case IRInternalCall(_, lhs, NodeUtil.INTERNAL_CALL, fun :: thisId :: args :: Nil) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
