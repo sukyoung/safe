@@ -18,6 +18,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.errors.error.NoChoiceError
 
@@ -38,6 +39,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
       config.AbsBool,
       config.AbsNumber,
       config.AbsString,
+      config.AbsHeap,
       DefaultLoc,
       config.aaddrType
     )
@@ -46,6 +48,14 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
     // handling snapshot mode
     config.snapshot.map(str =>
       initSt = Initialize.addSnapshot(initSt, str))
+
+    config.AbsHeap match {
+      case TSHeap => {
+        val heap = TSHeap.assignGlobalHeap(initSt.heap)
+        initSt = AbsState(heap, initSt.context)
+      }
+      case _ =>
+    }
 
     val sens =
       CallSiteSensitivity(config.callsiteSensitivity) *
@@ -68,6 +78,11 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
       "messages during heap building are muted."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
+    ("heap", StrOption((c, s) => s match {
+      case "default" => c.AbsHeap = DefaultHeap
+      case "two-step" => c.AbsHeap = TSHeap
+      case str => throw NoChoiceError(s"there is no heap abstraction type with name '$str'.")
+    }), "heap abstraction type."),
     ("aaddrType", StrOption((c, s) => s match {
       case "normal" => c.aaddrType = NormalAAddr
       case "recency" => c.aaddrType = RecencyAAddr
@@ -100,6 +115,7 @@ case class HeapBuildConfig(
   var AbsBool: AbsBoolUtil = DefaultBool,
   var AbsNumber: AbsNumberUtil = DefaultNumber,
   var AbsString: AbsStringUtil = StringSet(0),
+  var AbsHeap: AbsHeapUtil = DefaultHeap,
   var callsiteSensitivity: Int = 0,
   var loopSensitivity: Int = 0,
   var snapshot: Option[String] = None,
