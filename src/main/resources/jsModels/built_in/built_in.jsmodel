@@ -1264,8 +1264,8 @@ Heap: {
     "length": <1.0, F, F, F>
   },
   #BoundFunctionHelper: {
-    [[Call]]: fun(141),
-    [[Construct]]: fun(142),
+    [[Call]]: fun(137),
+    [[Construct]]: fun(138),
     [[HasInstance]]: null
   }
 }
@@ -4931,7 +4931,9 @@ Function: {
   }
   \\],
   98: [\\
-  function () {
+  function test () {
+    // TODO
+    return @BoolTop;
   }
   \\],
   99: [\\
@@ -5273,7 +5275,7 @@ Function: {
   function () {
   }
   \\],
-  141: [\\
+  137: [\\
   function bindCall () {
     // 1. Let boundArgs be the value of F’s [[BoundArgs]] internal property.
     var boundArgs = @BoundArgs(arguments.callee);
@@ -5293,7 +5295,7 @@ Function: {
     return @Call(target, boundThis, args);
   }
   \\],
-  142: [\\
+  138: [\\
   function bindConstruct () {
     // 1. Let target be the value of F’s [[TargetFunction]] internal property.
     var target = @TargetFunction(arguments.callee);
@@ -5313,5 +5315,4 @@ Function: {
     return @Construct(target, this, args);
   }
   \\]
-
 }

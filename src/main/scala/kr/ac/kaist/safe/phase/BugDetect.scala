@@ -84,7 +84,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
         block.getInsts.foldRight(List[String](), st)((inst, r) => {
           val (bs, state) = r
           inst match {
-            case i @ CFGAssert(_, _, cond: CFGBin, true) =>
+            case i @ CFGAssert(_, _, cond, true) =>
               val exprBugs = checkExpr(cond, state, semantics)
               val (v, _) = semantics.V(cond, state)
               val bv = TypeConversionHelper.ToBoolean(v)

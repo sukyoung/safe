@@ -24,14 +24,12 @@ import scala.collection.immutable.HashSet
 abstract class Loc extends Value {
   def isUser: Boolean = this match {
     case Recency(loc, _) => loc.isUser
-    case Concrete(loc) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
   }
 
   override def toString: String = this match {
     case Recency(loc, _) => loc.toString
-    case Concrete(loc) => loc.toString
     case u @ UserAllocSite(_) => throw UserAllocSiteError(u)
     case p @ PredAllocSite(_) => p.toString
   }
@@ -46,7 +44,6 @@ object Loc {
 
   def parse(str: String): Try[Loc] = {
     val recency = "(R|O)(.+)".r
-    val concrete = "C(.+)".r
     val userASite = "#([0-9]+)".r
     val predASite = "#([0-9a-zA-Z.<>]+)".r
     str match {
@@ -56,8 +53,6 @@ object Loc {
       // recency abstraction
       case recency("R", str) => parse(str).map(Recency(_, Recent))
       case recency("O", str) => parse(str).map(Recency(_, Old))
-      // concrete abstraction
-      case concrete(str) => parse(str).map(Concrete(_))
       // otherwise
       case str => Failure(NoLoc(str))
     }
@@ -67,7 +62,6 @@ object Loc {
   def apply(asite: AllocSite): Loc = AAddrType match {
     case NormalAAddr => asite
     case RecencyAAddr => Recency(asite, Recent)
-    case ConcreteAAddr => Concrete(asite)
   }
 
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
@@ -211,4 +205,3 @@ case object DefaultLoc extends AbsLocUtil {
 sealed abstract class AAddrType
 case object NormalAAddr extends AAddrType
 case object RecencyAAddr extends AAddrType
-case object ConcreteAAddr extends AAddrType

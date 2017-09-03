@@ -11,7 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.analyzer.console._
+import kr.ac.kaist.safe.errors.error.IllFormedBlockStr
 
 // move
 case object CmdMove extends Command("move", "Change a current position.") {
@@ -24,36 +26,13 @@ case object CmdMove extends Command("move", "Change a current position.") {
 
   def run(c: Console, args: List[String]): Option[Target] = {
     val cfg = c.cfg
-    val idPattern = "(\\d+):(\\d+)".r
-    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
     args match {
-      case subcmd :: Nil => subcmd match {
-        case idPattern(fidStr, bidStr) => {
-          val fid = fidStr.toInt
-          val bid = bidStr.toInt
-          cfg.getFunc(fid) match {
-            case Some(func) => func.getBlock(bid) match {
-              case Some(block) => c.moveCurCP(block)
-              case None => println(s"* unknown bid in function[$fid]: $bid")
-            }
-            case None => println(s"* unknown fid: $fid")
-          }
+      case subcmd :: Nil => cfg.findBlock(subcmd) match {
+        case Success(block) => c.moveCurCP(block)
+        case Failure(e) => e match {
+          case IllFormedBlockStr => help
+          case _ => println(s"* ${e.getMessage}")
         }
-        case spPattern(fidStr, sp) => {
-          val fid = fidStr.toInt
-          cfg.getFunc(fid) match {
-            case Some(func) => {
-              val block = sp match {
-                case "entry" => func.entry
-                case "exit" => func.exit
-                case _ => func.exitExc
-              }
-              c.moveCurCP(block)
-            }
-            case None => println(s"* unknown fid: $fid")
-          }
-        }
-        case _ => help
       }
       case _ => help
     }

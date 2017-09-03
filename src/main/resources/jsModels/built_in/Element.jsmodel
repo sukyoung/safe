@@ -9,7 +9,8 @@ Heap: {
     "document": <#document, T, F, T>,
     "location": <#location, F, T, T>,
     "setInterval": <#Document.prototype.setInterval, T, T, T>,
-    "setTimeout": <#Document.prototype.setTimeout, T, T, T>
+    "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
+    "navigator": <#Global.clientInformation, F, T, T>
   },
   #Element: {
     [[Call]]: fun(1),
@@ -171,7 +172,13 @@ Heap: {
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null
-  }
+  },
+  #Global.clientInformation: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "userAgent": <string, T, T, T>
+  },
 }
 
 Function: {

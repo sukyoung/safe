@@ -28,13 +28,13 @@ object Initialize {
     val initHeap = AbsHeap(HashMap(
       BuiltinGlobal.loc -> AbsObject.Bot
     // TODO If delete, not working because not allowed update to bottom heap
-    ), HashSet[Concrete]())
+    ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
       PredAllocSite.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PredAllocSite.PURE_LOCAL -> globalPureLocalEnv,
       PredAllocSite.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), HashSet[Concrete](), OldASiteSet.Empty, globalLocSet)
+    ), OldASiteSet.Empty, globalLocSet)
 
     val modeledHeap: AbsHeap =
       if (jsModel) {

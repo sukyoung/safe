@@ -52,9 +52,8 @@ object AbsStateProtocol extends DefaultJsonProtocol {
     def write(ctx: AbsContext): JsValue = ctx match {
       case DefaultContext.Bot => JsTrue
       case DefaultContext.Top => JsFalse
-      case DefaultContext.CtxMap(map, set, old, value) => JsArray(
+      case DefaultContext.CtxMap(map, old, value) => JsArray(
         JsArray(map.to[Vector].map { case (loc, env) => JsArray(loc.toJson, env.toJson) }),
-        JsArray(set.to[Vector].map(_.asInstanceOf[Loc].toJson)),
         old.toJson,
         value.toJson
       )
@@ -63,12 +62,11 @@ object AbsStateProtocol extends DefaultJsonProtocol {
     def read(value: JsValue): AbsContext = value match {
       case JsTrue => DefaultContext.Bot
       case JsFalse => DefaultContext.Top
-      case JsArray(Vector(JsArray(map), JsArray(set), old, value)) => DefaultContext.CtxMap(
+      case JsArray(Vector(JsArray(map), old, value)) => DefaultContext.CtxMap(
         map.map(_ match {
         case JsArray(Vector(loc, env)) => loc.convertTo[Loc] -> env.convertTo[AbsLexEnv]
         case _ => throw AbsContextParseError(value)
       }).toMap,
-        set.map(_.convertTo[Loc].asInstanceOf[Concrete]).to[Set],
         old.convertTo[OldASiteSet],
         value.convertTo[AbsValue]
       )
@@ -80,20 +78,18 @@ object AbsStateProtocol extends DefaultJsonProtocol {
 
     def write(heap: AbsHeap): JsValue = heap match {
       case DefaultHeap.Top => JsNull
-      case DefaultHeap.HeapMap(map, set) => JsArray(
-        JsArray(map.to[Vector].map { case (loc, obj) => JsArray(loc.toJson, obj.toJson) }),
-        JsArray(set.to[Vector].map(_.asInstanceOf[Loc].toJson))
+      case DefaultHeap.HeapMap(map) => JsArray(
+        JsArray(map.to[Vector].map { case (loc, obj) => JsArray(loc.toJson, obj.toJson) })
       )
     }
 
     def read(value: JsValue): AbsHeap = value match {
       case JsNull => DefaultHeap.Top
-      case JsArray(Vector(JsArray(map), JsArray(set))) => DefaultHeap.HeapMap(
+      case JsArray(Vector(JsArray(map))) => DefaultHeap.HeapMap(
         map.map(_ match {
         case JsArray(Vector(loc, obj)) => loc.convertTo[Loc] -> obj.convertTo[AbsObject]
         case _ => throw AbsHeapParseError(value)
-      }).toMap,
-        set.map(_.convertTo[Loc].asInstanceOf[Concrete]).to[Set]
+      }).toMap
       )
       case _ => throw AbsHeapParseError(value)
     }

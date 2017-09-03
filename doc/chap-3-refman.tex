@@ -194,7 +194,7 @@ For example:
 <function[0] top-level: Entry[-1], ()> @test.js:1:1
 Iter[0] > help print
 usage: print state(-all) ({keyword})
-       print block
+       print block ({fid}:{bid})
        print loc {LocName} ({keyword})
        print func {functionID}
        print worklist
@@ -428,9 +428,10 @@ Infinity, SyntaxError, __RefErrProtoLoc, __Global,
 }
 
 \medskip\noindent
-\fbox{\texttt{print block}}\\[.2em]
+\fbox{\texttt{print block ({}{})}}\\[.2em]
+\fbox{\texttt{print block (\{fid\}\{bid\})}}\\[.2em]
 The \verb!print block! command displays the information of
-a given block.  For example:
+the current block. For example:
 {\small
 \begin{verbatim}
 <function[0] top-level: Block[0], ()> @test.js:1:1-7:18
@@ -452,6 +453,31 @@ Block[0] -> [1], ExitExc
   [12] <>arguments<>7 := allocArg(0) @ #8
   [13] <>fun<>8 :=
        <>Global<>toObject(<>obj<>6["pop"]) @ #9
+\end{verbatim}
+}
+
+Moreover, it displays the information of the given block denoted
+by the id of a function, the id of a block, and the kind of the block.
+For example:
+
+{\small
+\begin{verbatim}
+<function[0] top-level: Block[0], ()> @test.js:1:1-7:18
+Iter[1] > print block 0:4
+Block[4] -> Exit, ExitExc
+  [0] shift := <>Global<>ignore6
+  [1] __result1 := shift !== "x"
+  [2] __expect1 := false
+  [3] <>obj<>10 := <>Global<>toObject(obj) @ #13
+  [4] __result2 := <>obj<>10["length"] !== 1
+  [5] __expect2 := false
+  [6] <>obj<>11 := <>Global<>toObject(obj) @ #14
+  [7] __result3 := <>obj<>11[0] !== "y"
+  [8] __expect3 := false
+  [9] <>obj<>12 := <>Global<>toObject(obj) @ #15
+  [10] __result4 := <>obj<>12[1] !== undefined
+  [11] __expect4 := false
+  [12] noop(EndOfFile)
 \end{verbatim}
 }
 

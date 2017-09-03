@@ -169,7 +169,7 @@ class Console(
 
   private def toString(cp: ControlPoint): String = {
     val block = cp.block
-    val func = block.func
+    val func = block.func.simpleName
     val span = block.span
     val tp = cp.tracePartition
     s"<$func: $block, $tp> @${span.toString}"

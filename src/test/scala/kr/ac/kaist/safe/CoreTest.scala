@@ -38,12 +38,26 @@ object AnalyzeTest extends Tag("AnalyzeTest")
 object HtmlTest extends Tag("HtmlTest")
 object Test262Test extends Tag("Test262Test")
 object BenchTest extends Tag("BenchTest")
+object DumpTest extends Tag("DumpTest")
 
 class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val SEP = File.separator
   val testDir = BASE_DIR + SEP + "tests" + SEP
   val jsDir = testDir + "cfg" + SEP + "js" + SEP + "success" + SEP
   val resDir = testDir + "cfg" + SEP + "result" + SEP + "success" + SEP
+  val noTestForWithoutJSModel: List[String] = List(
+    "/tests/semantics/builtin/15.3/15.3.4/15.3.4.5/15.3.4.5_BASE.js",
+    "/tests/test262/15.3/15.3.4/15.3.4.5/",
+    "/tests/test262/15.3/15.3.4/15.3.4.5.1/",
+    "/tests/test262/15.3/15.3.4/15.3.4.5.2/"
+  )
+  def noTestCheckForWithoutJSModel(file: File): Boolean = {
+    val filename = file.getName
+    val name = file.toString
+    val relPath = name.substring(BASE_DIR.length)
+    noTestForWithoutJSModel.exists(relPath contains _)
+  }
+
   def walkTree(file: File): Iterable[File] = {
     val children = new Iterable[File] {
       def iterator: Iterator[File] = if (file.isDirectory) file.listFiles.iterator else Iterator.empty
@@ -62,6 +76,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   }
 
   def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
+
+  def getDumped(filename: String): Try[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] =
+    CmdJsonLoad(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -173,20 +190,23 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val name = file.toString
     val relPath = name.substring(BASE_DIR.length)
     if (filename.endsWith(".js") || filename.endsWith(".html")) {
-      registerTest(prefix + filename, tag) {
-        val safeConfig = testSafeConfig.copy(fileNames = List(name))
-        val cfg = getCFG(name)
-        if (filename.endsWith(".html")) heapBuildConfig.jsModel = true
-        val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
-        val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
-        testList ::= relPath
-        val (ar, iter) = analyzeTest(analysis, tag)
-        totalIteration += iter
-        ar match {
-          case Precise => preciseList ::= relPath
-          case Imprecise => impreciseList ::= relPath
-          case Benchmark => // Not yet decided what to do
-          case Fail => // unreachable
+      // no test when jsModel option is deactive.
+      if (heapBuildConfig.jsModel || !(noTestCheckForWithoutJSModel(file))) {
+        registerTest(prefix + filename, tag) {
+          val safeConfig = testSafeConfig.copy(fileNames = List(name))
+          val cfg = getCFG(name)
+          if (filename.endsWith(".html")) heapBuildConfig.jsModel = true
+          val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
+          val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
+          testList ::= relPath
+          val (ar, iter) = analyzeTest(analysis, tag)
+          totalIteration += iter
+          ar match {
+            case Precise => preciseList ::= relPath
+            case Imprecise => impreciseList ::= relPath
+            case Benchmark => // Not yet decided what to do
+            case Fail => // unreachable
+          }
         }
       }
     } else if (filename.endsWith(".js.todo")) {
@@ -200,6 +220,21 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         CmdParse(List("-silent", name), testMode = true) match {
           case Failure(ParserError(_, _)) => preciseList ::= relPath
           case e => assert(false)
+        }
+      }
+    } else if (filename.endsWith(".json")) {
+      registerTest(prefix + filename, tag) {
+        val safeConfig = testSafeConfig.copy(fileNames = List(name))
+        val dumped = getDumped(name)
+        val analysis = dumped.flatMap(Analyze(_, safeConfig, analyzeConfig))
+        testList ::= relPath
+        val (ar, iter) = analyzeTest(analysis, tag)
+        totalIteration += iter
+        ar match {
+          case Precise => preciseList ::= relPath
+          case Imprecise => impreciseList ::= relPath
+          case Benchmark => // Not yet decided what to do
+          case Fail => // unreachable
         }
       }
     }
@@ -243,7 +278,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var slowList = List[String]()
   var totalIteration = 0
 
-  val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
+  val analysisDetail = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
   val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
 
   val parser = new ArgParser(CmdBase, testSafeConfig)
@@ -259,8 +294,10 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   }
 
   val analyzerTestDir = testDir + "semantics"
-  for (file <- shuffle(walkTree(new File(analyzerTestDir))))
-    analyzeHelper("[Analyze]", AnalyzeTest, file)
+  for (
+    file <- shuffle(walkTree(new File(analyzerTestDir + SEP + "language"))
+      ++ walkTree(new File(analyzerTestDir + SEP + "builtin")))
+  ) analyzeHelper("[Analyze]", AnalyzeTest, file)
 
   val htmlTestDir = testDir + "html"
   for (file <- shuffle(walkTree(new File(htmlTestDir)))) {
@@ -275,8 +312,12 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   for (file <- shuffle(walkTree(new File(benchTestDir))))
     analyzeHelper("[Benchmarks]", BenchTest, file)
 
+  val dumpTestDir = testDir + "semantics" + SEP + "result"
+  for (file <- shuffle(walkTree(new File(dumpTestDir))))
+    analyzeHelper("[Dump]", DumpTest, file)
+
   override def afterAll(): Unit = {
-    val file = new File(analysisDeatil)
+    val file = new File(analysisDetail)
     val bw = new BufferedWriter(new FileWriter(file))
     val pw = new PrintWriter(bw)
     val pre = preciseList.sorted
