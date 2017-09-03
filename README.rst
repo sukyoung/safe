@@ -31,15 +31,15 @@ In your shell startup script, add $SAFE_HOME/bin to your path.  The shell script
 Installation
 ============
 
-Type **sbt compile** and then **sbt test** to make sure that your installation successfully finishes the tests.
+Type **sbt compile** and then **sbt test** in the SAFE directory to make sure that your installation successfully finishes the tests.
 
 Once you have built the framework, you can call it from any directory, on any JavaScript file, simply by typing one of available commands at a command line.  You can see the available commands by typing: ::
 
-    bin/safe
+    safe
 
 or with more explanation: ::
 
-    bin/safe help
+    safe help
 
 Some of the available commands are as follows:
 
