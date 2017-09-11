@@ -101,7 +101,9 @@ object AbsObjectProtocol extends DefaultJsonProtocol {
       ICall -> 4,
       IConstruct -> 5,
       IScope -> 6,
-      IHasInstance -> 7
+      IHasInstance -> 7,
+      // for NodeJS
+      IModuleCache -> 7
     )
     val imap: Map[Int, IName] = map.map(_.swap)
 

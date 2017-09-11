@@ -1063,6 +1063,33 @@ class Semantics(
       val newExcSt = st.raiseException(excSetV)
       (newSt, excSt + newExcSt)
     }
+    // for NodeJS : @resolvePath(path)
+    case (NodeUtil.INTERNAL_RESOLVE_PATH, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) {
+          // concrete path
+          val path: String = v.pvalue.strval.gamma match {
+            // for now, we assume that a given path for the loaded module has a single concrete string
+            case ConFin(strset) if strset.size == 1 => strset.head
+            case ConFin(strset) if strset.size != 1 =>
+              throw new Error("Possible paths for loading the module are multiple : " + strset)
+            case ConInf() => throw new Error("Unknown path for the module to be loaded in Node.js")
+          }
+          val resolvedPath = NodeJSUtil.resolve(path)
+
+          st.varStore(lhs, AbsValue(resolvedPath))
+        } else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+
+    // for NodeJS : @notModeled()
+    case (NodeUtil.INTERNAL_NOT_MODELED, List(), None) => {
+      throw new Error("Not Modeled yet!!!")
+    }
+
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
       (AbsState.Bot, AbsState.Bot)
@@ -1085,17 +1112,19 @@ class Semantics(
     }*/
 
     // concrete path for the loaded source
-    val path: String = argVal.pvalue.strval.gamma match {
+    // Node that the path has been already resolved by @resolvePath
+    val resolvedPath: String = argVal.pvalue.strval.gamma match {
       // for now, we assume that a given path for the loaded module has a single concrete string
       case ConFin(strset) if strset.size == 1 => strset.head
       case ConFin(strset) if strset.size != 1 =>
         throw new Error("Possible paths for loading the module are multiple : " + strset)
       case ConInf() => throw new Error("Unknown path for the module to be loaded in Node.js")
     }
-    val resolvedPath = NodeJSUtil.resolve(path)
+    //val resolvedPath = NodeJSUtil.resolve(path)
     if (thisVal.isBottom)
       throw new Error("thisArg in @loadModule(thisArg, path) is the bottom value.")
     else {
+      println("module " + resolvedPath + " is being loaded ...")
       // construct an AST
       val ast = Parser.moduleToAST(resolvedPath) match {
         case Success((program, excLog)) => {
@@ -1206,6 +1235,10 @@ class Semantics(
             funObj(IConstruct).fidset
           case _: CFGCall =>
             funObj(ICall).fidset
+        }
+        if (fidSet.size > 10) {
+          println("The size of fids is more than 10!!!")
+          throw new Error("error")
         }
         fidSet.foreach((fid) => {
           cfg.getFunc(fid) match {
@@ -1371,12 +1404,16 @@ class Semantics(
           }
       }
     }
-    case CFGInternalValue(ir, name) => getInternalValue(name) match {
-      case Some(value) => (value, ExcSetEmpty)
-      case None =>
-        excLog.signal(SemanticsNotYetImplementedError(ir))
-        (AbsValue.Bot, ExcSetEmpty)
-    }
+    case CFGInternalValue(ir, name) =>
+      // for NodeJS
+      if (name == NodeUtil.INTERNAL_MODULE_CACHE) {
+        (st.heap.get(BuiltinGlobal.loc)(IModuleCache).value, ExcSetEmpty)
+      } else getInternalValue(name) match {
+        case Some(value) => (value, ExcSetEmpty)
+        case None =>
+          excLog.signal(SemanticsNotYetImplementedError(ir))
+          (AbsValue.Bot, ExcSetEmpty)
+      }
     case CFGVal(ejsVal) =>
       val pvalue: AbsPValue = ejsVal match {
         case EJSNumber(_, num) => AbsPValue(num)

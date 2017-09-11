@@ -40,6 +40,10 @@ case object IScope extends IName {
 case object IHasInstance extends IName {
   override def toString: String = s"[[HasInstance]]" // TODO
 }
+// for NodeJS
+case object IModuleCache extends IName {
+  override def toString: String = s"[[ModuleCache]]" // TODO
+}
 
 abstract class IValue {
   def +(other: IValue): IValue = {

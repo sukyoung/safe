@@ -136,7 +136,9 @@ object NodeUtil {
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val INTERNAL_GET_LOC = internalAPIName("getLoc")
   // for Node.js
+  val INTERNAL_RESOLVE_PATH = internalAPIName("resolvePath")
   val INTERNAL_LOAD_MODULE = internalAPIName("loadModule")
+  val INTERNAL_NOT_MODELED = internalAPIName("notModeled")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
@@ -183,7 +185,9 @@ object NodeUtil {
     INTERNAL_ADD_EVENT_FUNC,
     INTERNAL_GET_LOC,
     // for Node.js
-    INTERNAL_LOAD_MODULE
+    INTERNAL_RESOLVE_PATH,
+    INTERNAL_LOAD_MODULE,
+    INTERNAL_NOT_MODELED
   )
   def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
 
@@ -210,6 +214,9 @@ object NodeUtil {
   val INTERNAL_ERR_PROTO = internalAPIName("ErrProto")
   val INTERNAL_OBJ_CONST = internalAPIName("ObjConst")
   val INTERNAL_ARRAY_CONST = internalAPIName("ArrayConst")
+  // for NodeJS
+  val INTERNAL_MODULE_CACHE = internalAPIName("ModuleCache")
+
   val internalValueSet: Set[String] = HashSet(
     INTERNAL_TOP,
     INTERNAL_BOT,
@@ -232,7 +239,9 @@ object NodeUtil {
     INTERNAL_URI_ERR_PROTO,
     INTERNAL_ERR_PROTO,
     INTERNAL_OBJ_CONST,
-    INTERNAL_ARRAY_CONST
+    INTERNAL_ARRAY_CONST,
+    // for NodeJS
+    INTERNAL_MODULE_CACHE
   )
   def isInternalValue(id: String): Boolean = internalValueSet.contains(id)
 

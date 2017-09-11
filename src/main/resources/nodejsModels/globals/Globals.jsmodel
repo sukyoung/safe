@@ -1,6 +1,12 @@
-Heap: {
+Heap: {  
   #Global: {
-    "global": <#Global, T, T, T>
+    "global": <#Global, T, T, T>,
+    [[ModuleCache]]: #NodeJS.ModuleCache
+  },
+  #NodeJS.ModuleCache: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype 
   }
 }
 
