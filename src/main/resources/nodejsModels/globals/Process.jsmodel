@@ -5,7 +5,8 @@ Heap: {
   #NodeJS.process: {
     [[Class]]: "Object",
     [[Extensible]]: true,
-    [[Prototype]]: #Object.prototype
+    [[Prototype]]: #Object.prototype,
+    "pid" : <number, F, T, T>
   }
 }
 

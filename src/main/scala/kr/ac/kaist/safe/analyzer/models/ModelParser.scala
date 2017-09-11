@@ -213,9 +213,13 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   private lazy val jsIConstruct = "[[Construct]]" ^^^ { IConstruct }
   private lazy val jsIScope = "[[Scope]]" ^^^ { IScope }
   private lazy val jsIHasInstance = "[[HasInstance]]" ^^^ { IHasInstance }
+  // for NodeJS
+  private lazy val jsIModuleCache = "[[ModuleCache]]" ^^^ { IModuleCache }
   private lazy val jsIName: Parser[IName] = {
     jsIPrototype | jsIClass | jsIExtensible | jsIPrimitiveValue |
-      jsICall | jsIConstruct | jsIScope | jsIHasInstance
+      jsICall | jsIConstruct | jsIScope | jsIHasInstance |
+      // for NodeJS
+      jsIModuleCache
   }
   private lazy val jsFId: Parser[FId] = "fun(" ~> int <~ ")" ^^ { case n => FId(-n) }
   private lazy val jsIValue: Parser[IValue] = jsValue | jsFId

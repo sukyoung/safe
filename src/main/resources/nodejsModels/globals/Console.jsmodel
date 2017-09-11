@@ -1,0 +1,27 @@
+Heap: {
+  #Global: {
+    "console": <#NodeJS.console, T, T, T>
+  },
+  #NodeJS.console: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "log" : <#NodeJS.console.log, T, T, T>
+  },
+  #NodeJS.console.log: {
+    [[Call]]: fun(1),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+}
+
+Function: {
+  1: [\\
+  function log() {
+  }
+  \\],
+
+}

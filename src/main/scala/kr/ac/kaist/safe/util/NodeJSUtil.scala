@@ -10,22 +10,32 @@
  */
 
 package kr.ac.kaist.safe.util
+
+import java.nio.file.Paths
 import kr.ac.kaist.safe.BASE_DIR
 
 object NodeJSUtil {
   // TODO : Not fully modeled
   val requireFunction =
     "function __require(path) {\n" +
-      "  return @loadModule(this, path);" +
+      "  var resolvedPath = @resolvePath(path);\n" +
+      "  if(@ModuleCache[resolvedPath]) {\n" +
+      "    return @ModuleCache[resolvedPath].exports;\n" +
+      "  }\n" +
+      "  else {\n" +
+      "    return @loadModule(this, resolvedPath);\n" +
+      "  }\n" +
       "}\n"
   val moduleWrapperTemplate =
     "function (){\n" +
       "   var __filename = /* SAFE: __filename */;\n" +
       "   var __dirname = /* SAFE: __dirname */;\n" +
-      "   var require = " +
-      requireFunction +
       "   var module = { exports : {}\n" +
       "                };\n" +
+      "   @ModuleCache[__filename] = module;\n" +
+      "   var require = " +
+      requireFunction +
+      "   require.cache = @ModuleCache;\n" +
       "   var exports = module.exports;\n" +
       "\n" +
       "   /* SAFE: original source */\n " +
@@ -72,8 +82,12 @@ object NodeJSUtil {
   def resolve(path: String): String = {
     if (coreModuleList.contains(path))
       coreModuleBase + path + ".js"
-    else
-      path
+    else {
+      if (path.startsWith("./") && path.endsWith(".js"))
+        Paths.get(path.stripPrefix("./")).toAbsolutePath.toString
+      else
+        throw new Error("Not Yet Implemented : require.resolve")
+    }
   }
 
   private val modelBase = BASE_DIR + "/src/main/resources/nodejsModels/"

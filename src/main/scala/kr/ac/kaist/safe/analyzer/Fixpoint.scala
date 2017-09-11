@@ -28,6 +28,7 @@ class Fixpoint(
       consoleOpt.fold() { _.runFixpoint }
       val cp = worklist.pop
       val st = semantics.getState(cp)
+      println("Interation  " + iters + ": " + cp)
       val (nextSt, nextExcSt) = semantics.C(cp, st)
       propagateNormal(cp, nextSt)
       propagateException(cp, nextExcSt)
