@@ -6,8 +6,129 @@ Heap: {
     [[Class]]: "Object",
     [[Extensible]]: true,
     [[Prototype]]: #Object.prototype,
-    "pid" : <number, F, T, T>
-  }
+    "pid" : <number, F, T, T>,
+    "binding" : <#NodeJS.process.binding, T, T, T>,
+    "env" : <#NodeJS.process.env, T, T, T>
+  },
+  #NodeJS.process.binding: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(1),
+    "length": <0, F, F, F>
+  },
+  #NodeJS.process.binding.buffer: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "setupBufferJS" : <#NodeJS.process.binding.buffer.setupBufferJS, T, T, T>,
+    "kMaxLength" : <number, T, T, T>,
+    "kStringMaxLength" : <number, T, T, T>
+  },
+  #NodeJS.process.binding.buffer.setupBufferJS: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(2),
+    "length": <0, F, F, F>
+  },
+  #NodeJS.process.binding.smalloc: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "alloc" : <#NodeJS.process.binding.smalloc.alloc, T, T, T>,
+    "truncate" : <#NodeJS.process.binding.smalloc.truncate, T, T, T>,
+    "sliceOnto" : <#NodeJS.process.binding.smalloc.sliceOnto, T, T, T>,
+    "kMaxLength" : <number, T, T, T>
+  },
+ #NodeJS.process.binding.smalloc.alloc: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(3),
+    "length": <0, F, F, F>
+  },
+ #NodeJS.process.binding.smalloc.truncate: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(4),
+    "length": <0, F, F, F>
+  },
+ #NodeJS.process.binding.smalloc.sliceOnto: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(5),
+    "length": <0, F, F, F>
+  },
+ #NodeJS.process.env: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype
+ }
 }
 
-Function: {}
+Function: {
+ 1: [\\
+  function binding(name) {
+    if(name == "buffer") {
+      return @getLoc("NodeJS.process.binding.buffer");     
+    }
+    else if(name == "smalloc") {
+      return @getLoc("NodeJS.process.binding.smalloc");     
+    }
+    else {
+      @notModeled("function binding(" + name + ") not modeled!!!");
+    } 
+  }
+  \\],
+ 2: [\\
+  function setupBufferJS(proto, target) {
+    @Prototype(target, proto);
+  }
+  \\],
+ 3: [\\
+  function alloc(obj, size) {
+    // TODO : check for already allocated objects
+    for(var i = 0; i < size; i++) {
+      obj[i] = 0;
+    }
+    return obj;
+  }
+  \\],
+ 4: [\\
+  function truncate(obj, length) {
+    var size = 0;
+    // to figure out the size of obj
+    while(obj[size] != undefined) {
+      size++;
+    }
+    if(size===0) {
+      throw new TypeError("object has no external array data");
+    }
+    else if(length > size) {
+      throw new RangeError("truncate length is bigger than current one"); 
+    }
+    else {
+      for(var i=length; i<size; i++) {
+         delete obj[i];
+      }
+    }
+  }
+  \\],
+ 5: [\\
+  function sliceOnto(obj, target, start, end) {
+    // TODO : check for already allocated objects
+    for(var i = start, j=0; i < end; i++, j++) {
+      target[j] = obj[i];
+    }
+    return obj; 
+  }
+  \\]
+}
