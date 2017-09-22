@@ -60,18 +60,20 @@ object NodeJSUtil {
     val translatedSource = moduleWrapper(source, filename, dirname, isMain)
     "(" + translatedSource + ") ();"
   }
-
+  // NodeJS V1.0
   private val coreModuleList = List(
-    "assert", "buffer", "child_process", "cluster", "crypto",
-    "dgram", "dns", "domain", "events", "fs", "http",
-    "https", "net", "os", "path", "punycode",
-    "querystring", "readline", "repl", "stream", "string_decoder",
-    "tls", "tty", "url", "util", "v8", "vm", "zlib",
+    "assert", "buffer", "child_process", "cluster", "console",
+    "constants", "crypto", "dgram", "dns", "domain",
+    "events", "freelist", "fs", "http", "https",
+    "module", "net", "os", "path", "process",
+    "punycode", "querystring", "readline", "repl", "smalloc",
+    "stream", "string_decoder", "sys", "tls", "tty",
+    "url", "util", "v8", "vm", "zlib",
     // internal core modules
-    "timers", "constants", "freelist", "smalloc", "_debugger",
-    "_http_agent", "_http_client", "_http_common", "_http_incoming", "_http_outgoing",
-    "_http_server", "_linklist", "_stream_duplex", "_stream_passthrough", "_stream_readable",
-    "_stream_transform", "_stream_writable", "_tls_common", "_tls_legacy", "_tls_wrap"
+    "_debug_agent", "_debugger", "_http_agent", "_http_client", "_http_common",
+    "_http_incoming", "_http_outgoing", "_http_server", "_linklist", "_stream_duplex",
+    "_stream_passthrough", "_stream_readable", "_stream_transform", "_stream_writable",
+    "_tls_common", "_tls_legacy", "_tls_wrap"
   )
 
   private val coreModuleBase = BASE_DIR + "/src/main/resources/nodejsModels/core_modules/"
