@@ -128,6 +128,14 @@ class CFG(
   // get all locations
   def getAllASiteSet: Set[AllocSite] =
     (1 to userASiteSize).foldLeft(predASiteSet)(_ + UserAllocSite(_))
+
+  // for NodeJS
+  // keeps fun CFGs for already loaded modules.
+  private val moduleMap: MMap[String, CFGFunction] = MHashMap()
+  def getModuleCFG(path: String): Option[CFGFunction] = moduleMap.get(path)
+  def addModuleCFG(path: String, moduleCFG: CFGFunction): Unit =
+    moduleMap(path) = moduleCFG
+
 }
 
 object CFG {

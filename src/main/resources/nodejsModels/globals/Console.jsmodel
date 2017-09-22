@@ -6,7 +6,9 @@ Heap: {
     [[Class]]: "Object",
     [[Extensible]]: true,
     [[Prototype]]: #Object.prototype,
-    "log" : <#NodeJS.console.log, T, T, T>
+    "log" : <#NodeJS.console.log, T, T, T>,
+    "trace" : <#NodeJS.console.trace, T, T, T>,
+    "error" : <#NodeJS.console.error, T, T, T>
   },
   #NodeJS.console.log: {
     [[Call]]: fun(1),
@@ -16,12 +18,41 @@ Heap: {
     [[Scope]]: null,
     "length": <0, F, F, F>
   },
+  #NodeJS.console.trace: {
+    [[Call]]: fun(2),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #NodeJS.console.error: {
+    [[Call]]: fun(3),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  }
 }
 
 Function: {
   1: [\\
-  function log() {
+  function log(msg) {
+    // prints to stdout with newline
+    // return value : undefined
   }
   \\],
-
+  2: [\\
+  function trace(msg) {
+    // Print to stderr 'Trace :', followed by the formatted message and stack trace to the current position.
+    // return value : undefined
+  }
+  \\],
+  3: [\\
+  function error(msg) {
+    // Same as console.log but prints to stderr.
+    // return value : undefined
+  }
+  \\]
 }

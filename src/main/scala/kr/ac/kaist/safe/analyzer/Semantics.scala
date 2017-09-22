@@ -1125,43 +1125,52 @@ class Semantics(
       throw new Error("thisArg in @loadModule(thisArg, path) is the bottom value.")
     else {
       println("module " + resolvedPath + " is being loaded ...")
-      // construct an AST
-      val ast = Parser.moduleToAST(resolvedPath) match {
-        case Success((program, excLog)) => {
-          // Report errors.
-          if (excLog.hasError) {
-            println(program.relFileName + ":")
-            println(excLog)
+      val func = cfg.getModuleCFG(resolvedPath) match {
+        case Some(moduleCFG) =>
+          println("Using the CFGs already constructed for the module ...")
+          moduleCFG
+        case None =>
+          println("Constructing a new CFG for the module ...")
+          // construct an AST
+          val ast = Parser.moduleToAST(resolvedPath) match {
+            case Success((program, excLog)) => {
+              // Report errors.
+              if (excLog.hasError) {
+                println(program.relFileName + ":")
+                println(excLog)
+              }
+              program
+            }
+            // for now, throw an exception when the parsing failed
+            case Failure(e) =>
+              throw ModelParseError(e.toString)
           }
-          program
-        }
-        // for now, throw an exception when the parsing failed
-        case Failure(e) =>
-          throw ModelParseError(e.toString)
+          // rewrite AST
+          val safeConfig = SafeConfig(CmdCFGBuild, silent = true)
+          val astRewriteConfig = ASTRewriteConfig()
+          val rast = ASTRewrite(ast, safeConfig, astRewriteConfig).get
+
+          // construct an IR
+          val compileConfig = CompileConfig()
+          val ir = Compile(rast, safeConfig, compileConfig).get
+
+          // cfg build
+          val cfgBuildConfig = CFGBuildConfig()
+          val funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig, cfg.getUserASiteSize).get
+
+          // main function 
+          val fun = funCFG.getFunc(1).get
+
+          // add the cfg for the main function to the current cfg
+          cfg.addFunction(fun)
+
+          // add the cfgs for other functions to the current cfg
+          (2 until funCFG.getFId).foreach(fid => cfg.addFunction(funCFG.getFunc(fid).get))
+
+          cfg.setUserASiteSize(cfg.getUserASiteSize + funCFG.getUserASiteSize)
+          cfg.addModuleCFG(resolvedPath, fun)
+          fun
       }
-      // rewrite AST
-      val safeConfig = SafeConfig(CmdCFGBuild, silent = true)
-      val astRewriteConfig = ASTRewriteConfig()
-      val rast = ASTRewrite(ast, safeConfig, astRewriteConfig).get
-
-      // construct an IR
-      val compileConfig = CompileConfig()
-      val ir = Compile(rast, safeConfig, compileConfig).get
-
-      // cfg build
-      val cfgBuildConfig = CFGBuildConfig()
-      val funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig, cfg.getUserASiteSize).get
-
-      // main function 
-      val func = funCFG.getFunc(1).get
-
-      // add the cfg for the main function to the current cfg
-      cfg.addFunction(func)
-
-      // add the cfgs for other functions to the current cfg
-      (2 until funCFG.getFId).foreach(fid => cfg.addFunction(funCFG.getFunc(fid).get))
-
-      cfg.setUserASiteSize(cfg.getUserASiteSize + funCFG.getUserASiteSize)
 
       // draw call/return edges
       val oldLocalEnv = st1.context.pureLocal
