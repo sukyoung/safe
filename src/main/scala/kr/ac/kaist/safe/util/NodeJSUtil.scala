@@ -67,7 +67,7 @@ object NodeJSUtil {
     "events", "freelist", "fs", "http", "https",
     "module", "net", "os", "path", "process",
     "punycode", "querystring", "readline", "repl", "smalloc",
-    "stream", "string_decoder", "sys", "tls", "tty",
+    "stream", "string_decoder", "sys", "timers", "tls", "tty",
     "url", "util", "v8", "vm", "zlib",
     // internal core modules
     "_debug_agent", "_debugger", "_http_agent", "_http_client", "_http_common",

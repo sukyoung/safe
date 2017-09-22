@@ -71,7 +71,28 @@ Heap: {
     [[Class]]: "Object",
     [[Extensible]]: true,
     [[Prototype]]: #Object.prototype
- }
+ },
+ #NodeJS.process.binding.timer_wrap: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "Timer" : <#NodeJS.process.binding.timer_wrap.Timer, T, T, T>
+ },
+ #NodeJS.process.binding.timer_wrap.Timer: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "kOnTimeout" : <0, T, T, T>,
+    "now" : <#NodeJS.process.binding.timer_wrap.Timer.now, T, T, T>
+ },
+ #NodeJS.process.binding.timer_wrap.Timer.now: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(6),
+    "length": <0, F, F, F>
+  }
 }
 
 Function: {
@@ -82,6 +103,9 @@ Function: {
     }
     else if(name == "smalloc") {
       return @getLoc("NodeJS.process.binding.smalloc");     
+    }
+    else if(name == "timer_wrap") {
+      return @getLoc("NodeJS.process.binding.timer_wrap");     
     }
     else {
       @notModeled("function binding(" + name + ") not modeled!!!");
@@ -130,5 +154,11 @@ Function: {
     }
     return obj; 
   }
+  \\],
+ 6: [\\
+  function now() {
+    return @NumTop; 
+  }
   \\]
+
 }
