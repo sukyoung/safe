@@ -39,11 +39,21 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
     }
     NodeProtocol.test = safeConfig.testMode
 
+    // set the start time.
+    val startTime = System.currentTimeMillis
+
+    // calculate fixpoint
     val fixpoint = new Fixpoint(sem, worklist, consoleOpt)
     val iters = fixpoint.compute(iter + 1)
 
-    val excLog = sem.excLog
+    // display duration time
+    if (config.time) {
+      val duration = System.currentTimeMillis - startTime
+      println(s"The analysis took $duration ms.")
+    }
+
     // Report errors.
+    val excLog = sem.excLog
     if (excLog.hasError) {
       println(cfg.fileName + ":")
       println(excLog)
@@ -70,6 +80,8 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
       "messages during analysis are muted."),
     ("console", BoolOption(c => c.console = true),
       "REPL-style console debugger."),
+    ("time", BoolOption(c => c.time = true),
+      "display duration time."),
     ("exitDump", BoolOption(c => c.exitDump = true),
       "dump the state of the exit state of a given CFG"),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
@@ -83,6 +95,7 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
 case class AnalyzeConfig(
   var silent: Boolean = false,
   var console: Boolean = false,
+  var time: Boolean = false,
   var exitDump: Boolean = false,
   var outFile: Option[String] = None,
   var htmlName: Option[String] = None
