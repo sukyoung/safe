@@ -27,3 +27,4 @@ lib/debugger/webix.js
 lib/debugger/css/webix.css
 doc/safe.pdf
 doc/icse-demo/main.pdf
+.idea/
