@@ -51,7 +51,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
 
     config.AbsHeap match {
       case TSHeap => {
-        val heap = TSHeap.assignGlobalHeap(initSt.heap)
+        val heap = TSHeap.assignGlobalMap(initSt.heap)
         initSt = AbsState(heap, initSt.context)
       }
       case _ =>
