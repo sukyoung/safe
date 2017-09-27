@@ -77,14 +77,19 @@ object AbsStateProtocol extends DefaultJsonProtocol {
   implicit object AbsHeapJsonFormat extends RootJsonFormat[AbsHeap] {
 
     def write(heap: AbsHeap): JsValue = heap match {
-      case DefaultHeap.Top => JsNull
+      case DefaultHeap.Top => JsNumber(1)
+      case DefaultHeap.Bot => JsNumber(2)
       case DefaultHeap.HeapMap(map) => JsArray(
         JsArray(map.to[Vector].map { case (loc, obj) => JsArray(loc.toJson, obj.toJson) })
       )
     }
 
     def read(value: JsValue): AbsHeap = value match {
-      case JsNull => DefaultHeap.Top
+      case JsNumber(x) => x.toInt match {
+        case 1 => DefaultHeap.Top
+        case 2 => DefaultHeap.Bot
+        case _ => throw AbsHeapParseError(value)
+      }
       case JsArray(Vector(JsArray(map))) => DefaultHeap.HeapMap(
         map.map(_ match {
         case JsArray(Vector(loc, obj)) => loc.convertTo[Loc] -> obj.convertTo[AbsObject]

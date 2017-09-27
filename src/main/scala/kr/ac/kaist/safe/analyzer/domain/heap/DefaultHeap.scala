@@ -21,9 +21,7 @@ import kr.ac.kaist.safe.util._
 object DefaultHeap extends AbsHeapUtil {
   case object Top extends Dom
   case object Bot extends Dom
-  case class HeapMap(
-    val map: Map[Loc, AbsObject]
-  ) extends Dom
+  case class HeapMap(map: Map[Loc, AbsObject]) extends Dom
 
   def alpha(heap: Heap): AbsHeap = {
     val map = heap.map.foldLeft[Map[Loc, AbsObject]](HashMap()) {
