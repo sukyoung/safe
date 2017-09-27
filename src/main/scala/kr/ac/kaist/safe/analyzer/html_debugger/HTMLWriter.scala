@@ -160,7 +160,7 @@ object HTMLWriter {
           val value =
             if (h.isBottom) "Bot"
             else "Top"
-          sb.append(s"{ value: '$value' }")
+          sb.append(s"{ value: '$value' },")
         }
         case Some(map) => {
           sb.append("{ value: {value: 'Predefined Locations', id: 'predLoc'}, parent: 'heap' },").append(LINE_SEP)
