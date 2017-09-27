@@ -63,8 +63,8 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   sealed abstract class Dom extends AbsString {
 
     def json: JsValue = this match {
-      case StrSet(values) => JsArray(JsNumber(maxSetSize), JsArray(values.to[Vector].map(JsString(_))))
-      case _ => JsArray(JsNumber(maxSetSize), JsNumber(jsonMap(this)))
+      case StrSet(values) => JsArray(values.to[Vector].map(JsString(_)))
+      case _ => JsNumber(jsonMap(this))
     }
 
     def gamma: ConSet[Str] = this match {

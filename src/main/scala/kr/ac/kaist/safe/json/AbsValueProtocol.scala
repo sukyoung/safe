@@ -93,7 +93,7 @@ object AbsValueProtocol extends DefaultJsonProtocol {
     def read(value: JsValue): AbsNumber = value match {
       case JsArray(Vector(JsNumber(x), JsNumber(v))) => x.toInt match {
         case 10 => DefaultNumber.UIntConst(v.toLong)
-        case 11 => DefaultNumber.NUIntConst(v.toLong)
+        case 11 => DefaultNumber.NUIntConst(v.toDouble)
         case 12 => FlatNumber.Const(v.toDouble)
       }
       case JsNumber(n) => imap(n.toInt)
@@ -105,8 +105,8 @@ object AbsValueProtocol extends DefaultJsonProtocol {
 
     def write(str: AbsString): JsValue = str.json
 
-    def read(value: JsValue): AbsString = value match {
-      case JsArray(Vector(JsNumber(size), v)) => StringSet(size.toInt).fromJson(v)
+    def read(value: JsValue): AbsString = Utils.AbsString match {
+      case set @ StringSet(_) => set.fromJson(value)
       case _ => throw AbsStringParseError(value)
     }
   }
