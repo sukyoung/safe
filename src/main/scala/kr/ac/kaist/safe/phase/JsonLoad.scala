@@ -63,7 +63,6 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Worklist, Sema
                   heapConfig.AbsBool,
                   heapConfig.AbsNumber,
                   heapConfig.AbsString,
-                  heapConfig.AbsHeap,
                   DefaultLoc,
                   heapConfig.aaddrType
                 )

@@ -21,7 +21,6 @@ object Utils {
     absBool: AbsBoolUtil = DefaultBool,
     absNumber: AbsNumberUtil = DefaultNumber,
     absString: AbsStringUtil = StringSet(0),
-    absHeap: AbsHeapUtil = DefaultHeap,
     absLoc: AbsLocUtil = DefaultLoc,
     aaddrType: AAddrType = RecencyAAddr
   ): Unit = {
@@ -30,7 +29,6 @@ object Utils {
     AbsBool = absBool
     AbsNumber = absNumber
     AbsString = absString
-    AbsHeap = absHeap
     AbsLoc = absLoc
     AAddrType = aaddrType
   }
