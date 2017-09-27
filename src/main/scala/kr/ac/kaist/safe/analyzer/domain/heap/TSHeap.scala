@@ -19,12 +19,10 @@ import kr.ac.kaist.safe.util._
 
 // two-step heap abstract domain
 object TSHeap extends AbsHeapUtil {
-  lazy val globalMap: Map[Loc, AbsObject] = globalHeap
-
-  var globalHeap: Map[Loc, AbsObject] = HashMap()
-  def assignGlobalHeap(heap: AbsHeap): AbsHeap = {
-    heap match {
-      case HeapMap(map) => globalHeap = map
+  var globalMap: Map[Loc, AbsObject] = HashMap()
+  def assignGlobalMap(heap: AbsHeap): AbsHeap = {
+    heap.getMap match {
+      case Some(map) => globalMap = map
       case _ =>
     }
     HeapMap(HashMap())
