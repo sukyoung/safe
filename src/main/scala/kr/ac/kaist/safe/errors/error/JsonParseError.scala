@@ -104,7 +104,7 @@ case class DefSetParseError(value: JsValue) extends JsonFormatError("DefSet", va
 
 case class AbsDataPropParseError(value: JsValue) extends JsonFormatError("AbsDataProp", value)
 
-case class AbsMapParseError(value: JsValue) extends JsonFormatError("AbsMap", value)
+case class APropMapParseError(value: JsValue) extends JsonFormatError("APropMap", value)
 
 case class INameParseError(value: JsValue) extends JsonFormatError("IName", value)
 

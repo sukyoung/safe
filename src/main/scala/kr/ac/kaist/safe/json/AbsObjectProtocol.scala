@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.json.AbsValueProtocol._
 import kr.ac.kaist.safe.errors.error.{
   DefSetParseError,
   AbsDataPropParseError,
-  AbsMapParseError,
+  APropMapParseError,
   INameParseError,
   AbsFIdParseError,
   AbsIValueParseError,
@@ -68,29 +68,29 @@ object AbsObjectProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit object AbsMapJsonFormat extends RootJsonFormat[AbsMap] {
+  implicit object APropMapJsonFormat extends RootJsonFormat[APropMap] {
 
-    def write(map: AbsMap): JsValue = map match {
-      case AbsMapBot => JsTrue
-      case AbsMapEmpty => JsFalse
-      case AbsMapFin(m, s) => JsArray(
+    def write(map: APropMap): JsValue = map match {
+      case APropMapBot => JsTrue
+      case APropMapEmpty => JsFalse
+      case APropMapFin(m, s) => JsArray(
         JsArray(m.to[Vector].map { case (str, prop) => JsArray(str.toJson, prop.toJson) }),
         s.toJson
       )
     }
 
-    def read(value: JsValue): AbsMap = value match {
-      case JsTrue => AbsMapBot
-      case JsFalse => AbsMapEmpty
-      case JsArray(Vector(JsArray(m), s)) => AbsMapFin(
+    def read(value: JsValue): APropMap = value match {
+      case JsTrue => APropMapBot
+      case JsFalse => APropMapEmpty
+      case JsArray(Vector(JsArray(m), s)) => APropMapFin(
         m.map(_ match {
         case JsArray(Vector(str, prop)) =>
           str.convertTo[AbsString] -> prop.convertTo[AbsDataProp]
-        case _ => throw AbsMapParseError(value)
+        case _ => throw APropMapParseError(value)
       }).toMap,
         s.convertTo[DefSet]
       )
-      case _ => throw AbsMapParseError(value)
+      case _ => throw APropMapParseError(value)
     }
   }
 
@@ -171,7 +171,7 @@ object AbsObjectProtocol extends DefaultJsonProtocol {
     def read(value: JsValue): AbsObject = value match {
       case JsNull => AKeyObject.Top
       case JsArray(Vector(amap, imap)) =>
-        AKeyObject.ObjMap(amap.convertTo[AbsMap], imap.convertTo[ObjInternalMap])
+        AKeyObject.ObjMap(amap.convertTo[APropMap], imap.convertTo[ObjInternalMap])
       case _ => throw AbsObjectParseError(value)
     }
   }

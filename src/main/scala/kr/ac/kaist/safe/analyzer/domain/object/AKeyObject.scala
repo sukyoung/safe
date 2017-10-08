@@ -28,14 +28,14 @@ object AKeyObject extends AbsObjectUtil {
 
   case object Top extends Dom
   case class ObjMap(
-    val amap: AbsMap,
+    val amap: APropMap,
     val imap: ObjInternalMap = ObjEmptyIMap
   ) extends Dom
-  lazy val Bot: AbsObject = ObjMap(AbsMapBot)
-  lazy val Empty: AbsObject = ObjMap(AbsMapEmpty)
+  lazy val Bot: AbsObject = ObjMap(APropMapBot)
+  lazy val Empty: AbsObject = ObjMap(APropMapEmpty)
 
   def alpha(obj: Object): Dom = {
-    val amap: AbsMap = obj.amap.foldLeft[AbsMap](AbsMapEmpty) {
+    val amap: APropMap = obj.amap.foldLeft[APropMap](APropMapEmpty) {
       case (map, (key, dp)) => map.update(key, AbsDataProp(dp))
     }
     val imap: ObjInternalMap = obj.imap.foldLeft[ObjInternalMap](ObjEmptyIMap) {
@@ -99,7 +99,7 @@ object AKeyObject extends AbsObjectUtil {
       case (left, Top) => left
       case (left: ObjMap, right: ObjMap) =>
         if (left.amap eq right.amap) this
-        else ObjMap(AbsMapEmpty, ObjEmptyIMap) // TODO is really sound?
+        else ObjMap(APropMapEmpty, ObjEmptyIMap) // TODO is really sound?
     }
 
     override def toString: String = this match {
@@ -783,7 +783,7 @@ object AKeyObject extends AbsObjectUtil {
 ////////////////////////////////////////////////////////////////////////////////
 // abstract map with abstract key
 ////////////////////////////////////////////////////////////////////////////////
-sealed abstract class AbsMap(
+sealed abstract class APropMap(
     private val map: Map[AbsString, AbsDataProp],
     private val defset: DefSet
 ) {
@@ -807,10 +807,10 @@ sealed abstract class AbsMap(
   }
 
   /* partial order */
-  def <=(that: AbsMap): Boolean =
+  def <=(that: APropMap): Boolean =
     (this, that) match {
-      case (AbsMapBot, _) => true
-      case (_, AbsMapBot) => false
+      case (APropMapBot, _) => true
+      case (_, APropMapBot) => false
       case _ if !(that.defset subsetOf this.defset) => false
       case _ if that.defset subsetOf this.defset =>
         this.map.forall(kv1 => {
@@ -831,10 +831,10 @@ sealed abstract class AbsMap(
     }
 
   /* join */
-  def +(that: AbsMap): AbsMap =
+  def +(that: APropMap): APropMap =
     (this, that) match {
-      case (AbsMapBot, _) => that
-      case (_, AbsMapBot) => this
+      case (APropMapBot, _) => that
+      case (_, APropMapBot) => this
       case _ =>
         val thisKeys = this.map.keySet
         val thatKeys = that.map.keySet
@@ -847,7 +847,7 @@ sealed abstract class AbsMap(
         val mapCap = (thisKeys intersect thatKeys).foldLeft(map2)((m, key) => {
           m + (key -> (this.map(key) + that.map(key)))
         })
-        AbsMapFin(mapCap, this.defset intersect that.defset)
+        APropMapFin(mapCap, this.defset intersect that.defset)
     }
 
   /* property read */
@@ -856,7 +856,7 @@ sealed abstract class AbsMap(
     val astr = AbsString(str)
     val domIn = (this.map.keySet contains astr) && (this.defset contains str)
     this match {
-      case AbsMapBot => (emptySet, false)
+      case APropMapBot => (emptySet, false)
       case _ if domIn => (HashSet(this.map(astr)), true)
       case _ =>
         val dpset = this.map.foldLeft(emptySet)((dps, kv) => {
@@ -871,7 +871,7 @@ sealed abstract class AbsMap(
   def lookup(astr: AbsString): (Set[AbsDataProp], Boolean) = {
     val emptySet = HashSet[AbsDataProp]()
     (this, astr.gamma) match {
-      case (AbsMapBot, _) => (emptySet, false)
+      case (APropMapBot, _) => (emptySet, false)
       case (_, conset) if conset.isBottom => (emptySet, false)
       case _ =>
         val dpset = this.map.foldLeft(emptySet)((dps, kv) => {
@@ -884,59 +884,59 @@ sealed abstract class AbsMap(
   }
 
   /* property write */
-  def initializeUpdate(str: String, dp: AbsDataProp): AbsMap = {
+  def initializeUpdate(str: String, dp: AbsDataProp): APropMap = {
     val astr = AbsString(str)
     val domIn = this.map.keySet contains astr
 
     this match {
-      case AbsMapBot => AbsMapBot
-      case _ if !domIn => AbsMapFin(this.map + (astr -> dp), this.defset + str)
+      case APropMapBot => APropMapBot
+      case _ if !domIn => APropMapFin(this.map + (astr -> dp), this.defset + str)
       case _ if domIn =>
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old + dp))
-        AbsMapFin(newMap, this.defset + str)
+        APropMapFin(newMap, this.defset + str)
     }
   }
 
-  def update(str: String, dp: AbsDataProp, weak: Boolean = false): AbsMap = {
+  def update(str: String, dp: AbsDataProp, weak: Boolean = false): APropMap = {
     // TODO: add Map[String, AbsDataProp] for performance
     val astr = AbsString(str)
     val domIn = this.map.keySet contains astr
 
     this match {
-      case AbsMapBot => AbsMapBot
-      case _ if dp.isBottom => AbsMapBot
-      case _ if !domIn && !weak => AbsMapFin(this.map + (astr -> dp), this.defset + str)
-      case _ if !domIn && weak => AbsMapFin(this.map + (astr -> dp), this.defset)
+      case APropMapBot => APropMapBot
+      case _ if dp.isBottom => APropMapBot
+      case _ if !domIn && !weak => APropMapFin(this.map + (astr -> dp), this.defset + str)
+      case _ if !domIn && weak => APropMapFin(this.map + (astr -> dp), this.defset)
       case _ if domIn && !weak => // Strong update
-        AbsMapFin(this.map + (astr -> dp), this.defset + str)
+        APropMapFin(this.map + (astr -> dp), this.defset + str)
       case _ if domIn && weak => // Weak update
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old + dp))
-        AbsMapFin(newMap, this.defset)
+        APropMapFin(newMap, this.defset)
     }
   }
 
-  def update(astr: AbsString, dp: AbsDataProp): AbsMap = {
+  def update(astr: AbsString, dp: AbsDataProp): APropMap = {
     val domIn = this.map.keySet contains astr
 
     (this, astr.gamma) match {
-      case (AbsMapBot, _) => AbsMapBot
-      case (_, conset) if conset.isBottom => AbsMapBot
-      case _ if dp.isBottom => AbsMapBot
+      case (APropMapBot, _) => APropMapBot
+      case (_, conset) if conset.isBottom => APropMapBot
+      case _ if dp.isBottom => APropMapBot
 
       case (_, ConFin(strSet)) if strSet.size == 1 => this.update(strSet.head, dp)
       case (_, ConFin(strSet)) => strSet.foldLeft(this)((am, str) => am.update(str, dp, true))
-      case (_, ConInf()) if !domIn => AbsMapFin(this.map + (astr -> dp), this.defset)
+      case (_, ConInf()) if !domIn => APropMapFin(this.map + (astr -> dp), this.defset)
       case (_, ConInf()) if domIn =>
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old + dp))
-        AbsMapFin(newMap, this.defset)
+        APropMapFin(newMap, this.defset)
     }
   }
 
   /* property delete */
-  def delete(str: String): (AbsMap, AbsBool) = {
+  def delete(str: String): (APropMap, AbsBool) = {
     val astr = AbsString(str)
     val (domIn, configurable) =
       if (this.map.keySet contains astr) (true, this.map(astr).configurable)
@@ -944,33 +944,33 @@ sealed abstract class AbsMap(
     val newDefSet = this.defset - str
 
     this match {
-      case AbsMapBot => (AbsMapBot, AbsBool.Bot)
+      case APropMapBot => (APropMapBot, AbsBool.Bot)
       case _ if !domIn =>
-        val newAbsMap = AbsMapFin(this.map, newDefSet)
-        (newAbsMap, AbsBool.Top)
+        val newAPropMap = APropMapFin(this.map, newDefSet)
+        (newAPropMap, AbsBool.Top)
       case _ if domIn => {
         val (falseMap, falseB) =
           if (AbsBool.False <= configurable) (this, AbsBool.False)
-          else (AbsMapBot, AbsBool.Bot)
+          else (APropMapBot, AbsBool.Bot)
         val (trueMap, trueB) =
           if (AbsBool.True <= configurable) {
-            val newAbsMap = AbsMapFin(this.map - astr, newDefSet)
-            (newAbsMap, AbsBool.True)
-          } else (AbsMapBot, AbsBool.Bot)
+            val newAPropMap = APropMapFin(this.map - astr, newDefSet)
+            (newAPropMap, AbsBool.True)
+          } else (APropMapBot, AbsBool.Bot)
         (falseMap + trueMap, falseB + trueB)
       }
     }
   }
 
-  def delete(astr: AbsString): (AbsMap, AbsBool) = {
+  def delete(astr: AbsString): (APropMap, AbsBool) = {
     val (domIn, configurable) =
       if (this.map.keySet contains astr) (true, this.map(astr).configurable)
       else (false, AbsBool.Bot)
     val defSetEmpty = DefSetFin(HashSet[String]())
 
     (this, astr.gamma) match {
-      case (AbsMapBot, _) => (AbsMapBot, AbsBool.Bot)
-      case (_, conset) if conset.isBottom => (AbsMapBot, AbsBool.Bot)
+      case (APropMapBot, _) => (APropMapBot, AbsBool.Bot)
+      case (_, conset) if conset.isBottom => (APropMapBot, AbsBool.Bot)
 
       case (_, ConFin(strSet)) =>
         strSet.foldLeft((this, AbsBool.Bot))((tpl, str) => {
@@ -978,17 +978,17 @@ sealed abstract class AbsMap(
           am.delete(str)
         })
       case (_, ConInf()) if !domIn =>
-        val newAbsMap = AbsMapFin(this.map, defSetEmpty)
-        (newAbsMap, AbsBool.Top)
+        val newAPropMap = APropMapFin(this.map, defSetEmpty)
+        (newAPropMap, AbsBool.Top)
       case (_, ConInf()) if domIn => {
         val (falseMap, falseB) =
           if (AbsBool.False <= configurable) (this, AbsBool.Top)
-          else (AbsMapBot, AbsBool.Bot)
+          else (APropMapBot, AbsBool.Bot)
         val (trueMap, trueB) =
           if (AbsBool.True <= configurable) {
-            val newAbsMap = AbsMapFin(this.map - astr, defSetEmpty)
-            (newAbsMap, AbsBool.Top)
-          } else (AbsMapBot, AbsBool.Bot)
+            val newAPropMap = APropMapFin(this.map - astr, defSetEmpty)
+            (newAPropMap, AbsBool.Top)
+          } else (APropMapBot, AbsBool.Bot)
         (falseMap + trueMap, falseB + trueB)
       }
     }
@@ -1036,12 +1036,12 @@ sealed abstract class AbsMap(
       case _ => false
     }
 
-  def mapValue(f: AbsDataProp => AbsDataProp): AbsMap = {
+  def mapValue(f: AbsDataProp => AbsDataProp): APropMap = {
     val newMap = map.foldLeft(HashMap[AbsString, AbsDataProp]())((tmp, kv) => {
       val (k, v) = kv
       tmp + (k -> f(v))
     })
-    AbsMapFin(newMap, defset)
+    APropMapFin(newMap, defset)
   }
 
   def abstractKeySet: Set[AbsString] = map.keySet
@@ -1091,9 +1091,9 @@ sealed abstract class AbsMap(
       }
     }
 }
-case class AbsMapFin(private val map: Map[AbsString, AbsDataProp], private val defset: DefSet) extends AbsMap(map, defset)
-case object AbsMapEmpty extends AbsMap(HashMap[AbsString, AbsDataProp](), DefSet.Empty)
-case object AbsMapBot extends AbsMap(HashMap[AbsString, AbsDataProp](), DefSet.Top)
+case class APropMapFin(private val map: Map[AbsString, AbsDataProp], private val defset: DefSet) extends APropMap(map, defset)
+case object APropMapEmpty extends APropMap(HashMap[AbsString, AbsDataProp](), DefSet.Empty)
+case object APropMapBot extends APropMap(HashMap[AbsString, AbsDataProp](), DefSet.Top)
 
 ////////////////////////////////////////////////////////////////////////////////
 // definite key set
