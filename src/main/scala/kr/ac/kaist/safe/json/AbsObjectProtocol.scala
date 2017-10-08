@@ -164,14 +164,14 @@ object AbsObjectProtocol extends DefaultJsonProtocol {
   implicit object AbsObjectFormat extends RootJsonFormat[AbsObject] {
 
     def write(obj: AbsObject): JsValue = obj match {
-      case DefaultObject.Top => JsNull
-      case DefaultObject.ObjMap(amap, imap) => JsArray(amap.toJson, imap.toJson)
+      case AKeyObject.Top => JsNull
+      case AKeyObject.ObjMap(amap, imap) => JsArray(amap.toJson, imap.toJson)
     }
 
     def read(value: JsValue): AbsObject = value match {
-      case JsNull => DefaultObject.Top
+      case JsNull => AKeyObject.Top
       case JsArray(Vector(amap, imap)) =>
-        DefaultObject.ObjMap(amap.convertTo[AbsMap], imap.convertTo[ObjInternalMap])
+        AKeyObject.ObjMap(amap.convertTo[AbsMap], imap.convertTo[ObjInternalMap])
       case _ => throw AbsObjectParseError(value)
     }
   }

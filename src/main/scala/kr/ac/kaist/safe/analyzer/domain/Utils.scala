@@ -74,7 +74,7 @@ object Utils {
   var AbsContext: AbsContextUtil = DefaultContext
 
   // object
-  var AbsObject: AbsObjectUtil = DefaultObject
+  var AbsObject: AbsObjectUtil = AKeyObject
 
   // heap
   var AbsHeap: AbsHeapUtil = DefaultHeap

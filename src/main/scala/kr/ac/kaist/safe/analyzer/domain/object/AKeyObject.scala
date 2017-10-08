@@ -20,9 +20,9 @@ import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
 
 ////////////////////////////////////////////////////////////////////////////////
-// default object abstract domain
+// object abstract domain with abstract keys
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultObject extends AbsObjectUtil {
+object AKeyObject extends AbsObjectUtil {
   private lazy val atrue = AbsBool.True
   private lazy val afalse = AbsBool.False
 
