@@ -65,9 +65,9 @@ private object BuiltinErrorHelper {
   def construct(errorName: String, protoLoc: Loc)(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val message = Helper.propLoad(args, Set(AbsString("0")), st.heap)
     val defaultError = AbsObject.Empty
-      .update(IClass, AbsIValueUtil(AbsString(errorName)))
-      .update(IPrototype, AbsIValueUtil(protoLoc))
-      .update(IExtensible, AbsIValueUtil(AbsBool.True))
+      .update(IClass, AbsIValue(AbsString(errorName)))
+      .update(IPrototype, AbsIValue(protoLoc))
+      .update(IExtensible, AbsIValue(AbsBool.True))
 
     val undefObject =
       if (message.pvalue.undefval </ AbsUndef.Bot) defaultError

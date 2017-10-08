@@ -23,6 +23,7 @@ import kr.ac.kaist.safe.errors.error.{
   ObjInternalMapParseError,
   AbsObjectParseError
 }
+import kr.ac.kaist.safe.util._
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -132,14 +133,14 @@ object AbsObjectProtocol extends DefaultJsonProtocol {
   implicit object AbsIValueFormat extends RootJsonFormat[AbsIValue] {
 
     def write(value: AbsIValue): JsValue = value match {
-      case AbsIValue(v, s) => JsArray(
+      case DefaultIValue.Dom(v, s) => JsArray(
         v.toJson,
         s.toJson
       )
     }
 
     def read(value: JsValue): AbsIValue = value match {
-      case JsArray(Vector(v, s)) => AbsIValue(
+      case JsArray(Vector(v, s)) => DefaultIValue.Dom(
         v.convertTo[AbsValue],
         s.convertTo[AbsFId]
       )

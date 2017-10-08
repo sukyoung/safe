@@ -12,8 +12,6 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.domain.IClass
-import kr.ac.kaist.safe.analyzer.domain.IPrimitiveValue
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._

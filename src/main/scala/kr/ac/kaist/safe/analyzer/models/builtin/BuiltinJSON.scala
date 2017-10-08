@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain.IClass
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.util.IClass
 
 // TODO JSON
 object BuiltinJSON extends ObjModel(

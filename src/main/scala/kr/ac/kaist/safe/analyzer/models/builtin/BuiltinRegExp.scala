@@ -66,17 +66,16 @@ private object BuiltinRegExpHelper {
   val instanceASite = PredAllocSite("RegExp<instance>")
 
   def newREObject(source: AbsString, g: AbsBool, i: AbsBool, m: AbsBool): AbsObject = {
-    val IV = AbsIValueUtil
-    val afalse = AbsBool.False
+    val F = AbsBool.False
     AbsObject.Empty
-      .update(IClass, IV(AbsString("RegExp")))
-      .update(IPrototype, IV(BuiltinRegExpProto.loc))
-      .update(IExtensible, IV(AbsBool.True))
-      .update("source", AbsDataProp(source, afalse, afalse, afalse))
-      .update("global", AbsDataProp(g, afalse, afalse, afalse))
-      .update("ignoreCase", AbsDataProp(i, afalse, afalse, afalse))
-      .update("multiline", AbsDataProp(m, afalse, afalse, afalse))
-      .update("lastIndex", AbsDataProp(AbsNumber(0.0), AbsBool.True, afalse, afalse))
+      .update(IClass, AbsIValue(AbsString("RegExp")))
+      .update(IPrototype, AbsIValue(BuiltinRegExpProto.loc))
+      .update(IExtensible, AbsIValue(AbsBool.True))
+      .update("source", AbsDataProp(source, F, F, F))
+      .update("global", AbsDataProp(g, F, F, F))
+      .update("ignoreCase", AbsDataProp(i, F, F, F))
+      .update("multiline", AbsDataProp(m, F, F, F))
+      .update("lastIndex", AbsDataProp(AbsNumber(0.0), AbsBool.True, F, F))
   }
 
   // 15.10.3.1 RegExp(pattern, flags)

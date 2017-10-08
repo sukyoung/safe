@@ -75,7 +75,7 @@ case object DefaultFId extends AbsFIdUtil {
     override def toString: String = this match {
       case Top => "Top(fid)"
       case FIdSet(set) if set.size == 0 => "⊥(fid)"
-      case FIdSet(set) => set.mkString(", ")
+      case FIdSet(set) => set.mkString("fid(", ", ", ")")
     }
 
     def <=(that: AbsFId): Boolean = (this, check(that)) match {

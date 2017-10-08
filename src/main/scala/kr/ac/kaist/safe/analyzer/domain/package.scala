@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.util.IName
 import scala.collection.immutable.{ HashMap, HashSet }
 
 package object domain {
@@ -85,6 +86,12 @@ package object domain {
 
   // AbsLoc -> AbsValue
   implicit def loc2v[T <% AbsLoc](loc: T): AbsValue = AbsValue(loc)
+
+  // AbsValue -> AbsIValue
+  implicit def v2iv[T <% AbsValue](v: T): AbsIValue = AbsIValue(v)
+
+  // AbsFId -> AbsIValue
+  implicit def fid2iv[T <% AbsFId](fid: T): AbsIValue = AbsIValue(fid)
 
   // AbsDecEnvRec, AbsGlobalEnvRec -> AbsEnvRec
   implicit def denv2env(dEnv: AbsDecEnvRec): AbsEnvRec = AbsEnvRec(dEnv)

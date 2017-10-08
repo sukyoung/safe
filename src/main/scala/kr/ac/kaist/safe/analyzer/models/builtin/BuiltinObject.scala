@@ -377,7 +377,7 @@ object BuiltinObjectHelper {
     val obj = AbsObject.newObject
     // 3. Set the [[Prototype]] internal property of obj to O.
     val protoV = AbsValue(objV.locset) + objV.pvalue.nullval
-    val newObj = obj.update(IPrototype, AbsIValueUtil(protoV))
+    val newObj = obj.update(IPrototype, AbsIValue(protoV))
     // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
     val loc = Loc(createObjASite)
@@ -453,7 +453,7 @@ object BuiltinObjectHelper {
           desc.copyWith(configurable = (newConfig, ca))
         })
         // 3. Set the [[Extensible]] internal property of O to false.
-        val retObj = newObj.update(IExtensible, AbsIValueUtil(AbsBool.False))
+        val retObj = newObj.update(IExtensible, AbsIValue(AbsBool.False))
         // 4. Return O.
         val retH = heap.update(loc, retObj)
         (retH, e ++ excSet)
@@ -490,7 +490,7 @@ object BuiltinObjectHelper {
           )
         })
         // 3. Set the [[Extensible]] internal property of O to false.
-        val retObj = newObj.update(IExtensible, AbsIValueUtil(AbsBool.False))
+        val retObj = newObj.update(IExtensible, AbsIValue(AbsBool.False))
         // 4. Return O.
         val retH = heap.update(loc, retObj)
         (retH, e ++ excSet)
@@ -512,7 +512,7 @@ object BuiltinObjectHelper {
       case (heap, loc) => {
         val obj = h.get(loc)
         // 2. Set the [[Extensible]] internal property of O to false.
-        val retObj = obj.update(IExtensible, AbsIValueUtil(AbsBool.False))
+        val retObj = obj.update(IExtensible, AbsIValue(AbsBool.False))
         // 3. Return O.
         heap.update(loc, retObj)
       }

@@ -179,10 +179,10 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     def apply(in: IName): AbsIValue = this match {
-      case Top => AbsIValueUtil.Top
+      case Top => AbsIValue.Top
       case ObjMap(amap, imap) => imap.get(in) match {
         case Some(iv) => iv
-        case None => AbsIValueUtil.Bot
+        case None => AbsIValue.Bot
       }
     }
 
@@ -625,24 +625,24 @@ object DefaultObject extends AbsObjectUtil {
 
   def newObject(locSet: AbsLoc): AbsObject = {
     Empty
-      .update(IClass, AbsIValueUtil(AbsString("Object")))
-      .update(IPrototype, AbsIValueUtil(locSet))
-      .update(IExtensible, AbsIValueUtil(atrue))
+      .update(IClass, AbsIValue(AbsString("Object")))
+      .update(IPrototype, AbsIValue(locSet))
+      .update(IExtensible, AbsIValue(atrue))
   }
 
   def newArgObject(absLength: AbsNumber = AbsNumber(0)): AbsObject = {
     Empty
-      .update(IClass, AbsIValueUtil(AbsString("Arguments")))
-      .update(IPrototype, AbsIValueUtil(BuiltinObjectProto.loc))
-      .update(IExtensible, AbsIValueUtil(atrue))
+      .update(IClass, AbsIValue(AbsString("Arguments")))
+      .update(IPrototype, AbsIValue(BuiltinObjectProto.loc))
+      .update(IExtensible, AbsIValue(atrue))
       .update("length", AbsDataProp(absLength, atrue, afalse, atrue))
   }
 
   def newArrayObject(absLength: AbsNumber = AbsNumber(0)): AbsObject = {
     Empty
-      .update(IClass, AbsIValueUtil(AbsString("Array")))
-      .update(IPrototype, AbsIValueUtil(BuiltinArrayProto.loc))
-      .update(IExtensible, AbsIValueUtil(atrue))
+      .update(IClass, AbsIValue(AbsString("Array")))
+      .update(IPrototype, AbsIValue(BuiltinArrayProto.loc))
+      .update(IExtensible, AbsIValue(atrue))
       .update("length", AbsDataProp(absLength, atrue, afalse, afalse))
   }
 
@@ -661,24 +661,24 @@ object DefaultObject extends AbsObjectUtil {
     absLength: AbsNumber): AbsObject = {
     val obj1 =
       Empty
-        .update(IClass, AbsIValueUtil(AbsString("Function")))
-        .update(IPrototype, AbsIValueUtil(BuiltinFunctionProto.loc))
-        .update(IExtensible, AbsIValueUtil(atrue))
-        .update(IScope, AbsIValueUtil(env))
+        .update(IClass, AbsIValue(AbsString("Function")))
+        .update(IPrototype, AbsIValue(BuiltinFunctionProto.loc))
+        .update(IExtensible, AbsIValue(atrue))
+        .update(IScope, AbsIValue(env))
         .update("length", AbsDataProp(absLength, afalse, afalse, afalse))
 
     val obj2 = fidOpt match {
-      case Some(fid) => obj1.update(ICall, AbsIValueUtil(fid))
+      case Some(fid) => obj1.update(ICall, AbsFId(fid))
       case None => obj1
     }
     val obj3 = constructIdOpt match {
-      case Some(cid) => obj2.update(IConstruct, AbsIValueUtil(cid))
+      case Some(cid) => obj2.update(IConstruct, AbsFId(cid))
       case None => obj2
     }
     val obj4 = locOpt match {
       case Some(loc) =>
         val prototypeVal = AbsValue(loc)
-        obj3.update(IHasInstance, AbsIValueUtil(AbsNull.Top))
+        obj3.update(IHasInstance, AbsIValue(AbsNull.Top))
           .update("prototype", AbsDataProp(prototypeVal, writable, enumerable, configurable))
       case None => obj3
     }
@@ -687,22 +687,22 @@ object DefaultObject extends AbsObjectUtil {
 
   def newBooleanObj(absB: AbsBool): AbsObject = {
     val newObj = newObject(BuiltinBooleanProto.loc)
-    newObj.update(IClass, AbsIValueUtil(AbsString("Boolean")))
-      .update(IPrimitiveValue, AbsIValueUtil(absB))
+    newObj.update(IClass, AbsIValue(AbsString("Boolean")))
+      .update(IPrimitiveValue, AbsIValue(absB))
   }
 
   def newNumberObj(absNum: AbsNumber): AbsObject = {
     val newObj = newObject(BuiltinNumberProto.loc)
-    newObj.update(IClass, AbsIValueUtil(AbsString("Number")))
-      .update(IPrimitiveValue, AbsIValueUtil(absNum))
+    newObj.update(IClass, AbsIValue(AbsString("Number")))
+      .update(IPrimitiveValue, AbsIValue(absNum))
   }
 
   def newStringObj(absStr: AbsString): AbsObject = {
     val newObj = newObject(BuiltinStringProto.loc)
 
     val newObj2 = newObj
-      .update(IClass, AbsIValueUtil(AbsString("String")))
-      .update(IPrimitiveValue, AbsIValueUtil(absStr))
+      .update(IClass, AbsIValue(AbsString("String")))
+      .update(IPrimitiveValue, AbsIValue(absStr))
 
     absStr.gamma match {
       case ConFin(strSet) =>
@@ -725,9 +725,9 @@ object DefaultObject extends AbsObjectUtil {
 
   def newErrorObj(errorName: String, protoLoc: Loc): AbsObject = {
     Empty
-      .update(IClass, AbsIValueUtil(AbsString(errorName)))
-      .update(IPrototype, AbsIValueUtil(protoLoc))
-      .update(IExtensible, AbsIValueUtil(AbsBool.True))
+      .update(IClass, AbsIValue(AbsString(errorName)))
+      .update(IPrototype, AbsIValue(protoLoc))
+      .update(IExtensible, AbsIValue(AbsBool.True))
   }
 
   def defaultValue(locSet: AbsLoc): AbsPValue = {

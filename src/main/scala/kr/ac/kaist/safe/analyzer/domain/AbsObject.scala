@@ -34,7 +34,7 @@ case class Object(amap: Map[String, DataProp], imap: Map[IName, IValue]) {
     val newimap = this.imap.foldLeft(other.imap) {
       case (map, (name, value)) => {
         map.get(name) match {
-          case Some(v) => map + (name -> (value + v))
+          case Some(v) => map + (name -> v)
           case None => map + (name -> value)
         }
       }

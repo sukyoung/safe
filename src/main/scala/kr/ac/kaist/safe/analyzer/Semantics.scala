@@ -465,7 +465,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IClass, AbsIValueUtil(p))
+          val newObj = obj.update(IClass, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -490,7 +490,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IPrimitiveValue, AbsIValueUtil(p))
+          val newObj = obj.update(IPrimitiveValue, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -515,7 +515,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IPrototype, AbsIValueUtil(p))
+          val newObj = obj.update(IPrototype, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -540,7 +540,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IExtensible, AbsIValueUtil(p))
+          val newObj = obj.update(IExtensible, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -1060,7 +1060,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(ITargetFunction, AbsIValueUtil(p))
+          val newObj = obj.update(ITargetFunction, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -1085,7 +1085,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IBoundThis, AbsIValueUtil(p))
+          val newObj = obj.update(IBoundThis, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -1110,7 +1110,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IBoundArgs, AbsIValueUtil(p))
+          val newObj = obj.update(IBoundArgs, AbsIValue(p))
           h.update(loc, newObj)
         }
       }
@@ -1149,7 +1149,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(ICall, AbsIValueUtil(fidset))
+          val newObj = obj.update(ICall, fidset)
           h.update(loc, newObj)
         }
       }
@@ -1168,7 +1168,7 @@ class Semantics(
       val newH = v.locset.foldLeft(st.heap) {
         case (h, loc) => {
           val obj = st.heap.get(loc)
-          val newObj = obj.update(IConstruct, AbsIValueUtil(cidset))
+          val newObj = obj.update(IConstruct, cidset)
           h.update(loc, newObj)
         }
       }

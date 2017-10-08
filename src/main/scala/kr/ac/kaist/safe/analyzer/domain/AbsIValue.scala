@@ -15,110 +15,79 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
-sealed abstract class IName
-case object IPrototype extends IName {
-  override def toString: String = s"[[Prototype]]"
-}
-case object IClass extends IName {
-  override def toString: String = s"[[Class]]"
-}
-case object IExtensible extends IName {
-  override def toString: String = s"[[Extensible]]"
-}
-case object IPrimitiveValue extends IName {
-  override def toString: String = s"[[PrimitiveValue]]"
-}
-case object ICall extends IName {
-  override def toString: String = s"[[Call]]"
-}
-case object IConstruct extends IName {
-  override def toString: String = s"[[Construct]]"
-}
-case object IScope extends IName {
-  override def toString: String = s"[[Scope]]"
-}
-case object IHasInstance extends IName {
-  override def toString: String = s"[[HasInstance]]" // TODO
-}
-case object ITargetFunction extends IName {
-  override def toString: String = s"[[TargetFunction]]"
-}
-case object IBoundThis extends IName {
-  override def toString: String = s"[[BoundThis]]"
-}
-case object IBoundArgs extends IName {
-  override def toString: String = s"[[BoundArgs]]"
+////////////////////////////////////////////////////////////////////////////////
+// concrete internal value type
+////////////////////////////////////////////////////////////////////////////////
+abstract class IValue
+
+////////////////////////////////////////////////////////////////////////////////
+// value abstract domain
+////////////////////////////////////////////////////////////////////////////////
+trait AbsIValue extends AbsDomain[IValue, AbsIValue] {
+  val value: AbsValue
+  val fidset: AbsFId
 }
 
-abstract class IValue {
-  def +(other: IValue): IValue = {
-    other
+trait AbsIValueUtil extends AbsDomainUtil[IValue, AbsIValue] {
+  def apply(value: AbsValue): AbsIValue
+  def apply(fidset: AbsFId): AbsIValue
+  def apply(value: AbsValue, fidset: AbsFId): AbsIValue
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// default internal value abstract domain
+////////////////////////////////////////////////////////////////////////////////
+object DefaultIValue extends AbsIValueUtil {
+  lazy val Bot: Dom = Dom(AbsValue.Bot, AbsFId.Bot)
+  lazy val Top: Dom = Dom(AbsValue.Top, AbsFId.Top)
+
+  def alpha(value: IValue): AbsIValue = value match {
+    case (value: Value) => AbsValue(value)
+    case (fid: FId) => AbsFId(fid)
   }
-}
 
-object AbsIValueUtil {
-  val Bot: AbsIValue = AbsIValue(AbsValue.Bot, AbsFId.Bot)
-  val Top: AbsIValue = AbsIValue(AbsValue.Top, AbsFId.Top)
+  def apply(value: AbsValue): AbsIValue = Bot.copy(value = value)
+  def apply(fidset: AbsFId): AbsIValue = Bot.copy(fidset = fidset)
+  def apply(value: AbsValue, fidset: AbsFId): AbsIValue = Dom(value, fidset)
 
-  // constructor
-  def apply(undefval: AbsUndef): AbsIValue = AbsIValue(AbsValue(undefval), AbsFId.Bot)
-  def apply(nullval: AbsNull): AbsIValue = AbsIValue(AbsValue(nullval), AbsFId.Bot)
-  def apply(boolval: AbsBool): AbsIValue = AbsIValue(AbsValue(boolval), AbsFId.Bot)
-  def apply(numval: AbsNumber): AbsIValue = AbsIValue(AbsValue(numval), AbsFId.Bot)
-  def apply(strval: AbsString): AbsIValue = AbsIValue(AbsValue(strval), AbsFId.Bot)
-  def apply(loc: Loc): AbsIValue = AbsIValue(AbsValue(loc), AbsFId.Bot)
-  def apply(locSet: AbsLoc): AbsIValue = AbsIValue(AbsValue(locSet), AbsFId.Bot)
-  def apply(fid: FunctionId): AbsIValue = AbsIValue(AbsValue.Bot, AbsFId(fid))
-  def apply(fidSet: => Set[FunctionId]): AbsIValue = AbsIValue(AbsValue.Bot, AbsFId(fidSet))
-  def apply(fidSet: AbsFId): AbsIValue = AbsIValue(AbsValue.Bot, fidSet)
-  def apply(value: AbsValue): AbsIValue = AbsIValue(value, AbsFId.Bot)
-}
+  case class Dom(value: AbsValue, fidset: AbsFId) extends AbsIValue {
+    def gamma: ConSet[IValue] = ConInf() // TODO more precisely
 
-case class AbsIValue(value: AbsValue, fidset: AbsFId) {
-  override def toString: String = {
-    val valStr =
-      if (value.isBottom) ""
-      else value.toString
+    def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
-    val funidSetStr =
-      if (fidset.isBottom) ""
-      else s"[FunIds] " + fidset.map(id => id.toString).mkString(", ")
+    def getSingle: ConSingle[IValue] = ConMany()
 
-    (value.isBottom, fidset.isBottom) match {
-      case (true, true) => "⊥AbsIValue"
-      case (true, false) => funidSetStr
-      case (false, true) => valStr
-      case (false, false) => valStr + LINE_SEP + funidSetStr
+    override def toString: String = {
+      if (isBottom) "⊥AbsIValue"
+      else {
+        var list: List[String] = Nil
+        value.foldUnit(list :+= _.toString)
+        fidset.foldUnit(list :+= _.toString)
+        list.mkString(", ")
+      }
     }
-  }
 
-  /* partial order */
-  def <=(that: AbsIValue): Boolean = {
-    (this.value <= that.value) &&
-      (this.fidset <= that.fidset)
-  }
+    def <=(that: AbsIValue): Boolean = {
+      val (left, right) = (this, check(that))
+      left.value <= right.value &&
+        left.fidset <= right.fidset
+    }
 
-  /* not a partial order */
-  def </(that: AbsIValue): Boolean = !(this <= that)
+    def +(that: AbsIValue): AbsIValue = {
+      val (left, right) = (this, check(that))
+      Dom(
+        left.value + right.value,
+        left.fidset + right.fidset
+      )
+    }
 
-  /* join */
-  def +(that: AbsIValue): AbsIValue = {
-    AbsIValue(
-      this.value + that.value,
-      this.fidset + that.fidset
-    )
-  }
-
-  /* meet */
-  def <>(that: AbsIValue): AbsIValue = {
-    AbsIValue(
-      this.value <> that.value,
-      this.fidset <> that.fidset
-    )
-  }
-
-  def isBottom: Boolean = {
-    value.isBottom &&
-      this.fidset.isBottom
+    def <>(that: AbsIValue): AbsIValue = {
+      val (left, right) = (this, check(that))
+      AbsIValue(
+        left.value <> right.value,
+        left.fidset <> right.fidset
+      )
+    }
   }
 }
