@@ -55,41 +55,36 @@ abstract class IValue {
     other
   }
 }
-case class FId(id: FunctionId) extends IValue {
-  override def toString: String = {
-    val fid = -id
-    s"fun($fid)"
-  }
-}
 
 object AbsIValueUtil {
-  val Bot: AbsIValue = AbsIValue(AbsValue.Bot, FidSetEmpty)
-  val Top: AbsIValue = AbsIValue(AbsValue.Top, FidSetEmpty) // TODO unsound
+  val Bot: AbsIValue = AbsIValue(AbsValue.Bot, AbsFId.Bot)
+  val Top: AbsIValue = AbsIValue(AbsValue.Top, AbsFId.Top)
 
   // constructor
-  def apply(undefval: AbsUndef): AbsIValue = AbsIValue(AbsValue(undefval), FidSetEmpty)
-  def apply(nullval: AbsNull): AbsIValue = AbsIValue(AbsValue(nullval), FidSetEmpty)
-  def apply(boolval: AbsBool): AbsIValue = AbsIValue(AbsValue(boolval), FidSetEmpty)
-  def apply(numval: AbsNumber): AbsIValue = AbsIValue(AbsValue(numval), FidSetEmpty)
-  def apply(strval: AbsString): AbsIValue = AbsIValue(AbsValue(strval), FidSetEmpty)
-  def apply(loc: Loc): AbsIValue = AbsIValue(AbsValue(loc), FidSetEmpty)
-  def apply(locSet: AbsLoc): AbsIValue = AbsIValue(AbsValue(locSet), FidSetEmpty)
-  def apply(fid: FunctionId): AbsIValue = AbsIValue(AbsValue.Bot, FidSetEmpty + fid)
-  def apply(fidSet: => Set[FunctionId]): AbsIValue = AbsIValue(AbsValue.Bot, fidSet)
-  def apply(value: AbsValue): AbsIValue = AbsIValue(value, FidSetEmpty)
+  def apply(undefval: AbsUndef): AbsIValue = AbsIValue(AbsValue(undefval), AbsFId.Bot)
+  def apply(nullval: AbsNull): AbsIValue = AbsIValue(AbsValue(nullval), AbsFId.Bot)
+  def apply(boolval: AbsBool): AbsIValue = AbsIValue(AbsValue(boolval), AbsFId.Bot)
+  def apply(numval: AbsNumber): AbsIValue = AbsIValue(AbsValue(numval), AbsFId.Bot)
+  def apply(strval: AbsString): AbsIValue = AbsIValue(AbsValue(strval), AbsFId.Bot)
+  def apply(loc: Loc): AbsIValue = AbsIValue(AbsValue(loc), AbsFId.Bot)
+  def apply(locSet: AbsLoc): AbsIValue = AbsIValue(AbsValue(locSet), AbsFId.Bot)
+  def apply(fid: FunctionId): AbsIValue = AbsIValue(AbsValue.Bot, AbsFId(fid))
+  def apply(fidSet: => Set[FunctionId]): AbsIValue = AbsIValue(AbsValue.Bot, AbsFId(fidSet))
+  def apply(fidSet: AbsFId): AbsIValue = AbsIValue(AbsValue.Bot, fidSet)
+  def apply(value: AbsValue): AbsIValue = AbsIValue(value, AbsFId.Bot)
 }
 
-case class AbsIValue(value: AbsValue, fidset: Set[FunctionId]) {
+case class AbsIValue(value: AbsValue, fidset: AbsFId) {
   override def toString: String = {
     val valStr =
       if (value.isBottom) ""
       else value.toString
 
     val funidSetStr =
-      if (fidset.isEmpty) ""
+      if (fidset.isBottom) ""
       else s"[FunIds] " + fidset.map(id => id.toString).mkString(", ")
 
-    (value.isBottom, fidset.isEmpty) match {
+    (value.isBottom, fidset.isBottom) match {
       case (true, true) => "⊥AbsIValue"
       case (true, false) => funidSetStr
       case (false, true) => valStr
@@ -100,7 +95,7 @@ case class AbsIValue(value: AbsValue, fidset: Set[FunctionId]) {
   /* partial order */
   def <=(that: AbsIValue): Boolean = {
     (this.value <= that.value) &&
-      (this.fidset subsetOf that.fidset)
+      (this.fidset <= that.fidset)
   }
 
   /* not a partial order */
@@ -110,7 +105,7 @@ case class AbsIValue(value: AbsValue, fidset: Set[FunctionId]) {
   def +(that: AbsIValue): AbsIValue = {
     AbsIValue(
       this.value + that.value,
-      this.fidset ++ that.fidset
+      this.fidset + that.fidset
     )
   }
 
@@ -118,12 +113,12 @@ case class AbsIValue(value: AbsValue, fidset: Set[FunctionId]) {
   def <>(that: AbsIValue): AbsIValue = {
     AbsIValue(
       this.value <> that.value,
-      this.fidset intersect that.fidset
+      this.fidset <> that.fidset
     )
   }
 
   def isBottom: Boolean = {
     value.isBottom &&
-      this.fidset.isEmpty
+      this.fidset.isBottom
   }
 }

@@ -39,8 +39,8 @@ object DefaultObject extends AbsObjectUtil {
     val imap: ObjInternalMap = obj.imap.foldLeft[ObjInternalMap](ObjEmptyIMap) {
       case (map, (iname, ivalue)) =>
         map + (iname -> (ivalue match {
-          case FId(fid) => AbsIValue(AbsValue.Bot, HashSet(fid))
-          case v: Value => AbsIValue(AbsValue(v), HashSet())
+          case FId(fid) => AbsIValue(AbsValue.Bot, AbsFId(fid))
+          case v: Value => AbsIValue(AbsValue(v), AbsFId())
         }))
     }
     ObjMap(amap, imap)

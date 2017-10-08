@@ -18,6 +18,7 @@ import kr.ac.kaist.safe.errors.error.{
   AbsDataPropParseError,
   AbsMapParseError,
   INameParseError,
+  AbsFIdParseError,
   AbsIValueParseError,
   ObjInternalMapParseError,
   AbsObjectParseError
@@ -112,22 +113,35 @@ object AbsObjectProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object AbsFIdFormat extends RootJsonFormat[AbsFId] {
+    def write(value: AbsFId): JsValue = value match {
+      case DefaultFId.FIdSet(set) => JsArray(set.to[Vector].map(JsNumber(_)))
+      case DefaultFId.Top => JsNull
+    }
+
+    def read(value: JsValue): AbsFId = value match {
+      case JsNull => DefaultFId.Top
+      case JsArray(v) => DefaultFId.FIdSet((v.map {
+        case JsNumber(n) => n.toInt
+        case _ => throw AbsFIdParseError(value)
+      }).to[Set])
+      case _ => throw AbsFIdParseError(value)
+    }
+  }
+
   implicit object AbsIValueFormat extends RootJsonFormat[AbsIValue] {
 
     def write(value: AbsIValue): JsValue = value match {
       case AbsIValue(v, s) => JsArray(
         v.toJson,
-        JsArray(s.to[Vector].map(JsNumber(_)))
+        s.toJson
       )
     }
 
     def read(value: JsValue): AbsIValue = value match {
-      case JsArray(Vector(v, JsArray(s))) => AbsIValue(
+      case JsArray(Vector(v, s)) => AbsIValue(
         v.convertTo[AbsValue],
-        s.map(_ match {
-        case JsNumber(n) => n.toInt
-        case _ => throw AbsIValueParseError(value)
-      }).to[Set]
+        s.convertTo[AbsFId]
       )
       case _ => throw AbsIValueParseError(value)
     }

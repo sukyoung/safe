@@ -50,6 +50,9 @@ object Utils {
   // value
   var AbsValue: AbsValueUtil = DefaultValue
 
+  // function id
+  var AbsFId: AbsFIdUtil = DefaultFId
+
   // data property
   var AbsDataProp: AbsDataPropUtil = DefaultDataProp
 

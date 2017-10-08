@@ -108,6 +108,8 @@ case class AbsMapParseError(value: JsValue) extends JsonFormatError("AbsMap", va
 
 case class INameParseError(value: JsValue) extends JsonFormatError("IName", value)
 
+case class AbsFIdParseError(value: JsValue) extends JsonFormatError("AbsFId", value)
+
 case class AbsIValueParseError(value: JsValue) extends JsonFormatError("AbsIValue", value)
 
 case class ObjInternalMapParseError(value: JsValue) extends JsonFormatError("ObjInternalMap", value)
