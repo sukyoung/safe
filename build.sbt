@@ -91,3 +91,5 @@ libraryDependencies ++= Seq(
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")
+
+retrieveManaged := true
