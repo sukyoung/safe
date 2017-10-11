@@ -1,4 +1,3 @@
-import scalariform.formatter.preferences._
 import java.io.File
 
 lazy val checkCopyrights = taskKey[Unit]("Checks copyrights of source files")
@@ -21,7 +20,7 @@ lazy val root = (project in file(".")).
     name := "SAFE",
     version := "2.0",
     organization := "kr.ac.kaist.safe",
-    scalaVersion := "2.12.0-M5",
+    scalaVersion := "2.12.3",
     checkCopyrights in Compile := {
       val violated: String = (baseDirectory.value + "/bin/checkCopyrights.sh" !!)
       if (violated != "") {
@@ -79,11 +78,16 @@ scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
                                    "-language:postfixOps",
                                    "-language:implicitConversions")
 
-unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/spray-json_2.11-1.3.2.jar"), file("lib/jericho-html-3.3.jar"))
+unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/jericho-html-3.3.jar"))
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.12.0-M5" % "3.0.0" % "test" withSources
+  "org.scala-lang" % "scala-library" % scalaVersion.value,
+  "org.scala-lang" % "scala-compiler" % scalaVersion.value % "scala-tool",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test" withSources,
+  "com.typesafe.akka" %% "akka-http" % "10.0.10",
+  "io.spray" %% "spray-json" % "1.3.2"
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")
