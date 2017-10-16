@@ -11,15 +11,16 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
-import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.json.NodeProtocol
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.json.NodeProtocol
+import kr.ac.kaist.safe.web.WebServer
+
+import scala.util.{ Success, Try }
 
 // Analyze phase
 case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
@@ -33,14 +34,17 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
     val (cfg, worklist, sem, initTP, heapConfig, iter) = in
 
-    val consoleOpt = config.console match {
-      case true => Some(new Console(cfg, worklist, sem, heapConfig, iter))
-      case false => None
-    }
+    val consoleOpt: Option[Console] = Some(new Console(cfg, worklist, sem, heapConfig, iter))
+
     NodeProtocol.test = safeConfig.testMode
 
     // set the start time.
     val startTime = System.currentTimeMillis
+
+    // run web server
+    if (config.web) {
+      WebServer.run(consoleOpt.get)
+    }
 
     // calculate fixpoint
     val fixpoint = new Fixpoint(sem, worklist, consoleOpt)
@@ -60,7 +64,7 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
     }
 
     // print html file: {htmlName}.html
-    config.htmlName.map(name => {
+    config.htmlName.foreach(name => {
       HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
     })
 
@@ -87,7 +91,9 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
-      "the resulting CFG with states will be drawn to the {string}.html")
+      "the resulting CFG with states will be drawn to the {string}.html"),
+    ("web", BoolOption(c => c.web = true),
+      "run analytics web server")
   )
 }
 
@@ -95,6 +101,7 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
 case class AnalyzeConfig(
   var silent: Boolean = false,
   var console: Boolean = false,
+  var web: Boolean = false,
   var time: Boolean = false,
   var exitDump: Boolean = false,
   var outFile: Option[String] = None,

@@ -34,8 +34,8 @@ lazy val root = (project in file(".")).
         IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
 
       // webix
-      val webixJsFile = new File("./lib/debugger/webix.js")
-      val webixCssFile = new File("./lib/debugger/css/webix.css")
+      val webixJsFile = new File("./src/main/resources/assets/js/webix.js")
+      val webixCssFile = new File("./src/main/resources/assets/css/webix.css")
       if (!webixJsFile.exists)
         IO.download(new URL("http://cdn.webix.com/edge/webix.js"), webixJsFile)
       if (!webixCssFile.exists)

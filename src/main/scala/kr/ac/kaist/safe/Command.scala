@@ -11,16 +11,16 @@
 
 package kr.ac.kaist.safe
 
-import scala.util.Try
-import scala.collection.immutable.HashMap
-import kr.ac.kaist.safe.phase._
-import kr.ac.kaist.safe.errors.error.NoMode
-import kr.ac.kaist.safe.util.ArgParser
-import kr.ac.kaist.safe.nodes.ast.Program
-import kr.ac.kaist.safe.nodes.ir.IRRoot
-import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.errors.error.NoMode
+import kr.ac.kaist.safe.nodes.ast.Program
+import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.nodes.ir.IRRoot
+import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.util.ArgParser
+
+import scala.collection.immutable.HashMap
+import scala.util.Try
 
 sealed trait Command {
   val name: String

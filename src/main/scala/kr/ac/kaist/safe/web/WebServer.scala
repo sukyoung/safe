@@ -11,28 +11,66 @@
 
 package kr.ac.kaist.safe.web
 
+import java.io.File
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, UpgradeToWebSocket}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.{Flow, Sink, Source}
+import kr.ac.kaist.safe.BASE_DIR
+import kr.ac.kaist.safe.analyzer.console.Console
+import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
 
 object WebServer {
-  def run(port: Int = 8080) {
+  def run(c: Console, port: Int = 8080) {
     implicit val system: ActorSystem = ActorSystem("web-debugger")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-    val route = {
-      path("hello")
-      get {
-        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
+    val SEP = File.separator
+    val base = BASE_DIR + SEP
+    val assetsPath = Array[String](base + "src", "main", "resources", "assets").mkString(SEP)
+
+    val greetHandler =
+      Flow[Message]
+        .mapConcat {
+          case tm: TextMessage => TextMessage(Source.single("Hello ") ++ tm.textStream) :: Nil
+          // ignore binary messages but drain content to avoid the stream being clogged
+          case bm: BinaryMessage =>
+            bm.dataStream.runWith(Sink.ignore)
+            Nil
+        }
+
+    val route =
+      path("") {
+        get {
+          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Templates.getBaseTemplate))
+        }
+      } ~ path("result") {
+        get {
+          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, HTMLWriter.drawGraph(c.cfg, c.sem, Some(c.worklist))))
+        }
+      } ~ pathPrefix("assets") {
+        get {
+          getFromDirectory(assetsPath)
+        }
+      } ~ path("ws") {
+        extractRequest {
+          req => {
+            req.header[UpgradeToWebSocket] match {
+              case Some(upgrade) => complete(upgrade.handleMessages(greetHandler))
+              case None => complete(StatusCodes.BadRequest, HttpEntity("Not a valid websocket request!"))
+            }
+          }
+        }
       }
-    }
 
     val bindingFuture = Http().bindAndHandle(route, "localhost", port)
 

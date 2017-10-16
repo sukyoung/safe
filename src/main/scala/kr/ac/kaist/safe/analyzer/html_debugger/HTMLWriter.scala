@@ -12,16 +12,13 @@
 package kr.ac.kaist.safe.analyzer.html_debugger
 
 import java.io.{ File, FileWriter }
-import org.apache.commons.io.FileUtils
-import scala.collection.immutable.TreeMap
-import kr.ac.kaist.safe.analyzer.Worklist
-import kr.ac.kaist.safe.analyzer.models.builtin._
-import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.Semantics
-import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util._
+
+import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.{ LINE_SEP, BASE_DIR }
+import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
+import org.apache.commons.io.FileUtils
 
 object HTMLWriter {
   val EXC_EDGE = ", width: 2, style: 'dashed', arrow: 'triangle', label:'exc'"
@@ -224,17 +221,17 @@ object HTMLWriter {
     }.reverse
 
     val sb = new StringBuilder
-    sb.append(s"""<!DOCTYPE HTML>
+    sb.append(s"""<!doctype html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <script src="jquery-2.0.3.min.js"></script>
-        <script src="cytoscape.min.js"></script>
-        <script src="dagre.min.js"></script>
-        <script src="cytoscape-dagre.js"></script>
-        <script src="webix.js" type="text/javascript"></script>
-        <link rel="stylesheet" href="css/webix.css" type="text/css">
-        <link rel="stylesheet" href="css/core.css" type="text/css">
+        <script src="assets/js/jquery-2.0.3.min.js"></script>
+        <script src="assets/js/cytoscape.min.js"></script>
+        <script src="assets/js/dagre.min.js"></script>
+        <script src="assets/js/cytoscape-dagre.js"></script>
+        <script src="assets/js/webix.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="assets/css/webix.css" type="text/css">
+        <link rel="stylesheet" href="assets/css/core.css" type="text/css">
         <script>
 var safe_DB = {
   nodes: [
@@ -274,15 +271,15 @@ var safe_DB = {
       // copy libraries
       val SEP = File.separator
       val base = BASE_DIR + SEP
-      val src = new File(base + "lib" + SEP + "debugger")
-      val dest = new File("debugger")
+      val src = new File(Array[String](base + "src", "main", "resources", "assets").mkString(SEP))
+      val dest = new File("debugger" + SEP + "assets")
       FileUtils.copyDirectory(src, dest)
       println("* copy debugger libraries.")
 
       val f = new File("debugger" + SEP + htmlfile)
       val fw = new FileWriter(f)
       fw.write(drawGraph(cfg, sem, wlOpt))
-      fw.close
+      fw.close()
       println(s"* success writing HTML file $htmlfile.")
     } catch {
       case e: Throwable =>

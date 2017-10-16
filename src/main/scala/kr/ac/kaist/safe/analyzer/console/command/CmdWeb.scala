@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
-import java.net.URI
-
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.web.WebServer
 
@@ -30,10 +28,10 @@ case object CmdWeb extends Command("web", "Run interactive debugging web server"
       case str :: Nil =>
         str match {
           case _ if str.matches("[+-]?\\d+") =>
-            WebServer.run(str.toInt); None
+            WebServer.run(c, str.toInt); None
           case _ => help; None
         }
-      case _ => WebServer.run(); None
+      case _ => WebServer.run(c); None
     }
   }
 }
