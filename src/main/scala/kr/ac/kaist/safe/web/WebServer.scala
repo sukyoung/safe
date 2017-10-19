@@ -27,6 +27,7 @@ import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
 
+
 object WebServer {
   def run(c: Console, port: Int = 8080) {
     implicit val system: ActorSystem = ActorSystem("web-debugger")
@@ -38,14 +39,12 @@ object WebServer {
     val base = BASE_DIR + SEP
     val assetsPath = Array[String](base + "src", "main", "resources", "assets").mkString(SEP)
 
-    val greetHandler =
+    val handleWebsocket =
       Flow[Message]
         .mapConcat {
-          case tm: TextMessage => TextMessage(Source.single("Hello ") ++ tm.textStream) :: Nil
+          case TextMessage.Strict(tm) => WebsocketHandler.handleTextMessage(tm) :: Nil
           // ignore binary messages but drain content to avoid the stream being clogged
-          case bm: BinaryMessage =>
-            bm.dataStream.runWith(Sink.ignore)
-            Nil
+          case bm: BinaryMessage => bm.dataStream.runWith(Sink.ignore); Nil
         }
 
     val route =
@@ -65,7 +64,7 @@ object WebServer {
         extractRequest {
           req => {
             req.header[UpgradeToWebSocket] match {
-              case Some(upgrade) => complete(upgrade.handleMessages(greetHandler))
+              case Some(upgrade) => complete(upgrade.handleMessages(handleWebsocket))
               case None => complete(StatusCodes.BadRequest, HttpEntity("Not a valid websocket request!"))
             }
           }

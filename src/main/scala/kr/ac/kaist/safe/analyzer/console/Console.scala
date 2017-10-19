@@ -48,29 +48,39 @@ class Console(
   ////////////////////////////////////////////////////////////////
 
   def runFixpoint: Unit = {
+    val find = prepareToRunFixpoint
+    if (find) {
+      this.setPrompt
+      while ( {
+        println
+        val line = reader.readLine
+        val loop = runCmd(line) match {
+          case Some(t) =>
+            target = t; false
+          case None => true
+        }
+        out.flush()
+        loop
+      }) {}
+    }
+  }
+
+  def prepareToRunFixpoint: Boolean = {
     iter += 1
     cur = worklist.head
     home = cur
     val block = cur.block
-    val find = (target match {
+    (target match {
       case TargetIter(k) => iter == k
       case TargetBlock(b) => b == block
     }) || breakList(block)
-    find match {
-      case true =>
-        this.setPrompt
-        while ({
-          println
-          val line = reader.readLine
-          val loop = runCmd(line) match {
-            case Some(t) =>
-              target = t; false
-            case None => true
-          }
-          out.flush
-          loop
-        }) {}
-      case false =>
+  }
+
+  def runRemoteCmd(cmd: String): Unit = {
+    runCmd(cmd) match {
+      case Some(t) =>
+        target = t
+      case None =>
     }
   }
 

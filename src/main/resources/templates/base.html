@@ -29,7 +29,6 @@
       background-color: black;
       color: white;
       position: absolute;
-      width: 100%;
       height: 50%;
       bottom: 0;
       left: 0;
@@ -72,21 +71,46 @@
       border: none;
       padding-bottom: 10px;
     }
+    .console-line {
+      display: block;
+    }
     .console-line-command {
       margin-bottom: 0;
     }
     .console-line-result {
       margin-top: 0;
     }
+    .console-line-error {
+      color: red;
+    }
+
+    .console-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .status-connecting {
+      color: yellow;
+    }
+    .status-connected {
+      color: green;
+    }
+    .status-closed {
+      color: red;
+    }
   </style>
 </head>
 <body>
   <div id="cy"></div>
   <div class="console" id="console">
+    <div class="console-status status-connecting">
+      <i class="fa fa-circle"></i>
+      <span class="console-status-text">Initializing</span>
+    </div>
     <div class="console-output"></div>
     <div class="console-input-wrapper">
       <span class="console-input-marker">&gt;</span>
-      <input class="console-input" type="text" />
+      <input class="console-input" type="text"/>
     </div>
   </div>
 </body>
