@@ -252,7 +252,7 @@ var safe_DB = {
     sb.append(s"""  },
 };
         </script>
-        <script src="core.js" type="text/javascript"></script>
+        <script src="assets/js/core.js" type="text/javascript"></script>
     </head>
     <body>
         <div id='cy'></div>
