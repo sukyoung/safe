@@ -1374,7 +1374,7 @@ Function: {
   14: [\\
   function isPrototypeOf (V) {
     // 1. If V is not an object, return false.
-    if (typeof V !== 'object' || V === null) return false;
+    if (typeof V !== 'function' && typeof V !== 'object' || V === null) return false;
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
     var O = @ToObject(this);
     // 3. Repeat
@@ -1418,7 +1418,7 @@ Function: {
   18: [\\
   function getPrototypeOf (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Return the value of the [[Prototype]] internal property of O.
     return @Prototype(O);
   }
@@ -1426,7 +1426,7 @@ Function: {
   19: [\\
   function getOwnPropertyDescriptor (O, P) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Let name be ToString(P).
     var name = @ToString(P);
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with argument name.
@@ -1442,7 +1442,7 @@ Function: {
   21: [\\
   function create (O, Properties) {
     // 1. If Type(O) is not Object or Null throw a TypeError exception.
-    if (typeof O !== 'object') throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object') throw new TypeError();
     // 2. Let obj be the result of creating a new object as if by the expression new Object() where Object is the
     // standard built-in constructor with that name
     var obj = new Object();
@@ -1458,7 +1458,7 @@ Function: {
   22: [\\
   function defineProperty (O, P, Attributes) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Let name be ToString(P).
     var name = @ToString(P);
     // 3. Let desc be the result of calling ToPropertyDescriptor with Attributes as the argument.
@@ -1471,7 +1471,7 @@ Function: {
   23: [\\
   function defineProperties (O, Properties) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Let props be ToObject(Properties).
     var props = @ToObject(Properties);
     // 3. Let names be an internal list containing the names of each enumerable own property of props.
@@ -1500,7 +1500,7 @@ Function: {
   24: [\\
   function seal (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. For each named own property name P of O,
     var names = @getOwnPropertyNames(O)
     for (var i = 0; i < names.length; i++) {
@@ -1521,7 +1521,7 @@ Function: {
   25: [\\
   function freeze (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. For each named own property name P of O,
     var names = @getOwnPropertyNames(O);
     for (var i = 0; i < names.length; i++) {
@@ -1545,7 +1545,7 @@ Function: {
   26: [\\
   function preventExtensions (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Set the [[Extensible]] internal property of O to false.
     @Extensible(O, false);
     // 3. Return O.
@@ -1555,7 +1555,7 @@ Function: {
   27: [\\
   function isSealed (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. For each named own property name P of O,
     var names = @getOwnPropertyNames(O);
     for (var i = 0; i < names.length; i++) {
@@ -1574,7 +1574,7 @@ Function: {
   28: [\\
   function isFrozen (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. For each named own property name P of O,
     var names = @getOwnPropertyNames(O);
     for (var i = 0; i < names.length; i++) {
@@ -1594,7 +1594,7 @@ Function: {
   29: [\\
   function isExtensible (O) {
     // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Return the Boolean value of the [[Extensible]] internal property of O.
     return @Extensible(O);
   }
@@ -1602,7 +1602,7 @@ Function: {
   30: [\\
   function keys (O) {
     // 1. If the Type(O) is not Object, throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 2. Let n be the number of own enumerable properties of O
     var names = @getOwnPropertyNames(O);
     // 3. Let array be the result of creating a new Object as if by the expression new Array(n) where Array is
@@ -1649,7 +1649,7 @@ Function: {
       // a. Return the result of calling the [[Call]] internal method of func, providing thisArg as the this value and an empty list of arguments.
     if (argArray === null || argArray === undefined) return @Call(this, thisArg, []);
     // 3. If Type(argArray) is not Object, then throw a TypeError exception.
-    if (typeof argArray !== 'object' || argArray === null) throw new TypeError();
+    if (typeof argArray !== 'function' && typeof argArray !== 'object' || argArray === null) throw new TypeError();
     // 4. Let len be the result of calling the [[Get]] internal method of argArray with argument "length".
     var len = argArray.length;
     // 5. Let n be ToUint32(len).
@@ -4963,9 +4963,7 @@ Function: {
     // 1. Let O be the this value.
     var O = this;
     // 2. If Type(O) is not Object, throw a TypeError exception.
-    if (!@SameValue(typeof O,"object")){
-      throw new TypeError();
-    }
+    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
     // 3. Let name be the result of calling the [[Get]] internal method of O with argument "name".
     var name = O.name;
     // 4. If name is undefined, then let name be "Error"; else let name be ToString(name).
