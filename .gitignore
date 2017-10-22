@@ -25,6 +25,7 @@ target/
 lib/xtc.jar
 lib/debugger/webix.js
 lib/debugger/css/webix.css
+lib_managed/
 doc/safe.pdf
 doc/icse-demo/main.pdf
 .idea/
