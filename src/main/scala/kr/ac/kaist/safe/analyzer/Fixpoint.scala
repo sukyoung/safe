@@ -25,7 +25,7 @@ class Fixpoint(
     var iters = initIters
     while (!worklist.isEmpty) {
       iters += 1
-      consoleOpt.fold() { _.runFixpoint }
+      consoleOpt.map(_.runFixpoint)
       val cp = worklist.pop
       val st = semantics.getState(cp)
       val (nextSt, nextExcSt) = semantics.C(cp, st)
@@ -33,7 +33,7 @@ class Fixpoint(
       propagateException(cp, nextExcSt)
       propagateInterProc(cp, nextSt)
     }
-    consoleOpt.fold() { _.runFinished }
+    consoleOpt.map(_.runFinished)
     iters
   }
 
