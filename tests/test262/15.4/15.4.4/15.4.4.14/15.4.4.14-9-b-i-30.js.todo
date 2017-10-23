@@ -1,17 +1,16 @@
-  function testcase() 
+  // TODO getter/setter
+  function testcase()
   {
     var accessed = false;
-    var obj = {
-      length : 2
-    };
-    Object.defineProperty(obj, "0", {
+    var arr = [];
+    Object.defineProperty(arr, "0", {
       get : (function () 
       {
         throw new TypeError();
       }),
       configurable : true
     });
-    Object.defineProperty(obj, "1", {
+    Object.defineProperty(arr, "1", {
       get : (function () 
       {
         accessed = true;
@@ -20,7 +19,7 @@
       configurable : true
     });
     try
-{      Array.prototype.indexOf.call(obj, true);
+{      arr.indexOf(true);
       return false;}
     catch (e)
 {      return (e instanceof TypeError) && ! accessed;}

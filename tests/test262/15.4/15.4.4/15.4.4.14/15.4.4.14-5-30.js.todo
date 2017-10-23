@@ -1,4 +1,5 @@
-  function testcase() 
+  // TODO getter/setter
+  function testcase()
   {
     var stepFiveOccurs = false;
     var obj = {
