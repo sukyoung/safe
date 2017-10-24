@@ -689,16 +689,22 @@ object DefaultObject extends AbsObjectUtil {
           if (Throw) (obj, AbsBool.Bot, HashSet(TypeError))
           else (obj, AbsBool.False, ExcSetEmpty)
         val BotTriple = (Bot, AbsBool.Bot, ExcSetEmpty)
+        // 1. Let current be the result of calling the [[GetOwnProperty]] internal method of O with property name P.
         val (current, curUndef) = GetOwnProperty(P)
+        // 2. Let extensible be the value of the [[Extensible]] internal property of O.
         val extensible = obj(IExtensible).value.pvalue.boolval
 
         val (obj1, b1, excSet1) = if (curUndef.isTop) {
           val (obj1, b1, excSet1) =
+            // 4. If current is undefined and extensible is true, then
             if (AbsBool.True <= extensible) {
+              // i. Create an own data property named P of object O whose [[Value]], [[Writable]],
+              // [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
               val changedObj = update(P, AbsDataProp(Desc))
               (changedObj, AbsBool.True, ExcSetEmpty)
             } else BotTriple
           val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
+            // 3. If current is undefined and extensible is false, then Reject.
             if (AbsBool.False <= extensible) Reject
             else BotTriple
           (obj1 + obj2, b1 + b2, excSet1 ++ excSet2)
@@ -717,7 +723,8 @@ object DefaultObject extends AbsObjectUtil {
         val (obj5, b5) =
           if (dva.isTop && dwa.isTop && dea.isTop && dca.isTop) (obj, AbsBool.True)
           else (Bot, AbsBool.Bot)
-        // 6. Return true, if every field in Desc also occurs in current and same
+        // 6. Return true, if every field in Desc also occurs in current and the value of every field in Desc is the
+        // same value as the corresponding field in current when compared using the SameValue algorithm (9.12).
         val (obj6, b6) =
           if ((dva.isTop || (!dv.isBottom && AbsBool.True <= (TypeConversionHelper.SameValue(h, dv, cv)))) &&
             (dwa.isTop || (!dw.isBottom && AbsBool.True <= (dw === cw))) &&
@@ -725,10 +732,34 @@ object DefaultObject extends AbsObjectUtil {
             (dca.isTop || (!dc.isBottom && AbsBool.True <= (dc === cc)))) (obj, AbsBool.True)
           else (Bot, AbsBool.Bot)
 
+        // 7. If the [[Configurable]] field of current is false then
         val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
-          if (AbsBool.False <= cc && AbsBool.False <= cw) Reject
-          else BotTriple
+          if (AbsBool.False <= cc) {
+            // a. Reject, if the [[Configurable]] field of Desc is true.
+            if (AbsBool.True <= dc) Reject
+            // b. Reject, if the [[Enumerable]] field of Desc is present and the [[Enumerable]] fields of current and
+            // Desc are the Boolean negation of each other.
+            else if (!de.isBottom &&
+              (AbsBool.True <= de && AbsBool.False <= ce || AbsBool.True <= ce && AbsBool.False <= de)) Reject
+            else BotTriple
+          } else BotTriple
 
+        // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
+        val (obj7: AbsObject, b7: AbsBool, excSet7: Set[Exception]) =
+          // a. If the [[Configurable]] field of current is false, then
+          if (AbsBool.False <= cc) {
+            // i. Reject, if the [[Writable]] field of current is false and the [[Writable]] field of Desc is true.
+            if (AbsBool.False <= cw && AbsBool.True <= dw) Reject
+            // ii. If the [[Writable]] field of current is false, then
+            else if (AbsBool.False <= cw &&
+              // 1. Reject, if the [[Value]] field of Desc is present and SameValue(Desc.[[Value]],
+              // current.[[Value]]) is false.
+              !dv.isBottom && AbsBool.False <= (TypeConversionHelper.SameValue(h, dv, cv))) Reject
+            else BotTriple
+          } else BotTriple
+
+        // 12. For each attribute field of Desc that is present, set the correspondingly named attribute of the
+        // property named P of object O to the value of the field.
         val (obj3, b3, excSet3) =
           if (AbsBool.True <= cc || AbsBool.True <= cw) {
             var newDP = obj(P)
@@ -745,7 +776,11 @@ object DefaultObject extends AbsObjectUtil {
             AbsString("length") <= P &&
             AbsBool.False <= (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
           else ExcSetEmpty
-        (obj1 + obj2 + obj3 + obj5 + obj6, b1 + b2 + b3 + b5 + b6, excSet1 ++ excSet2 ++ excSet3 ++ excSet4)
+
+        // TODO: unsound. Should Reject if an array element could not be deleted, i.e., it's not configurable.
+        // TODO: Implement DefineOwnProperty for Array objects (15.4.5.1).
+
+        (obj1 + obj2 + obj3 + obj5 + obj6 + obj7, b1 + b2 + b3 + b5 + b6 + b7, excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet7)
     }
   }
 
