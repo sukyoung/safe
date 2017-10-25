@@ -31,7 +31,7 @@ class WebConsole(
   // API
   ////////////////////////////////////////////////////////////////
 
-  override def runFixpoint(): Unit = {
+  override def runFixpoint: Unit = {
     prepareToRunFixpoint
   }
 
@@ -39,7 +39,19 @@ class WebConsole(
     throw new NotImplementedError
   }
 
+  override def getPrompt: String = {
+    val block = cur.block
+    val func = block.func.simpleName
+    val span = block.span
+    val tp = cur.tracePartition
+    s"<$func: $block, $tp> @${span.toString} Iter[$iter] > "
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // Private Methods
+  ////////////////////////////////////////////////////////////////
+
   private def init(): Unit = {
-    runFixpoint()
+    runFixpoint
   }
 }

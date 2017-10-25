@@ -83,8 +83,8 @@ class Console(
         println(s"* current control point changed.")
         this.setPrompt()
       }
-      case _ => {
-        reader.setPrompt(
+      case _ =>
+        this.setPrompt(
           tpList.zipWithIndex.map {
             case (tp, idx) => s"[$idx] $tp" + LINE_SEP
           }.mkString + s"select call context index > "
@@ -107,8 +107,15 @@ class Console(
           }
         }) {}
         this.setPrompt()
-      }
     }
+  }
+
+  override def getPrompt: String = {
+    val block = cur.block
+    val func = block.func.simpleName
+    val span = block.span
+    val tp = cur.tracePartition
+    s"<$func: $block, $tp> @${span.toString} $LINE_SEP Iter[$iter] > "
   }
 
   ////////////////////////////////////////////////////////////////
@@ -128,18 +135,7 @@ class Console(
     }
   }
 
-  private def toString(cp: ControlPoint): String = {
-    val block = cp.block
-    val func = block.func.simpleName
-    val span = block.span
-    val tp = cp.tracePartition
-    s"<$func: $block, $tp> @${span.toString}"
-  }
-
-  private def setPrompt(): Unit = {
-    reader.setPrompt(
-      toString(cur) + LINE_SEP +
-        s"Iter[$iter] > "
-    )
+  private def setPrompt(prompt: String = this.getPrompt): Unit = {
+    reader.setPrompt(prompt)
   }
 }

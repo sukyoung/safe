@@ -45,9 +45,9 @@
     padding-bottom: 5px;
 }
 
-.console-input-marker {
+.console-prompt {
     display: inline-block;
-    width: 20px;
+    padding-right: 10px;
 }
 
 .console-input {
@@ -64,11 +64,11 @@
 }
 .console-line-command {
     margin-bottom: 0;
+    white-space: pre;
 }
 .console-line-result {
-    margin-top: 0;
     white-space: pre;
-    margin-bottom: 0;
+    margin: 0 0 0 20px;
 }
 .console-line-error {
     color: red;

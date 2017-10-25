@@ -13,23 +13,22 @@ package kr.ac.kaist.safe.web
 
 import java.io.File
 
-import akka.actor.{ ActorRef, ActorSystem, Props }
+import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.ws.TextMessage.Strict
 import akka.http.scaladsl.model.ws.{ BinaryMessage, Message, TextMessage, UpgradeToWebSocket }
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{ Flow, Sink, Source }
+import akka.stream.scaladsl.{ Flow, Sink }
 import kr.ac.kaist.safe.BASE_DIR
-import kr.ac.kaist.safe.analyzer.console.{ WebConsole, Interactive }
+import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
 
 object WebServer {
-  def run(interactive: Interactive, port: Int = 8080) {
+  def run(fixpoint: Fixpoint, port: Int = 8080) {
     implicit val system: ActorSystem = ActorSystem("web-debugger")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
@@ -42,7 +41,7 @@ object WebServer {
     val handleWebsocket =
       Flow[Message]
         .mapConcat {
-          case TextMessage.Strict(tm) => WebsocketHandler.handleTextMessage(tm, interactive) :: Nil
+          case TextMessage.Strict(tm) => WebsocketHandler.handleTextMessage(tm, fixpoint) :: Nil
           // ignore binary messages but drain content to avoid the stream being clogged
           case bm: BinaryMessage => bm.dataStream.runWith(Sink.ignore); Nil
         }
@@ -54,6 +53,7 @@ object WebServer {
         }
       } ~ path("result") {
         get {
+          val interactive = fixpoint.consoleOpt.get
           complete(HttpEntity(
             ContentTypes.`text/html(UTF-8)`,
             HTMLWriter.drawGraph(interactive.cfg, interactive.sem, Some(interactive.worklist))

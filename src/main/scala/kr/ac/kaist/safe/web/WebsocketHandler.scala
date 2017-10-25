@@ -12,16 +12,24 @@
 package kr.ac.kaist.safe.web
 
 import akka.http.scaladsl.model.ws.TextMessage
-import kr.ac.kaist.safe.analyzer.console.{ CmdResult, Interactive }
+import kr.ac.kaist.safe.analyzer.Fixpoint
+import kr.ac.kaist.safe.analyzer.console.{ CmdResultBreak, CmdResultContinue }
+import kr.ac.kaist.safe.web.ReqRespJsonFormat._
+import spray.json._
 
 object WebsocketHandler {
-  private var iter: Int = 0
+  def handleTextMessage(tm: String, fixpoint: Fixpoint): TextMessage = {
+    val req = tm.parseJson.convertTo[Request]
 
-  def handleTextMessage(tm: String, c: Interactive): TextMessage = {
-    iter += 1
-
-    c.runCmd(tm) match {
-      case result: CmdResult => TextMessage(result.toString)
+    val console = fixpoint.consoleOpt.get
+    console.runCmd(req.cmd) match {
+      case CmdResultContinue(output) =>
+        val resp = Response(console.getPrompt, output, fixpoint.worklist.isEmpty)
+        TextMessage(resp.toJson.compactPrint)
+      case CmdResultBreak(output) =>
+        fixpoint.computeOneStep()
+        val resp = Response(console.getPrompt, output, fixpoint.worklist.isEmpty)
+        TextMessage(resp.toJson.compactPrint)
     }
   }
 }

@@ -85,6 +85,8 @@ trait Interactive {
   def addBreak(block: CFGBlock): Unit = breakList += block
   def getBreakList: List[CFGBlock] = breakList.toList
   def removeBreak(block: CFGBlock): Unit = breakList -= block
+
+  def getPrompt: String
 }
 
 abstract class CmdResult {

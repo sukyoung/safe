@@ -34,26 +34,27 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
     val (cfg, worklist, sem, initTP, heapConfig, iter) = in
 
-    var interOpt: Option[Interactive] = null
-    if (config.web) {
-      interOpt = Some(new WebConsole(cfg, worklist, sem, heapConfig, iter))
-    } else {
-      interOpt = Some(new Console(cfg, worklist, sem, heapConfig, iter))
-    }
-
     NodeProtocol.test = safeConfig.testMode
 
     // set the start time.
     val startTime = System.currentTimeMillis
+    var iters: Int = 0
 
-    // run web server
+    var interOpt: Option[Interactive] = None
     if (config.web) {
-      WebServer.run(interOpt.get)
+      interOpt = Some(new WebConsole(cfg, worklist, sem, heapConfig, iter))
+    } else if (config.console) {
+      interOpt = Some(new Console(cfg, worklist, sem, heapConfig, iter))
     }
 
-    // calculate fixpoint
-    val fixpoint = new Fixpoint(sem, worklist, interOpt)
-    val iters = fixpoint.compute(iter + 1)
+    if (config.web) {
+      // interactive analysis using web server
+      WebServer.run(new Fixpoint(sem, worklist, interOpt))
+    } else {
+      // calculate fixpoint
+      val fixpoint = new Fixpoint(sem, worklist, interOpt)
+      iters = fixpoint.compute(iter + 1)
+    }
 
     // display duration time
     if (config.time) {

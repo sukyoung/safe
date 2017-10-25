@@ -16,20 +16,6 @@ const MSG_TYPE = {
   DEFAULT: 'DEFAULT',
 }
 
-function print (msg, type=MSG_TYPE.DEFAULT) {
-  const o = $('.console-output')
-  if (type === MSG_TYPE.DEFAULT) {
-    o.append(`<span class="console-line">${msg}</span>`)
-  } else if (type === MSG_TYPE.COMMAND) {
-    o.append(`<p class="console-line console-line-command">&gt; ${msg}</p>`)
-  } else if (type === MSG_TYPE.ERROR) {
-    o.append(`<p class="console-line console-line-error">[Error] ${msg}</p>`)
-  } else if (type === MSG_TYPE.RESULT) {
-    o.append(`<p class="console-line console-line-result">${msg}</p>`)
-  }
-  o.scrollTop(o.prop('scrollHeight'))
-}
-
 class Connection {
   constructor () {
     const loc = window.location
@@ -44,6 +30,9 @@ class Connection {
     this.retry = 0
     this.uri = uri
     this.socket = this.connect()
+    this.isFirst = true
+    this.prompt = '>'
+    this.done = false
   }
 
   connect () {
@@ -51,9 +40,20 @@ class Connection {
     s.onopen = () => {
       this.updateStatusLabel()
       this.retry = 0
+
+      if (this.isFirst) {
+        this.send('help')
+        this.isFirst = false
+      }
     }
     s.onmessage = (msg) => {
-      print(msg.data, MSG_TYPE.RESULT)
+      const { prompt, output, done } = JSON.parse(msg.data)
+      this.print(output, MSG_TYPE.RESULT)
+      this.updatePrompt(prompt)
+      if (done) {
+        this.done = true
+        this.close()
+      }
     }
     s.onerror = (e) => {
       console.log(e)
@@ -74,9 +74,11 @@ class Connection {
   }
 
   send (cmd) {
-    if (this.isConnected()) {
-      this.socket.send(cmd)
-      print(cmd, MSG_TYPE.COMMAND)
+    if (this.isConnected() && !this.done) {
+      this.socket.send(JSON.stringify({
+        cmd,
+      }))
+      this.print(cmd, MSG_TYPE.COMMAND)
     } else {
       this.reconnect()
     }
@@ -84,13 +86,20 @@ class Connection {
 
   close () {
     this.socket.close()
+    this.updateStatusLabel()
+    this.updatePrompt("[Done]")
     window.onbeforeunload = function () {
     }
   }
 
   reconnect () {
-    if (this.retry > 10) {
-      print("Failed to connect server", MSG_TYPE.ERROR)
+    if (this.done) {
+      return
+    } else if (this.retry === 11) {
+      this.print("Failed to connect server", MSG_TYPE.ERROR)
+      return
+    } else if (this.retry > 10) {
+      return
     }
 
     if (this.socket.readyState === WebSocket.CLOSED || this.socket.readyState === WebSocket.CLOSING) {
@@ -124,6 +133,25 @@ class Connection {
       default:
     }
   }
+
+  updatePrompt (prompt) {
+    this.prompt = prompt
+    $('.console-prompt').text(prompt)
+  }
+
+  print (msg, type=MSG_TYPE.DEFAULT) {
+    const o = $('.console-output')
+    if (type === MSG_TYPE.DEFAULT) {
+      o.append(`<span class="console-line">${msg}</span>`)
+    } else if (type === MSG_TYPE.COMMAND) {
+      o.append($(`<p class="console-line console-line-command"></p>`).text(`${this.prompt} ${msg}`))
+    } else if (type === MSG_TYPE.ERROR) {
+      o.append(`<p class="console-line console-line-error">[Error] ${msg}</p>`)
+    } else if (type === MSG_TYPE.RESULT) {
+      o.append(`<p class="console-line console-line-result">${msg}</p>`)
+    }
+    o.scrollTop(o.prop('scrollHeight'))
+  }
 }
 
 let conn = new Connection()
@@ -131,7 +159,8 @@ let conn = new Connection()
 $(function () {
   $('.console-input').keypress(function(e) {
     if (e.which === 13) {
-      conn.send($(this).val())
+      const cmd = $(this).val() || 'next'
+      conn.send(cmd)
       $(this).val('')
     }
   })
