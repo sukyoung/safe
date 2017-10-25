@@ -65,12 +65,13 @@ object WebServer {
         }
       } ~ path("ws") {
         extractRequest {
-          req => {
-            req.header[UpgradeToWebSocket] match {
-              case Some(upgrade) => complete(upgrade.handleMessages(handleWebsocket))
-              case None => complete(StatusCodes.BadRequest, HttpEntity("Not a valid websocket request!"))
+          req =>
+            {
+              req.header[UpgradeToWebSocket] match {
+                case Some(upgrade) => complete(upgrade.handleMessages(handleWebsocket))
+                case None => complete(StatusCodes.BadRequest, HttpEntity("Not a valid websocket request!"))
+              }
             }
-          }
         }
       }
 
