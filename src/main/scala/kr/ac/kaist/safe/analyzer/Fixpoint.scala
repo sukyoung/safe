@@ -11,14 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.console.Console
+import kr.ac.kaist.safe.analyzer.console.{ WebConsole, Interactive }
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.nodes.cfg.{ CFGEdgeExc, CFGEdgeNormal }
 
 class Fixpoint(
     semantics: Semantics,
     worklist: Worklist,
-    consoleOpt: Option[Console]
+    consoleOpt: Option[Interactive]
 ) {
   def compute(initIters: Int = 0): Int = {
     var iters = initIters

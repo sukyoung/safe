@@ -15,9 +15,9 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // jump
 case object CmdJump extends Command("jump", "Continue to analyze until the given iteration.") {
-  def help: Unit = println("usage: " + name + " {#iteration}")
-  def run(c: Console, args: List[String]): Option[Target] = args match {
+  override val help: String = "usage: " + name + " {#iteration}"
+  def run(c: Interactive, args: List[String]): Option[Target] = args match {
     case iter :: Nil if iter.forall(_.isDigit) => Some(TargetIter(iter.toInt))
-    case _ => help; None
+    case _ => printResult(help); None
   }
 }

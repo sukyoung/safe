@@ -15,12 +15,10 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // home
 case object CmdHome extends Command("home", "Reset the current position.") {
-  def help: Unit = println("usage: " + name)
-
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
-      case Nil => c.goHome
-      case _ => help
+      case Nil => c.goHome()
+      case _ => printResult(help)
     }
     None
   }

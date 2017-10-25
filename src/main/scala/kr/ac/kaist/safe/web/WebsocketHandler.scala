@@ -12,12 +12,16 @@
 package kr.ac.kaist.safe.web
 
 import akka.http.scaladsl.model.ws.TextMessage
+import kr.ac.kaist.safe.analyzer.console.{ CmdResult, Interactive }
 
 object WebsocketHandler {
   private var iter: Int = 0
 
-  def handleTextMessage(tm: String): TextMessage = {
+  def handleTextMessage(tm: String, c: Interactive): TextMessage = {
     iter += 1
-    TextMessage("input[" + iter + "]: " ++ tm)
+
+    c.runCmd(tm) match {
+      case result: CmdResult => TextMessage(result.toString)
+    }
   }
 }

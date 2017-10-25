@@ -15,23 +15,21 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // help
 case object CmdHelp extends Command("help") {
-  def help: Unit = println("usage: " + name + " (command)")
-  def run(c: Console, args: List[String]): Option[Target] = {
+  override val help: String = "usage: " + name + " (command)"
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
       case Nil => {
-        println("Command list:")
-        Console.commands.foreach {
-          case cmd =>
-            println("- %-15s%s".format(cmd.name, cmd.info))
-        }
-        println("For more information, see '" + name + " <command>'.")
+        printResult("Command list:")
+        Command.commands.foreach(cmd =>
+          printResult("- %-15s%s".format(cmd.name, cmd.info)))
+        printResult("For more information, see '" + name + " <command>'.")
       }
-      case str :: Nil => Console.cmdMap.get(str) match {
-        case Some(cmd) => cmd.help
+      case str :: Nil => Command.cmdMap.get(str) match {
+        case Some(cmd) => printResult(cmd.help)
         case None =>
-          println("* '" + str + "' is not a command. See '" + name + "'.")
+          printResult("* '" + str + "' is not a command. See '" + name + "'.")
       }
-      case _ => help
+      case _ => printResult(help)
     }
     None
   }

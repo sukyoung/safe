@@ -15,26 +15,22 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // break list
 case object CmdBreakList extends Command("break-list", "Show the list of break points.") {
-  def help: Unit = {
-    println("usage: " + name)
-  }
-
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
       case Nil => c.getBreakList match {
-        case Nil => println("* no break point.")
+        case Nil => printResult("* no break point.")
         case breakList => {
           val len = breakList.length
-          println(s"* $len break point(s).")
+          printResult(s"* $len break point(s).")
           breakList.zipWithIndex.foreach {
             case (block, order) => {
               val fid = block.func.id
-              println(s"  [$order] function[$fid] $block")
+              printResult(s"  [$order] function[$fid] $block")
             }
           }
         }
       }
-      case _ => help
+      case _ => printResult(help)
     }
     None
   }

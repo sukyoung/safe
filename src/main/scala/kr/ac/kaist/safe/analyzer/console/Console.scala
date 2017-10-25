@@ -11,91 +11,63 @@
 
 package kr.ac.kaist.safe.analyzer.console
 
+import java.io.PrintWriter
+
 import jline.console.ConsoleReader
 import jline.console.completer._
-import java.io.PrintWriter
-import scala.collection.immutable.{ HashMap, TreeSet }
-import scala.collection.JavaConverters._
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, TracePartition }
 import kr.ac.kaist.safe.analyzer.console.command._
+import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, TracePartition, Worklist }
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.Span
 import kr.ac.kaist.safe.phase.HeapBuildConfig
 
+import scala.collection.JavaConverters._
+
 class Console(
-    val cfg: CFG,
-    val worklist: Worklist,
-    val sem: Semantics,
-    val config: HeapBuildConfig,
-    private var iter: Int = -1
-) {
+    override val cfg: CFG,
+    override val worklist: Worklist,
+    override val sem: Semantics,
+    override val config: HeapBuildConfig,
+    var iter0: Int
+) extends Interactive {
   ////////////////////////////////////////////////////////////////
   // private variables
   ////////////////////////////////////////////////////////////////
 
   private val reader = new ConsoleReader()
   private val out: PrintWriter = new PrintWriter(reader.getOutput)
-  private var target: Target = TargetIter(iter + 1)
-  private var cur: ControlPoint = _
-  private var home: ControlPoint = _
-  private var breakList: TreeSet[CFGBlock] = TreeSet()
 
-  init
+  iter = iter0
+  init()
 
   ////////////////////////////////////////////////////////////////
   // API
   ////////////////////////////////////////////////////////////////
 
-  def runFixpoint: Unit = {
+  override def runFixpoint(): Unit = {
     val find = prepareToRunFixpoint
     if (find) {
-      this.setPrompt
-      while ( {
+      this.setPrompt()
+      while ({
         println
         val line = reader.readLine
         val loop = runCmd(line) match {
-          case Some(t) =>
-            target = t; false
-          case None => true
+          case CmdResultContinue(o) =>
+            println(o); true
+          case CmdResultBreak(o) => println(o); false
         }
         out.flush()
         loop
       }) {}
     }
   }
-
-  def prepareToRunFixpoint: Boolean = {
-    iter += 1
-    cur = worklist.head
-    home = cur
-    val block = cur.block
-    (target match {
-      case TargetIter(k) => iter == k
-      case TargetBlock(b) => b == block
-    }) || breakList(block)
-  }
-
-  def runRemoteCmd(cmd: String): Unit = {
-    runCmd(cmd) match {
-      case Some(t) =>
-        target = t
-      case None =>
-    }
-  }
-
-  def runFinished: Unit = println("* analysis finished")
-
-  def getIter: Int = iter
-
-  def getCurCP: ControlPoint = cur
-  def goHome: Unit = {
+  override def goHome(): Unit = {
     if (cur == home) {
       println("* here is already original control point.")
     } else {
       cur = home
       println("* reset the current control point.")
-      this.setPrompt
+      this.setPrompt()
     }
   }
   def moveCurCP(block: CFGBlock): Unit = {
@@ -109,7 +81,7 @@ class Console(
       case tp :: Nil => {
         cur = ControlPoint(block, tp)
         println(s"* current control point changed.")
-        this.setPrompt
+        this.setPrompt()
       }
       case _ => {
         reader.setPrompt(
@@ -120,60 +92,39 @@ class Console(
         while ({
           println
           reader.readLine match {
-            case null => {
+            case null =>
               println
               println("* current control point not changed.")
               false
-            }
             case "" => true
             case line => !line.forall(_.isDigit) || (line.toInt match {
-              case idx if idx < len => {
+              case idx if idx < len =>
                 cur = ControlPoint(block, tpList(idx))
                 println(s"* current control point changed.")
                 false
-              }
               case _ => println(s"* given index is out of bound $len"); true
             })
           }
         }) {}
-        this.setPrompt
+        this.setPrompt()
       }
     }
   }
-
-  def addBreak(block: CFGBlock): Unit = breakList += block
-  def getBreakList: List[CFGBlock] = breakList.toList
-  def removeBreak(block: CFGBlock): Unit = breakList -= block
 
   ////////////////////////////////////////////////////////////////
   // private helper
   ////////////////////////////////////////////////////////////////
 
-  private def init: Unit = {
-    val cmds = Console.commands.map(_.name).asJavaCollection
+  private def init(): Unit = {
+    val cmds = Command.commands.map(_.name).asJavaCollection
     reader.addCompleter(new StringsCompleter(cmds))
     // TODO extend aggregator for sub-command
     // reader.addCompleter(new AggregateCompleter(
     //   new ArgumentCompleter(new StringsCompleter("asdf"), new StringsCompleter("sdf"), new NullCompleter()),
     //   new ArgumentCompleter(new StringsCompleter("wer"), new NullCompleter())
     // ))
-    runCmd("help")
-  }
-
-  private def runCmd(line: String): Option[Target] = {
-    line match {
-      case null =>
-        println; Some(TargetIter(-1)) // run
-      case "" => Some(TargetIter(iter + 1))
-      case _ => {
-        val list = line.trim.split("\\s+").toList
-        val cmd = list.head
-        val args = list.tail
-        Console.cmdMap.get(cmd) match {
-          case Some(o) => o.run(this, args)
-          case None => println(s"* $cmd: command not found"); None
-        }
-      }
+    runCmd("help") match {
+      case o: CmdResult => println(o)
     }
   }
 
@@ -185,37 +136,10 @@ class Console(
     s"<$func: $block, $tp> @${span.toString}"
   }
 
-  private def setPrompt: Unit = {
+  private def setPrompt(): Unit = {
     reader.setPrompt(
       toString(cur) + LINE_SEP +
         s"Iter[$iter] > "
     )
   }
 }
-
-object Console {
-  val commands: List[Command] = List(
-    CmdHelp,
-    CmdNext,
-    CmdJump,
-    CmdPrint,
-    CmdPrintResult,
-    CmdRunInsts,
-    CmdMove,
-    CmdHome,
-    CmdRun,
-    CmdBreak,
-    CmdBreakList,
-    CmdBreakRemove,
-    CmdFindBot,
-    CmdDump,
-    CmdWeb
-  )
-  val cmdMap: Map[String, Command] = commands.foldLeft(
-    Map[String, Command]()
-  ) { case (map, cmd) => map + (cmd.name -> cmd) }
-}
-
-sealed abstract class Target
-case class TargetIter(iter: Int) extends Target
-case class TargetBlock(block: CFGBlock) extends Target

@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.phase
 
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.console.Console
+import kr.ac.kaist.safe.analyzer.console.{ Console, Interactive, WebConsole }
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.json.NodeProtocol
 import kr.ac.kaist.safe.nodes.cfg.CFG
@@ -34,7 +34,12 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
     val (cfg, worklist, sem, initTP, heapConfig, iter) = in
 
-    val consoleOpt: Option[Console] = Some(new Console(cfg, worklist, sem, heapConfig, iter))
+    var interOpt: Option[Interactive] = null
+    if (config.web) {
+      interOpt = Some(new WebConsole(cfg, worklist, sem, heapConfig, iter))
+    } else {
+      interOpt = Some(new Console(cfg, worklist, sem, heapConfig, iter))
+    }
 
     NodeProtocol.test = safeConfig.testMode
 
@@ -43,11 +48,11 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
 
     // run web server
     if (config.web) {
-      WebServer.run(consoleOpt.get)
+      WebServer.run(interOpt.get)
     }
 
     // calculate fixpoint
-    val fixpoint = new Fixpoint(sem, worklist, consoleOpt)
+    val fixpoint = new Fixpoint(sem, worklist, interOpt)
     val iters = fixpoint.compute(iter + 1)
 
     // display duration time
