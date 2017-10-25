@@ -1,0 +1,90 @@
+/*
+ * ****************************************************************************
+ * Copyright (c) 2016-2017, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ***************************************************************************
+ */
+
+.console {
+    padding: 10px;
+    opacity: 0.9;
+    transition: opacity .3s ease-in-out;
+    overflow-y: scroll;
+    background-color: black;
+    color: white;
+    position: absolute;
+    height: 50%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+.console:hover {
+    opacity: 1;
+}
+.console-output {
+    font-size: 20px;
+    max-height: calc(100% - 40px);
+    overflow: scroll;
+}
+
+.console-input-wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+    width: 100%;
+    display: flex;
+    font-size: 20px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+}
+
+.console-input-marker {
+    display: inline-block;
+    width: 20px;
+}
+
+.console-input {
+    flex: 1;
+    display: inline-block;
+    color: white;
+    background-color: transparent;
+    font-size: 20px;
+    border: none;
+    padding-bottom: 10px;
+}
+.console-line {
+    display: block;
+}
+.console-line-command {
+    margin-bottom: 0;
+}
+.console-line-result {
+    margin-top: 0;
+    white-space: pre;
+    margin-bottom: 0;
+}
+.console-line-error {
+    color: red;
+}
+
+.console-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.status-connecting {
+    color: yellow;
+}
+.status-connected {
+    color: green;
+}
+.status-closed {
+    color: red;
+}
