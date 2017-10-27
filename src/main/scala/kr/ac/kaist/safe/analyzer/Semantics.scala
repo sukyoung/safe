@@ -589,9 +589,14 @@ class Semantics(
       val (attrV, excSetA) = V(exprA, st)
 
       val name = propV.pvalue.strval
+      // ToPropertyDescriptor ( Obj )
+      // 1. If Type(Obj) is not Object throw a TypeError exception.
+      val excSet =
+        if (attrV.pvalue.isBottom) ExcSetEmpty
+        else HashSet(TypeError)
       val attr = h.get(attrV.locset)
       val desc = AbsDesc.ToPropertyDescriptor(attr, h)
-      val (retH, retExcSet) = objV.locset.foldLeft((h, excSetO ++ excSetP ++ excSetA)) {
+      val (retH, retExcSet) = objV.locset.foldLeft((h, excSet ++ excSetO ++ excSetP ++ excSetA)) {
         case ((heap, e), loc) => {
           val obj = heap.get(loc)
           val (retObj, _, newExcSet) = obj.DefineOwnProperty(h, name, desc, true)
