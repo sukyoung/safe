@@ -326,7 +326,7 @@ Function: {
     // 3. Let len be ToUint32(lenVal).
     var len = @ToUint32(lenVal);
     // 4. If separator is undefined, let separator be the single-character String ",".
-    if (arguments.length === 0){
+    if (separator === undefined){
         var separator = ",";
     }
     // 5. Let sep be ToString(separator).
