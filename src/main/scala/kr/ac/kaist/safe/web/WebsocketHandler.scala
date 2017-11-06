@@ -27,16 +27,19 @@ object WebsocketHandler {
       console.sem,
       Some(console.worklist),
     )
-    val prompt = console.getPrompt
-
-    console.runCmd(req.cmd) match {
-      case CmdResultContinue(output) =>
-        val resp = Response(prompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
-        TextMessage(resp.toJson)
-      case CmdResultBreak(output) =>
-        fixpoint.computeOneStep()
-        val resp = Response(prompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
-        TextMessage(resp.toJson)
+    if (req.cmd == "status") {
+      val resp = Response(console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+      TextMessage(resp.toJson)
+    } else {
+      console.runCmd(req.cmd) match {
+        case CmdResultContinue(output) =>
+          val resp = Response(console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+          TextMessage(resp.toJson)
+        case CmdResultBreak(output) =>
+          fixpoint.computeOneStep()
+          val resp = Response(console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+          TextMessage(resp.toJson)
+      }
     }
   }
 }
