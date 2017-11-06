@@ -24,7 +24,6 @@ webix.ready(function(){
     rows:[
       { view: 'toolbar', id: 'toolbar', elements: [
         { view: 'label', label: 'SAFE 2.0' },
-        { view: 'icon', icon: 'terminal' },
         { view: 'icon', icon: 'bars',
           click: function() {
             if( $$('options').config.hidden) {
@@ -37,6 +36,9 @@ webix.ready(function(){
         { id: 'side-bar', header: 'Instructions & State', width: 500, minWidth: 320, body: side },
         { id: 'resizer', view: 'resizer' },
         { id: 'cy', body: { content: 'cy' } },
+        { id: 'console', header: 'Console', width: '50%', minWidth: 720, height: '100%',
+          body: { content: 'console' },
+        },
       ]},
       // TODO { template: 'search engine', height: 30},
     ]
@@ -79,90 +81,105 @@ webix.ready(function(){
 // redraw CFG after collapsing
   $$('accord').attachEvent("onAfterCollapse", function(){
     cy.resize();
+    cy.layout();
   });
 
 // redraw CFG after expanding
   $$('accord').attachEvent("onAfterExpand", function(){
     cy.resize();
+    cy.layout();
   });
 
 // redraw CFG when the 'cy' view resized
   $$('cy').attachEvent('onViewResize', function() {
     cy.resize();
+    cy.layout();
   });
 
-  $(function(){
-    var cy = window.cy = cytoscape({
-      container: document.getElementById('cy'),
-      layout: {
-        name: 'dagre'
-      },
+  drawGraph();
+  $$('console').expand();
 
-      style: [
-        {
-          selector: 'node',
-          style: {
-            'shape': 'roundrectangle',
-            'border-width': 'data(border)',
-            'border-color': 'data(color)',
-            'content': 'data(content)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': 'data(color)',
-            'width': '120',
-            'background-color': 'data(bc)',
-          }
-        },
-
-        {
-          selector: 'edge',
-          style: {
-            'width': 'data(width)',
-            'target-arrow-shape': 'data(arrow)',
-            'line-color': 'data(color)',
-            'color': 'data(color)',
-            'target-arrow-color': 'data(color)',
-            'curve-style': 'bezier',
-            'line-style': 'data(style)',
-            'label': 'data(label)',
-            'text-rotation': 'autorotate',
-            'text-background-opacity': 1,
-            'text-background-color': 'white',
-          }
-        }
-      ],
-
-      elements: {
-        nodes: safe_DB.nodes,
-        edges: safe_DB.edges,
-      },
-    });
-
-    var blocks = cy.nodes().filter(function() { var a = this.id().includes(':'); return a; });
-    blocks.on('click', function(e){
-      $$('side-bar').expand();
-      var target = e.cyTarget;
-      var id = target.id();
-      var insts_data = safe_DB.insts[id];
-      var state_data = safe_DB.state[id];
-
-      // reset insts data
-      var insts = $$('insts');
-      insts.clearAll();
-      for (var i in insts_data) insts.add(insts_data[i]);
-
-      // reset state data
-      var state = $$('state');
-      state.clearAll();
-      for (var i in state_data) state.add(state_data[i].value, undefined, state_data[i].parent);
-
-      $$('insts').select('block');
-      cy.center(target);
-      // TODO zoom is better?
-      // cy.zoom({
-      //   level: 2.0,
-      //   position: target.position(),
-      // });
-    });
-  });
+  $('.console').click(function () {
+    $('.console-input').focus()
+  })
 })
+
+function drawGraph () {
+  var cy = window.cy = cytoscape({
+    container: document.getElementById('cy'),
+    layout: {
+      name: 'dagre'
+    },
+
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'shape': 'roundrectangle',
+          'border-width': 'data(border)',
+          'border-color': 'data(color)',
+          'content': 'data(content)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'color': 'data(color)',
+          'width': '120',
+          'background-color': 'data(bc)',
+        }
+      },
+
+      {
+        selector: 'edge',
+        style: {
+          'width': 'data(width)',
+          'target-arrow-shape': 'data(arrow)',
+          'line-color': 'data(color)',
+          'color': 'data(color)',
+          'target-arrow-color': 'data(color)',
+          'curve-style': 'bezier',
+          'line-style': 'data(style)',
+          'label': 'data(label)',
+          'text-rotation': 'autorotate',
+          'text-background-opacity': 1,
+          'text-background-color': 'white',
+        }
+      }
+    ],
+
+    elements: {
+      nodes: safe_DB.nodes,
+      edges: safe_DB.edges,
+    },
+  });
+
+  var blocks = cy.nodes().filter(function() { var a = this.id().includes(':'); return a; });
+  blocks.on('click', function(e){
+    $$('side-bar').expand();
+    var target = e.cyTarget;
+    var id = target.id();
+    var insts_data = safe_DB.insts[id];
+    var state_data = safe_DB.state[id];
+
+    // reset insts data
+    var insts = $$('insts');
+    insts.clearAll();
+    for (var i in insts_data) insts.add(insts_data[i]);
+
+    // reset state data
+    var state = $$('state');
+    state.clearAll();
+    for (var i in state_data) state.add(state_data[i].value, undefined, state_data[i].parent);
+
+    $$('insts').select('block');
+    cy.center(target);
+    // TODO zoom is better?
+    // cy.zoom({
+    //   level: 2.0,
+    //   position: target.position(),
+    // });
+  });
+}
+
+function redrawGraph () {
+  window.cy.destroy()
+  drawGraph()
+}

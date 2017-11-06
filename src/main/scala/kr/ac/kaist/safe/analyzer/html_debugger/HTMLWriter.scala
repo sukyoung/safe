@@ -207,6 +207,23 @@ object HTMLWriter {
     sb.toString
   }
 
+  def renderGraphStates(cfg: CFG, sem: Semantics, wlOpt: Option[Worklist]): String = {
+    // computes reachable fid_set
+    val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry, sem))
+
+    // dump each function node
+    val blocks = reachableFunSet.foldRight(List[CFGBlock]()) {
+      case (func, lst) => func.getAllBlocks ++ lst
+    }.reverse
+
+    return s"""{
+      "nodes": [${blocks.map(block => drawBlock(block, wlOpt, sem)).mkString("")}],
+      "edges": [${blocks.map(block => drawEdge(block, sem)).mkString("")}],
+      "insts": {${blocks.map(block => addInsts(block)).mkString("")}},
+      "state": {${blocks.map(block => addState(block, sem)).mkString("")}}
+    }""".stripMargin
+  }
+
   def drawGraph(
     cfg: CFG,
     sem: Semantics,
@@ -233,29 +250,12 @@ object HTMLWriter {
         <link rel="stylesheet" href="assets/css/webix.css" type="text/css">
         <link rel="stylesheet" href="assets/css/core.css" type="text/css">
         <script>
-var safe_DB = {
-  nodes: [
-""")
-    blocks.foreach(block => sb.append(drawBlock(block, wlOpt, sem)))
-    sb.append("""  ],
-  edges: [
-""")
-    blocks.foreach(block => sb.append(drawEdge(block, sem)))
-    sb.append("""  ],
-  insts: {
-""")
-    blocks.foreach(block => sb.append(addInsts(block)))
-    sb.append("""  },
-  state: {
-""")
-    blocks.foreach(block => sb.append(addState(block, sem)))
-    sb.append(s"""  },
-};
+          var safe_DB = ${renderGraphStates(cfg, sem, wlOpt)};
         </script>
         <script src="assets/js/core.js" type="text/javascript"></script>
     </head>
     <body>
-        <div id='cy'></div>
+        <div id="cy"></div>
     </body>
 </html>""")
     sb.toString

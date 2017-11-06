@@ -87,7 +87,9 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test" withSources,
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
-  "io.spray" %% "spray-json" % "1.3.2"
+  "io.spray" %% "spray-json" % "1.3.2",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.2",
+  "com.fasterxml.jackson.module" % "jackson-module-scala_2.12" % "2.9.1"
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")

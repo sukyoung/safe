@@ -9,10 +9,10 @@
  * ***************************************************************************
  */
 
-package kr.ac.kaist.safe.web
+package kr.ac.kaist.safe.web.utils
 
-import kr.ac.kaist.safe.web.utils.JsonImplicits._
-
-case class Request(cmd: String)
-case class Response(prompt: String, iter: Int, output: String, state: String, done: Boolean = false)
-
+object JsonImplicits {
+  implicit class Marshallable[T](marshallMe: T) {
+    def toJson: String = JsonUtil.toJson(marshallMe)
+  }
+}

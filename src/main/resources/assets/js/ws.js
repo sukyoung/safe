@@ -31,7 +31,8 @@ class Connection {
     this.uri = uri
     this.socket = this.connect()
     this.isFirst = true
-    this.prompt = '>'
+    this.prompt = ''
+    this.iter = -1
     this.done = false
   }
 
@@ -47,13 +48,18 @@ class Connection {
       }
     }
     s.onmessage = (msg) => {
-      const { prompt, output, done } = JSON.parse(msg.data)
+      const { prompt, iter, output, state, done } = JSON.parse(msg.data)
+      // TODO: remove eval
+      eval(`safe_DB = ${state}`)
+      redrawGraph()
       this.print(output, MSG_TYPE.RESULT)
-      this.updatePrompt(prompt)
+      this.updatePrompt(prompt, iter)
       if (done) {
         this.done = true
         this.close()
       }
+      const console = $('.console')
+      console.scrollTop(console.prop('scrollHeight'))
     }
     s.onerror = (e) => {
       console.log(e)
@@ -79,6 +85,9 @@ class Connection {
         cmd,
       }))
       this.print(cmd, MSG_TYPE.COMMAND)
+      this.updatePrompt(this.prompt, this.iter+1)
+      const console = $('.console')
+      console.scrollTop(console.prop('scrollHeight'))
     } else {
       this.reconnect()
     }
@@ -87,7 +96,6 @@ class Connection {
   close () {
     this.socket.close()
     this.updateStatusLabel()
-    this.updatePrompt("[Done]")
     window.onbeforeunload = function () {
     }
   }
@@ -134,9 +142,11 @@ class Connection {
     }
   }
 
-  updatePrompt (prompt) {
+  updatePrompt (prompt, iter) {
     this.prompt = prompt
+    this.iter = iter
     $('.console-prompt').text(prompt)
+    $('.console-iter').text(`Iter[${iter}] >`)
   }
 
   print (msg, type=MSG_TYPE.DEFAULT) {
@@ -144,13 +154,21 @@ class Connection {
     if (type === MSG_TYPE.DEFAULT) {
       o.append(`<span class="console-line">${msg}</span>`)
     } else if (type === MSG_TYPE.COMMAND) {
-      o.append($(`<p class="console-line console-line-command"></p>`).text(`${this.prompt} ${msg}`))
+      let p = ''
+      if (this.prompt) {
+        p += `${this.prompt}\n`
+      }
+      if (this.iter > -1) {
+        p += `Iter[${this.iter}] > ${msg}`
+      } else {
+        p += `> ${msg}`
+      }
+      o.append($(`<p class="console-line console-line-command"></p>`).text(p))
     } else if (type === MSG_TYPE.ERROR) {
       o.append(`<p class="console-line console-line-error">[Error] ${msg}</p>`)
     } else if (type === MSG_TYPE.RESULT) {
       o.append(`<p class="console-line console-line-result">${msg}</p>`)
     }
-    o.scrollTop(o.prop('scrollHeight'))
   }
 }
 

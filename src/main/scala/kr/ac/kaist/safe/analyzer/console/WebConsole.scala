@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.console
 
 import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.phase.HeapBuildConfig
 
 class WebConsole(
@@ -44,7 +45,7 @@ class WebConsole(
     val func = block.func.simpleName
     val span = block.span
     val tp = cur.tracePartition
-    s"<$func: $block, $tp> @${span.toString} Iter[$iter] > "
+    s"<$func: $block, $tp> @${span.toString}"
   }
 
   ////////////////////////////////////////////////////////////////
