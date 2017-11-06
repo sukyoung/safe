@@ -24,6 +24,12 @@ webix.ready(function(){
     rows:[
       { view: 'toolbar', id: 'toolbar', elements: [
         { view: 'label', label: 'SAFE 2.0' },
+        { view: 'button', id: 'next',
+          type: 'iconButton', icon: 'play', label: 'Next', width: 80,
+          click () {
+            conn.send('next')
+          },
+        },
         { view: 'icon', icon: 'bars',
           click: function() {
             if( $$('options').config.hidden) {
@@ -32,12 +38,11 @@ webix.ready(function(){
           }
         },
       ]},
-      { view: 'accordion', id: 'accord', type: 'wide', collapsed: true, cols:[
-        { id: 'side-bar', header: 'Instructions & State', width: 500, minWidth: 320, body: side },
+      { view: 'accordion', id: 'accord', type: 'wide', collapsed: true, multi: true, cols:[
+        { id: 'side-bar', header: 'Instructions & State', collapsed: false, width: 500, minWidth: 320, body: side },
         { id: 'resizer', view: 'resizer' },
         { id: 'cy', body: { content: 'cy' } },
-        { id: 'console', header: 'Console', width: '50%', minWidth: 720, height: '100%',
-          body: { content: 'console' },
+        { id: 'console', header: 'Console', minWidth: 720, width: '50%', height: '100%', body: { content: 'console' },
         },
       ]},
       // TODO { template: 'search engine', height: 30},
@@ -97,7 +102,6 @@ webix.ready(function(){
   });
 
   drawGraph();
-  $$('console').expand();
 
   $('.console').click(function () {
     $('.console-input').focus()

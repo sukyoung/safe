@@ -44,6 +44,7 @@
     display: block;
     width: 100%;
     color: lightcoral;
+    white-space: pre-wrap;
 }
 
 .console-input-line {

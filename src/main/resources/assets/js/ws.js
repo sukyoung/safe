@@ -30,7 +30,6 @@ class Connection {
     this.retry = 0
     this.uri = uri
     this.socket = this.connect()
-    this.isFirst = true
     this.prompt = ''
     this.iter = -1
     this.done = false
@@ -41,11 +40,7 @@ class Connection {
     s.onopen = () => {
       this.updateStatusLabel()
       this.retry = 0
-
-      if (this.isFirst) {
-        this.send('help')
-        this.isFirst = false
-      }
+      this.send('status')
     }
     s.onmessage = (msg) => {
       const { prompt, iter, output, state, done } = JSON.parse(msg.data)
@@ -96,6 +91,9 @@ class Connection {
   close () {
     this.socket.close()
     this.updateStatusLabel()
+    if (this.done) {
+      this.updatePrompt('Analysis has done\nTo restart analysis, please restart the server', this.iter, true)
+    }
     window.onbeforeunload = function () {
     }
   }
@@ -142,14 +140,20 @@ class Connection {
     }
   }
 
-  updatePrompt (prompt, iter) {
+  updatePrompt (prompt, iter, done=false) {
     this.prompt = prompt
     this.iter = iter
     $('.console-prompt').text(prompt)
     $('.console-iter').text(`Iter[${iter}] >`)
+
+    if (done) {
+      $('.console-input-line').hide()
+    }
   }
 
   print (msg, type=MSG_TYPE.DEFAULT) {
+    if (msg === 'status') return
+
     const o = $('.console-output')
     if (type === MSG_TYPE.DEFAULT) {
       o.append(`<span class="console-line">${msg}</span>`)
