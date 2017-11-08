@@ -38,12 +38,11 @@ webix.ready(function(){
           }
         },
       ]},
-      { view: 'accordion', id: 'accord', type: 'wide', collapsed: true, multi: true, cols:[
+      { view: 'accordion', id: 'accord', type: 'wide', collapsed: true, cols:[
         { id: 'side-bar', header: 'Instructions & State', collapsed: false, width: 500, minWidth: 320, body: side },
         { id: 'resizer', view: 'resizer' },
         { id: 'cy', body: { content: 'cy' } },
-        { id: 'console', header: 'Console', minWidth: 720, width: '50%', height: '100%', body: { content: 'console' },
-        },
+        { id: 'console', header: 'Console', minWidth: 720, width: '50%', height: '100%', body: { content: 'console' } },
       ]},
       // TODO { template: 'search engine', height: 30},
     ]
@@ -184,6 +183,8 @@ function drawGraph () {
 }
 
 function redrawGraph () {
-  window.cy.destroy()
+  if (window.cy.destroy) {
+    window.cy.destroy()
+  }
   drawGraph()
 }

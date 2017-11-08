@@ -11,10 +11,9 @@
 
 package kr.ac.kaist.safe.web
 
-import kr.ac.kaist.safe.json.JsonImplicits._
+import akka.actor.ActorRef
 
-object Protocol {
-  sealed trait Message
-  case class Run(cmd: String) extends Message
-  case class Result(prompt: String, iter: Int, output: String, state: String, done: Boolean = false) extends Message
-}
+sealed trait Event
+case class ReceivedCmd(cmd: String) extends Event
+case class ParticipantLeft(uid: String) extends Event
+case class NewParticipant(uid: String, subscriber: ActorRef) extends Event

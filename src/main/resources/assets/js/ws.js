@@ -25,7 +25,9 @@ class Connection {
     } else {
       uri = "ws:"
     }
-    uri += `//${loc.host}/ws`
+    const uid = Math.floor(Math.random() * 10000000)
+    console.log(`Generated UID: ${uid}`)
+    uri += `//${loc.host}/ws?uid=${uid}`
 
     this.retry = 0
     this.uri = uri
@@ -40,7 +42,6 @@ class Connection {
     s.onopen = () => {
       this.updateStatusLabel()
       this.retry = 0
-      this.send('status')
     }
     s.onmessage = (msg) => {
       const { prompt, iter, output, state, done } = JSON.parse(msg.data)

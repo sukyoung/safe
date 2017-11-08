@@ -9,7 +9,7 @@
  * ***************************************************************************
  */
 
-package kr.ac.kaist.safe.web.utils
+package kr.ac.kaist.safe.json
 
 object JsonImplicits {
   implicit class Marshallable[T](marshallMe: T) {
