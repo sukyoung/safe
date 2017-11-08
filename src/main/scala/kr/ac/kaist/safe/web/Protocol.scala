@@ -16,5 +16,5 @@ import kr.ac.kaist.safe.json.JsonImplicits._
 object Protocol {
   sealed trait Message
   case class Run(cmd: String) extends Message
-  case class Result(prompt: String, iter: Int, output: String, state: String, done: Boolean = false) extends Message
+  case class Result(cmd: String, prompt: String, iter: Int, output: String, state: String, done: Boolean = false) extends Message
 }

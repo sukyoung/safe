@@ -32,9 +32,24 @@ class Connection {
     this.retry = 0
     this.uri = uri
     this.socket = this.connect()
-    this.prompt = ''
-    this.iter = -1
     this.done = false
+    this.p = ""
+    this.i =-1
+  }
+
+  get prompt () {
+    return this.p
+  }
+  set prompt (prompt) {
+    this.p = prompt
+    $('.console-prompt').text(prompt)
+  }
+  get iter () {
+    return this.i
+  }
+  set iter(iter) {
+    this.i = iter
+    $('.console-iter').text(`Iter[${iter}] >`)
   }
 
   connect () {
@@ -44,18 +59,21 @@ class Connection {
       this.retry = 0
     }
     s.onmessage = (msg) => {
-      const { prompt, iter, output, state, done } = JSON.parse(msg.data)
+      const { cmd, prompt, iter, output, state, done } = JSON.parse(msg.data)
       // TODO: remove eval
       eval(`safe_DB = ${state}`)
       redrawGraph()
-      this.print(output, MSG_TYPE.RESULT)
-      this.updatePrompt(prompt, iter)
+      if (cmd !== '') {
+        this.print(cmd, MSG_TYPE.COMMAND)
+        this.print(output, MSG_TYPE.RESULT)
+      }
+      this.prompt = prompt
+      this.iter = iter
+
       if (done) {
         this.done = true
         this.close()
       }
-      const console = $('.console')
-      console.scrollTop(console.prop('scrollHeight'))
     }
     s.onerror = (e) => {
       console.log(e)
@@ -80,10 +98,6 @@ class Connection {
       this.socket.send(JSON.stringify({
         cmd,
       }))
-      this.print(cmd, MSG_TYPE.COMMAND)
-      this.updatePrompt(this.prompt, this.iter+1)
-      const console = $('.console')
-      console.scrollTop(console.prop('scrollHeight'))
     } else {
       this.reconnect()
     }
@@ -93,7 +107,8 @@ class Connection {
     this.socket.close()
     this.updateStatusLabel()
     if (this.done) {
-      this.updatePrompt('Analysis has done\nTo restart analysis, please restart the server', this.iter, true)
+      this.prompt = 'Analysis has done\nTo restart analysis, please restart the server'
+      $('.console-input-line').hide()
     }
     window.onbeforeunload = function () {
     }
@@ -141,17 +156,6 @@ class Connection {
     }
   }
 
-  updatePrompt (prompt, iter, done=false) {
-    this.prompt = prompt
-    this.iter = iter
-    $('.console-prompt').text(prompt)
-    $('.console-iter').text(`Iter[${iter}] >`)
-
-    if (done) {
-      $('.console-input-line').hide()
-    }
-  }
-
   print (msg, type=MSG_TYPE.DEFAULT) {
     if (msg === 'status') return
 
@@ -165,8 +169,6 @@ class Connection {
       }
       if (this.iter > -1) {
         p += `Iter[${this.iter}] > ${msg}`
-      } else {
-        p += `> ${msg}`
       }
       o.append($(`<p class="console-line console-line-command"></p>`).text(p))
     } else if (type === MSG_TYPE.ERROR) {
@@ -174,6 +176,8 @@ class Connection {
     } else if (type === MSG_TYPE.RESULT) {
       o.append(`<p class="console-line console-line-result">${msg}</p>`)
     }
+    const console = $('.console')
+    console.scrollTop(console.prop('scrollHeight'))
   }
 }
 

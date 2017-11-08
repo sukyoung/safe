@@ -50,10 +50,10 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
     )
     console.runCmd(req.cmd) match {
       case CmdResultContinue(output) =>
-        Result(console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+        Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultBreak(output) =>
         fixpoint.computeOneStep()
-        Result(console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+        Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
     }
   }
 
@@ -64,6 +64,6 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
       console.sem,
       Some(console.worklist),
     )
-    Result(console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+    Result("", console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
   }
 }
