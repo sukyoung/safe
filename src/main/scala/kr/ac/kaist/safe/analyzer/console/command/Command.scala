@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
+import java.io.OutputStream
+
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.LINE_SEP
 
@@ -31,6 +33,11 @@ abstract class Command(
 
   protected def printResult(s: String = ""): Unit = {
     sb.append(s + LINE_SEP)
+  }
+  protected def flushTo(outputStream: OutputStream): Unit = {
+    outputStream.write(sb.toString.getBytes)
+    outputStream.flush()
+    sb.clear()
   }
   def result(): String = {
     val s = sb.toString

@@ -49,6 +49,9 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
                   printResult()
                   printResult("*** exception state ***")
                   printResult(oldExcSt.toString)
+
+                  // TODO: This doesn't support WebConsole
+                  flushTo(System.out)
                   true
                 }
                 case "d" => true // TODO diff
