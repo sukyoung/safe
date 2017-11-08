@@ -13,13 +13,13 @@ package kr.ac.kaist.safe.web
 
 import java.io.File
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ ActorSystem, Props }
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.ws.{Message, TextMessage, UpgradeToWebSocket}
+import akka.http.scaladsl.model.ws.{ Message, TextMessage, UpgradeToWebSocket }
 import akka.http.scaladsl.server.Directives._
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
+import akka.stream.scaladsl.{ Flow, Sink, Source }
+import akka.stream.{ ActorMaterializer, OverflowStrategy }
 import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.json.JsonImplicits._
@@ -60,7 +60,6 @@ object WebServer extends {
       }
     }
 
-
     def websocketFlow(uid: String): Flow[Message, Message, Any] =
       Flow[Message]
         .collect {
@@ -82,12 +81,13 @@ object WebServer extends {
       } ~ path("ws") {
         parameter('uid) { uid =>
           extractRequest {
-            req => {
-              req.header[UpgradeToWebSocket] match {
-                case Some(upgrade) => complete(upgrade.handleMessages(websocketFlow(uid)))
-                case None => complete(StatusCodes.BadRequest, HttpEntity("Not a valid websocket request!"))
+            req =>
+              {
+                req.header[UpgradeToWebSocket] match {
+                  case Some(upgrade) => complete(upgrade.handleMessages(websocketFlow(uid)))
+                  case None => complete(StatusCodes.BadRequest, HttpEntity("Not a valid websocket request!"))
+                }
               }
-            }
           }
         }
       }
