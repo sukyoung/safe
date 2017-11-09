@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.web.actors
 
 import akka.actor.{Actor, ActorRef, Status, Terminated}
 import kr.ac.kaist.safe.analyzer.Fixpoint
-import kr.ac.kaist.safe.analyzer.console.{CmdResultBreak, CmdResultContinue}
+import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.json.JsonUtil
 import kr.ac.kaist.safe.web.{NewParticipant, ParticipantLeft, ReceivedCmd}
@@ -54,6 +54,8 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
       case CmdResultBreak(output) =>
         fixpoint.computeOneStep()
         Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+      case CmdResultRestart =>
+        Result(req.cmd, console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
     }
   }
 

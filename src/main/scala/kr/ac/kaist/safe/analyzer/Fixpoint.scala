@@ -17,9 +17,10 @@ import kr.ac.kaist.safe.nodes.cfg.{ CFGEdgeExc, CFGEdgeNormal }
 
 class Fixpoint(
     semantics: Semantics,
-    val worklist: Worklist,
     val consoleOpt: Option[Interactive]
 ) {
+  def worklist: Worklist = semantics.worklist
+
   def compute(initIters: Int = 0): Int = {
     var iters = initIters
     while (!worklist.isEmpty) {

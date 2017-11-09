@@ -25,7 +25,6 @@ import scala.collection.JavaConverters._
 
 class Console(
     override val cfg: CFG,
-    override val worklist: Worklist,
     override val sem: Semantics,
     override val config: HeapBuildConfig,
     var iter0: Int
@@ -45,16 +44,22 @@ class Console(
   ////////////////////////////////////////////////////////////////
 
   override def runFixpoint(): Unit = {
-    val find = prepareToRunFixpoint
-    if (find) {
-      this.setPrompt()
+    if (prepareToRunFixpoint) {
+      setPrompt()
       while ({
         println
         val line = reader.readLine
         val loop = runCmd(line) match {
           case CmdResultContinue(o) =>
-            println(o); true
-          case CmdResultBreak(o) => println(o); false
+            println(o)
+            true
+          case CmdResultBreak(o) =>
+            println(o)
+            false
+          case CmdResultRestart =>
+            prepareToRunFixpoint
+            setPrompt()
+            true
         }
         out.flush()
         loop
@@ -67,7 +72,7 @@ class Console(
     } else {
       cur = home
       println("* reset the current control point.")
-      this.setPrompt()
+      setPrompt()
     }
   }
   def moveCurCP(block: CFGBlock): Unit = {
@@ -81,10 +86,10 @@ class Console(
       case tp :: Nil => {
         cur = ControlPoint(block, tp)
         println(s"* current control point changed.")
-        this.setPrompt()
+        setPrompt()
       }
       case _ =>
-        this.setPrompt(
+        setPrompt(
           tpList.zipWithIndex.map {
             case (tp, idx) => s"[$idx] $tp" + LINE_SEP
           }.mkString + s"select call context index > "
@@ -106,7 +111,7 @@ class Console(
             })
           }
         }) {}
-        this.setPrompt()
+        setPrompt()
     }
   }
 
@@ -135,7 +140,7 @@ class Console(
     }
   }
 
-  private def setPrompt(prompt: String = this.getPrompt): Unit = {
+  private def setPrompt(prompt: String = getPrompt): Unit = {
     reader.setPrompt(prompt)
   }
 }

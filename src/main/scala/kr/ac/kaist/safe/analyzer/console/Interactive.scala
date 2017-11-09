@@ -20,7 +20,6 @@ import scala.collection.immutable.TreeSet
 
 trait Interactive {
   val cfg: CFG
-  val worklist: Worklist
   val sem: Semantics
   val config: HeapBuildConfig
   var iter: Int = -1
@@ -29,7 +28,7 @@ trait Interactive {
   // private variables
   ////////////////////////////////////////////////////////////////
 
-  protected var target: Target = TargetIter(iter + 1)
+  protected var target: Target = TargetStart
   protected var cur: ControlPoint = _
   protected var home: ControlPoint = _
   protected var breakList: TreeSet[CFGBlock] = TreeSet()
@@ -38,6 +37,7 @@ trait Interactive {
   // API
   ////////////////////////////////////////////////////////////////
 
+  def worklist: Worklist = sem.worklist
   def runFixpoint: Unit
   def prepareToRunFixpoint: Boolean = {
     iter += 1
@@ -45,6 +45,7 @@ trait Interactive {
     home = cur
     val block = cur.block
     (target match {
+      case TargetStart => iter == 0
       case TargetIter(k) => iter == k
       case _ => false
     }) || breakList(block)
@@ -53,7 +54,7 @@ trait Interactive {
   def runCmd(line: String): CmdResult = {
     line match {
       case null =>
-        target = TargetIter(-1); CmdResultBreak()
+        target = NoTarget; CmdResultBreak()
       case "" =>
         target = TargetIter(iter + 1); CmdResultBreak()
       case _ =>
@@ -63,6 +64,10 @@ trait Interactive {
         Command.cmdMap.get(cmd) match {
           case Some(o) =>
             o.run(this, args) match {
+              case Some(TargetStart) =>
+                target = TargetStart
+                iter = -1
+                CmdResultRestart
               case Some(t) =>
                 target = t
                 CmdResultBreak(o.result())
@@ -89,11 +94,12 @@ trait Interactive {
   def getPrompt: String
 }
 
-abstract class CmdResult {
-  val output: String
-
+sealed abstract class CmdResult(
+    val output: String = ""
+) {
   override def toString: String = output
 }
 
-case class CmdResultContinue(override val output: String = "") extends CmdResult
-case class CmdResultBreak(override val output: String = "") extends CmdResult
+case class CmdResultContinue(override val output: String = "") extends CmdResult(output)
+case class CmdResultBreak(override val output: String = "") extends CmdResult(output)
+case object CmdResultRestart extends CmdResult

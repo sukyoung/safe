@@ -11,14 +11,13 @@
 
 package kr.ac.kaist.safe.analyzer.console
 
-import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
+import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.phase.HeapBuildConfig
 
 class WebConsole(
     override val cfg: CFG,
-    override val worklist: Worklist,
     override val sem: Semantics,
     override val config: HeapBuildConfig,
     var iter0: Int

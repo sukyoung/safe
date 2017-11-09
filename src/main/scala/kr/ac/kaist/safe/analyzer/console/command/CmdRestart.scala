@@ -13,15 +13,14 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 
-// jump
-case object CmdJump extends Command("jump", "Continue to analyze until the given iteration.") {
-  override val help: String = "usage: " + name + " {#iteration}"
+// restart
+case object CmdRestart extends Command("restart", "Restart the analysis.") {
   def run(c: Interactive, args: List[String]): Option[Target] = args match {
-    case iter :: Nil if iter.forall(_.isDigit) =>
-      (iter.toInt, c.getIter) match {
-        case (i, ci) if i > ci => Some(TargetIter(i))
-        case (i, ci) => printResult(s"* illlegal iteration #: $i (must > $ci)"); None
-      }
-    case _ => printResult(help); None
+    case Nil =>
+      c.sem.init
+      Some(TargetStart)
+    case _ =>
+      printResult(help)
+      None
   }
 }

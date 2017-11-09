@@ -23,16 +23,16 @@ import kr.ac.kaist.safe.web.WebServer
 import scala.util.{ Success, Try }
 
 // Analyze phase
-case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
+case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
   val name: String = "analyzer"
   val help: String = "Analyze JavaScript source files."
 
   def apply(
-    in: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int),
+    in: (CFG, Semantics, TracePartition, HeapBuildConfig, Int),
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
-    val (cfg, worklist, sem, initTP, heapConfig, iter) = in
+    val (cfg, sem, initTP, heapConfig, iter) = in
 
     NodeProtocol.test = safeConfig.testMode
 
@@ -42,17 +42,17 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
 
     var interOpt: Option[Interactive] = None
     if (config.web) {
-      interOpt = Some(new WebConsole(cfg, worklist, sem, heapConfig, iter))
+      interOpt = Some(new WebConsole(cfg, sem, heapConfig, iter))
     } else if (config.console) {
-      interOpt = Some(new Console(cfg, worklist, sem, heapConfig, iter))
+      interOpt = Some(new Console(cfg, sem, heapConfig, iter))
     }
 
     if (config.web) {
       // interactive analysis using web server
-      WebServer.run(new Fixpoint(sem, worklist, interOpt))
+      WebServer.run(new Fixpoint(sem, interOpt))
     } else {
       // calculate fixpoint
-      val fixpoint = new Fixpoint(sem, worklist, interOpt)
+      val fixpoint = new Fixpoint(sem, interOpt)
       iters = fixpoint.compute(iter + 1)
     }
 
