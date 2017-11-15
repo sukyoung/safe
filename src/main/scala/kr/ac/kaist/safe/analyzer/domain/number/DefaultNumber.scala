@@ -367,6 +367,7 @@ object DefaultNumber extends AbsNumberUtil {
       case NegInf | Inf => PosInf
       // other cases
       case NUIntConst(n) => alpha(math.abs(n))
+      case NUInt => Top
       case _ => this
     }
 
@@ -410,8 +411,7 @@ object DefaultNumber extends AbsNumberUtil {
         case NegInf => alpha(-scala.math.Pi / 2)
         case UIntConst(n) => alpha(Math.atan(n))
         case NUIntConst(n) => alpha(Math.atan(n))
-        case UInt
-          | NUInt => NUInt
+        case NUInt => NUInt
         case _ => Top
       }
     }
@@ -427,7 +427,8 @@ object DefaultNumber extends AbsNumberUtil {
       case (UIntConst(x), NUIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
       case (NUIntConst(x), UIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
       case (NUIntConst(x), NUIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
-      case (UInt, UIntConst(0)) | (UInt, NUIntConst(0)) => alpha(scala.math.Pi / 2)
+      case (UInt, UIntConst(0)) => Top
+      case (UInt, NUIntConst(0)) => NUInt
       case (PosInf, UIntConst(0)) | (PosInf, NUIntConst(0)) => alpha(scala.math.Pi / 2)
       // if (this == + 0) & (that >= + 0) then 0
       case (UIntConst(0), UIntConst(_)) => alpha(0.0)
@@ -464,7 +465,7 @@ object DefaultNumber extends AbsNumberUtil {
       case (NUIntConst(y), PosInf) if y < 0 => alpha(-0.0)
       case (NUIntConst(y), NegInf) if y < 0 => alpha(-scala.math.Pi)
       case (PosInf, UInt | NUInt | UIntConst(_) | NUIntConst(_)) => alpha(scala.math.Pi / 2)
-      case (NegInf, UInt | NUInt | UIntConst(_) | NUIntConst(_)) => alpha(scala.math.Pi / 2)
+      case (NegInf, UInt | NUInt | UIntConst(_) | NUIntConst(_)) => alpha(-scala.math.Pi / 2)
       case (PosInf, PosInf) => alpha(scala.math.Pi / 4)
       case (PosInf, NegInf) => alpha(scala.math.Pi * 3 / 4)
       case (NegInf, PosInf) => alpha(-scala.math.Pi / 4)
@@ -498,8 +499,6 @@ object DefaultNumber extends AbsNumberUtil {
           | Inf
           | PosInf
           | NegInf => NaN
-        case UInt
-          | NUInt => NUInt
         case UIntConst(n) => alpha(Math.cos(n))
         case NUIntConst(n) => alpha(Math.cos(n))
         case _ => Top
@@ -513,8 +512,6 @@ object DefaultNumber extends AbsNumberUtil {
           | PosInf => this
         case UIntConst(0) | NUIntConst(0) => alpha(1)
         case NegInf => alpha(0)
-        case UInt
-          | NUInt => NUInt
         case UIntConst(n) => alpha(Math.exp(n))
         case NUIntConst(n) => alpha(Math.exp(n))
         case _ => Top
@@ -552,9 +549,9 @@ object DefaultNumber extends AbsNumberUtil {
 
     // TODO 15.8.2.13 pow (x, y)
     def pow(that: AbsNumber): Dom = (this, check(that)) match {
-      case (UInt, UInt) => UInt
-      case (UInt, UIntConst(_)) => UInt
-      case (UIntConst(_), UInt) => UInt
+      case (UInt, UInt) => Top
+      case (UInt, UIntConst(_)) => Top
+      case (UIntConst(_), UInt) => Top
       case (UIntConst(1), Inf) => NaN
       case (UIntConst(_) | NUIntConst(_) | NaN | PosInf | NegInf,
         UIntConst(_) | NUIntConst(_) | NaN | PosInf | NegInf) => {
@@ -588,6 +585,7 @@ object DefaultNumber extends AbsNumberUtil {
           | NegInf
           | UInt
           | UIntConst(_) => this
+        case NUIntConst(0) => NUIntConst(0)
         case NUIntConst(n) => alpha(scala.math.round(n))
         case _ => Top
       }
@@ -612,8 +610,7 @@ object DefaultNumber extends AbsNumberUtil {
       this match {
         case NaN
           | NegInf => NaN
-        case PosInf
-          | UInt => this
+        case PosInf => PosInf
         case UIntConst(n) => alpha(scala.math.sqrt(n))
         case NUIntConst(n) if n < 0 => NaN
         case NUIntConst(n) => alpha(scala.math.sqrt(n))

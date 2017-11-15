@@ -368,6 +368,7 @@ object FlatNumber extends AbsNumberUtil {
       case Const(PositiveInfinity) => PosInf
       case Const(NegativeInfinity) => NegInf
       case Const(n) if n.isNaN => NaN
+      case Const(n) if isNegZero(n) => Const(-0.0)
       case Const(n) => alpha(math.round(n))
       case Top => Top
     }
