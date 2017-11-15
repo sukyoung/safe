@@ -51,7 +51,11 @@ class Connection {
   }
   set iter(iter) {
     this.i = iter
-    $('.console-iter').text(`Iter[${iter}] >`)
+    if (iter === -1) {
+      $('.console-iter').text(`>`)
+    } else {
+      $('.console-iter').text(`Iter[${iter}] >`)
+    }
   }
 
   connect () {
@@ -72,10 +76,23 @@ class Connection {
       }
       this.prompt = prompt
       this.iter = iter
+      this.done = done
 
-      if (done) {
-        this.done = true
-        this.close()
+      if (this.done) {
+        this.prompt = 'Analysis is finished\nDo you want to restart?'
+        this.iter = -1
+
+        $$('next').config.label = 'Restart'
+        $$('next').config.width = 90
+        $$('next').config.icon = 'refresh'
+        $$('next').refresh()
+        $$('next').resize()
+      } else {
+        $$('next').config.label = 'Next'
+        $$('next').config.width = 80
+        $$('next').config.icon = 'play'
+        $$('next').refresh()
+        $$('next').resize()
       }
     }
     s.onclose = () => {
@@ -101,31 +118,30 @@ class Connection {
   }
 
   send (cmd) {
-    if (this.isConnected() && !this.done) {
-      this.socket.send(JSON.stringify({
-        cmd,
-      }))
-    } else {
-      this.retry = 0
-      this.reconnect()
+    if (this.isConnected()) {
+      if (!this.done) {
+        this.socket.send(JSON.stringify({
+          cmd: cmd,
+        }))
+      } else {
+        if (cmd.toLowerCase() === 'y' ||
+          cmd.toLowerCase() === 'yes' ||
+          cmd.toLowerCase() === 'next') {
+          this.socket.send(JSON.stringify({cmd: 'restart'}))
+        }
+      }
     }
   }
 
   close () {
     this.socket.close()
     this.updateStatusLabel()
-    if (this.done) {
-      this.prompt = 'Analysis has done\nTo restart analysis, please restart the server'
-      $('.console-input-line').hide()
-    }
     window.onbeforeunload = function () {
     }
   }
 
   reconnect () {
-    if (this.done) {
-      return
-    } else if (this.retry === MAX_RETRY) {
+    if (this.retry === MAX_RETRY) {
       this.print("Failed to connect server", MSG_TYPE.ERROR)
       return
     } else if (this.retry > 10) {
