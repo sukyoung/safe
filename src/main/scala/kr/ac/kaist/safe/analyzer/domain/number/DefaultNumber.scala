@@ -411,7 +411,7 @@ object DefaultNumber extends AbsNumberUtil {
         case NegInf => alpha(-scala.math.Pi / 2)
         case UIntConst(n) => alpha(Math.atan(n))
         case NUIntConst(n) => alpha(Math.atan(n))
-        case NUInt => NUInt
+        case NUInt => Top
         case _ => Top
       }
     }
@@ -598,7 +598,7 @@ object DefaultNumber extends AbsNumberUtil {
           | Inf
           | PosInf
           | NegInf => NaN
-        case NUInt => this
+        case NUInt => Top
         case UIntConst(n) => alpha(scala.math.sin(n))
         case NUIntConst(n) => alpha(scala.math.sin(n))
         case _ => Top
@@ -625,7 +625,7 @@ object DefaultNumber extends AbsNumberUtil {
           | Inf
           | PosInf
           | NegInf => NaN
-        case NUInt => this
+        case NUInt => Top
         case UIntConst(n) => alpha(scala.math.tan(n))
         case NUIntConst(n) => alpha(scala.math.tan(n))
         case _ => Top
