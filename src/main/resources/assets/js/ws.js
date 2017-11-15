@@ -16,6 +16,8 @@ const MSG_TYPE = {
   DEFAULT: 'DEFAULT',
 }
 
+const MAX_RETRY = 5
+
 class Connection {
   constructor () {
     const loc = window.location
@@ -57,6 +59,7 @@ class Connection {
     s.onopen = () => {
       this.updateStatusLabel()
       this.retry = 0
+      console.log('WebSocket is connected!')
     }
     s.onmessage = (msg) => {
       const { cmd, prompt, iter, output, state, done } = JSON.parse(msg.data)
@@ -75,14 +78,18 @@ class Connection {
         this.close()
       }
     }
-    s.onerror = (e) => {
-      console.log(e)
-    }
     s.onclose = () => {
       this.updateStatusLabel()
-      window.onbeforeunload = function () {
+      if (this.retry === 0) {
+        console.log(`WebSocket connection is lost. Try to reconnect.`)
+        this.reconnect()
+      } else {
+        const timeout = (2**this.retry) * 500
+        console.log(`Try to reconnect after ${timeout}ms...`)
+        setTimeout(() => {
+          this.reconnect()
+        }, timeout)
       }
-      this.reconnect()
     }
 
     window.onbeforeunload = function () {
@@ -99,6 +106,7 @@ class Connection {
         cmd,
       }))
     } else {
+      this.retry = 0
       this.reconnect()
     }
   }
@@ -117,7 +125,7 @@ class Connection {
   reconnect () {
     if (this.done) {
       return
-    } else if (this.retry === 11) {
+    } else if (this.retry === MAX_RETRY) {
       this.print("Failed to connect server", MSG_TYPE.ERROR)
       return
     } else if (this.retry > 10) {
