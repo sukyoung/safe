@@ -33,8 +33,9 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
     case ReceivedCmd(cmd: String) => // Someone send command
       dispatch(processCmd(cmd, fixpoint))
     case ParticipantLeft(uid: String) => // Participant has left
-      val entry @ (_, ref) = subscribers.find(p => p._1 == uid).orNull
-      if (ref != null) {
+      val entry = subscribers.find(p => p._1 == uid).orNull
+      if (entry != null) {
+        val ref = entry._2
         ref ! Status.Success(Unit)
         subscribers -= entry
       }
