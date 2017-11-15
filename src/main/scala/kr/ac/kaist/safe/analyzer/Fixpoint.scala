@@ -27,12 +27,12 @@ class Fixpoint(
       iters += 1
       computeOneStep()
     }
-    consoleOpt.map(_.runFinished)
+    consoleOpt.foreach(_.runFinished)
     iters
   }
 
   def computeOneStep(): Unit = {
-    consoleOpt.map(_.runFixpoint)
+    consoleOpt.foreach(_.runFixpoint)
     val cp = worklist.pop
     val st = semantics.getState(cp)
     val (nextSt, nextExcSt) = semantics.C(cp, st)

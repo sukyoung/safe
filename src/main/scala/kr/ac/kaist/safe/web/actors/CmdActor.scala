@@ -33,9 +33,11 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
     case ReceivedCmd(cmd: String) => // Someone send command
       dispatch(processCmd(cmd, fixpoint))
     case ParticipantLeft(uid: String) => // Participant has left
-      val entry @ (_, ref) = subscribers.find(p => p._1 == uid).get
-      ref ! Status.Success(Unit)
-      subscribers -= entry
+      val entry @ (_, ref) = subscribers.find(p => p._1 == uid).orNull
+      if (ref != null) {
+        ref ! Status.Success(Unit)
+        subscribers -= entry
+      }
     case Terminated(sub) ⇒ // clean up dead subscribers, but should have been removed when `ParticipantLeft`
       subscribers = subscribers.filterNot(_._2 == sub)
   }
@@ -43,18 +45,16 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
   def processCmd(cmd: String, fixpoint: Fixpoint): Result = {
     val req = JsonUtil.fromJson[Run](cmd)
     val console = fixpoint.consoleOpt.get
-    val state = HTMLWriter.renderGraphStates(
-      console.cfg,
-      console.sem,
-      Some(console.worklist)
-    )
     console.runCmd(req.cmd) match {
       case CmdResultContinue(output) =>
+        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist))
         Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultBreak(output) =>
         fixpoint.computeOneStep()
+        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist))
         Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultRestart =>
+        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist))
         Result(req.cmd, console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
     }
   }
