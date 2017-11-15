@@ -434,6 +434,7 @@ class Semantics(
   def getInternalValue(name: String): Option[AbsValue] = name match {
     case (NodeUtil.INTERNAL_TOP) => Some(AbsValue.Top)
     case (NodeUtil.INTERNAL_UINT) => Some(AbsNumber.UInt)
+    case (NodeUtil.INTERNAL_NUINT) => Some(AbsNumber.NUInt)
     case (NodeUtil.INTERNAL_GLOBAL) => Some(AbsValue(BuiltinGlobal.loc))
     case (NodeUtil.INTERNAL_BOOL_TOP) => Some(AbsBool.Top)
     case (NodeUtil.INTERNAL_NUM_TOP) => Some(AbsNumber.Top)

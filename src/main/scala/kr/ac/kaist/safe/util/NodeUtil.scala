@@ -200,6 +200,7 @@ object NodeUtil {
   val INTERNAL_TOP = internalAPIName("Top")
   val INTERNAL_BOT = internalAPIName("Bot")
   val INTERNAL_UINT = internalAPIName("UInt")
+  val INTERNAL_NUINT = internalAPIName("NUInt")
   val INTERNAL_GLOBAL = internalAPIName("Global")
   val INTERNAL_BOOL_TOP = internalAPIName("BoolTop")
   val INTERNAL_NUM_TOP = internalAPIName("NumTop")
@@ -223,6 +224,7 @@ object NodeUtil {
     INTERNAL_TOP,
     INTERNAL_BOT,
     INTERNAL_UINT,
+    INTERNAL_NUINT,
     INTERNAL_GLOBAL,
     INTERNAL_BOOL_TOP,
     INTERNAL_NUM_TOP,
