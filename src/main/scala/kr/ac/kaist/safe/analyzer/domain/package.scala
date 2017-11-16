@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import kr.ac.kaist.safe.util.IName
 import scala.collection.immutable.{ HashMap, HashSet }
 
@@ -96,4 +95,78 @@ package object domain {
   // AbsDecEnvRec, AbsGlobalEnvRec -> AbsEnvRec
   implicit def denv2env(dEnv: AbsDecEnvRec): AbsEnvRec = AbsEnvRec(dEnv)
   implicit def genv2env(gEnv: AbsGlobalEnvRec): AbsEnvRec = AbsEnvRec(gEnv)
+
+  ////////////////////////////////////////////////////////////////
+  // abstract domains
+  ////////////////////////////////////////////////////////////////
+  def register(
+    absUndef: AbsUndefUtil = DefaultUndef,
+    absNull: AbsNullUtil = DefaultNull,
+    absBool: AbsBoolUtil = DefaultBool,
+    absNumber: AbsNumberUtil = DefaultNumber,
+    absString: AbsStringUtil = StringSet(0),
+    absLoc: AbsLocUtil = DefaultLoc,
+    aaddrType: AAddrType = RecencyAAddr
+  ): Unit = {
+    AbsUndef = absUndef
+    AbsNull = absNull
+    AbsBool = absBool
+    AbsNumber = absNumber
+    AbsString = absString
+    AbsLoc = absLoc
+    AAddrType = aaddrType
+  }
+
+  // primitive values
+  var AbsUndef: AbsUndefUtil = _
+  var AbsNull: AbsNullUtil = _
+  var AbsBool: AbsBoolUtil = _
+  var AbsNumber: AbsNumberUtil = _
+  var AbsString: AbsStringUtil = _
+  var AbsPValue: AbsPValueUtil = DefaultPValue
+
+  // abstract address type
+  var AAddrType: AAddrType = _
+
+  // location
+  var AbsLoc: AbsLocUtil = _
+
+  // value
+  var AbsValue: AbsValueUtil = DefaultValue
+
+  // function id
+  var AbsFId: AbsFIdUtil = DefaultFId
+
+  // internal value
+  var AbsIValue: AbsIValueUtil = DefaultIValue
+
+  // data property
+  var AbsDataProp: AbsDataPropUtil = DefaultDataProp
+
+  // descriptor
+  var AbsDesc: AbsDescUtil = DefaultDesc
+
+  // absent value for parital map
+  var AbsAbsent: AbsAbsentUtil = DefaultAbsent
+
+  // execution context
+  var AbsBinding: AbsBindingUtil = DefaultBinding
+  var AbsDecEnvRec: AbsDecEnvRecUtil = DefaultDecEnvRec
+  var AbsGlobalEnvRec: AbsGlobalEnvRecUtil = DefaultGlobalEnvRec
+  var AbsEnvRec: AbsEnvRecUtil = DefaultEnvRec
+  var AbsLexEnv: AbsLexEnvUtil = DefaultLexEnv
+  var AbsContext: AbsContextUtil = DefaultContext
+
+  // object
+  var AbsObject: AbsObjectUtil = AKeyObject
+
+  // heap
+  var AbsHeap: AbsHeapUtil = DefaultHeap
+
+  // state
+  var AbsState: AbsStateUtil = DefaultState
+
+  // concrete domains
+  def ConSingle[T]: ConSingleUtil[T] = ConSingleUtil[T]
+  def ConSet[T]: ConSetUtil[T] = ConSetUtil[T]
 }

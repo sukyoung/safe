@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.domain.Utils.AAddrType
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError, UserAllocSiteError }
 import kr.ac.kaist.safe.util._

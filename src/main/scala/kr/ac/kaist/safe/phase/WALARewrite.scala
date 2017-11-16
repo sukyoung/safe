@@ -140,7 +140,7 @@ case object WALARewrite extends PhaseObj[Unit, WALARewriteConfig, Unit] {
     safeConfig: SafeConfig,
     config: WALARewriteConfig
   ): Try[Unit] = {
-    Utils.register(aaddrType = NormalAAddr)
+    register(aaddrType = NormalAAddr)
     val data = transJSModel(safeConfig.fileNames.head)
     val outFileName = config.outFile match {
       case Some(out) => {

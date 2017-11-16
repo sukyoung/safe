@@ -105,7 +105,7 @@ object AbsValueProtocol extends DefaultJsonProtocol {
 
     def write(str: AbsString): JsValue = str.json
 
-    def read(value: JsValue): AbsString = Utils.AbsString match {
+    def read(value: JsValue): AbsString = AbsString match {
       case set @ StringSet(_) => set.fromJson(value)
       case _ => throw AbsStringParseError(value)
     }
@@ -183,7 +183,7 @@ object AbsValueProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit object AbsValue extends RootJsonFormat[AbsValue] {
+  implicit object AbsValueFormat extends RootJsonFormat[AbsValue] {
 
     def write(value: AbsValue): JsValue = value match {
       case DefaultValue.Dom(pvalue, locset) => JsArray(pvalue.toJson, locset.toJson)

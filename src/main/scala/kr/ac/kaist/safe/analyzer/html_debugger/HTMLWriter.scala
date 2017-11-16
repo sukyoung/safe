@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.{ LINE_SEP, BASE_DIR }
 
 object HTMLWriter {

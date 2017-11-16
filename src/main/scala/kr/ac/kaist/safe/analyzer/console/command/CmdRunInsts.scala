@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.analyzer.console.command
 import jline.console.ConsoleReader
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.{ CFGCallInst, CFGNormalInst }
 

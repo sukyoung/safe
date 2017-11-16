@@ -57,7 +57,7 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Worklist, Sema
                 val heapConfig = heapConfigJson.convertTo[HeapBuildConfig]
 
                 // initialization
-                Utils.register(
+                register(
                   heapConfig.AbsUndef,
                   heapConfig.AbsNull,
                   heapConfig.AbsBool,

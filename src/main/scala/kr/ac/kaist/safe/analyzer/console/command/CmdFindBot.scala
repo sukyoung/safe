@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.{ CFGInst, CFGCallInst, CFGNormalInst }
 
 // find the instruction whose result is bottom

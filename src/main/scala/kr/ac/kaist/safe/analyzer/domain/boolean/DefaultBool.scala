@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.domain.Utils._
-
 // default boolean abstract domain
 object DefaultBool extends AbsBoolUtil {
   case object Bot extends Dom

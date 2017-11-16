@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.domain.Utils._
-
 // default null abstract domain
 object DefaultNull extends AbsNullUtil {
   case object Top extends Dom

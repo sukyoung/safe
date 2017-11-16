@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.{ IClass, PredAllocSite }

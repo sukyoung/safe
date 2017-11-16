@@ -48,8 +48,8 @@ object ConfigProtocol extends DefaultJsonProtocol {
     def read(value: JsValue): AbsStringUtil = value match {
       case JsNumber(n) =>
         val k = n.toInt
-        Utils.AbsString match {
-          case StringSet(k) => Utils.AbsString
+        AbsString match {
+          case StringSet(k) => AbsString
           case _ => StringSet(k)
         }
       case _ => throw AbsStringUtilParseError(value)
