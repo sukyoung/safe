@@ -36,8 +36,8 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
       config.AbsUndef,
       config.AbsNull,
       config.AbsBool,
-      config.AbsNumber,
-      config.AbsString,
+      config.AbsNum,
+      config.AbsStr,
       DefaultLoc,
       config.aaddrType
     )
@@ -66,8 +66,8 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
   val options: List[PhaseOption[HeapBuildConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
       "messages during heap building are muted."),
-    ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
-      "the analyzer will use the AbsString Set domain with given size limit n."),
+    ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsStr = StringSet(n)),
+      "the analyzer will use the AbsStr Set domain with given size limit n."),
     ("aaddrType", StrOption((c, s) => s match {
       case "normal" => c.aaddrType = NormalAAddr
       case "recency" => c.aaddrType = RecencyAAddr
@@ -80,8 +80,8 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
       "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
     ("number", StrOption((c, s) => s match {
-      case "default" => c.AbsNumber = DefaultNumber
-      case "flat" => c.AbsNumber = FlatNumber
+      case "default" => c.AbsNum = DefaultNumber
+      case "flat" => c.AbsNum = FlatNumber
       case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
     }), "analysis with a selected number domain."),
     ("jsModel", BoolOption(c => c.jsModel = true),
@@ -95,11 +95,11 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
 // HeapBuild phase config
 case class HeapBuildConfig(
   var silent: Boolean = false,
-  var AbsUndef: AbsUndefUtil = DefaultUndef,
-  var AbsNull: AbsNullUtil = DefaultNull,
-  var AbsBool: AbsBoolUtil = DefaultBool,
-  var AbsNumber: AbsNumberUtil = DefaultNumber,
-  var AbsString: AbsStringUtil = StringSet(0),
+  var AbsUndef: UndefDomain = DefaultUndef,
+  var AbsNull: NullDomain = DefaultNull,
+  var AbsBool: BoolDomain = DefaultBool,
+  var AbsNum: NumDomain = DefaultNumber,
+  var AbsStr: StrDomain = StringSet(0),
   var callsiteSensitivity: Int = 0,
   var loopSensitivity: Int = 0,
   var snapshot: Option[String] = None,

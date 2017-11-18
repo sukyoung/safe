@@ -14,10 +14,10 @@ package kr.ac.kaist.safe.analyzer.domain
 import Double._
 
 // flat number abstract domain
-object FlatNumber extends AbsNumberUtil {
-  case object Top extends Dom
-  case object Bot extends Dom
-  case class Const(value: Double) extends Dom
+object FlatNumber extends NumDomain {
+  case object Top extends Elem
+  case object Bot extends Elem
+  case class Const(value: Double) extends Elem
   lazy val Inf = Top
   lazy val PosInf = Const(PositiveInfinity)
   lazy val NegInf = Const(NegativeInfinity)
@@ -25,11 +25,11 @@ object FlatNumber extends AbsNumberUtil {
   lazy val UInt = Top
   lazy val NUInt = Top
 
-  def alpha(num: Num): Dom = Const(num.num)
+  def alpha(num: Num): Elem = Const(num.num)
 
-  sealed abstract class Dom extends AbsNumber {
+  sealed abstract class Elem extends ElemTrait {
     override def equals(other: Any): Boolean = other match {
-      case (right: Dom) => (this, right) match {
+      case (right: Elem) => (this, right) match {
         case (_: Bot.type, _: Bot.type) | (_: Top.type, _: Top.type) => true
         case (lc: Const, rc: Const) => {
           val l = lc.value
@@ -50,9 +50,6 @@ object FlatNumber extends AbsNumberUtil {
       case Top => ConInf()
     }
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
     def getSingle: ConSingle[Num] = this match {
       case Bot => ConZero()
       case Const(v) => ConOne(v)
@@ -65,32 +62,32 @@ object FlatNumber extends AbsNumberUtil {
       case Top => "Top(number)"
     }
 
-    def <=(that: AbsNumber): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Top) => true
       case (left, right) if left == right => true
       case _ => false
     }
 
-    def +(that: AbsNumber): Dom = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (left, right) if left <= right => right
       case (left, right) if right <= left => left
       case _ => Top
     }
 
-    def <>(that: AbsNumber): Dom = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (left, right) if left <= right => left
       case (left, right) if right <= left => right
       case _ => Bot
     }
 
-    def <(that: AbsNumber): AbsBool = (this, check(that)) match {
+    def <(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (Const(n1), Const(n2)) => AbsBool(n1 < n2)
       case _ => AbsBool.Top
     }
 
-    def ===(that: AbsNumber): AbsBool = (this, check(that)) match {
+    def ===(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (Const(n1), Const(n2)) => AbsBool(n1 == n2)
       case _ => AbsBool.Top
@@ -166,14 +163,14 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 9.8.1 ToString Applied to the Number Type
-    def toAbsString: AbsString = this match {
-      case Bot => AbsString.Bot
-      case Const(0) => AbsString("0")
-      case Const(n) if n < 0 => AbsString("-") concat alpha(-n).toAbsString
-      case Const(n) if n.isNaN => AbsString("NaN")
-      case Const(PositiveInfinity) => AbsString("Infinity")
-      case Const(n) => AbsString(toString(n))
-      case Top => AbsString.Number
+    def toAbsStr: AbsStr = this match {
+      case Bot => AbsStr.Bot
+      case Const(0) => AbsStr("0")
+      case Const(n) if n < 0 => AbsStr("-") concat alpha(-n).toAbsStr
+      case Const(n) if n.isNaN => AbsStr("NaN")
+      case Const(PositiveInfinity) => AbsStr("Infinity")
+      case Const(n) => AbsStr(toString(n))
+      case Top => AbsStr.Number
     }
 
     // 9.2 ToBoolean
@@ -185,7 +182,7 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 9.4 ToInteger
-    def toInteger: Dom = this match {
+    def toInteger: Elem = this match {
       case Bot => Bot
       // 2. If number is NaN, return +0.
       case Const(n) if n.isNaN => Const(0.0)
@@ -204,7 +201,7 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 9.5 ToInt32: (Signed 32 Bit Integer)
-    def toInt32: Dom = {
+    def toInt32: Elem = {
       def helper(number: Double): Long = {
         val bound = 0x100000000L // 2^32
         // 3. Let posInt be sign(number) * floor(abs(number)).
@@ -227,7 +224,7 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 9.6 ToUint32: (Unsigned 32 Bit Integer)
-    def toUInt32: Dom = {
+    def toUInt32: Elem = {
       def helper(number: Double): Long = {
         val bound = 0x100000000L // 2^32
         // 3. Let posInt be sign(number) * floor(abs(number)).
@@ -249,7 +246,7 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 9.7 ToUint16: (Unsigned 16 Bit Integer)
-    def toUInt16: Dom = {
+    def toUInt16: Elem = {
       def helper(number: Double): Long = {
         val bound = 0x10000L // 2^16
         // 3. Let posInt be sign(number) * floor(abs(number)).
@@ -271,98 +268,98 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 9.12 The SameValue Algorithm
-    def sameValue(that: AbsNumber): AbsBool = (this, check(that)) match {
+    def sameValue(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (left: Const, right: Const) => AbsBool(left == right)
       case _ => AbsBool.Top
     }
 
     // 11.4.7 Unary-Operator
-    def negate: Dom = this match {
+    def negate: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(-n)
       case Top => Top
     }
 
     // 15.8.2.1 abs (x)
-    def abs: Dom = this match {
+    def abs: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.abs(n))
       case Top => Top
     }
 
     // 15.8.2.2 acos (x)
-    def acos: Dom = this match {
+    def acos: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.acos(n))
       case Top => Top
     }
 
     // 15.8.2.3 asin (x)
-    def asin: Dom = this match {
+    def asin: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.asin(n))
       case Top => Top
     }
 
     // 15.8.2.4 atan (x)
-    def atan: Dom = this match {
+    def atan: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.atan(n))
       case Top => Top
     }
 
     // 15.8.2.5 atan2 (y, x)
-    def atan2(that: AbsNumber): Dom = (this, check(that)) match {
+    def atan2(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Top, _) | (_, Top) => Top
       case (Const(y), Const(x)) => alpha(math.atan2(y, x))
     }
 
     // 15.8.2.6 ceil (x)
-    def ceil: Dom = this match {
+    def ceil: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.ceil(n))
       case Top => Top
     }
 
     // 15.8.2.7 cos (x)
-    def cos: Dom = this match {
+    def cos: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.cos(n))
       case Top => Top
     }
 
     // 15.8.2.8 exp (x)
-    def exp: Dom = this match {
+    def exp: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.exp(n))
       case Top => Top
     }
 
     // 15.8.2.9 floor (x)
-    def floor: Dom = this match {
+    def floor: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.floor(n))
       case Top => Top
     }
 
     // 15.8.2.10 log (x)
-    def log: Dom = this match {
+    def log: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.log(n))
       case Top => Top
     }
 
     // 15.8.2.13 pow (x, y)
-    def pow(that: AbsNumber): Dom = (this, check(that)) match {
+    def pow(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Top, _) | (_, Top) => Top
       case (Const(x), Const(y)) => alpha(math.pow(x, y))
     }
 
     // 15.8.2.15 round (x)
-    def round: Dom = this match {
+    def round: Elem = this match {
       case Bot => Bot
       case Const(PositiveInfinity) => PosInf
       case Const(NegativeInfinity) => NegInf
@@ -373,21 +370,21 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 15.8.2.16 sin (x)
-    def sin: Dom = this match {
+    def sin: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.sin(n))
       case Top => Top
     }
 
     // 15.8.2.17 sqrt (x)
-    def sqrt: Dom = this match {
+    def sqrt: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.sqrt(n))
       case Top => Top
     }
 
     // 15.8.2.18 tan (x)
-    def tan: Dom = this match {
+    def tan: Elem = this match {
       case Bot => Bot
       case Const(n) => alpha(math.tan(n))
       case Top => Top
@@ -396,27 +393,27 @@ object FlatNumber extends AbsNumberUtil {
     // 11.4.8 Bitwise NOT Operator ( ~ )
     // 1. Let expr be the result of evaluating UnaryExpression.
     // 2. Let oldValue be ToInt32(GetValue(expr)).
-    def bitNegate: Dom = toInt32 match {
+    def bitNegate: Elem = toInt32 match {
       case Bot => Bot
       case Const(n) => alpha(~(n.toLong.toInt))
       case Top => Top
     }
 
-    private def binaryBitwiseOp(left: Dom, right: Dom)(op: (Int, Int) => Int): Dom = (left.toInt32, right.toInt32) match {
+    private def binaryBitwiseOp(left: Elem, right: Elem)(op: (Int, Int) => Int): Elem = (left.toInt32, right.toInt32) match {
       case (Const(l), Const(r)) => alpha(op(l.toLong.toInt, r.toLong.toInt))
       case _ => Top
     }
 
     // 11.10 BinaryBitwiseOperators
-    def bitOr(that: AbsNumber): Dom = binaryBitwiseOp(this, check(that))(_ | _)
-    def bitAnd(that: AbsNumber): Dom = binaryBitwiseOp(this, check(that))(_ & _)
-    def bitXor(that: AbsNumber): Dom = binaryBitwiseOp(this, check(that))(_ ^ _)
+    def bitOr(that: Elem): Elem = binaryBitwiseOp(this, that)(_ | _)
+    def bitAnd(that: Elem): Elem = binaryBitwiseOp(this, that)(_ & _)
+    def bitXor(that: Elem): Elem = binaryBitwiseOp(this, that)(_ ^ _)
 
     private def binaryShiftOp(
-      left: Dom,
-      right: Dom,
+      left: Elem,
+      right: Elem,
       signed: Boolean = true
-    )(op: (Int, Int) => Long): Dom = (left.toUInt32, right.toUInt32) match {
+    )(op: (Int, Int) => Long): Elem = (left.toUInt32, right.toUInt32) match {
       case (Const(l), Const(r)) =>
         val bound = 0x100000000L
         val l32 = l.toLong.toInt
@@ -428,34 +425,34 @@ object FlatNumber extends AbsNumberUtil {
     }
 
     // 11.7.1 The Left Shift Operator ( << )
-    def bitLShift(shift: AbsNumber): Dom = binaryShiftOp(this, check(shift))(_ << _)
+    def bitLShift(shift: Elem): Elem = binaryShiftOp(this, shift)(_ << _)
     // 11.7.2 The Signed Right Shift Operator ( >> )
-    def bitRShift(shift: AbsNumber): Dom = binaryShiftOp(this, check(shift))(_ >> _)
+    def bitRShift(shift: Elem): Elem = binaryShiftOp(this, shift)(_ >> _)
     // 11.7.3 The Unsigned Right Shift Operator ( >>> )
-    def bitURShift(shift: AbsNumber): Dom = binaryShiftOp(this, check(shift), false)(_ >>> _)
+    def bitURShift(shift: Elem): Elem = binaryShiftOp(this, shift, false)(_ >>> _)
 
     // 11.6.3 Applying the Additive Operators to Numbers
-    def add(that: AbsNumber): Dom = (this, check(that)) match {
+    def add(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Const(l), Const(r)) => Const(l + r)
       case _ => Top
     }
 
-    def sub(that: AbsNumber): Dom = this add (that.negate)
+    def sub(that: Elem): Elem = this add (that.negate)
 
-    def mul(that: AbsNumber): Dom = (this, check(that)) match {
+    def mul(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Const(l), Const(r)) => Const(l * r)
       case _ => Top
     }
 
-    def div(that: AbsNumber): Dom = (this, check(that)) match {
+    def div(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Const(l), Const(r)) => Const(l / r)
       case _ => Top
     }
 
-    def mod(that: AbsNumber): Dom = (this, check(that)) match {
+    def mod(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Const(l), Const(r)) => Const(l % r)
       case _ => Top

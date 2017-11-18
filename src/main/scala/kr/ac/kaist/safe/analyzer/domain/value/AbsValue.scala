@@ -30,70 +30,70 @@ case object BoolT extends TypeValue("bool")
 ////////////////////////////////////////////////////////////////////////////////
 // value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsValue extends AbsDomain[Value, AbsValue] {
-  val pvalue: AbsPValue
-  val locset: AbsLoc
+trait ValueDomain extends AbsDomain[Value] { domain: ValueDomain =>
+  def apply(pvalue: AbsPValue): Elem
+  def apply(locset: AbsLoc): Elem
+  def apply(pvalue: AbsPValue, locset: AbsLoc): Elem
 
-  /* substitute locR by locO */
-  def subsLoc(locR: Recency, locO: Recency): AbsValue
-  /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Recency, locO: Recency): AbsValue
-  // TODO working but a more simple way exists with modifying getBase
-  def getThis(h: AbsHeap): AbsLoc
+  // abstract boolean element
+  type Elem <: ElemTrait
 
-  def typeCount: Int
-}
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val pvalue: AbsPValue
+    val locset: AbsLoc
 
-trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
-  def apply(pvalue: AbsPValue): AbsValue
-  def apply(locset: AbsLoc): AbsValue
-  def apply(pvalue: AbsPValue, locset: AbsLoc): AbsValue
+    /* substitute locR by locO */
+    def subsLoc(locR: Recency, locO: Recency): Elem
+    /* weakly substitute locR by locO, that is keep locR together */
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+    // TODO working but a more simple way exists with modifying getBase
+    def getThis(h: AbsHeap): AbsLoc
+
+    def typeCount: Int
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultValue extends AbsValueUtil {
-  lazy val Bot: Dom = Dom(AbsPValue.Bot, AbsLoc.Bot)
-  lazy val Top: Dom = Dom(AbsPValue.Top, AbsLoc.Top)
+object DefaultValue extends ValueDomain {
+  lazy val Bot: Elem = Elem(AbsPValue.Bot, AbsLoc.Bot)
+  lazy val Top: Elem = Elem(AbsPValue.Top, AbsLoc.Top)
 
-  def alpha(value: Value): AbsValue = value match {
+  def alpha(value: Value): Elem = value match {
     case (pvalue: PValue) => apply(AbsPValue(pvalue))
     case (loc: Loc) => apply(AbsLoc(loc))
-    case StringT => apply(AbsString.Top)
-    case NumberT => apply(AbsNumber.Top)
+    case StringT => apply(AbsStr.Top)
+    case NumberT => apply(AbsNum.Top)
     case BoolT => apply(AbsBool.Top)
   }
 
-  def apply(pvalue: AbsPValue): AbsValue = Bot.copy(pvalue = pvalue)
-  def apply(locset: AbsLoc): AbsValue = Bot.copy(locset = locset)
-  def apply(pvalue: AbsPValue, locset: AbsLoc): AbsValue = Dom(pvalue, locset)
+  def apply(pvalue: AbsPValue): Elem = Bot.copy(pvalue = pvalue)
+  def apply(locset: AbsLoc): Elem = Bot.copy(locset = locset)
+  def apply(pvalue: AbsPValue, locset: AbsLoc): Elem = Elem(pvalue, locset)
 
-  case class Dom(pvalue: AbsPValue, locset: AbsLoc) extends AbsValue {
+  case class Elem(pvalue: AbsPValue, locset: AbsLoc) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf() // TODO more precisely
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
 
-    def <=(that: AbsValue): Boolean = {
-      val (left, right) = (this, check(that))
+    def <=(that: Elem): Boolean = {
+      val (left, right) = (this, that)
       left.pvalue <= right.pvalue &&
         left.locset <= right.locset
     }
 
-    def +(that: AbsValue): AbsValue = {
-      val (left, right) = (this, check(that))
-      Dom(
+    def +(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.pvalue + right.pvalue,
         left.locset + right.locset
       )
     }
 
-    def <>(that: AbsValue): AbsValue = {
-      val (left, right) = (this, check(that))
-      Dom(
+    def <>(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.pvalue <> right.pvalue,
         left.locset <> right.locset
       )
@@ -116,11 +116,11 @@ object DefaultValue extends AbsValueUtil {
       }
     }
 
-    def subsLoc(locR: Recency, locO: Recency): AbsValue =
-      Dom(this.pvalue, this.locset.subsLoc(locR, locO))
+    def subsLoc(locR: Recency, locO: Recency): Elem =
+      Elem(this.pvalue, this.locset.subsLoc(locR, locO))
 
-    def weakSubsLoc(locR: Recency, locO: Recency): AbsValue =
-      Dom(this.pvalue, this.locset.weakSubsLoc(locR, locO))
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
+      Elem(this.pvalue, this.locset.weakSubsLoc(locR, locO))
 
     def typeCount: Int = {
       if (this.locset.isBottom)

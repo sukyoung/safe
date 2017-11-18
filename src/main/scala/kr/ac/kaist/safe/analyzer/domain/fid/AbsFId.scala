@@ -24,47 +24,47 @@ case class FId(id: Int) extends IValue {
 ////////////////////////////////////////////////////////////////////////////////
 // function id abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsFId extends AbsDomain[FId, AbsFId] {
-  def contains(fid: FunctionId): Boolean
-  def exists(f: FunctionId => Boolean): Boolean
-  def filter(f: FunctionId => Boolean): AbsFId
-  def foreach(f: FunctionId => Unit): Unit
-  def foldLeft[T](initial: T)(f: (T, FunctionId) => T): T
-  def map[T](f: FunctionId => T): Set[T]
-  def +(fid: FunctionId): AbsFId
-  def -(fid: FunctionId): AbsFId
-}
+trait FIdDomain extends AbsDomain[FId] { domain: FIdDomain =>
+  def apply(fid: FunctionId): Elem
+  def apply(fid: Set[FunctionId]): Elem
 
-trait AbsFIdUtil extends AbsDomainUtil[FId, AbsFId] {
-  def apply(fid: FunctionId): AbsFId
-  def apply(fid: Set[FunctionId]): AbsFId
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def contains(fid: FunctionId): Boolean
+    def exists(f: FunctionId => Boolean): Boolean
+    def filter(f: FunctionId => Boolean): Elem
+    def foreach(f: FunctionId => Unit): Unit
+    def foldLeft[T](initial: T)(f: (T, FunctionId) => T): T
+    def map[T](f: FunctionId => T): Set[T]
+    def +(fid: FunctionId): Elem
+    def -(fid: FunctionId): Elem
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default function id abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case object DefaultFId extends AbsFIdUtil {
-  case object Top extends Dom
-  case class FIdSet(set: Set[FunctionId]) extends Dom
+case object DefaultFId extends FIdDomain {
+  case object Top extends Elem
+  case class FIdSet(set: Set[FunctionId]) extends Elem
   object FIdSet {
     def apply(seq: FunctionId*): FIdSet = FIdSet(seq.toSet)
   }
-  lazy val Bot: Dom = FIdSet()
+  lazy val Bot: Elem = FIdSet()
 
-  def alpha(fid: FId): AbsFId = FIdSet(fid.id)
-  override def alpha(fidset: Set[FId]): AbsFId = FIdSet(fidset.map(_.id))
+  def alpha(fid: FId): Elem = FIdSet(fid.id)
+  override def alpha(fidset: Set[FId]): Elem = FIdSet(fidset.map(_.id))
 
-  def apply(fid: FunctionId): AbsFId = FIdSet(fid)
-  def apply(fidset: Set[FunctionId]): AbsFId = FIdSet(fidset)
+  def apply(fid: FunctionId): Elem = FIdSet(fid)
+  def apply(fidset: Set[FunctionId]): Elem = FIdSet(fidset)
 
-  sealed abstract class Dom extends AbsFId {
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[FId] = this match {
       case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
       case FIdSet(set) => ConFin(set.map(FId(_)))
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[FId] = this match {
       case FIdSet(set) if set.size == 0 => ConZero()
@@ -78,18 +78,18 @@ case object DefaultFId extends AbsFIdUtil {
       case FIdSet(set) => set.mkString("fid(", ", ", ")")
     }
 
-    def <=(that: AbsFId): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true
       case (Top, _) => false
       case (FIdSet(lset), FIdSet(rset)) => lset subsetOf rset
     }
 
-    def +(that: AbsFId): AbsFId = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (FIdSet(lset), FIdSet(rset)) => FIdSet(lset ++ rset)
     }
 
-    def <>(that: AbsFId): AbsFId = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Top, _) => that
       case (_, Top) => this
       case (FIdSet(lset), FIdSet(rset)) => FIdSet(lset intersect rset)
@@ -105,7 +105,7 @@ case object DefaultFId extends AbsFIdUtil {
       case FIdSet(set) => set.exists(f)
     }
 
-    def filter(f: FunctionId => Boolean): AbsFId = this match {
+    def filter(f: FunctionId => Boolean): Elem = this match {
       case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
       case FIdSet(set) => FIdSet(set.filter(f))
     }
@@ -125,12 +125,12 @@ case object DefaultFId extends AbsFIdUtil {
       case FIdSet(set) => set.map(f)
     }
 
-    def +(fid: FunctionId): AbsFId = this match {
+    def +(fid: FunctionId): Elem = this match {
       case Top => Top
       case FIdSet(set) => FIdSet(set + fid)
     }
 
-    def -(fid: FunctionId): AbsFId = this match {
+    def -(fid: FunctionId): Elem = this match {
       case Top => Top
       case FIdSet(set) => FIdSet(set - fid)
     }

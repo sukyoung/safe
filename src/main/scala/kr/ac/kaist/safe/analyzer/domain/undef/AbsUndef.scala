@@ -22,8 +22,11 @@ case object Undef extends Undef {
 ////////////////////////////////////////////////////////////////////////////////
 // undefined abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsUndef extends AbsDomain[Undef, AbsUndef] {
-  def ===(that: AbsUndef): AbsBool
-}
+trait UndefDomain extends AbsDomain[Undef] { domain: UndefDomain =>
+  // abstract boolean element
+  type Elem <: ElemTrait
 
-trait AbsUndefUtil extends AbsDomainUtil[Undef, AbsUndef]
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def ===(that: Elem): AbsBool
+  }
+}

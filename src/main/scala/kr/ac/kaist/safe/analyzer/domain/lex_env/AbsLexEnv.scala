@@ -26,30 +26,12 @@ case class LexEnv(record: EnvRec, outer: Option[Loc])
 ////////////////////////////////////////////////////////////////////////////////
 // lexical environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
-  val record: AbsEnvRec
-  val outer: AbsLoc
-  val nullOuter: AbsAbsent
-
-  def copyWith(
-    record: AbsEnvRec = this.record,
-    outer: AbsLoc = this.outer,
-    nullOuter: AbsAbsent = this.nullOuter
-  ): AbsLexEnv
-
-  // substitute locR by locO
-  def subsLoc(locR: Recency, locO: Recency): AbsLexEnv
-
-  // weak substitute locR by locO
-  def weakSubsLoc(locR: Recency, locO: Recency): AbsLexEnv
-}
-
-trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
+trait LexEnvDomain extends AbsDomain[LexEnv] { domain: LexEnvDomain =>
   def apply(
     record: AbsEnvRec,
     outer: AbsLoc = AbsLoc.Bot,
     nullOuter: AbsAbsent = AbsAbsent.Top
-  ): AbsLexEnv
+  ): Elem
 
   // 10.2.2.1 GetIdentifierReference(lex, name, strict)
   // + 8.7 GetBase(V)
@@ -77,64 +59,82 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
   )(st: AbsState): (AbsState, Set[Exception])
 
   // 10.2.2.2 NewDeclarativeEnvironment(E)
-  def NewDeclarativeEnvironment(locSet: AbsLoc): AbsLexEnv
+  def NewDeclarativeEnvironment(locSet: AbsLoc): Elem
 
   // 10.2.2.3 NewObjectEnvironment (O, E)
   // XXX: we do not support
 
   // create new pure-local lexical environment.
-  def newPureLocal(locSet: AbsLoc): AbsLexEnv
+  def newPureLocal(locSet: AbsLoc): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val record: AbsEnvRec
+    val outer: AbsLoc
+    val nullOuter: AbsAbsent
+
+    def copyWith(
+      record: AbsEnvRec = this.record,
+      outer: AbsLoc = this.outer,
+      nullOuter: AbsAbsent = this.nullOuter
+    ): Elem
+
+    // substitute locR by locO
+    def subsLoc(locR: Recency, locO: Recency): Elem
+
+    // weak substitute locR by locO
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default lexical environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultLexEnv extends AbsLexEnvUtil {
-  lazy val Bot = Dom(AbsEnvRec.Bot, AbsLoc.Bot, AbsAbsent.Bot)
-  lazy val Top = Dom(AbsEnvRec.Top, AbsLoc.Top, AbsAbsent.Top)
+object DefaultLexEnv extends LexEnvDomain {
+  lazy val Bot = Elem(AbsEnvRec.Bot, AbsLoc.Bot, AbsAbsent.Bot)
+  lazy val Top = Elem(AbsEnvRec.Top, AbsLoc.Top, AbsAbsent.Top)
 
-  def alpha(env: LexEnv): AbsLexEnv = env.outer match {
-    case None => Dom(AbsEnvRec(env.record), AbsLoc.Bot, AbsAbsent.Top)
-    case Some(loc) => Dom(AbsEnvRec(env.record), AbsLoc(loc), AbsAbsent.Bot)
+  def alpha(env: LexEnv): Elem = env.outer match {
+    case None => Elem(AbsEnvRec(env.record), AbsLoc.Bot, AbsAbsent.Top)
+    case Some(loc) => Elem(AbsEnvRec(env.record), AbsLoc(loc), AbsAbsent.Bot)
   }
 
   def apply(
     record: AbsEnvRec,
     outer: AbsLoc,
     nullOuter: AbsAbsent
-  ): AbsLexEnv = Dom(record, outer, nullOuter)
+  ): Elem = Elem(record, outer, nullOuter)
 
-  case class Dom(
+  case class Elem(
       record: AbsEnvRec,
       outer: AbsLoc,
       nullOuter: AbsAbsent
-  ) extends AbsLexEnv {
+  ) extends ElemTrait {
     def gamma: ConSet[LexEnv] = ConInf() // TODO more precise
 
     def getSingle: ConSingle[LexEnv] = ConMany() // TODO more precise
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
-    def <=(that: AbsLexEnv): Boolean = {
-      val right = check(that)
+    def <=(that: Elem): Boolean = {
+      val right = that
       this.record <= right.record &&
         this.outer <= right.outer &&
         this.nullOuter <= right.nullOuter
     }
 
-    def +(that: AbsLexEnv): AbsLexEnv = {
-      val right = check(that)
-      Dom(
+    def +(that: Elem): Elem = {
+      val right = that
+      Elem(
         this.record + right.record,
         this.outer + right.outer,
         this.nullOuter + right.nullOuter
       )
     }
 
-    def <>(that: AbsLexEnv): AbsLexEnv = {
-      val right = check(that)
-      Dom(
+    def <>(that: Elem): Elem = {
+      val right = that
+      Elem(
         this.record <> right.record,
         this.outer <> right.outer,
         this.nullOuter <> right.nullOuter
@@ -155,13 +155,13 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       record: AbsEnvRec = this.record,
       outer: AbsLoc = this.outer,
       nullOuter: AbsAbsent = this.nullOuter
-    ): AbsLexEnv = Dom(record, outer, nullOuter)
+    ): Elem = Elem(record, outer, nullOuter)
 
-    def subsLoc(locR: Recency, locO: Recency): AbsLexEnv =
-      Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
+    def subsLoc(locR: Recency, locO: Recency): Elem =
+      Elem(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
 
-    def weakSubsLoc(locR: Recency, locO: Recency): AbsLexEnv =
-      Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
+      Elem(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
   }
 
   def getIdBase(
@@ -176,19 +176,24 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       if (visited.contains(loc)) AbsValue.Bot
       else {
         visited += loc
-        val env = ctx.getOrElse(loc, AbsLexEnv.Bot)
+        val env = ctx.getOrElse(loc, Bot)
         val envRec = env.record
         val exists = envRec.HasBinding(name)(heap)
-        exists.map[AbsValue](thenV = {
-          AbsLoc(loc)
-        }, elseV = {
-          var initV: AbsValue =
-            if (env.nullOuter.isTop) AbsUndef.Top
-            else AbsValue.Bot
-          env.outer.foldLeft(initV) {
-            case (v, loc) => v + visit(loc)
-          }
-        })(AbsValue)
+        val b = exists
+        val t: AbsValue =
+          if (AT <= b) {
+            AbsLoc(loc)
+          } else AbsValue.Bot
+        val f =
+          if (AF <= b) {
+            var initV: AbsValue =
+              if (env.nullOuter.isTop) AbsUndef.Top
+              else AbsValue.Bot
+            env.outer.foldLeft(initV) {
+              case (v, loc) => v + visit(loc)
+            }
+          } else AbsValue.Bot
+        t + f
       }
     }
     locSet.foldLeft(AbsValue.Bot) {
@@ -209,19 +214,24 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       if (visited.contains(loc)) AbsValue.Bot
       else {
         visited += loc
-        val env = ctx.getOrElse(loc, AbsLexEnv.Bot)
+        val env = ctx.getOrElse(loc, Bot)
         val envRec = env.record
         val exists = envRec.HasBinding(name)(heap)
-        exists.map[AbsValue](thenV = {
-          val (v, e) = envRec.GetBindingValue(name, strict)(heap)
-          excSet ++= e
-          v
-        }, elseV = {
-          if (env.nullOuter.isTop) excSet += ReferenceError
-          env.outer.foldLeft(AbsValue.Bot) {
-            case (v, loc) => v + visit(loc)
-          }
-        })(AbsValue)
+        val b = exists
+        val t =
+          if (AT <= b) {
+            val (v, e) = envRec.GetBindingValue(name, strict)(heap)
+            excSet ++= e
+            v
+          } else AbsValue.Bot
+        val f =
+          if (AF <= b) {
+            if (env.nullOuter.isTop) excSet += ReferenceError
+            env.outer.foldLeft(AbsValue.Bot) {
+              case (v, loc) => v + visit(loc)
+            }
+          } else AbsValue.Bot
+        t + f
       }
     }
     val resV = locSet.foldLeft(AbsValue.Bot) {
@@ -239,33 +249,38 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     var visited = AbsLoc.Bot
     var newH = st.heap
     var newCtx = st.context
-    var ctxUpdatePairSet = HashSet[(Loc, AbsLexEnv)]()
+    var ctxUpdatePairSet = HashSet[(Loc, Elem)]()
     var excSet = ExcSetEmpty
     def visit(loc: Loc): Unit = if (!visited.contains(loc)) {
       visited += loc
-      val env = st.context.getOrElse(loc, AbsLexEnv.Bot)
+      val env = st.context.getOrElse(loc, Bot)
       val envRec = env.record
       val exists = envRec.HasBinding(name)(st.heap)
-      exists.map[AbsAbsent](thenV = {
-        val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
-        val newEnv = env.copyWith(record = er)
-        ctxUpdatePairSet += ((loc, newEnv))
-        newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
-        excSet ++= e
-        AbsAbsent.Bot
-      }, elseV = {
-        if (env.nullOuter.isTop) {
-          if (strict) excSet += ReferenceError
-          else {
-            val (_, h, e) = AbsGlobalEnvRec.Top
-              .SetMutableBinding(name, value, false)(newH)
-            newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
-            excSet ++= e
+      val b = exists
+      val t =
+        if (AT <= b) {
+          val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
+          val newEnv = env.copyWith(record = er)
+          ctxUpdatePairSet += ((loc, newEnv))
+          newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
+          excSet ++= e
+          AbsAbsent.Bot
+        } else AbsAbsent.Bot
+      val f =
+        if (AF <= b) {
+          if (env.nullOuter.isTop) {
+            if (strict) excSet += ReferenceError
+            else {
+              val (_, h, e) = AbsGlobalEnvRec.Top
+                .SetMutableBinding(name, value, false)(newH)
+              newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
+              excSet ++= e
+            }
           }
-        }
-        env.outer.foreach(visit(_))
-        AbsAbsent.Bot
-      })(AbsAbsent)
+          env.outer.foreach(visit(_))
+          AbsAbsent.Bot
+        } else AbsAbsent.Bot
+      t + f
     }
     locSet.foreach(visit(_))
     ctxUpdatePairSet.size match {
@@ -279,15 +294,15 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     (AbsState(newH, newCtx), excSet)
   }
 
-  def NewDeclarativeEnvironment(outer: AbsLoc): AbsLexEnv =
-    Dom(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
+  def NewDeclarativeEnvironment(outer: AbsLoc): Elem =
+    Elem(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
 
-  def newPureLocal(outer: AbsLoc): AbsLexEnv = {
+  def newPureLocal(outer: AbsLoc): Elem = {
     val envRec = AbsDecEnvRec(HashMap(
       "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
       "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
       "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)
     ))
-    Dom(envRec, outer, AbsAbsent.Bot)
+    Elem(envRec, outer, AbsAbsent.Bot)
   }
 }

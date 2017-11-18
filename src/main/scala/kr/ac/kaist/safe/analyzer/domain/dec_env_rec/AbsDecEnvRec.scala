@@ -26,94 +26,94 @@ case class DecEnvRec(map: Map[String, Binding]) extends EnvRec
 ////////////////////////////////////////////////////////////////////////////////
 // declarative environment record abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsDecEnvRec extends AbsDomain[DecEnvRec, AbsDecEnvRec] {
-  // 10.2.1.1.1 HasBinding(N)
-  def HasBinding(name: String): AbsBool
-
-  // 10.2.1.1.2 CreateMutableBinding(N, D)
-  def CreateMutableBinding(
-    name: String,
-    del: Boolean = true
-  ): AbsDecEnvRec
-
-  // 10.2.1.1.3 SetMutableBinding(N, V, S)
-  def SetMutableBinding(
-    name: String,
-    v: AbsValue,
-    strict: Boolean = false
-  ): (AbsDecEnvRec, Set[Exception])
-
-  // 10.2.1.1.4 GetBindingValue(N, S)
-  def GetBindingValue(
-    name: String,
-    strict: Boolean = false
-  ): (AbsValue, Set[Exception])
-
-  // 10.2.1.1.5 DeleteBinding(N)
-  def DeleteBinding(
-    name: String
-  ): (AbsDecEnvRec, AbsBool)
-
-  // 10.2.1.1.6 ImplicitThisValue()
-  def ImplicitThisValue: AbsValue
-
-  // 10.2.1.1.7 CreateImmutableBinding(N)
-  def CreateImmutableBinding(
-    name: String
-  ): AbsDecEnvRec
-
-  // 10.2.1.1.6 InitializeImmutableBinding(N, V)
-  def InitializeImmutableBinding(
-    name: String,
-    v: AbsValue
-  ): AbsDecEnvRec
-
-  // substitute locR by locO
-  def subsLoc(locR: Recency, locO: Recency): AbsDecEnvRec
-
-  // weak substitute locR by locO
-  def weakSubsLoc(locR: Recency, locO: Recency): AbsDecEnvRec
-}
-
-trait AbsDecEnvRecUtil extends AbsDomainUtil[DecEnvRec, AbsDecEnvRec] {
+trait DecEnvRecDomain extends AbsDomain[DecEnvRec] { domain: DecEnvRecDomain =>
   type EnvMap = Map[String, (AbsBinding, AbsAbsent)]
 
-  val Empty: AbsDecEnvRec
+  val Empty: Elem
 
-  def apply(m: EnvMap, upper: Boolean = false): AbsDecEnvRec
+  def apply(m: EnvMap, upper: Boolean = false): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    // 10.2.1.1.1 HasBinding(N)
+    def HasBinding(name: String): AbsBool
+
+    // 10.2.1.1.2 CreateMutableBinding(N, D)
+    def CreateMutableBinding(
+      name: String,
+      del: Boolean = true
+    ): Elem
+
+    // 10.2.1.1.3 SetMutableBinding(N, V, S)
+    def SetMutableBinding(
+      name: String,
+      v: AbsValue,
+      strict: Boolean = false
+    ): (Elem, Set[Exception])
+
+    // 10.2.1.1.4 GetBindingValue(N, S)
+    def GetBindingValue(
+      name: String,
+      strict: Boolean = false
+    ): (AbsValue, Set[Exception])
+
+    // 10.2.1.1.5 DeleteBinding(N)
+    def DeleteBinding(
+      name: String
+    ): (Elem, AbsBool)
+
+    // 10.2.1.1.6 ImplicitThisValue()
+    def ImplicitThisValue: AbsValue
+
+    // 10.2.1.1.7 CreateImmutableBinding(N)
+    def CreateImmutableBinding(
+      name: String
+    ): Elem
+
+    // 10.2.1.1.6 InitializeImmutableBinding(N, V)
+    def InitializeImmutableBinding(
+      name: String,
+      v: AbsValue
+    ): Elem
+
+    // substitute locR by locO
+    def subsLoc(locR: Recency, locO: Recency): Elem
+
+    // weak substitute locR by locO
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default declarative environment record abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultDecEnvRec extends AbsDecEnvRecUtil {
+object DefaultDecEnvRec extends DecEnvRecDomain {
   private val EmptyMap: EnvMap = HashMap()
 
-  case object Bot extends Dom
-  case class LBindMap(map: EnvMap) extends Dom
-  case class UBindMap(map: EnvMap) extends Dom
-  lazy val Empty: Dom = LBindMap(EmptyMap)
-  lazy val Top: Dom = UBindMap(EmptyMap)
+  case object Bot extends Elem
+  case class LBindMap(map: EnvMap) extends Elem
+  case class UBindMap(map: EnvMap) extends Elem
+  lazy val Empty: Elem = LBindMap(EmptyMap)
+  lazy val Top: Elem = UBindMap(EmptyMap)
 
-  def alpha(envRec: DecEnvRec): AbsDecEnvRec = LBindMap(envRec.map.foldLeft(EmptyMap) {
+  def alpha(envRec: DecEnvRec): Elem = LBindMap(envRec.map.foldLeft(EmptyMap) {
     case (map, (str, bind)) => map + (str -> (AbsBinding.alpha(bind), AbsAbsent.Bot))
   })
 
-  def apply(m: EnvMap, upper: Boolean): AbsDecEnvRec = upper match {
+  def apply(m: EnvMap, upper: Boolean): Elem = upper match {
     case false => LBindMap(m)
     case true => UBindMap(m)
   }
 
-  abstract class Dom extends AbsDecEnvRec {
+  abstract class Elem extends ElemTrait {
     def gamma: ConSet[DecEnvRec] = ConInf() // TODO more precise
 
     def getSingle: ConSingle[DecEnvRec] = ConMany() // TODO more precise
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
-    def <=(that: AbsDecEnvRec): Boolean = {
-      val right = check(that)
+    def <=(that: Elem): Boolean = {
+      val right = that
       (this, right) match {
         case (Bot, _) => true
         case (LBindMap(lmap), _) => lmap.forall {
@@ -132,8 +132,8 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
       }
     }
 
-    def +(that: AbsDecEnvRec): AbsDecEnvRec = {
-      val right = check(that)
+    def +(that: Elem): Elem = {
+      val right = that
       (this, right) match {
         case _ if this eq right => this
         case (Bot, _) => right
@@ -154,8 +154,8 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
       }
     }
 
-    def <>(that: AbsDecEnvRec): AbsDecEnvRec = {
-      val right = check(that)
+    def <>(that: Elem): Elem = {
+      val right = that
       (this, right) match {
         case _ if this eq right => this
         case (Bot, _) | (_, Bot) => Bot
@@ -231,7 +231,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     def CreateMutableBinding(
       name: String,
       del: Boolean
-    ): AbsDecEnvRec = get(name) match {
+    ): Elem = get(name) match {
       // 1. Let envRec be the declarative environment record for
       //    which the method was invoked.
       case (bind, absent) => absent.isBottom match {
@@ -251,7 +251,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
       name: String,
       v: AbsValue,
       strict: Boolean
-    ): (AbsDecEnvRec, Set[Exception]) = get(name) match {
+    ): (Elem, Set[Exception]) = get(name) match {
       // 1. Let envRec be the declarative environment record for
       //    which the method was invoked.
       case (bind, _) => bind.isBottom match {
@@ -259,18 +259,22 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
         case true => (Bot, ExcSetEmpty)
         case false => {
           var excSet = ExcSetEmpty
-          val envRec = bind.mutable.map[AbsDecEnvRec](
-            // 3. If the binding for N in envRec is a mutable binding,
-            //    change its bound value to V.
-            thenV =
-              update(name, (bind.copyWith(value = v), AbsAbsent.Bot)),
-            // 4. Else this must be an attempt to change the value of
-            //    an immutable binding so if S is true, throw a TypeError
-            //    exception.
-            elseV =
+          val b = bind.mutable
+          val t =
+            if (AT <= b) {
+              // 3. If the binding for N in envRec is a mutable binding,
+              //    change its bound value to V.
+              update(name, (bind.copyWith(value = v), AbsAbsent.Bot))
+            } else Bot
+          val f =
+            if (AF <= b) {
+              // 4. Else this must be an attempt to change the value of
+              //    an immutable binding so if S is true, throw a TypeError
+              //    exception.
               if (strict) { excSet += TypeError; Bot }
               else this
-          )(AbsDecEnvRec)
+            } else Bot
+          val envRec = t + f
           (envRec, excSet)
         }
       }
@@ -288,18 +292,22 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
         case true => (AbsValue.Bot, ExcSetEmpty)
         case false => {
           var excSet = ExcSetEmpty
-          val retV = (bind.mutable.negate && AbsBool(!bind.uninit.isBottom)).map(
-            // 3. If the binding for N in envRec is
-            //    an uninitialised immutable binding, then
-            //    a. If S is false, return the value undefined,
-            //       otherwise throw a ReferenceError exception.
-            thenV =
-            if (strict) { excSet += ReferenceError; AbsValue.Bot }
-            else AbsValue(Undef),
-            // 4. Else, return the value currently bound to N in envRec.
-            elseV =
+          val b = bind.mutable.negate && AbsBool(!bind.uninit.isBottom)
+          val t =
+            if (AT <= b) {
+              // 3. If the binding for N in envRec is
+              //    an uninitialised immutable binding, then
+              //    a. If S is false, return the value undefined,
+              //       otherwise throw a ReferenceError exception.
+              if (strict) { excSet += ReferenceError; AbsValue.Bot }
+              else AbsValue(Undef)
+            } else AbsValue.Bot
+          val f =
+            if (AF <= b) {
+              // 4. Else, return the value currently bound to N in envRec.
               bind.value
-          )(AbsValue)
+            } else AbsValue.Bot
+          val retV = t + f
           (retV, excSet)
         }
       }
@@ -308,18 +316,26 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     // 10.2.1.1.5 DeleteBinding(N)
     def DeleteBinding(
       name: String
-    ): (AbsDecEnvRec, AbsBool) = HasBinding(name).map[AbsDecEnvRec, AbsBool](
-      // 1. Let envRec be the declarative environment record for
-      //    which the method was invoked.
-      // 2. If envRec does not have a binding for
-      //    the name that is the value of N, return true.
-      elseV = (this, AbsBool.True),
-      // 3. If the binding for N in envRec is cannot be deleted, return false.
-      //    (XXX: we do not consider explicit design)
-      // 4. Remove the binding for N from envRec.
-      // 5. Return true.
-      thenV = ((this - name), AbsBool.True)
-    )(AbsDecEnvRec, AbsBool)
+    ): (Elem, AbsBool) = {
+      val b = HasBinding(name)
+      val (f1, f2) =
+        if (AF <= b) {
+          // 1. Let envRec be the declarative environment record for
+          //    which the method was invoked.
+          // 2. If envRec does not have a binding for
+          //    the name that is the value of N, return true.
+          (this, AbsBool.True)
+        } else (Bot, AbsBool.Bot)
+      val (t1, t2) =
+        if (AT <= b) {
+          // 3. If the binding for N in envRec is cannot be deleted, return false.
+          //    (XXX: we do not consider explicit design)
+          // 4. Remove the binding for N from envRec.
+          // 5. Return true.
+          (this - name, AbsBool.True)
+        } else (Bot, AbsBool.Bot)
+      (f1 + t1, f2 + t2)
+    }
 
     // 10.2.1.1.6 ImplicitThisValue()
     def ImplicitThisValue: AbsValue = {
@@ -330,7 +346,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     // 10.2.1.1.7 CreateImmutableBinding(N)
     def CreateImmutableBinding(
       name: String
-    ): AbsDecEnvRec = get(name) match {
+    ): Elem = get(name) match {
       // 1. Let envRec be the declarative environment record for
       //    which the method was invoked.
       case (_, absent) => {
@@ -347,7 +363,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     def InitializeImmutableBinding(
       name: String,
       v: AbsValue
-    ): AbsDecEnvRec = get(name) match {
+    ): Elem = get(name) match {
       // 1. Let envRec be the declarative environment record for
       //    which the method was invoked.
       case (bind, absent) => {
@@ -366,7 +382,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     }
 
     // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Dom = {
+    def subsLoc(locR: Recency, locO: Recency): Elem = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
           val newV = bind.value.subsLoc(locR, locO)
@@ -382,7 +398,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     }
 
     // weak substitute locR by locO
-    def weakSubsLoc(locR: Recency, locO: Recency): Dom = {
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
           val newV = bind.value.weakSubsLoc(locR, locO)
@@ -411,7 +427,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     }
 
     // strong update
-    def update(name: String, pair: (AbsBinding, AbsAbsent)): Dom = {
+    def update(name: String, pair: (AbsBinding, AbsAbsent)): Elem = {
       val (bind, absent) = pair
       this match {
         case Bot => Bot
@@ -427,7 +443,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     }
 
     // delete
-    def -(name: String): Dom =
+    def -(name: String): Elem =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
   }
 }

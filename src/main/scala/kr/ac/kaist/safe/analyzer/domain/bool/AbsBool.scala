@@ -21,32 +21,24 @@ case class Bool(b: Boolean) extends PValue {
 ////////////////////////////////////////////////////////////////////////////////
 // boolean abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsBool extends AbsDomain[Bool, AbsBool] {
-  def ===(that: AbsBool): AbsBool
-  def negate: AbsBool
-  def &&(that: AbsBool): AbsBool
-  def ||(that: AbsBool): AbsBool
-  def xor(that: AbsBool): AbsBool
-
-  def toAbsNumber: AbsNumber
-  def toAbsString: AbsString
-
-  def map[T <: Domain[T]](
-    thenV: => T,
-    elseV: => T
-  )(implicit util: DomainUtil[T]): T
-
-  // TODO remove after when product domains are possible
-  def map[T <: Domain[T], U <: Domain[U]](
-    thenV: => (T, U),
-    elseV: => (T, U)
-  )(implicit util: (DomainUtil[T], DomainUtil[U])): (T, U)
-}
-
-trait AbsBoolUtil extends AbsDomainUtil[Bool, AbsBool] {
+trait BoolDomain extends AbsDomain[Bool] { domain: BoolDomain =>
   // abstraction from true
-  val True: AbsBool
+  val True: Elem
 
   // abstraction from false
-  val False: AbsBool
+  val False: Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def ===(that: Elem): Elem
+    def negate: Elem
+    def &&(that: Elem): Elem
+    def ||(that: Elem): Elem
+    def xor(that: Elem): Elem
+
+    def toAbsNum: AbsNum
+    def toAbsStr: AbsStr
+  }
 }

@@ -27,96 +27,94 @@ trait Context // TODO
 ////////////////////////////////////////////////////////////////////////////////
 // execution context abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsContext extends AbsDomain[Context, AbsContext] {
-  // lookup
-  def apply(loc: Loc): Option[AbsLexEnv]
-  def apply(locSet: Set[Loc]): AbsLexEnv
-  def apply(locSet: AbsLoc): AbsLexEnv
-  def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv
-  def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T
-
-  // context update
-  def weakUpdate(loc: Loc, env: AbsLexEnv): AbsContext
-  def update(loc: Loc, env: AbsLexEnv): AbsContext
-
-  // remove location
-  def remove(loc: Loc): AbsContext
-
-  // substitute locR by locO
-  def subsLoc(locR: Recency, locO: Recency): AbsContext
-
-  def oldify(loc: Loc): AbsContext
-
-  def domIn(loc: Loc): Boolean
-
-  def isBottom: Boolean
-
-  def setOldASiteSet(old: OldASiteSet): AbsContext
-
-  def setThisBinding(thisBinding: AbsValue): AbsContext
-
-  def getMap: Map[Loc, AbsLexEnv]
-
-  def old: OldASiteSet
-
-  def thisBinding: AbsValue
-
-  def toStringLoc(loc: Loc): Option[String]
-
-  // delete
-  def delete(loc: Loc, str: String): (AbsContext, AbsBool)
-
-  // pure local environment
-  def pureLocal: AbsLexEnv
-  def subsPureLocal(env: AbsLexEnv): AbsContext
-
-  // location concrete check
-  def isConcrete(loc: Loc): Boolean
-}
-
-trait AbsContextUtil extends AbsDomainUtil[Context, AbsContext] {
-  val Empty: AbsContext
+trait ContextDomain extends AbsDomain[Context] { domain: ContextDomain =>
+  val Empty: Elem
   def apply(
     map: Map[Loc, AbsLexEnv],
     old: OldASiteSet,
     thisBinding: AbsValue
-  ): AbsContext
+  ): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    // lookup
+    def apply(loc: Loc): Option[AbsLexEnv]
+    def apply(locSet: Set[Loc]): AbsLexEnv
+    def apply(locSet: AbsLoc): AbsLexEnv
+    def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv
+    def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T
+
+    // context update
+    def weakUpdate(loc: Loc, env: AbsLexEnv): Elem
+    def update(loc: Loc, env: AbsLexEnv): Elem
+
+    // remove location
+    def remove(loc: Loc): Elem
+
+    // substitute locR by locO
+    def subsLoc(locR: Recency, locO: Recency): Elem
+
+    def oldify(loc: Loc): Elem
+
+    def domIn(loc: Loc): Boolean
+
+    def setOldASiteSet(old: OldASiteSet): Elem
+
+    def setThisBinding(thisBinding: AbsValue): Elem
+
+    def getMap: Map[Loc, AbsLexEnv]
+
+    def old: OldASiteSet
+
+    def thisBinding: AbsValue
+
+    def toStringLoc(loc: Loc): Option[String]
+
+    // delete
+    def delete(loc: Loc, str: String): (Elem, AbsBool)
+
+    // pure local environment
+    def pureLocal: AbsLexEnv
+    def subsPureLocal(env: AbsLexEnv): Elem
+
+    // location concrete check
+    def isConcrete(loc: Loc): Boolean
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default execution context abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultContext extends AbsContextUtil {
+object DefaultContext extends ContextDomain {
   private val EmptyMap: Map[Loc, AbsLexEnv] = HashMap()
 
-  case object Bot extends Dom
-  case object Top extends Dom
+  case object Bot extends Elem
+  case object Top extends Elem
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
     val map: Map[Loc, AbsLexEnv],
     override val old: OldASiteSet,
     override val thisBinding: AbsValue // ThisBinding
-  ) extends Dom
-  lazy val Empty: AbsContext =
+  ) extends Elem
+  lazy val Empty: Elem =
     CtxMap(EmptyMap, OldASiteSet.Empty, AbsLoc(BuiltinGlobal.loc))
 
-  def alpha(ctx: Context): AbsContext = Top // TODO more precise
+  def alpha(ctx: Context): Elem = Top // TODO more precise
 
   def apply(
     map: Map[Loc, AbsLexEnv],
     old: OldASiteSet,
     thisBinding: AbsValue
-  ): AbsContext = CtxMap(map, old, thisBinding)
+  ): Elem = CtxMap(map, old, thisBinding)
 
-  sealed abstract class Dom extends AbsContext {
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf() // TODO more precise
 
     def getSingle: ConSingle[Context] = ConMany() // TODO more precise
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
-    def <=(that: AbsContext): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Bot) => false
       case (_, Top) => true
@@ -138,7 +136,7 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def +(that: AbsContext): AbsContext = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Bot, _) => that
       case (_, Bot) => this
       case (Top, _) | (_, Top) => Top
@@ -160,7 +158,7 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def <>(that: AbsContext): AbsContext = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Top, _) => that
       case (_, Top) => this
@@ -216,14 +214,14 @@ object DefaultContext extends AbsContextUtil {
         case None => m.updated(loc, newEnv)
       }
 
-    def weakUpdate(loc: Loc, env: AbsLexEnv): AbsContext = this match {
+    def weakUpdate(loc: Loc, env: AbsLexEnv): Elem = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old, thisBinding) =>
         CtxMap(weakUpdated(map, loc, env), old, thisBinding)
     }
 
-    def update(loc: Loc, env: AbsLexEnv): AbsContext = this match {
+    def update(loc: Loc, env: AbsLexEnv): Elem = this match {
       case Bot => Bot
       case Top => Top
       case cmap @ CtxMap(map, _, _) => {
@@ -235,13 +233,13 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def remove(loc: Loc): AbsContext = this match {
+    def remove(loc: Loc): Elem = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old, thisBinding) => CtxMap(map - loc, old, thisBinding)
     }
 
-    def subsLoc(locR: Recency, locO: Recency): AbsContext = this match {
+    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old, thisBinding) => {
@@ -255,7 +253,7 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def oldify(loc: Loc): AbsContext = loc match {
+    def oldify(loc: Loc): Elem = loc match {
       case locR @ Recency(subLoc, Recent) => this match {
         case Bot => Bot
         case Top => Top
@@ -276,13 +274,13 @@ object DefaultContext extends AbsContextUtil {
       case CtxMap(map, _, _) => map.contains(loc)
     }
 
-    def setOldASiteSet(old: OldASiteSet): AbsContext = this match {
+    def setOldASiteSet(old: OldASiteSet): Elem = this match {
       case Bot => Bot
       case Top => Top
       case cmap @ CtxMap(_, _, _) => cmap.copy(old = old)
     }
 
-    def setThisBinding(thisBinding: AbsValue): AbsContext = this match {
+    def setThisBinding(thisBinding: AbsValue): Elem = this match {
       case Bot => Bot
       case Top => Top
       case cmap @ CtxMap(_, _, _) => cmap.copy(thisBinding = thisBinding)
@@ -311,7 +309,7 @@ object DefaultContext extends AbsContextUtil {
     }
 
     private def buildString(filter: Loc => Boolean): String = this match {
-      case Bot => "⊥AbsContext"
+      case Bot => "⊥Elem"
       case Top => "Top"
       case CtxMap(map, old, thisBinding) => {
         val s = new StringBuilder
@@ -343,7 +341,7 @@ object DefaultContext extends AbsContextUtil {
     ////////////////////////////////////////////////////////////////
     // delete
     ////////////////////////////////////////////////////////////////
-    def delete(loc: Loc, str: String): (AbsContext, AbsBool) = {
+    def delete(loc: Loc, str: String): (Elem, AbsBool) = {
       getOrElse(loc)((this, AbsBool.Bot))(_ => {
         val test = hasOwnProperty(loc, str)
         if (AbsBool.True <= test)
@@ -362,7 +360,7 @@ object DefaultContext extends AbsContextUtil {
     ////////////////////////////////////////////////////////////////
     def pureLocal: AbsLexEnv =
       getOrElse(PredAllocSite.PURE_LOCAL, AbsLexEnv.Bot)
-    def subsPureLocal(env: AbsLexEnv): AbsContext =
+    def subsPureLocal(env: AbsLexEnv): Elem =
       update(PredAllocSite.PURE_LOCAL, env)
 
     ////////////////////////////////////////////////////////////////

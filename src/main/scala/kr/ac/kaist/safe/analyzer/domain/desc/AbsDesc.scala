@@ -28,71 +28,74 @@ case class Desc(
 ////////////////////////////////////////////////////////////////////////////////
 // descriptor abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsDesc extends AbsDomain[Desc, AbsDesc] {
-  val value: (AbsValue, AbsAbsent)
-  val writable: (AbsBool, AbsAbsent)
-  val enumerable: (AbsBool, AbsAbsent)
-  val configurable: (AbsBool, AbsAbsent)
-
-  def copyWith(
-    value: (AbsValue, AbsAbsent) = this.value,
-    writable: (AbsBool, AbsAbsent) = this.writable,
-    enumerable: (AbsBool, AbsAbsent) = this.enumerable,
-    configurable: (AbsBool, AbsAbsent) = this.configurable
-  ): AbsDesc
-
-  // 8.10.1 IsAccessorDescriptor ( Desc )
-  // XXX: we do not support accessor descriptor yet
-  // def IsAccessorDescriptor: AbsBool
-
-  // 8.10.2 IsDataDescriptor ( Desc )
-  def IsDataDescriptor: AbsBool
-
-  // 8.10.3 IsGenericDescriptor ( Desc )
-  def IsGenericDescriptor: AbsBool
-}
-
-trait AbsDescUtil extends AbsDomainUtil[Desc, AbsDesc] {
+trait DescDomain extends AbsDomain[Desc] { domain: DescDomain =>
   def apply(
     value: (AbsValue, AbsAbsent),
     writable: (AbsBool, AbsAbsent) = (AbsBool.Bot, AbsAbsent.Top),
     enumerable: (AbsBool, AbsAbsent) = (AbsBool.Bot, AbsAbsent.Top),
     configurable: (AbsBool, AbsAbsent) = (AbsBool.Bot, AbsAbsent.Top)
-  ): AbsDesc
+  ): Elem
 
   // 8.10.5 ToPropertyDescriptor ( Obj )
-  def ToPropertyDescriptor(obj: AbsObject, h: AbsHeap): AbsDesc
+  def ToPropertyDescriptor(obj: AbsObj, h: AbsHeap): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val value: (AbsValue, AbsAbsent)
+    val writable: (AbsBool, AbsAbsent)
+    val enumerable: (AbsBool, AbsAbsent)
+    val configurable: (AbsBool, AbsAbsent)
+
+    def copyWith(
+      value: (AbsValue, AbsAbsent) = this.value,
+      writable: (AbsBool, AbsAbsent) = this.writable,
+      enumerable: (AbsBool, AbsAbsent) = this.enumerable,
+      configurable: (AbsBool, AbsAbsent) = this.configurable
+    ): Elem
+
+    // 8.10.1 IsAccessorDescriptor ( Desc )
+    // XXX: we do not support accessor descriptor yet
+    // def IsAccessorDescriptor: AbsBool
+
+    // 8.10.2 IsDataDescriptor ( Desc )
+    def IsDataDescriptor: AbsBool
+
+    // 8.10.3 IsGenericDescriptor ( Desc )
+    def IsGenericDescriptor: AbsBool
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default descriptor abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultDesc extends AbsDescUtil {
-  lazy val Bot: Dom = Dom(
+object DefaultDesc extends DescDomain {
+  lazy val Bot: Elem = Elem(
     (AbsValue.Bot, AbsAbsent.Bot),
     (AbsBool.Bot, AbsAbsent.Bot),
     (AbsBool.Bot, AbsAbsent.Bot),
     (AbsBool.Bot, AbsAbsent.Bot)
   )
-  lazy val Top: Dom = Dom(
+  lazy val Top: Elem = Elem(
     (AbsValue.Top, AbsAbsent.Top),
     (AbsBool.Top, AbsAbsent.Top),
     (AbsBool.Top, AbsAbsent.Top),
     (AbsBool.Top, AbsAbsent.Top)
   )
 
-  private def conversion[C, A <: AbsDomain[C, A], U <: AbsDomainUtil[C, A]](
-    opt: Option[C],
-    util: U
-  ): (A, AbsAbsent) = opt match {
-    case Some(v) => (util(v), AbsAbsent.Bot)
-    case None => (util.Bot, AbsAbsent.Top)
+  private def conversion[V](
+    opt: Option[V],
+    domain: AbsDomain[V]
+  ): (domain.Elem, AbsAbsent) = opt match {
+    case Some(v) => (domain(v), AbsAbsent.Bot)
+    case None => (domain.Bot, AbsAbsent.Top)
   }
-  def alpha(desc: Desc): AbsDesc = Dom(
-    conversion[Value, AbsValue, AbsValueUtil](desc.value, AbsValue),
-    conversion[Bool, AbsBool, AbsBoolUtil](desc.writable, AbsBool),
-    conversion[Bool, AbsBool, AbsBoolUtil](desc.enumerable, AbsBool),
-    conversion[Bool, AbsBool, AbsBoolUtil](desc.configurable, AbsBool)
+  def alpha(desc: Desc): Elem = Elem(
+    conversion(desc.value, AbsValue),
+    conversion(desc.writable, AbsBool),
+    conversion(desc.enumerable, AbsBool),
+    conversion(desc.configurable, AbsBool)
   )
 
   def apply(
@@ -100,23 +103,20 @@ object DefaultDesc extends AbsDescUtil {
     writable: (AbsBool, AbsAbsent),
     enumerable: (AbsBool, AbsAbsent),
     configurable: (AbsBool, AbsAbsent)
-  ): AbsDesc = Dom(value, writable, enumerable, configurable)
+  ): Elem = Elem(value, writable, enumerable, configurable)
 
-  case class Dom(
+  case class Elem(
       value: (AbsValue, AbsAbsent),
       writable: (AbsBool, AbsAbsent),
       enumerable: (AbsBool, AbsAbsent),
       configurable: (AbsBool, AbsAbsent)
-  ) extends AbsDesc {
+  ) extends ElemTrait {
     def gamma: ConSet[Desc] = ConInf() // TODO more precise
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Desc] = ConMany() // TODO more precise
 
-    def <=(that: AbsDesc): Boolean = {
-      val (left, right) = (this, check(that))
+    def <=(that: Elem): Boolean = {
+      val (left, right) = (this, that)
       val (lv, lva) = left.value
       val (lw, lwa) = left.writable
       val (le, lea) = left.enumerable
@@ -131,8 +131,8 @@ object DefaultDesc extends AbsDescUtil {
         lc <= rc && lca <= rca
     }
 
-    def +(that: AbsDesc): AbsDesc = {
-      val (left, right) = (this, check(that))
+    def +(that: Elem): Elem = {
+      val (left, right) = (this, that)
       val (lv, lva) = left.value
       val (lw, lwa) = left.writable
       val (le, lea) = left.enumerable
@@ -141,7 +141,7 @@ object DefaultDesc extends AbsDescUtil {
       val (rw, rwa) = right.writable
       val (re, rea) = right.enumerable
       val (rc, rca) = right.configurable
-      Dom(
+      Elem(
         (lv + rv, lva + rva),
         (lw + rw, lwa + rwa),
         (le + re, lea + rea),
@@ -149,8 +149,8 @@ object DefaultDesc extends AbsDescUtil {
       )
     }
 
-    def <>(that: AbsDesc): AbsDesc = {
-      val (left, right) = (this, check(that))
+    def <>(that: Elem): Elem = {
+      val (left, right) = (this, that)
       val (lv, lva) = left.value
       val (lw, lwa) = left.writable
       val (le, lea) = left.enumerable
@@ -159,7 +159,7 @@ object DefaultDesc extends AbsDescUtil {
       val (rw, rwa) = right.writable
       val (re, rea) = right.enumerable
       val (rc, rca) = right.configurable
-      Dom(
+      Elem(
         (lv <> rv, lva <> rva),
         (lw <> rw, lwa <> rwa),
         (le <> re, lea <> rea),
@@ -182,7 +182,7 @@ object DefaultDesc extends AbsDescUtil {
       writable: (AbsBool, AbsAbsent) = this.writable,
       enumerable: (AbsBool, AbsAbsent) = this.enumerable,
       configurable: (AbsBool, AbsAbsent) = this.configurable
-    ): AbsDesc = Dom(value, writable, enumerable, configurable)
+    ): Elem = Elem(value, writable, enumerable, configurable)
 
     def IsDataDescriptor: AbsBool = {
       val (v, va) = value
@@ -200,9 +200,9 @@ object DefaultDesc extends AbsDescUtil {
       IsDataDescriptor.negate
   }
 
-  def ToPropertyDescriptor(obj: AbsObject, h: AbsHeap): AbsDesc = {
+  def ToPropertyDescriptor(obj: AbsObj, h: AbsHeap): Elem = {
     def get(str: String): (AbsValue, AbsAbsent) = {
-      val has = obj.HasProperty(AbsString(str), h)
+      val has = obj.HasProperty(AbsStr(str), h)
       val v =
         if (AbsBool.True <= has) obj.Get(str, h)
         else AbsValue.Bot
@@ -222,6 +222,6 @@ object DefaultDesc extends AbsDescUtil {
     val e = getB("enumerable")
     val c = getB("configurable")
 
-    AbsDesc(v, w, e, c)
+    Elem(v, w, e, c)
   }
 }

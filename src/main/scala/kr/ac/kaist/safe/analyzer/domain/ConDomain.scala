@@ -11,15 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-trait ConDomain[T, Self <: ConDomain[T, _]] extends Domain[Self]
-trait ConDomainUtil[T, CON <: ConDomain[T, CON]] extends DomainUtil[CON]
-
 ////////////////////////////////////////////////////////////////////////////////
 // concrete single domain
 ////////////////////////////////////////////////////////////////////////////////
-sealed abstract class ConSingle[T] extends ConDomain[T, ConSingle[T]] {
-  def isBottom: Boolean = this == ConZero[T]()
-  def isTop: Boolean = this == ConMany()
+sealed abstract class ConSingle[T] {
 
   override def toString: String = this match {
     case ConZero() => "[]"
@@ -51,23 +46,17 @@ case class ConZero[T]() extends ConSingle[T]
 case class ConOne[T](value: T) extends ConSingle[T]
 case class ConMany[T]() extends ConSingle[T]
 
-case class ConSingleUtil[T]() extends ConDomainUtil[T, ConSingle[T]] {
-  type Dom = ConSingle[T]
-  val Top = ConMany[T]()
-  val Bot = ConZero[T]()
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // concrete finite set domain
 ////////////////////////////////////////////////////////////////////////////////
-sealed abstract class ConSet[T] extends ConDomain[T, ConSet[T]] {
-  def isBottom: Boolean = this == ConFin[T]()
-  def isTop: Boolean = this == ConInf[T]()
+sealed abstract class ConSet[T] {
 
   override def toString: String = this match {
     case ConFin(set) => "[" + set.mkString(", ") + "]"
     case ConInf() => "[< infinite values >]"
   }
+
+  def isBottom: Boolean = this == ConFin()
 
   def <=(that: ConSet[T]): Boolean = (this, that) match {
     case (_, ConInf()) => true
@@ -90,10 +79,4 @@ case class ConInf[T]() extends ConSet[T]
 case class ConFin[T](values: Set[T]) extends ConSet[T]
 object ConFin {
   def apply[T](seq: T*): ConFin[T] = ConFin(seq.toSet)
-}
-
-case class ConSetUtil[T]() extends ConDomainUtil[T, ConSet[T]] {
-  type Dom = ConSet[T]
-  val Top = ConInf[T]()
-  val Bot = ConFin[T]()
 }

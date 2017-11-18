@@ -19,7 +19,6 @@ import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.json.NodeProtocol
 
 // Analyze phase
 case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
@@ -37,7 +36,6 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
       case true => Some(new Console(cfg, worklist, sem, heapConfig, iter))
       case false => None
     }
-    NodeProtocol.test = safeConfig.testMode
 
     // set the start time.
     val startTime = System.currentTimeMillis

@@ -71,50 +71,50 @@ object Loc {
 ////////////////////////////////////////////////////////////////////////////////
 // location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
-  def contains(loc: Loc): Boolean
-  def exists(f: Loc => Boolean): Boolean
-  def filter(f: Loc => Boolean): AbsLoc
-  def foreach(f: Loc => Unit): Unit
-  def foldLeft[T](initial: T)(f: (T, Loc) => T): T
-  def map[T](f: Loc => T): Set[T]
-  def +(loc: Loc): AbsLoc
-  def -(loc: Loc): AbsLoc
-  /* substitute locR by locO */
-  def subsLoc(locR: Recency, locO: Recency): AbsLoc
-  /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc
-}
+trait LocDomain extends AbsDomain[Loc] { domain: LocDomain =>
+  // abstract boolean element
+  type Elem <: ElemTrait
 
-trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def contains(loc: Loc): Boolean
+    def exists(f: Loc => Boolean): Boolean
+    def filter(f: Loc => Boolean): Elem
+    def foreach(f: Loc => Unit): Unit
+    def foldLeft[T](initial: T)(f: (T, Loc) => T): T
+    def map[T](f: Loc => T): Set[T]
+    def +(loc: Loc): Elem
+    def -(loc: Loc): Elem
+    /* substitute locR by locO */
+    def subsLoc(locR: Recency, locO: Recency): Elem
+    /* weakly substitute locR by locO, that is keep locR together */
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // default location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case object DefaultLoc extends AbsLocUtil {
-  case object Top extends Dom
-  case class LocSet(set: Set[Loc]) extends Dom
+case object DefaultLoc extends LocDomain {
+  case object Top extends Elem
+  case class LocSet(set: Set[Loc]) extends Elem
   object LocSet {
     def apply(seq: Loc*): LocSet = LocSet(seq.toSet)
   }
-  lazy val Bot: Dom = LocSet()
+  lazy val Bot: Elem = LocSet()
 
   // TODO all location set
   // lazy val locSet: Set[Loc] = cfg.getAllASiteSet.foldLeft(HashSet[Loc]()) {
   //   case (set, asite) => set + Loc(asite, Recent) + Loc(asite, Old)
   // }
 
-  def alpha(loc: Loc): AbsLoc = LocSet(loc)
-  override def alpha(locset: Set[Loc]): AbsLoc = LocSet(locset)
+  def alpha(loc: Loc): Elem = LocSet(loc)
+  override def alpha(locset: Set[Loc]): Elem = LocSet(locset)
 
-  sealed abstract class Dom extends AbsLoc {
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Loc] = this match {
       case Top => throw LocTopGammaError // TODO ConFin(locSet)
       case LocSet(set) => ConFin(set)
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Loc] = this match {
       case LocSet(set) if set.size == 0 => ConZero()
@@ -128,18 +128,18 @@ case object DefaultLoc extends AbsLocUtil {
       case LocSet(set) => set.mkString(", ")
     }
 
-    def <=(that: AbsLoc): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true
       case (Top, _) => false
       case (LocSet(lset), LocSet(rset)) => lset subsetOf rset
     }
 
-    def +(that: AbsLoc): AbsLoc = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (LocSet(lset), LocSet(rset)) => LocSet(lset ++ rset)
     }
 
-    def <>(that: AbsLoc): AbsLoc = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Top, _) => that
       case (_, Top) => this
       case (LocSet(lset), LocSet(rset)) => LocSet(lset intersect rset)
@@ -155,7 +155,7 @@ case object DefaultLoc extends AbsLocUtil {
       case LocSet(set) => set.exists(f)
     }
 
-    def filter(f: Loc => Boolean): AbsLoc = this match {
+    def filter(f: Loc => Boolean): Elem = this match {
       case Top => throw LocTopGammaError // TODO LocSet(locSet.filter(f))
       case LocSet(set) => LocSet(set.filter(f))
     }
@@ -175,24 +175,24 @@ case object DefaultLoc extends AbsLocUtil {
       case LocSet(set) => set.map(f)
     }
 
-    def +(loc: Loc): AbsLoc = this match {
+    def +(loc: Loc): Elem = this match {
       case Top => Top
       case LocSet(set) => LocSet(set + loc)
     }
 
-    def -(loc: Loc): AbsLoc = this match {
+    def -(loc: Loc): Elem = this match {
       case Top => Top // TODO LocSet(locSet - loc)
       case LocSet(set) => LocSet(set - loc)
     }
 
-    def subsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
+    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
       case Top => Top // TODO LocSet(locSet - locR + locO)
       case LocSet(set) =>
         if (set contains locR) LocSet(set - locR + locO)
         else this
     }
 
-    def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem = this match {
       case Top => Top
       case LocSet(set) =>
         if (set contains locR) LocSet(set + locO)

@@ -20,43 +20,45 @@ case object Absent extends Absent
 ////////////////////////////////////////////////////////////////////////////////
 // absent abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsAbsent extends AbsDomain[Absent, AbsAbsent]
-trait AbsAbsentUtil extends AbsDomainUtil[Absent, AbsAbsent]
+trait AbsentDomain extends AbsDomain[Absent] { domain: AbsentDomain =>
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // default absent abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultAbsent extends AbsAbsentUtil {
-  case object Bot extends Dom
-  case object Top extends Dom
+object DefaultAbsent extends AbsentDomain {
+  case object Bot extends Elem
+  case object Top extends Elem
 
-  def alpha(abs: Absent): AbsAbsent = Top
+  def alpha(abs: Absent): Elem = Top
 
-  abstract class Dom extends AbsAbsent {
+  abstract class Elem extends ElemTrait {
     def gamma: ConSet[Absent] = this match {
       case Bot => ConFin()
       case Top => ConFin(Absent)
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Absent] = this match {
       case Bot => ConZero()
       case Top => ConOne(Absent)
     }
 
-    def <=(that: AbsAbsent): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false
       case _ => true
     }
 
-    def +(that: AbsAbsent): AbsAbsent = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Bot, Bot) => Bot
       case _ => Top
     }
 
-    def <>(that: AbsAbsent): AbsAbsent = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Top, Top) => Top
       case _ => Bot
     }

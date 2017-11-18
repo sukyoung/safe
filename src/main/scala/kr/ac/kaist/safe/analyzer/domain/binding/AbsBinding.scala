@@ -25,50 +25,53 @@ case class IBinding(valueOpt: Option[Value]) extends Binding
 ////////////////////////////////////////////////////////////////////////////////
 // binding abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsBinding extends AbsDomain[Binding, AbsBinding] {
-  val value: AbsValue
-  val uninit: AbsAbsent
-  val mutable: AbsBool
-
-  def copyWith(
-    value: AbsValue = this.value,
-    uninit: AbsAbsent = this.uninit,
-    mutable: AbsBool = this.mutable
-  ): AbsBinding
-}
-
-trait AbsBindingUtil extends AbsDomainUtil[Binding, AbsBinding] {
+trait BindingDomain extends AbsDomain[Binding] { domain: BindingDomain =>
   def apply(
     value: AbsValue,
     uninit: AbsAbsent = AbsAbsent.Bot,
     mutable: AbsBool = AbsBool.True
-  ): AbsBinding
+  ): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val value: AbsValue
+    val uninit: AbsAbsent
+    val mutable: AbsBool
+
+    def copyWith(
+      value: AbsValue = this.value,
+      uninit: AbsAbsent = this.uninit,
+      mutable: AbsBool = this.mutable
+    ): Elem
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default binding abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultBinding extends AbsBindingUtil {
-  lazy val Bot: Dom = Dom(AbsValue.Bot, AbsAbsent.Bot, AbsBool.Bot)
-  lazy val Top: Dom = Dom(AbsValue.Top, AbsAbsent.Top, AbsBool.Top)
+object DefaultBinding extends BindingDomain {
+  lazy val Bot: Elem = Elem(AbsValue.Bot, AbsAbsent.Bot, AbsBool.Bot)
+  lazy val Top: Elem = Elem(AbsValue.Top, AbsAbsent.Top, AbsBool.Top)
 
-  def alpha(bind: Binding): AbsBinding = bind match {
-    case MBinding(value) => Dom(AbsValue(value), AbsAbsent.Bot, AbsBool.True)
-    case IBinding(None) => Dom(AbsValue.Bot, AbsAbsent.Top, AbsBool.False)
-    case IBinding(Some(value)) => Dom(AbsValue(value), AbsAbsent.Bot, AbsBool.False)
+  def alpha(bind: Binding): Elem = bind match {
+    case MBinding(value) => Elem(AbsValue(value), AbsAbsent.Bot, AbsBool.True)
+    case IBinding(None) => Elem(AbsValue.Bot, AbsAbsent.Top, AbsBool.False)
+    case IBinding(Some(value)) => Elem(AbsValue(value), AbsAbsent.Bot, AbsBool.False)
   }
 
   def apply(
     value: AbsValue,
     uninit: AbsAbsent,
     mutable: AbsBool
-  ): AbsBinding = Dom(value, uninit, mutable)
+  ): Elem = Elem(value, uninit, mutable)
 
-  case class Dom(
+  case class Elem(
       value: AbsValue,
       uninit: AbsAbsent,
       mutable: AbsBool
-  ) extends AbsBinding {
+  ) extends ElemTrait {
     def gamma: ConSet[Binding] = value.gamma match {
       case ConInf() => ConInf()
       case ConFin(valSet) => {
@@ -84,9 +87,6 @@ object DefaultBinding extends AbsBindingUtil {
       }
     }
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
     def getSingle: ConSingle[Binding] = {
       (value.getSingle, uninit.getSingle, mutable.getSingle) match {
         case (ConZero(), ConZero(), ConZero()) => ConZero()
@@ -97,17 +97,17 @@ object DefaultBinding extends AbsBindingUtil {
       }
     }
 
-    def <=(that: AbsBinding): Boolean = {
-      val right = check(that)
+    def <=(that: Elem): Boolean = {
+      val right = that
       this.value <= right.value &&
         this.uninit <= right.uninit &&
         this.mutable <= right.mutable
     }
 
     /* join */
-    def +(that: AbsBinding): AbsBinding = {
-      val right = check(that)
-      Dom(
+    def +(that: Elem): Elem = {
+      val right = that
+      Elem(
         this.value + right.value,
         this.uninit + right.uninit,
         this.mutable + right.mutable
@@ -115,9 +115,9 @@ object DefaultBinding extends AbsBindingUtil {
     }
 
     /* meet */
-    def <>(that: AbsBinding): AbsBinding = {
-      val right = check(that)
-      Dom(
+    def <>(that: Elem): Elem = {
+      val right = that
+      Elem(
         this.value <> right.value,
         this.uninit <> right.uninit,
         this.mutable <> right.mutable
@@ -140,6 +140,6 @@ object DefaultBinding extends AbsBindingUtil {
       value: AbsValue = this.value,
       uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable
-    ): AbsBinding = Dom(value, uninit, mutable)
+    ): Elem = Elem(value, uninit, mutable)
   }
 }

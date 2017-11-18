@@ -29,50 +29,53 @@ case object GlobalEnvRec extends GlobalEnvRec
 ////////////////////////////////////////////////////////////////////////////////
 // global environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsGlobalEnvRec extends AbsDomain[GlobalEnvRec, AbsGlobalEnvRec] {
-  // 10.2.1.2.1 HasBinding(N)
-  def HasBinding(name: String)(heap: AbsHeap): AbsBool
+trait GlobalEnvRecDomain extends AbsDomain[GlobalEnvRec] { domain: GlobalEnvRecDomain =>
+  // abstract boolean element
+  type Elem <: ElemTrait
 
-  // 10.2.1.2.2 CreateMutableBinding(N, D)
-  def CreateMutableBinding(
-    name: String,
-    del: Boolean
-  )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception])
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    // 10.2.1.2.1 HasBinding(N)
+    def HasBinding(name: String)(heap: AbsHeap): AbsBool
 
-  // 10.2.1.2.3 SetMutableBinding(N, V, S)
-  def SetMutableBinding(
-    name: String,
-    v: AbsValue,
-    strict: Boolean
-  )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception])
+    // 10.2.1.2.2 CreateMutableBinding(N, D)
+    def CreateMutableBinding(
+      name: String,
+      del: Boolean
+    )(heap: AbsHeap): (Elem, AbsHeap, Set[Exception])
 
-  // 10.2.1.2.4 GetBindingValue(N, S)
-  def GetBindingValue(
-    name: String,
-    strict: Boolean
-  )(heap: AbsHeap): (AbsValue, Set[Exception])
+    // 10.2.1.2.3 SetMutableBinding(N, V, S)
+    def SetMutableBinding(
+      name: String,
+      v: AbsValue,
+      strict: Boolean
+    )(heap: AbsHeap): (Elem, AbsHeap, Set[Exception])
 
-  // 10.2.1.2.5 DeleteBinding(N)
-  def DeleteBinding(
-    name: String
-  )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, AbsBool)
+    // 10.2.1.2.4 GetBindingValue(N, S)
+    def GetBindingValue(
+      name: String,
+      strict: Boolean
+    )(heap: AbsHeap): (AbsValue, Set[Exception])
 
-  // 10.2.1.2.6 ImplicitThisValue()
-  def ImplicitThisValue(heap: AbsHeap): AbsValue
+    // 10.2.1.2.5 DeleteBinding(N)
+    def DeleteBinding(
+      name: String
+    )(heap: AbsHeap): (Elem, AbsHeap, AbsBool)
+
+    // 10.2.1.2.6 ImplicitThisValue()
+    def ImplicitThisValue(heap: AbsHeap): AbsValue
+  }
 }
-
-trait AbsGlobalEnvRecUtil extends AbsDomainUtil[GlobalEnvRec, AbsGlobalEnvRec]
 
 ////////////////////////////////////////////////////////////////////////////////
 // default global environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
-  case object Bot extends Dom
-  case object Top extends Dom
+object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
+  case object Bot extends Elem
+  case object Top extends Elem
 
-  def alpha(g: GlobalEnvRec): Dom = Top
+  def alpha(g: GlobalEnvRec): Elem = Top
 
-  abstract class Dom extends AbsGlobalEnvRec {
+  abstract class Elem extends ElemTrait {
     def gamma: ConSet[GlobalEnvRec] = this match {
       case Bot => ConFin()
       case Top => ConFin(GlobalEnvRec)
@@ -83,20 +86,17 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
       case Top => ConOne(GlobalEnvRec)
     }
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
-    def <=(that: AbsGlobalEnvRec): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false
       case _ => true
     }
 
-    def +(that: AbsGlobalEnvRec): Dom = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Bot, Bot) => Bot
       case _ => Top
     }
 
-    def <>(that: AbsGlobalEnvRec): Dom = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Top, Top) => Top
       case _ => Bot
     }
@@ -114,14 +114,14 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
       val bindings = getGlobalObj(heap)
       // 3. Return the result of calling the [[HasProperty]] internal method
       //    of bindings, passing N as the property name.
-      heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)
+      heap.get(GLOBAL_LOC).HasProperty(AbsStr(name), heap)
     }
 
     // 10.2.1.2.2 CreateMutableBinding(N, D)
     def CreateMutableBinding(
       name: String,
       del: Boolean
-    )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception]) = this match {
+    )(heap: AbsHeap): (Elem, AbsHeap, Set[Exception]) = this match {
       case Bot => (Bot, AbsHeap.Bot, ExcSetEmpty)
       case Top =>
         // 1. Let envRec be the object environment record for
@@ -130,7 +130,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Assert: The result of calling the [[HasProperty]] internal method
         //    of bindings, passing N as the property name, is false.
-        if (AbsBool.False <= heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)) {
+        if (AbsBool.False <= heap.get(GLOBAL_LOC).HasProperty(AbsStr(name), heap)) {
           // 4. If D is true then let configValue be true
           //    otherwise let configValue be false.
           val configValue = del
@@ -140,7 +140,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
           //    configValue}, and true as arguments.
           val (newObj, _, excSet) = bindings.DefineOwnProperty(
             heap,
-            AbsString(name),
+            AbsStr(name),
             AbsDesc(Desc(Some(Undef), Some(true), Some(true), Some(configValue))),
             true
           )
@@ -153,7 +153,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
       name: String,
       v: AbsValue,
       strict: Boolean
-    )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception]) = this match {
+    )(heap: AbsHeap): (Elem, AbsHeap, Set[Exception]) = this match {
       case Bot => (Bot, AbsHeap.Bot, ExcSetEmpty)
       case Top =>
         // 1. Let envRec be the object environment record for
@@ -162,7 +162,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Call the [[Put]] internal method of bindings with
         //    arguments N, V, and S.
-        val (newObj, excSet) = bindings.Put(AbsString(name), v, strict, heap)
+        val (newObj, excSet) = bindings.Put(AbsStr(name), v, strict, heap)
         (
           this,
           heap.update(BuiltinGlobal.loc, newObj),
@@ -183,26 +183,31 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Let value be the result of calling the [[HasProperty]]
         //    internal method of bindings, passing N as the property name.
-        val value = heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)
+        val value = heap.get(GLOBAL_LOC).HasProperty(AbsStr(name), heap)
         var excSet = ExcSetEmpty
-        val retV = value.map[AbsValue](
-          // 4. If value is false, then
-          //    a. If S is false, return the value undefined,
-          //       otherwise throw a ReferenceError exception.
-          elseV =
-          if (strict) { excSet += ReferenceError; AbsValue.Bot }
-          else { AbsUndef.Top },
-          // 5. Return the result of calling the [[Get]] internal method of
-          //    bindings, passing N for the argument.
-          thenV = heap.get(GLOBAL_LOC).Get(name, heap)
-        )(AbsValue)
+        val b = value
+        val f: AbsValue =
+          if (AF <= b) {
+            // 4. If value is false, then
+            //    a. If S is false, return the value undefined,
+            //       otherwise throw a ReferenceError exception.
+            if (strict) { excSet += ReferenceError; AbsValue.Bot }
+            else { AbsUndef.Top }
+          } else AbsValue.Bot
+        val t =
+          if (AT <= b) {
+            // 5. Return the result of calling the [[Get]] internal method of
+            //    bindings, passing N for the argument.
+            heap.get(GLOBAL_LOC).Get(name, heap)
+          } else AbsValue.Bot
+        val retV = f + t
         (retV, excSet)
     }
 
     // 10.2.1.2.5 DeleteBinding(N)
     def DeleteBinding(
       name: String
-    )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, AbsBool) = this match {
+    )(heap: AbsHeap): (Elem, AbsHeap, AbsBool) = this match {
       case Bot => (Bot, AbsHeap.Bot, AbsBool.Bot)
       case Top =>
         // 1. Let envRec be the object environment record for
@@ -211,7 +216,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Return the result of calling the [[Delete]] internal method
         //    of bindings, passing N and false as arguments.
-        val (retH, retB) = heap.delete(GLOBAL_LOC, AbsString(name))
+        val (retH, retB) = heap.delete(GLOBAL_LOC, AbsStr(name))
         (this, retH, retB)
     }
 
@@ -230,7 +235,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     }
 
     private val GLOBAL_LOC: Loc = BuiltinGlobal.loc
-    private def getGlobalObj(heap: AbsHeap): AbsObject =
+    private def getGlobalObj(heap: AbsHeap): AbsObj =
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
   }

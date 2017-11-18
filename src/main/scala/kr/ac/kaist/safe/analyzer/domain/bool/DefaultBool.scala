@@ -12,24 +12,21 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // default boolean abstract domain
-object DefaultBool extends AbsBoolUtil {
-  case object Bot extends Dom
-  case object True extends Dom
-  case object False extends Dom
-  case object Top extends Dom
+object DefaultBool extends BoolDomain {
+  case object Bot extends Elem
+  case object True extends Elem
+  case object False extends Elem
+  case object Top extends Elem
 
-  def alpha(bool: Bool): AbsBool = if (bool) True else False
+  def alpha(bool: Bool): Elem = if (bool) True else False
 
-  sealed abstract class Dom extends AbsBool {
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Bool] = this match {
       case Bot => ConFin()
       case True => ConFin(true)
       case False => ConFin(false)
       case Top => ConFin(true, false)
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Bool] = this match {
       case Bot => ConZero()
@@ -45,43 +42,43 @@ object DefaultBool extends AbsBoolUtil {
       case Top => "Top(boolean)"
     }
 
-    def toAbsString: AbsString = this match {
-      case Bot => AbsString.Bot
-      case True => AbsString("true")
-      case False => AbsString("false")
-      case Top => AbsString("true", "false")
+    def toAbsStr: AbsStr = this match {
+      case Bot => AbsStr.Bot
+      case True => AbsStr("true")
+      case False => AbsStr("false")
+      case Top => AbsStr("true", "false")
     }
 
-    def toAbsNumber: AbsNumber = this match {
-      case Bot => AbsNumber.Bot
-      case True => AbsNumber(1)
-      case False => AbsNumber(+0)
-      case Top => AbsNumber(1, +0)
+    def toAbsNum: AbsNum = this match {
+      case Bot => AbsNum.Bot
+      case True => AbsNum(1)
+      case False => AbsNum(+0)
+      case Top => AbsNum(1, +0)
     }
 
-    def <=(that: AbsBool): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (a, b) if a == b => true
       case (Bot, _) => true
       case (_, Top) => true
       case _ => false
     }
 
-    def +(that: AbsBool): AbsBool = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (a, b) if a == b => this
       case (Bot, _) => that
       case (_, Bot) => this
       case _ => Top
     }
 
-    def <>(that: AbsBool): AbsBool = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (a, b) if a == b => this
       case (Top, _) => that
       case (_, Top) => this
       case _ => Bot
     }
 
-    def ===(that: AbsBool): AbsBool = {
-      (this, check(that)) match {
+    def ===(that: Elem): Elem = {
+      (this, that) match {
         case (Bot, _) => Bot
         case (_, Bot) => Bot
         case (Top, _) => Top
@@ -92,58 +89,31 @@ object DefaultBool extends AbsBoolUtil {
       }
     }
 
-    def negate: AbsBool = this match {
+    def negate: Elem = this match {
       case True => False
       case False => True
       case _ => this
     }
 
-    def &&(that: AbsBool): Dom = (this, check(that)) match {
+    def &&(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (False, _) | (_, False) => False
       case (True, True) => True
       case _ => Top
     }
 
-    def ||(that: AbsBool): Dom = (this, check(that)) match {
+    def ||(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (True, _) | (_, True) => True
       case (False, False) => False
       case _ => Top
     }
 
-    def xor(that: AbsBool): Dom = (this, check(that)) match {
+    def xor(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (True, False) | (False, True) => True
       case (False, False) | (True, True) => False
       case _ => Top
-    }
-
-    def map[T <: Domain[T]](
-      thenV: => T,
-      elseV: => T
-    )(implicit util: DomainUtil[T]): T = {
-      val t =
-        if (True <= this) thenV
-        else util.Bot
-      val e =
-        if (False <= this) elseV
-        else util.Bot
-      t + e
-    }
-
-    def map[T <: Domain[T], U <: Domain[U]](
-      thenV: => (T, U),
-      elseV: => (T, U)
-    )(implicit util: (DomainUtil[T], DomainUtil[U])): (T, U) = {
-      val (lUtil, rUtil) = util
-      val (lt, rt) =
-        if (True <= this) thenV
-        else (lUtil.Bot, rUtil.Bot)
-      val (le, re) =
-        if (False <= this) elseV
-        else (lUtil.Bot, rUtil.Bot)
-      (lt + le, rt + re)
     }
   }
 }

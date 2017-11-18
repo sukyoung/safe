@@ -78,9 +78,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
 
-  def getDumped(filename: String): Try[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] =
-    CmdJsonLoad(List("-silent", filename), testMode = true)
-
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
       case Failure(e) =>
@@ -147,7 +144,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
             assert(false)
             Fail
           case globalObj => {
-            def prefixCheck(prefix: String): (AbsString, AbsDataProp) => Boolean = {
+            def prefixCheck(prefix: String): (AbsStr, AbsDataProp) => Boolean = {
               (str, dp) =>
                 str.getSingle match {
                   case ConOne(Str(str)) => str.startsWith(prefix)
@@ -223,6 +220,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
           case e => assert(false)
         }
       }
+      /*
     } else if (filename.endsWith(".json") && !(noTestCheckForWithoutJSModel(file))) {
       registerTest(prefix + filename, tag) {
         val safeConfig = testSafeConfig.copy(fileNames = List(name))
@@ -238,6 +236,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
           case Fail => // unreachable
         }
       }
+    */
     }
   }
 
@@ -290,7 +289,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   parser(List(s"-json=$testJSON"))
 
   HeapBuild.jscache = {
-    AAddrType = heapBuildConfig.aaddrType
+    register(aaddrType = heapBuildConfig.aaddrType)
     Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))
   }
 

@@ -20,9 +20,9 @@ import spray.json._
 ////////////////////////////////////////////////////////////////////////////////
 // concrete heap type
 ////////////////////////////////////////////////////////////////////////////////
-case class Heap(map: Map[Loc, Object]) {
+case class Heap(map: Map[Loc, Obj]) {
   def +(other: Heap): Heap = {
-    val emptyObj = Object(HashMap[String, DataProp](), HashMap[IName, IValue]())
+    val emptyObj = Obj(HashMap[String, DataProp](), HashMap[IName, IValue]())
     val newHeapMap = other.map.foldLeft(this.map) {
       case (map, (loc, obj)) => {
         val newObj = map.getOrElse(loc, emptyObj) + obj
@@ -40,50 +40,53 @@ object Heap {
 ////////////////////////////////////////////////////////////////////////////////
 // heap abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
-  // lookup
-  def get(loc: Loc): AbsObject
-  def get(locSet: AbsLoc): AbsObject
+trait HeapDomain extends AbsDomain[Heap] { domain: HeapDomain =>
+  def apply(map: Map[Loc, AbsObj]): Elem
 
-  // heap update
-  def weakUpdate(loc: Loc, obj: AbsObject): AbsHeap
-  def update(loc: Loc, obj: AbsObject): AbsHeap
+  // abstract boolean element
+  type Elem <: ElemTrait
 
-  // remove location
-  def remove(loc: Loc): AbsHeap
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    // lookup
+    def get(loc: Loc): AbsObj
+    def get(locSet: AbsLoc): AbsObj
 
-  // substitute locR by locO
-  def subsLoc(locR: Recency, locO: Recency): AbsHeap
-  def oldify(loc: Loc): AbsHeap
-  def domIn(loc: Loc): Boolean
+    // heap update
+    def weakUpdate(loc: Loc, obj: AbsObj): Elem
+    def update(loc: Loc, obj: AbsObj): Elem
 
-  // toString
-  def toStringAll: String
-  def toStringLoc(loc: Loc): Option[String]
+    // remove location
+    def remove(loc: Loc): Elem
 
-  // predicates
-  def hasConstruct(loc: Loc): AbsBool
-  def hasInstance(loc: Loc): AbsBool
-  def isArray(loc: Loc): AbsBool
-  def isObject(loc: Loc): Boolean
-  def canPutVar(x: String): AbsBool
+    // substitute locR by locO
+    def subsLoc(locR: Recency, locO: Recency): Elem
+    def oldify(loc: Loc): Elem
+    def domIn(loc: Loc): Boolean
 
-  // proto
-  def protoBase(loc: Loc, absStr: AbsString): AbsLoc
+    // toString
+    def toStringAll: String
+    def toStringLoc(loc: Loc): Option[String]
 
-  // store
-  def propStore(loc: Loc, absStr: AbsString, value: AbsValue): AbsHeap
+    // predicates
+    def hasConstruct(loc: Loc): AbsBool
+    def hasInstance(loc: Loc): AbsBool
+    def isArray(loc: Loc): AbsBool
+    def isObject(loc: Loc): Boolean
+    def canPutVar(x: String): AbsBool
 
-  // update location
-  def delete(loc: Loc, absStr: AbsString): (AbsHeap, AbsBool)
+    // proto
+    def protoBase(loc: Loc, absStr: AbsStr): AbsLoc
 
-  // get all map
-  def getMap: Option[Map[Loc, AbsObject]]
+    // store
+    def propStore(loc: Loc, absStr: AbsStr, value: AbsValue): Elem
 
-  // location concrete check
-  def isConcrete(loc: Loc): Boolean
-}
+    // update location
+    def delete(loc: Loc, absStr: AbsStr): (Elem, AbsBool)
 
-trait AbsHeapUtil extends AbsDomainUtil[Heap, AbsHeap] {
-  def apply(map: Map[Loc, AbsObject]): AbsHeap
+    // get all map
+    def getMap: Option[Map[Loc, AbsObj]]
+
+    // location concrete check
+    def isConcrete(loc: Loc): Boolean
+  }
 }

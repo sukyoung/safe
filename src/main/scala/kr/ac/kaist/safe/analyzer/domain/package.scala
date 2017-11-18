@@ -17,6 +17,11 @@ import scala.collection.immutable.{ HashMap, HashSet }
 
 package object domain {
   ////////////////////////////////////////////////////////////////
+  // value alias
+  ////////////////////////////////////////////////////////////////
+  lazy val AT = AbsBool.True
+  lazy val AF = AbsBool.False
+  ////////////////////////////////////////////////////////////////
   // value constructors
   ////////////////////////////////////////////////////////////////
   val ExcSetEmpty: Set[Exception] = HashSet[Exception]()
@@ -77,8 +82,8 @@ package object domain {
   implicit def undef2pv(undef: AbsUndef): AbsPValue = AbsPValue(undefval = undef)
   implicit def null2pv(x: AbsNull): AbsPValue = AbsPValue(nullval = x)
   implicit def bool2pv(b: AbsBool): AbsPValue = AbsPValue(boolval = b)
-  implicit def num2pv(num: AbsNumber): AbsPValue = AbsPValue(numval = num)
-  implicit def str2pv(str: AbsString): AbsPValue = AbsPValue(strval = str)
+  implicit def num2pv(num: AbsNum): AbsPValue = AbsPValue(numval = num)
+  implicit def str2pv(str: AbsStr): AbsPValue = AbsPValue(strval = str)
 
   // AbsPValue -> AbsValue
   implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
@@ -100,73 +105,113 @@ package object domain {
   // abstract domains
   ////////////////////////////////////////////////////////////////
   def register(
-    absUndef: AbsUndefUtil = DefaultUndef,
-    absNull: AbsNullUtil = DefaultNull,
-    absBool: AbsBoolUtil = DefaultBool,
-    absNumber: AbsNumberUtil = DefaultNumber,
-    absString: AbsStringUtil = StringSet(0),
-    absLoc: AbsLocUtil = DefaultLoc,
+    absUndef: UndefDomain = DefaultUndef,
+    absNull: NullDomain = DefaultNull,
+    absBool: BoolDomain = DefaultBool,
+    absNum: NumDomain = DefaultNumber,
+    absStr: StrDomain = StringSet(0),
+    absLoc: LocDomain = DefaultLoc,
     aaddrType: AAddrType = RecencyAAddr
   ): Unit = {
-    AbsUndef = absUndef
-    AbsNull = absNull
-    AbsBool = absBool
-    AbsNumber = absNumber
-    AbsString = absString
-    AbsLoc = absLoc
-    AAddrType = aaddrType
+    this.absUndef = Some(absUndef)
+    this.absNull = Some(absNull)
+    this.absBool = Some(absBool)
+    this.absNum = Some(absNum)
+    this.absStr = Some(absStr)
+    this.absLoc = Some(absLoc)
+    this.aaddrType = Some(aaddrType)
   }
 
   // primitive values
-  var AbsUndef: AbsUndefUtil = _
-  var AbsNull: AbsNullUtil = _
-  var AbsBool: AbsBoolUtil = _
-  var AbsNumber: AbsNumberUtil = _
-  var AbsString: AbsStringUtil = _
-  var AbsPValue: AbsPValueUtil = DefaultPValue
+  private var absUndef: Option[UndefDomain] = _
+  lazy val AbsUndef: UndefDomain = get(absUndef)
+  type AbsUndef = AbsUndef.Elem
+
+  private var absNull: Option[NullDomain] = _
+  lazy val AbsNull: NullDomain = get(absNull)
+  type AbsNull = AbsNull.Elem
+
+  private var absBool: Option[BoolDomain] = _
+  lazy val AbsBool: BoolDomain = get(absBool)
+  type AbsBool = AbsBool.Elem
+
+  private var absNum: Option[NumDomain] = _
+  lazy val AbsNum: NumDomain = get(absNum)
+  type AbsNum = AbsNum.Elem
+
+  private var absStr: Option[StrDomain] = _
+  lazy val AbsStr: StrDomain = get(absStr)
+  type AbsStr = AbsStr.Elem
+
+  val AbsPValue: DefaultPValue.type = DefaultPValue
+  type AbsPValue = DefaultPValue.Elem
 
   // abstract address type
-  var AAddrType: AAddrType = _
+  private var aaddrType: Option[AAddrType] = _
+  lazy val AAddrType: AAddrType = get(aaddrType)
 
   // location
-  var AbsLoc: AbsLocUtil = _
+  private var absLoc: Option[LocDomain] = _
+  lazy val AbsLoc: LocDomain = get(absLoc)
+  type AbsLoc = AbsLoc.Elem
 
   // value
-  var AbsValue: AbsValueUtil = DefaultValue
+  val AbsValue: DefaultValue.type = DefaultValue
+  type AbsValue = DefaultValue.Elem
 
   // function id
-  var AbsFId: AbsFIdUtil = DefaultFId
+  val AbsFId: DefaultFId.type = DefaultFId
+  type AbsFId = DefaultFId.Elem
 
   // internal value
-  var AbsIValue: AbsIValueUtil = DefaultIValue
+  val AbsIValue: DefaultIValue.type = DefaultIValue
+  type AbsIValue = DefaultIValue.Elem
 
   // data property
-  var AbsDataProp: AbsDataPropUtil = DefaultDataProp
+  val AbsDataProp: DefaultDataProp.type = DefaultDataProp
+  type AbsDataProp = DefaultDataProp.Elem
 
   // descriptor
-  var AbsDesc: AbsDescUtil = DefaultDesc
+  val AbsDesc: DefaultDesc.type = DefaultDesc
+  type AbsDesc = DefaultDesc.Elem
 
   // absent value for parital map
-  var AbsAbsent: AbsAbsentUtil = DefaultAbsent
+  val AbsAbsent: DefaultAbsent.type = DefaultAbsent
+  type AbsAbsent = DefaultAbsent.Elem
 
   // execution context
-  var AbsBinding: AbsBindingUtil = DefaultBinding
-  var AbsDecEnvRec: AbsDecEnvRecUtil = DefaultDecEnvRec
-  var AbsGlobalEnvRec: AbsGlobalEnvRecUtil = DefaultGlobalEnvRec
-  var AbsEnvRec: AbsEnvRecUtil = DefaultEnvRec
-  var AbsLexEnv: AbsLexEnvUtil = DefaultLexEnv
-  var AbsContext: AbsContextUtil = DefaultContext
+  val AbsBinding: DefaultBinding.type = DefaultBinding
+  type AbsBinding = DefaultBinding.Elem
+
+  val AbsDecEnvRec: DefaultDecEnvRec.type = DefaultDecEnvRec
+  type AbsDecEnvRec = DefaultDecEnvRec.Elem
+
+  val AbsGlobalEnvRec: DefaultGlobalEnvRec.type = DefaultGlobalEnvRec
+  type AbsGlobalEnvRec = DefaultGlobalEnvRec.Elem
+
+  val AbsEnvRec: DefaultEnvRec.type = DefaultEnvRec
+  type AbsEnvRec = DefaultEnvRec.Elem
+
+  val AbsLexEnv: DefaultLexEnv.type = DefaultLexEnv
+  type AbsLexEnv = DefaultLexEnv.Elem
+
+  val AbsContext: DefaultContext.type = DefaultContext
+  type AbsContext = DefaultContext.Elem
 
   // object
-  var AbsObject: AbsObjectUtil = AKeyObject
+  val AbsObj: AKeyObject.type = AKeyObject
+  type AbsObj = AKeyObject.Elem
 
   // heap
-  var AbsHeap: AbsHeapUtil = DefaultHeap
+  val AbsHeap: DefaultHeap.type = DefaultHeap
+  type AbsHeap = DefaultHeap.Elem
 
   // state
-  var AbsState: AbsStateUtil = DefaultState
+  val AbsState: DefaultState.type = DefaultState
+  type AbsState = DefaultState.Elem
 
-  // concrete domains
-  def ConSingle[T]: ConSingleUtil[T] = ConSingleUtil[T]
-  def ConSet[T]: ConSetUtil[T] = ConSetUtil[T]
+  private def get[T](opt: Option[T]): T = opt match {
+    case Some(choice) => choice
+    case None => throw new Error // TODO error handling
+  }
 }

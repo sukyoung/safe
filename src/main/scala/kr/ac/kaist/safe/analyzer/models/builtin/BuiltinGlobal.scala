@@ -49,7 +49,7 @@ object BuiltinGlobal extends ObjModel(
       name = "Global.isNaN",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         BuiltinHelper.isNaN(resV)
       })
     ), T, F, T),
@@ -59,7 +59,7 @@ object BuiltinGlobal extends ObjModel(
       name = "Global.isFinite",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV)
         num.gamma match {
           case ConFin(set) if set.size <= 3 => set.foldLeft(AbsBool.Bot) {

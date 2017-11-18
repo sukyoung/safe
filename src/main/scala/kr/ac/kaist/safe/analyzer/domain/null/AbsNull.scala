@@ -22,8 +22,11 @@ case object Null extends Null {
 ////////////////////////////////////////////////////////////////////////////////
 // null abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsNull extends AbsDomain[Null, AbsNull] {
-  def ===(that: AbsNull): AbsBool
-}
+trait NullDomain extends AbsDomain[Null] { domain: NullDomain =>
+  // abstract boolean element
+  type Elem <: ElemTrait
 
-trait AbsNullUtil extends AbsDomainUtil[Null, AbsNull]
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def ===(that: Elem): AbsBool
+  }
+}

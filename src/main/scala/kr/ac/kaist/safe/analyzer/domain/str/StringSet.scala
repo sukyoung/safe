@@ -13,24 +13,24 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 import scala.util.Try
-import kr.ac.kaist.safe.errors.error.AbsStringParseError
+import kr.ac.kaist.safe.errors.error.StrDomainParseError
 
 import spray.json._
 
 // string set domain with max set size
-case class StringSet(maxSetSize: Int) extends AbsStringUtil {
-  case object Top extends Dom
-  case object Number extends Dom
-  case object Other extends Dom
-  case class StrSet(values: Set[String]) extends Dom
+case class StringSet(maxSetSize: Int) extends StrDomain {
+  case object Top extends Elem
+  case object Number extends Elem
+  case object Other extends Elem
+  case class StrSet(values: Set[String]) extends Elem
   object StrSet {
     def apply(seq: String*): StrSet = StrSet(seq.toSet)
   }
-  lazy val Bot: Dom = StrSet()
+  lazy val Bot: Elem = StrSet()
 
-  def alpha(str: Str): AbsString = StrSet(str)
+  def alpha(str: Str): Elem = StrSet(str)
 
-  override def alpha(values: Set[Str]): AbsString = {
+  override def alpha(values: Set[Str]): Elem = {
     val strSet = values.map(_.str)
     if (maxSetSize == 0 | strSet.size <= maxSetSize)
       StrSet(strSet)
@@ -41,26 +41,25 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     else Top
   }
 
-  val jsonMap: Map[AbsString, Int] = Map(
+  val jsonMap: Map[Elem, Int] = Map(
     Top -> 0,
     Number -> 1,
     Other -> 2
   )
-  val jsonIMap: Map[Int, AbsString] = jsonMap.map(_.swap)
+  val jsonIMap: Map[Int, Elem] = jsonMap.map(_.swap)
 
-  def fromJson(value: JsValue): AbsString = value match {
+  def fromJson(value: JsValue): Elem = value match {
     case JsArray(values) => StrSet(
       values.map(_ match {
       case JsString(s) => s
-      case _ => throw AbsStringParseError(value)
+      case _ => throw StrDomainParseError(value)
     }).to[Set]
     )
     case JsNumber(n) => jsonIMap(n.toInt)
-    case _ => throw AbsStringParseError(value)
+    case _ => throw StrDomainParseError(value)
   }
 
-  sealed abstract class Dom extends AbsString {
-
+  sealed abstract class Elem extends ElemTrait {
     def json: JsValue = this match {
       case StrSet(values) => JsArray(values.to[Vector].map(JsString(_)))
       case _ => JsNumber(jsonMap(this))
@@ -70,9 +69,6 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case StrSet(set) => ConFin(set)
       case Top | Number | Other => ConInf()
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Str] = this match {
       case StrSet(set) if set.size == 0 => ConZero()
@@ -108,21 +104,21 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case Top | Other => AbsBool.Top
     }
 
-    def toAbsNumber: AbsNumber = this match {
-      case Top => AbsNumber.Top
-      case Number => AbsNumber.Top
-      case Other => AbsNumber.NaN
-      case StrSet(set) => set.foldLeft(AbsNumber.Bot)((tmpAbsNum, str) => {
+    def toAbsNum: AbsNum = this match {
+      case Top => AbsNum.Top
+      case Number => AbsNum.Top
+      case Other => AbsNum.NaN
+      case StrSet(set) => set.foldLeft(AbsNum.Bot)((tmpAbsNum, str) => {
         val absNum = str.trim match {
-          case "" => AbsNumber(0)
-          case s if isHex(s) => AbsNumber((s + "p0").toDouble)
-          case s => Try(AbsNumber(s.toDouble)).getOrElse(AbsNumber.NaN)
+          case "" => AbsNum(0)
+          case s if isHex(s) => AbsNum((s + "p0").toDouble)
+          case s => Try(AbsNum(s.toDouble)).getOrElse(AbsNum.NaN)
         }
         absNum + tmpAbsNum
       })
     }
 
-    def <=(that: AbsString): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Top) => true
       //      case (StrSet(v1), StrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasOther || b.hasOther) && a.values.subsetOf(b.values)
@@ -135,7 +131,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case _ => false
     }
 
-    def +(that: AbsString): AbsString = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) if v1 == v2 => this
       case (a: StrSet, b: StrSet) => alpha(a.values ++ b.values)
       case _ =>
@@ -146,7 +142,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         }
     }
 
-    def <>(that: AbsString): AbsString = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) => alpha(v1 intersect v2)
 
       case (StrSet(v), Number) if hasNum(v) =>
@@ -176,7 +172,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         }
     }
 
-    def ===(that: AbsString): AbsBool =
+    def ===(that: Elem): AbsBool =
       (this.getSingle, that.getSingle) match {
         case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
         case (ConZero(), _) | (_, ConZero()) => AbsBool.Bot
@@ -186,7 +182,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         }
       }
 
-    def <(that: AbsString): AbsBool = (this, check(that)) match {
+    def <(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (StrSet(leftStrSet), StrSet(rightStrSet)) =>
         leftStrSet.foldLeft(AbsBool.Bot)((r1, x) => {
@@ -208,17 +204,17 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     }
     def isWhitespaceOrLineterminator(c: Char): Boolean = isWhitespace(c) || isLineTerminator(c)
 
-    def trim: AbsString =
+    def trim: Elem =
       this match {
         case StrSet(vs) =>
-          vs.foldLeft[AbsString](Bot)((r: AbsString, s: String) => r + alpha(s.trim))
+          vs.foldLeft[Elem](Bot)((r: Elem, s: String) => r + alpha(s.trim))
         case Number => Number
         case Other => Other + Number
         case Bot => Bot
         case _ => Top
       }
 
-    def concat(that: AbsString): AbsString = (this, check(that)) match {
+    def concat(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) if (maxSetSize == 0 || v1.size * v2.size <= maxSetSize) => {
         val set = v1.foldLeft(HashSet[String]())((hs1, s1) =>
           v2.foldLeft(hs1)((hs2, s2) => hs2 + (s1 + s2)))
@@ -236,9 +232,9 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case _ => Top
     }
 
-    def charAt(pos: AbsNumber): AbsString = (gamma, pos.gamma) match {
+    def charAt(pos: AbsNum): Elem = (gamma, pos.gamma) match {
       case (ConFin(vs), ConFin(ds)) => {
-        ds.foldLeft[AbsString](Bot) {
+        ds.foldLeft[Elem](Bot) {
           case (res, d) => vs.foldLeft(res) {
             case (res, str) =>
               if (d >= str.length || d < 0)
@@ -253,23 +249,23 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case _ => Top
     }
 
-    def charCodeAt(pos: AbsNumber): AbsNumber = gamma match {
-      case ConInf() => AbsNumber.UInt
+    def charCodeAt(pos: AbsNum): AbsNum = gamma match {
+      case ConInf() => AbsNum.UInt
       case ConFin(vs) => pos.getSingle match {
         case ConOne(d) =>
-          vs.foldLeft[AbsNumber](AbsNumber.Bot)((r, s) => {
+          vs.foldLeft[AbsNum](AbsNum.Bot)((r, s) => {
             if (d >= s.length || d < 0)
-              r + AbsNumber.NaN
+              r + AbsNum.NaN
             else {
               val i = d.toInt
-              r + AbsNumber(s.substring(i, i + 1).head.toInt)
+              r + AbsNum(s.substring(i, i + 1).head.toInt)
             }
           })
-        case _ => AbsNumber.UInt
+        case _ => AbsNum.UInt
       }
     }
 
-    def contains(that: AbsString): AbsBool =
+    def contains(that: Elem): AbsBool =
       this match {
         case Number => AbsBool.Top
         case Other => AbsBool.Top
@@ -284,29 +280,29 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         case Bot => AbsBool.Bot
       }
 
-    def length: AbsNumber =
+    def length: AbsNum =
       this match {
-        case Number => AbsNumber.UInt
-        case Other => AbsNumber.UInt
-        case StrSet(vs) => vs.foldLeft[AbsNumber](AbsNumber.Bot)((result, v) => result + AbsNumber(v.length))
-        case Top => AbsNumber.UInt
-        case Bot => AbsNumber.Bot
+        case Number => AbsNum.UInt
+        case Other => AbsNum.UInt
+        case StrSet(vs) => vs.foldLeft[AbsNum](AbsNum.Bot)((result, v) => result + AbsNum(v.length))
+        case Top => AbsNum.UInt
+        case Bot => AbsNum.Bot
       }
 
-    def toLowerCase: AbsString =
+    def toLowerCase: Elem =
       this match {
         case Number => Top
         case Other => Other
-        case StrSet(vs) => vs.foldLeft[AbsString](Bot)((result, v) => result + alpha(v.toLowerCase))
+        case StrSet(vs) => vs.foldLeft[Elem](Bot)((result, v) => result + alpha(v.toLowerCase))
         case Top => Top
         case Bot => Bot
       }
 
-    def toUpperCase: AbsString =
+    def toUpperCase: Elem =
       this match {
         case Number => Top
         case Other => Other
-        case StrSet(vs) => vs.foldLeft[AbsString](Bot)((result, v) => result + alpha(v.toUpperCase))
+        case StrSet(vs) => vs.foldLeft[Elem](Bot)((result, v) => result + alpha(v.toUpperCase))
         case Top => Top
         case Bot => Bot
       }
@@ -328,8 +324,8 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     }
 
     // gamma(this) intersect gamma(that) != empty set
-    def isRelated(that: AbsString): Boolean =
-      (this, check(that)) match {
+    def isRelated(that: Elem): Boolean =
+      (this, that) match {
         case (Top, _) | (_, Top) => true
         case (Bot, _) | (_, Bot) => false
         case (left, right) if left == right => true
@@ -357,11 +353,11 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   def hasOther(values: Set[String]): Boolean =
     values.foldLeft(false)((b: Boolean, v: String) => b | !isNumber(v))
 
-  def fromCharCode(n: AbsNumber): AbsString = {
+  def fromCharCode(n: AbsNum): Elem = {
     n.gamma match {
       case ConInf() => Top
       case ConFin(vs) =>
-        vs.foldLeft[AbsString](Bot)((r, v) => {
+        vs.foldLeft[Elem](Bot)((r, v) => {
           r + alpha("%c".format(v.toInt))
         })
     }

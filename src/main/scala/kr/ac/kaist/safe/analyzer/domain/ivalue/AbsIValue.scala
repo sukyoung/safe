@@ -22,43 +22,43 @@ abstract class IValue
 ////////////////////////////////////////////////////////////////////////////////
 // value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsIValue extends AbsDomain[IValue, AbsIValue] {
-  val value: AbsValue
-  val fidset: AbsFId
-}
+trait IValueDomain extends AbsDomain[IValue] { domain: IValueDomain =>
+  def apply(value: AbsValue): Elem
+  def apply(fidset: AbsFId): Elem
+  def apply(value: AbsValue, fidset: AbsFId): Elem
 
-trait AbsIValueUtil extends AbsDomainUtil[IValue, AbsIValue] {
-  def apply(value: AbsValue): AbsIValue
-  def apply(fidset: AbsFId): AbsIValue
-  def apply(value: AbsValue, fidset: AbsFId): AbsIValue
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val value: AbsValue
+    val fidset: AbsFId
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default internal value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultIValue extends AbsIValueUtil {
-  lazy val Bot: Dom = Dom(AbsValue.Bot, AbsFId.Bot)
-  lazy val Top: Dom = Dom(AbsValue.Top, AbsFId.Top)
+object DefaultIValue extends IValueDomain {
+  lazy val Bot: Elem = Elem(AbsValue.Bot, AbsFId.Bot)
+  lazy val Top: Elem = Elem(AbsValue.Top, AbsFId.Top)
 
-  def alpha(value: IValue): AbsIValue = value match {
+  def alpha(value: IValue): Elem = value match {
     case (value: Value) => AbsValue(value)
     case (fid: FId) => AbsFId(fid)
   }
 
-  def apply(value: AbsValue): AbsIValue = Bot.copy(value = value)
-  def apply(fidset: AbsFId): AbsIValue = Bot.copy(fidset = fidset)
-  def apply(value: AbsValue, fidset: AbsFId): AbsIValue = Dom(value, fidset)
+  def apply(value: AbsValue): Elem = Bot.copy(value = value)
+  def apply(fidset: AbsFId): Elem = Bot.copy(fidset = fidset)
+  def apply(value: AbsValue, fidset: AbsFId): Elem = Elem(value, fidset)
 
-  case class Dom(value: AbsValue, fidset: AbsFId) extends AbsIValue {
+  case class Elem(value: AbsValue, fidset: AbsFId) extends ElemTrait {
     def gamma: ConSet[IValue] = ConInf() // TODO more precisely
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[IValue] = ConMany()
 
     override def toString: String = {
-      if (isBottom) "⊥AbsIValue"
+      if (isBottom) "⊥Elem"
       else {
         var list: List[String] = Nil
         value.foldUnit(list :+= _.toString)
@@ -67,23 +67,23 @@ object DefaultIValue extends AbsIValueUtil {
       }
     }
 
-    def <=(that: AbsIValue): Boolean = {
-      val (left, right) = (this, check(that))
+    def <=(that: Elem): Boolean = {
+      val (left, right) = (this, that)
       left.value <= right.value &&
         left.fidset <= right.fidset
     }
 
-    def +(that: AbsIValue): AbsIValue = {
-      val (left, right) = (this, check(that))
-      Dom(
+    def +(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.value + right.value,
         left.fidset + right.fidset
       )
     }
 
-    def <>(that: AbsIValue): AbsIValue = {
-      val (left, right) = (this, check(that))
-      AbsIValue(
+    def <>(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.value <> right.value,
         left.fidset <> right.fidset
       )

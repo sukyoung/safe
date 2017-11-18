@@ -23,38 +23,41 @@ case class Str(str: String) extends PValue {
 ////////////////////////////////////////////////////////////////////////////////
 // string abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsString extends AbsDomain[Str, AbsString] {
-  def ===(that: AbsString): AbsBool
-  def <(that: AbsString): AbsBool
-
-  def isNum: AbsBool
-
-  def trim: AbsString
-  def concat(that: AbsString): AbsString
-  def charAt(pos: AbsNumber): AbsString
-  def charCodeAt(pos: AbsNumber): AbsNumber
-  def contains(that: AbsString): AbsBool
-  def length: AbsNumber
-  def toLowerCase: AbsString
-  def toUpperCase: AbsString
-
-  def isArrayIndex: AbsBool
-
-  def isRelated(str: String): Boolean
-  def isRelated(astr: AbsString): Boolean
-
-  def toAbsNumber: AbsNumber
-  def toAbsBoolean: AbsBool
-
-  def json: JsValue
-}
-
-trait AbsStringUtil extends AbsDomainUtil[Str, AbsString] {
+trait StrDomain extends AbsDomain[Str] { domain: StrDomain =>
   // abstraction from all number string
-  val Number: AbsString
+  val Number: Elem
 
   // abstraction from all non-number string
-  val Other: AbsString
+  val Other: Elem
 
-  def fromCharCode(n: AbsNumber): AbsString
+  def fromCharCode(n: AbsNum): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def ===(that: Elem): AbsBool
+    def <(that: Elem): AbsBool
+
+    def isNum: AbsBool
+
+    def trim: Elem
+    def concat(that: Elem): Elem
+    def charAt(pos: AbsNum): Elem
+    def charCodeAt(pos: AbsNum): AbsNum
+    def contains(that: Elem): AbsBool
+    def length: AbsNum
+    def toLowerCase: Elem
+    def toUpperCase: Elem
+
+    def isArrayIndex: AbsBool
+
+    def isRelated(str: String): Boolean
+    def isRelated(astr: Elem): Boolean
+
+    def toAbsNum: AbsNum
+    def toAbsBoolean: AbsBool
+
+    def json: JsValue
+  }
 }

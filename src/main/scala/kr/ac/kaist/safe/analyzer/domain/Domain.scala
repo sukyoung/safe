@@ -12,48 +12,42 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // domain
-trait Domain[Self <: Domain[_]] {
-  // bottom check
-  def isBottom: Boolean
+trait Domain {
+  // top element
+  val Top: Elem
 
-  // bottom check
-  def isTop: Boolean
+  // bottom element
+  val Bot: Elem
 
-  // folding for bottom
-  def foldUnit(f: => Unit): Unit = fold(())(_ => f)
-  def foldUnit(f: Self => Unit): Unit = fold(())(f)
-  def fold[T](default: T)(f: Self => T): T = isBottom match {
-    case true => default
-    case false => f(this.asInstanceOf[Self])
+  // element
+  type Elem <: ElemTrait
+
+  // element traits
+  protected trait ElemTrait { this: Elem =>
+    // bottom check
+    def isBottom: Boolean = this == Bot
+
+    // top check
+    def isTop: Boolean = this == Top
+
+    // fold utils
+    def foldUnit(f: => Unit): Unit = fold(())(_ => f)
+    def foldUnit(f: Elem => Unit): Unit = fold(())(f)
+    def fold[T](default: T)(f: Elem => T): T = isBottom match {
+      case true => default
+      case false => f(this)
+    }
+
+    // partial order
+    def <=(that: Elem): Boolean
+
+    // not partial order
+    def </(that: Elem): Boolean = !(this <= that)
+
+    // join operator
+    def +(that: Elem): Elem
+
+    // meet operator
+    def <>(that: Elem): Elem
   }
-
-  // conversion to string
-  override def toString: String
-
-  // partial order
-  def <=(that: Self): Boolean
-
-  // not a partial order
-  def </(that: Self): Boolean = !(this <= that)
-
-  // join
-  def +(that: Self): Self
-
-  // meet
-  def <>(that: Self): Self
-}
-
-// utility class for given domain
-trait DomainUtil[DOM <: Domain[DOM]] {
-  // implementation
-  type Dom <: DOM
-
-  // lattice top
-  val Top: DOM
-
-  // lattice bottom
-  val Bot: DOM
-
-  // check for input
-  def check(that: DOM): Dom = that.asInstanceOf[Dom]
 }

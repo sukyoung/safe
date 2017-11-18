@@ -21,77 +21,77 @@ abstract class PValue extends Value
 ////////////////////////////////////////////////////////////////////////////////
 // primitive value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsPValue extends AbsDomain[PValue, AbsPValue] {
-  val undefval: AbsUndef
-  val nullval: AbsNull
-  val boolval: AbsBool
-  val numval: AbsNumber
-  val strval: AbsString
-
-  def ===(that: AbsPValue): AbsBool
-  def typeCount: Int
-  def toStringSet: Set[AbsString]
-  def copyWith(
-    undefval: AbsUndef = this.undefval,
-    nullval: AbsNull = this.nullval,
-    boolval: AbsBool = this.boolval,
-    numval: AbsNumber = this.numval,
-    strval: AbsString = this.strval
-  ): AbsPValue
-}
-
-trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
+trait PValueDomain extends AbsDomain[PValue] { domain: PValueDomain =>
   def apply(
     undefval: AbsUndef = AbsUndef.Bot,
     nullval: AbsNull = AbsNull.Bot,
     boolval: AbsBool = AbsBool.Bot,
-    numval: AbsNumber = AbsNumber.Bot,
-    strval: AbsString = AbsString.Bot
-  ): AbsPValue
+    numval: AbsNum = AbsNum.Bot,
+    strval: AbsStr = AbsStr.Bot
+  ): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val undefval: AbsUndef
+    val nullval: AbsNull
+    val boolval: AbsBool
+    val numval: AbsNum
+    val strval: AbsStr
+
+    def ===(that: Elem): AbsBool
+    def typeCount: Int
+    def toStringSet: Set[AbsStr]
+    def copyWith(
+      undefval: AbsUndef = this.undefval,
+      nullval: AbsNull = this.nullval,
+      boolval: AbsBool = this.boolval,
+      numval: AbsNum = this.numval,
+      strval: AbsStr = this.strval
+    ): Elem
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default primitive value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultPValue extends AbsPValueUtil {
-  lazy val Bot: Dom =
-    Dom(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
-  lazy val Top: Dom =
-    Dom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
+object DefaultPValue extends PValueDomain {
+  lazy val Bot: Elem =
+    Elem(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNum.Bot, AbsStr.Bot)
+  lazy val Top: Elem =
+    Elem(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNum.Top, AbsStr.Top)
 
-  def alpha(pvalue: PValue): AbsPValue = pvalue match {
+  def alpha(pvalue: PValue): Elem = pvalue match {
     case Undef => Bot.copy(undefval = AbsUndef.Top)
     case Null => Bot.copy(nullval = AbsNull.Top)
     case Bool(b) => Bot.copy(boolval = AbsBool(b))
-    case Num(n) => Bot.copy(numval = AbsNumber(n))
-    case Str(str) => Bot.copy(strval = AbsString(str))
+    case Num(n) => Bot.copy(numval = AbsNum(n))
+    case Str(str) => Bot.copy(strval = AbsStr(str))
   }
 
   def apply(
     undefval: AbsUndef,
     nullval: AbsNull,
     boolval: AbsBool,
-    numval: AbsNumber,
-    strval: AbsString
-  ): AbsPValue = Dom(undefval, nullval, boolval, numval, strval)
+    numval: AbsNum,
+    strval: AbsStr
+  ): Elem = Elem(undefval, nullval, boolval, numval, strval)
 
-  case class Dom(
+  case class Elem(
       undefval: AbsUndef,
       nullval: AbsNull,
       boolval: AbsBool,
-      numval: AbsNumber,
-      strval: AbsString
-  ) extends AbsPValue {
+      numval: AbsNum,
+      strval: AbsStr
+  ) extends ElemTrait {
     def gamma: ConSet[PValue] = ConInf() // TODO more precisely
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
 
     /* partial order */
-    def <=(that: AbsPValue): Boolean = {
-      val (left, right) = (this, check(that))
+    def <=(that: Elem): Boolean = {
+      val (left, right) = (this, that)
       if (left eq right) true
       else {
         (left.undefval <= right.undefval) &&
@@ -103,11 +103,11 @@ object DefaultPValue extends AbsPValueUtil {
     }
 
     /* join */
-    def +(that: AbsPValue): AbsPValue = {
-      val (left, right) = (this, check(that))
+    def +(that: Elem): Elem = {
+      val (left, right) = (this, that)
       if (left eq right) left
       else {
-        Dom(
+        Elem(
           left.undefval + right.undefval,
           left.nullval + right.nullval,
           left.boolval + right.boolval,
@@ -118,9 +118,9 @@ object DefaultPValue extends AbsPValueUtil {
     }
 
     /* meet */
-    def <>(that: AbsPValue): AbsPValue = {
-      val (left, right) = (this, check(that))
-      Dom(
+    def <>(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.undefval <> right.undefval,
         left.nullval <> right.nullval,
         left.boolval <> right.boolval,
@@ -144,8 +144,8 @@ object DefaultPValue extends AbsPValueUtil {
       }
     }
 
-    def ===(that: AbsPValue): AbsBool = {
-      val right = check(that)
+    def ===(that: Elem): AbsBool = {
+      val right = that
       val falseV =
         if ((this + right).typeCount > 1) AbsBool.False
         else AbsBool.Bot
@@ -167,16 +167,16 @@ object DefaultPValue extends AbsPValueUtil {
       count
     }
 
-    def toStringSet: Set[AbsString] = {
-      var set = HashSet[AbsString]()
+    def toStringSet: Set[AbsStr] = {
+      var set = HashSet[AbsStr]()
 
-      this.undefval.foldUnit(set += AbsString("undefined"))
-      this.nullval.foldUnit(set += AbsString("null"))
+      this.undefval.foldUnit(set += AbsStr("undefined"))
+      this.nullval.foldUnit(set += AbsStr("null"))
 
-      if (AbsBool.True <= this.boolval) set += AbsString("true")
-      if (AbsBool.False <= this.boolval) set += AbsString("false")
+      if (AbsBool.True <= this.boolval) set += AbsStr("true")
+      if (AbsBool.False <= this.boolval) set += AbsStr("false")
 
-      set += this.numval.toAbsString
+      set += this.numval.toAbsStr
 
       this.strval.foldUnit(set += this.strval)
 
@@ -188,8 +188,8 @@ object DefaultPValue extends AbsPValueUtil {
       undefval: AbsUndef = this.undefval,
       nullval: AbsNull = this.nullval,
       boolval: AbsBool = this.boolval,
-      numval: AbsNumber = this.numval,
-      strval: AbsString = this.strval
-    ): AbsPValue = Dom(undefval, nullval, boolval, numval, strval)
+      numval: AbsNum = this.numval,
+      strval: AbsStr = this.strval
+    ): Elem = Elem(undefval, nullval, boolval, numval, strval)
   }
 }

@@ -27,7 +27,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   // Generators of bug detector messages
   def always(expr: CFGExpr, cond: Boolean): String =
     expr.ir.span.toString + ":\n    [Warning] The conditional expression \"" + expr.ir.ast.toString(0) + "\" is always " + cond + "."
-  def absentProp(expr: CFGExpr, name: AbsString, obj: CFGExpr): String =
+  def absentProp(expr: CFGExpr, name: AbsStr, obj: CFGExpr): String =
     expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 
   // Move to CFGBlock?  Copied from HTMLWriter.

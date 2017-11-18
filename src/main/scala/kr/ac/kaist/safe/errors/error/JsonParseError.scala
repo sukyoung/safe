@@ -88,9 +88,9 @@ case class AbsNullParseError(value: JsValue) extends JsonFormatError("AbsNull", 
 
 case class AbsBoolParseError(value: JsValue) extends JsonFormatError("AbsBool", value)
 
-case class AbsNumberParseError(value: JsValue) extends JsonFormatError("AbsNumber", value)
+case class AbsNumParseError(value: JsValue) extends JsonFormatError("AbsNum", value)
 
-case class AbsStringParseError(value: JsValue) extends JsonFormatError("AbsString", value)
+case class AbsStrParseError(value: JsValue) extends JsonFormatError("AbsStr", value)
 
 case class RecencyTagParseError(value: JsValue) extends JsonFormatError("RecencyTag", value)
 
@@ -114,7 +114,7 @@ case class AbsIValueParseError(value: JsValue) extends JsonFormatError("AbsIValu
 
 case class ObjInternalMapParseError(value: JsValue) extends JsonFormatError("ObjInternalMap", value)
 
-case class AbsObjectParseError(value: JsValue) extends JsonFormatError("AbsObject", value)
+case class AbsObjParseError(value: JsValue) extends JsonFormatError("AbsObj", value)
 
 case class AbsAbsentParseError(value: JsValue) extends JsonFormatError("AbsAbsent", value)
 
@@ -142,9 +142,9 @@ case class EdgeDataParseError(value: JsValue) extends JsonFormatError("EdgeData"
 
 case class SemanticsParseError(value: JsValue) extends JsonFormatError("Semantics", value)
 
-case class AbsNumberUtilParseError(value: JsValue) extends JsonFormatError("AbsNumberUtil", value)
+case class NumDomainParseError(value: JsValue) extends JsonFormatError("NumDomain", value)
 
-case class AbsStringUtilParseError(value: JsValue) extends JsonFormatError("AbsStringUtil", value)
+case class StrDomainParseError(value: JsValue) extends JsonFormatError("StrDomain", value)
 
 case class AAddrTypeParseError(value: JsValue) extends JsonFormatError("AAddrType", value)
 

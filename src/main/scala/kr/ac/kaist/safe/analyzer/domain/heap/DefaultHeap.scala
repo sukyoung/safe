@@ -17,29 +17,26 @@ import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
 
 // default heap abstract domain
-object DefaultHeap extends AbsHeapUtil {
-  case object Top extends Dom
-  case object Bot extends Dom
-  case class HeapMap(map: Map[Loc, AbsObject]) extends Dom
+object DefaultHeap extends HeapDomain {
+  case object Top extends Elem
+  case object Bot extends Elem
+  case class HeapMap(map: Map[Loc, AbsObj]) extends Elem
 
-  def alpha(heap: Heap): AbsHeap = {
-    val map = heap.map.foldLeft[Map[Loc, AbsObject]](HashMap()) {
-      case (map, (loc, obj)) => map + (loc -> AbsObject(obj))
+  def alpha(heap: Heap): Elem = {
+    val map = heap.map.foldLeft[Map[Loc, AbsObj]](HashMap()) {
+      case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
     HeapMap(map)
   }
 
-  def apply(map: Map[Loc, AbsObject]): AbsHeap = HeapMap(map)
+  def apply(map: Map[Loc, AbsObj]): Elem = HeapMap(map)
 
-  sealed abstract class Dom extends AbsHeap {
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf() // TODO more precise
 
     def getSingle: ConSingle[Heap] = ConMany() // TODO more precise
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
-    def <=(that: AbsHeap): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (_, Top) | (Bot, _) => true
       case (Top, _) | (_, Bot) => false
       case (left: HeapMap, right: HeapMap) =>
@@ -57,7 +54,7 @@ object DefaultHeap extends AbsHeapUtil {
         }))
     }
 
-    def +(that: AbsHeap): AbsHeap = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (left, Bot) => left
       case (Bot, right) => right
@@ -68,7 +65,7 @@ object DefaultHeap extends AbsHeapUtil {
           else if (right.isBottom) left.map
           else {
             val joinKeySet = left.map.keySet ++ right.map.keySet
-            joinKeySet.foldLeft(HashMap[Loc, AbsObject]())((m, key) => {
+            joinKeySet.foldLeft(HashMap[Loc, AbsObj]())((m, key) => {
               val joinObj = (left.map.get(key), right.map.get(key)) match {
                 case (Some(obj1), Some(obj2)) => Some(obj1 + obj2)
                 case (Some(obj1), None) => Some(obj1)
@@ -84,12 +81,12 @@ object DefaultHeap extends AbsHeapUtil {
         HeapMap(newMap)
     }
 
-    def <>(that: AbsHeap): AbsHeap = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (left, Top) => left
       case (Top, right) => right
       case (Bot, _) | (_, Bot) => Bot
       case (left: HeapMap, right: HeapMap) =>
-        val newMap: Map[Loc, AbsObject] =
+        val newMap: Map[Loc, AbsObj] =
           if (left.map eq right.map) left.map
           else if (left.map.isEmpty) HashMap()
           else if (right.map.isEmpty) HashMap()
@@ -124,31 +121,31 @@ object DefaultHeap extends AbsHeapUtil {
       buildString(loc => loc.isUser || loc == BuiltinGlobal.loc)
     }
 
-    def get(loc: Loc): AbsObject = this match {
-      case Top => AbsObject.Top
-      case Bot => AbsObject.Bot
+    def get(loc: Loc): AbsObj = this match {
+      case Top => AbsObj.Top
+      case Bot => AbsObj.Bot
       case HeapMap(map) => map.get(loc) match {
         case Some(obj) => obj
-        case None => AbsObject.Bot
+        case None => AbsObj.Bot
       }
     }
 
-    def get(locSet: AbsLoc): AbsObject = locSet.foldLeft(AbsObject.Bot) {
+    def get(locSet: AbsLoc): AbsObj = locSet.foldLeft(AbsObj.Bot) {
       case (obj, loc) => obj + get(loc)
     }
 
-    private def weakUpdated(m: Map[Loc, AbsObject], loc: Loc, newObj: AbsObject): Map[Loc, AbsObject] = m.get(loc) match {
+    private def weakUpdated(m: Map[Loc, AbsObj], loc: Loc, newObj: AbsObj): Map[Loc, AbsObj] = m.get(loc) match {
       case Some(oldObj) => m.updated(loc, oldObj + newObj)
       case None => m.updated(loc, newObj)
     }
 
-    def weakUpdate(loc: Loc, obj: AbsObject): AbsHeap = this match {
+    def weakUpdate(loc: Loc, obj: AbsObj): Elem = this match {
       case Top => Top
       case Bot => Bot
       case HeapMap(map) => HeapMap(weakUpdated(map, loc, obj))
     }
 
-    def update(loc: Loc, obj: AbsObject): AbsHeap = this match {
+    def update(loc: Loc, obj: AbsObj): Elem = this match {
       case Top => Top
       case Bot => Bot
       case HeapMap(map) =>
@@ -156,29 +153,29 @@ object DefaultHeap extends AbsHeapUtil {
           if (obj.isBottom) Bot
           else HeapMap(map.updated(loc, obj))
         } else {
-          if (obj.isBottom) get(loc).fold[AbsHeap](Bot) { _ => this }
+          if (obj.isBottom) get(loc).fold[Elem](Bot) { _ => this }
           else HeapMap(weakUpdated(map, loc, obj))
         }
     }
 
-    def remove(loc: Loc): AbsHeap = this match {
+    def remove(loc: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
       case HeapMap(map) => HeapMap(map - loc)
     }
 
-    def subsLoc(locR: Recency, locO: Recency): AbsHeap = this match {
+    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
       case Top => Top
       case Bot => Bot
       case HeapMap(map) =>
-        val newMap = map.foldLeft(Map[Loc, AbsObject]())((m, kv) => {
+        val newMap = map.foldLeft(Map[Loc, AbsObj]())((m, kv) => {
           val (l, obj) = kv
           m + (l -> obj.subsLoc(locR, locO))
         })
         HeapMap(newMap)
     }
 
-    def oldify(loc: Loc): AbsHeap = loc match {
+    def oldify(loc: Loc): Elem = loc match {
       case locR @ Recency(subLoc, Recent) => this match {
         case Top => Top
         case Bot => Bot
@@ -204,7 +201,7 @@ object DefaultHeap extends AbsHeapUtil {
       buildString(_ => true).toString
     }
 
-    private def toStringLoc(loc: Loc, obj: AbsObject, con: Boolean): String = {
+    private def toStringLoc(loc: Loc, obj: AbsObj, con: Boolean): String = {
       val s = new StringBuilder
       val keyStr = loc.toString + " -> "
       s.append(keyStr)
@@ -213,7 +210,7 @@ object DefaultHeap extends AbsHeapUtil {
     }
 
     def toStringLoc(loc: Loc): Option[String] = this match {
-      case Top => Some(toStringLoc(loc, AbsObject.Top, false))
+      case Top => Some(toStringLoc(loc, AbsObj.Top, false))
       case Bot => None
       case HeapMap(map) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
     }
@@ -222,30 +219,30 @@ object DefaultHeap extends AbsHeapUtil {
     // Predicates
     ////////////////////////////////////////////////////////////////
     def hasConstruct(loc: Loc): AbsBool = {
-      val isDomIn = get(loc).fold(AbsBool.False) { obj => (obj contains IConstruct) }
+      val isElemIn = get(loc).fold(AbsBool.False) { obj => (obj contains IConstruct) }
       val b1 =
-        if (AbsBool.True <= isDomIn) AbsBool.True
+        if (AbsBool.True <= isElemIn) AbsBool.True
         else AbsBool.Bot
       val b2 =
-        if (AbsBool.False <= isDomIn) AbsBool.False
+        if (AbsBool.False <= isElemIn) AbsBool.False
         else AbsBool.Bot
       b1 + b2
     }
 
     def hasInstance(loc: Loc): AbsBool = {
-      val isDomIn = get(loc).fold(AbsBool.False) { obj => (obj contains IHasInstance) }
+      val isElemIn = get(loc).fold(AbsBool.False) { obj => (obj contains IHasInstance) }
       val b1 =
-        if (AbsBool.True <= isDomIn) AbsBool.True
+        if (AbsBool.True <= isElemIn) AbsBool.True
         else AbsBool.Bot
       val b2 =
-        if (AbsBool.False <= isDomIn) AbsBool.False
+        if (AbsBool.False <= isElemIn) AbsBool.False
         else AbsBool.Bot
       b1 + b2
     }
 
     def isArray(loc: Loc): AbsBool = {
       val className = get(loc)(IClass).value.pvalue.strval
-      val arrayAbsStr = AbsString.alpha("Array")
+      val arrayAbsStr = AbsStr.alpha("Array")
       val b1 =
         if (arrayAbsStr <= className)
           AbsBool.True
@@ -277,7 +274,7 @@ object DefaultHeap extends AbsHeapUtil {
     ////////////////////////////////////////////////////////////////
     // Proto
     ////////////////////////////////////////////////////////////////
-    def proto(loc: Loc, absStr: AbsString): AbsValue = {
+    def proto(loc: Loc, absStr: AbsStr): AbsValue = {
       var visited = AbsLoc.Bot
       val valueBot = AbsValue.Bot
       def visit(currentLoc: Loc): AbsValue = {
@@ -309,19 +306,19 @@ object DefaultHeap extends AbsHeapUtil {
       visit(loc)
     }
 
-    def protoBase(loc: Loc, absStr: AbsString): AbsLoc = {
+    def protoBase(loc: Loc, absStr: AbsStr): AbsLoc = {
       var visited = AbsLoc.Bot
       def visit(l: Loc): AbsLoc = {
         if (visited.contains(l)) AbsLoc.Bot
         else {
           visited += l
           val obj = this.get(l)
-          val isDomIn = (obj contains absStr)
+          val isElemIn = (obj contains absStr)
           val locSet1 =
-            if (AbsBool.True <= isDomIn) AbsLoc(l)
+            if (AbsBool.True <= isElemIn) AbsLoc(l)
             else AbsLoc.Bot
           val locSet2 =
-            if (AbsBool.False <= isDomIn) {
+            if (AbsBool.False <= isElemIn) {
               val protoLocSet = obj(IPrototype).value.locset
               protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
                 res + visit(protoLoc)
@@ -338,7 +335,7 @@ object DefaultHeap extends AbsHeapUtil {
     ////////////////////////////////////////////////////////////////
     // Store
     ////////////////////////////////////////////////////////////////
-    def propStore(loc: Loc, absStr: AbsString, value: AbsValue): AbsHeap = {
+    def propStore(loc: Loc, absStr: AbsStr, value: AbsValue): Elem = {
       //TODO: propagate type error of [[Put]] to semantics
       val findingObj = this.get(loc)
       val (obj, _) = findingObj.Put(absStr, value, true, this)
@@ -348,15 +345,15 @@ object DefaultHeap extends AbsHeapUtil {
     ////////////////////////////////////////////////////////////////
     // delete
     ////////////////////////////////////////////////////////////////
-    def delete(loc: Loc, absStr: AbsString): (AbsHeap, AbsBool) = {
-      get(loc).fold[(AbsHeap, AbsBool)]((this, AbsBool.Bot))(_ => {
+    def delete(loc: Loc, absStr: AbsStr): (Elem, AbsBool) = {
+      get(loc).fold[(Elem, AbsBool)]((this, AbsBool.Bot))(_ => {
         val targetObj = this.get(loc)
         val (newObj, asuccess) = targetObj.Delete(absStr)
         (this.update(loc, newObj), asuccess)
       })
     }
 
-    def getMap: Option[Map[Loc, AbsObject]] = this match {
+    def getMap: Option[Map[Loc, AbsObj]] = this match {
       case Top => None
       case Bot => None
       case HeapMap(map) => Some(map)

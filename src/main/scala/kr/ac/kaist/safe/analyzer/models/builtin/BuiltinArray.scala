@@ -256,45 +256,45 @@ object BuiltinArrayHelper {
   ////////////////////////////////////////////////////////////////
   def construct(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
-    val length = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
-    val first = Helper.propLoad(args, Set(AbsString("0")), h)
+    val length = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
+    val first = Helper.propLoad(args, Set(AbsStr("0")), h)
     val argObj = h.get(args.locset)
     val AT = AbsBool.True
-    val (retObj: AbsObject, retExcSet: Set[Exception]) = length.getSingle match {
-      case ConZero() => (AbsObject.Bot, ExcSetEmpty)
+    val (retObj: AbsObj, retExcSet: Set[Exception]) = length.getSingle match {
+      case ConZero() => (AbsObj.Bot, ExcSetEmpty)
       case ConOne(Num(1)) => {
         // 15.4.2.2 new Array(len)
         val firstN = first.pvalue.numval
-        val (lenObj: AbsObject, excSet: Set[Exception]) = if (!firstN.isBottom) {
+        val (lenObj: AbsObj, excSet: Set[Exception]) = if (!firstN.isBottom) {
           // If the argument len is a Number and ToUint32(len) is equal to len,
           // then the length property of the newly constructed object is set to ToUint32(len).
           val equal = (firstN === firstN.toUInt32)
           val trueV = if (AbsBool.True <= equal) {
-            AbsObject.newArrayObject(firstN)
-          } else AbsObject.Bot
+            AbsObj.newArrayObject(firstN)
+          } else AbsObj.Bot
           // If the argument len is a Number and ToUint32(len) is not equal to len,
           // a RangeError exception is thrown.
           val falseV =
             if (AbsBool.False <= equal) HashSet(RangeError)
             else ExcSetEmpty
           (trueV, falseV)
-        } else (AbsObject.Bot, ExcSetEmpty)
+        } else (AbsObj.Bot, ExcSetEmpty)
 
-        val otherObj = if (!first.pvalue.copyWith(numval = AbsNumber.Bot).isBottom || !first.locset.isBottom) {
+        val otherObj = if (!first.pvalue.copyWith(numval = AbsNum.Bot).isBottom || !first.locset.isBottom) {
           // If the argument len is not a Number, then the length property of the newly constructed object
           // is set to 1 and the 0 property of the newly constructed object is set to len with attributes
           // {[[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}.
-          val arr = AbsObject.newArrayObject(AbsNumber(1))
+          val arr = AbsObj.newArrayObject(AbsNum(1))
           val dp = AbsDataProp(first, AT, AT, AT)
           arr.initializeUpdate("0", dp)
-        } else AbsObject.Bot
+        } else AbsObj.Bot
 
         (lenObj + otherObj, excSet)
       }
       case ConOne(Num(n)) => {
         // 15.4.2.1 new Array([item0[, item1[, ... ]]])
         val length = n.toInt
-        val arr = AbsObject.newArrayObject(AbsNumber(length))
+        val arr = AbsObj.newArrayObject(AbsNum(length))
         val obj = (0 until length).foldLeft(arr)((arr, k) => {
           val kStr = k.toString
           val kValue = argObj(kStr).value
@@ -305,10 +305,10 @@ object BuiltinArrayHelper {
       }
       case ConMany() => {
         val len = first.pvalue.numval + length
-        val arr = AbsObject.newArrayObject(len)
-        val aKeySet = argObj.abstractKeySet((aKey, _) => aKey <= AbsString.Number)
+        val arr = AbsObj.newArrayObject(len)
+        val aKeySet = argObj.abstractKeySet((aKey, _) => aKey <= AbsStr.Number)
         val arrObj = aKeySet match {
-          case ConInf() => AbsObject.Top
+          case ConInf() => AbsObj.Top
           case ConFin(set) => set.foldLeft(arr)((arr, aKey) => {
             val value = argObj(aKey).value
             val dp = AbsDataProp(value, AT, AT, AT)
@@ -327,7 +327,7 @@ object BuiltinArrayHelper {
 
   def isArray(args: AbsValue, st: AbsState): AbsValue = {
     val h = st.heap
-    val arg = Helper.propLoad(args, Set(AbsString("0")), h)
+    val arg = Helper.propLoad(args, Set(AbsStr("0")), h)
     // 1. If Type(arg) is not Object, return false.
     val noObjB =
       if (arg.pvalue.isBottom) AbsBool.Bot
@@ -335,7 +335,7 @@ object BuiltinArrayHelper {
     val obj = h.get(arg.locset)
     // 2. If the value of the [[Class]] internal property of arg is "Array", then return true.
     // 3. Return false.
-    val arrB = obj(IClass).value.pvalue.strval === AbsString("Array")
+    val arrB = obj(IClass).value.pvalue.strval === AbsStr("Array")
     noObjB + arrB
   }
 
@@ -356,7 +356,7 @@ object BuiltinArrayHelper {
     // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an
     //    empty arguments list.
     val tempLoc = Loc(tempASite)
-    val newArgs = AbsObject.newArgObject()
+    val newArgs = AbsObj.newArgObject()
     val tempH = h.update(tempLoc, newArgs)
     val tempSt = AbsState(tempH, state.context)
     val (joinSt, joinExcSt, joinV) = join(AbsLoc(tempLoc), tempSt)
@@ -367,19 +367,19 @@ object BuiltinArrayHelper {
   def concat(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val argObj = h.get(args.locset)
-    val length = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val length = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
     val thisLoc = st.context.thisBinding.locset
     val thisObj = h.get(thisLoc)
     val AT = (AbsBool.True, AbsAbsent.Bot)
-    val Bot = AbsObject.Bot
-    val Top = AbsObject
-      .newArrayObject(AbsNumber.Top)
-      .update(AbsString.Number, AbsDataProp.Top)
-    val retObj: AbsObject = length.getSingle match {
+    val Bot = AbsObj.Bot
+    val Top = AbsObj
+      .newArrayObject(AbsNum.Top)
+      .update(AbsStr.Number, AbsDataProp.Top)
+    val retObj: AbsObj = length.getSingle match {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
         val argLen = n.toInt
-        val isArray = AbsString("Array") === thisObj(IClass).value.pvalue.strval
+        val isArray = AbsStr("Array") === thisObj(IClass).value.pvalue.strval
         val (arrList, arrIsBot): (Option[List[AbsValue]], Boolean) =
           if (AbsBool.True <= isArray) {
             val thisLength = thisObj.Get("length", h).pvalue.numval
@@ -412,7 +412,7 @@ object BuiltinArrayHelper {
                 case ((normal, array), loc) => {
                   val obj = h.get(loc)
                   val clsName = obj(IClass).value.pvalue.strval
-                  val isArr = clsName === AbsString("Array")
+                  val isArr = clsName === AbsStr("Array")
                   if (AbsBool.True <= isArr) (normal - loc, array + loc)
                   else (normal, array)
                 }
@@ -435,11 +435,11 @@ object BuiltinArrayHelper {
             case None => Top
             case Some(valueList) => {
               val finalLen = valueList.length
-              val arr = AbsObject.newArrayObject(AbsNumber(finalLen))
+              val arr = AbsObj.newArrayObject(AbsNum(finalLen))
               valueList.reverse.zipWithIndex.foldLeft(arr) {
                 case (arr, (value, idx)) => {
                   val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
-                  val (newArr, _, _) = arr.DefineOwnProperty(h, AbsString(idx.toString), desc, false)
+                  val (newArr, _, _) = arr.DefineOwnProperty(h, AbsStr(idx.toString), desc, false)
                   newArr
                 }
               }
@@ -456,13 +456,13 @@ object BuiltinArrayHelper {
   }
 
   def join(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
-    val separator = Helper.propLoad(args, Set(AbsString("0")), st.heap)
+    val separator = Helper.propLoad(args, Set(AbsStr("0")), st.heap)
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = joinObjASite
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val h = state.heap
-    val result = thisLoc.foldLeft(AbsString.Bot)((str, loc) => {
+    val result = thisLoc.foldLeft(AbsStr.Bot)((str, loc) => {
       val obj = h.get(loc)
       // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
       val lenVal = obj.Get("length", h)
@@ -471,21 +471,21 @@ object BuiltinArrayHelper {
       // 4. If separator is undefined, let separator be the single-character String ",".
       val noUndef = AbsValue(separator.pvalue.copyWith(undefval = AbsUndef.Bot), separator.locset)
       val undefV: AbsValue =
-        if (separator.pvalue.undefval.isTop) AbsString(",")
+        if (separator.pvalue.undefval.isTop) AbsStr(",")
         else AbsValue.Bot
       val newSep = noUndef + undefV
       // 5. Let sep be ToString(separator).
       val sep = TypeConversionHelper.ToString(newSep)
       len.getSingle match {
-        case ConZero() => AbsString.Bot
+        case ConZero() => AbsStr.Bot
         // 6. If len is zero, return the empty String.
-        case ConOne(Num(0)) => AbsString("")
+        case ConOne(Num(0)) => AbsStr("")
         case ConOne(Num(l)) => {
           val len = l.toInt
-          def noUndefNull(value: AbsValue): AbsString = {
+          def noUndefNull(value: AbsValue): AbsStr = {
             val empty =
-              if (value.pvalue.undefval.isBottom && value.pvalue.nullval.isBottom) AbsString.Bot
-              else AbsString("")
+              if (value.pvalue.undefval.isBottom && value.pvalue.nullval.isBottom) AbsStr.Bot
+              else AbsStr("")
             val noUNPV = value.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot)
             val other = TypeConversionHelper.ToString(AbsValue(noUNPV, value.locset))
             empty + other
@@ -510,7 +510,7 @@ object BuiltinArrayHelper {
           })
           // 11. Return R.
         }
-        case ConMany() => AbsString.Top
+        case ConMany() => AbsStr.Top
       }
     })
     val excSt = st.raiseException(excSet)
@@ -530,12 +530,12 @@ object BuiltinArrayHelper {
         val lenVal = arr.Get("length", h)
         // 3. Let len be ToUint32(lenVal).
         val len = TypeConversionHelper.ToUInt32(lenVal)
-        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
-          case ConZero() => (AbsObject.Bot, AbsValue.Bot, ExcSetEmpty)
+        val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
+          case ConZero() => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           // 4. If len is zero,
           case ConOne(Num(0)) => {
             // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
-            val (retArr, excSet) = arr.Put(AbsString("length"), AbsNumber(0), true, h)
+            val (retArr, excSet) = arr.Put(AbsStr("length"), AbsNum(0), true, h)
             // b. Return undefined.
             (retArr, AbsValue(AbsUndef.Top), excSet)
           }
@@ -549,12 +549,12 @@ object BuiltinArrayHelper {
             // c. Call the [[Delete]] internal method of O with arguments indx and true.
             val (delArr, _) = arr.Delete(indx) // XXX: missing second argument Throw = true.
             // d. Call the [[Put]] internal method of O with arguments "length", indx, and true.
-            val (putArr, excSet) = delArr.Put(AbsString("length"), AbsNumber(len - 1), true, h)
+            val (putArr, excSet) = delArr.Put(AbsStr("length"), AbsNum(len - 1), true, h)
             // e. Return element.
             (putArr, element, excSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top).update(AbsString("length"), AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (arr.update(AbsStr.Number, AbsDataProp.Top).update(AbsStr("length"), AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
@@ -566,7 +566,7 @@ object BuiltinArrayHelper {
 
   def push(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val argObj = st.heap.get(args.locset)
-    val argLen = Helper.propLoad(args, Set(AbsString("length")), st.heap).pvalue.numval
+    val argLen = Helper.propLoad(args, Set(AbsStr("length")), st.heap).pvalue.numval
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = pushObjASite
     val thisBinding = st.context.thisBinding
@@ -581,8 +581,8 @@ object BuiltinArrayHelper {
         val n = TypeConversionHelper.ToUInt32(lenVal)
         // 4. Let items be an internal List whose elements are, in left to right order, the arguments that were passed to this
         //    function invocation.
-        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = (argLen.getSingle, n.getSingle) match {
-          case (ConZero(), _) | (_, ConZero()) => (AbsObject.Bot, AbsValue.Bot, ExcSetEmpty)
+        val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = (argLen.getSingle, n.getSingle) match {
+          case (ConZero(), _) | (_, ConZero()) => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           case (ConOne(Num(al)), ConOne(Num(tl))) => {
             val argLen = al.toInt
             val thisLen = tl.toInt
@@ -592,18 +592,18 @@ object BuiltinArrayHelper {
                 val kValue = argObj.Get(k.toString, h)
                 //   a. Remove the first element from items and let E be the value of the element.
                 //   b. Call the [[Put]] internal method of O with arguments ToString(n), E, and true.
-                val (retObj, retExcSet) = arr.Put(AbsString((thisLen + k).toString), kValue, true, h)
+                val (retObj, retExcSet) = arr.Put(AbsStr((thisLen + k).toString), kValue, true, h)
                 (retObj, retExcSet)
                 //   c. Increase n by 1.
               }
             }
             // 6. Call the [[Put]] internal method of O with arguments "length", n, and true.
-            val n = AbsNumber(argLen + thisLen)
-            val (putObj, putExcSet) = retObj.Put(AbsString("length"), n, true, h)
+            val n = AbsNum(argLen + thisLen)
+            val (putObj, putExcSet) = retObj.Put(AbsStr("length"), n, true, h)
             // 7. Return n.
             (putObj, AbsValue(n), putExcSet ++ retExcSet)
           }
-          case _ => (arr.update(AbsString.Number, AbsDataProp.Top), AbsValue(AbsNumber.Top), HashSet(TypeError))
+          case _ => (arr.update(AbsStr.Number, AbsDataProp.Top), AbsValue(AbsNum.Top), HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
@@ -626,13 +626,13 @@ object BuiltinArrayHelper {
         val lenVal = arr.Get("length", h)
         // 3. Let len be ToUint32(lenVal).
         val len = TypeConversionHelper.ToUInt32(lenVal)
-        val (retObj: AbsObject, retExcSet: Set[Exception]) = len.getSingle match {
-          case ConZero() => (AbsObject.Bot, ExcSetEmpty)
+        val (retObj: AbsObj, retExcSet: Set[Exception]) = len.getSingle match {
+          case ConZero() => (AbsObj.Bot, ExcSetEmpty)
           case ConOne(Num(n)) => {
             val length = n.toInt
             val pairList = (0 until length).foldLeft[List[(AbsValue, AbsBool)]](Nil) {
               case (lst, k) => {
-                val absK = AbsString(k.toString)
+                val absK = AbsStr(k.toString)
                 val kValue = arr.Get(absK, h)
                 val kHas = arr.HasProperty(absK, h)
                 (kValue, kHas) :: lst
@@ -640,21 +640,21 @@ object BuiltinArrayHelper {
             }
             pairList.zipWithIndex.foldLeft((arr, ExcSetEmpty)) {
               case ((arr, excSet), ((value, has), idx)) => {
-                val absIdx = AbsString(idx.toString)
+                val absIdx = AbsStr(idx.toString)
                 val delObj =
                   if (AbsBool.False <= has) {
                     val (delObj, _) = arr.Delete(absIdx)
                     delObj
-                  } else AbsObject.Bot
+                  } else AbsObj.Bot
                 val (putObj, putExcSet) =
                   if (AbsBool.True <= has) {
                     arr.Put(absIdx, value, true, h)
-                  } else (AbsObject.Bot, ExcSetEmpty)
+                  } else (AbsObj.Bot, ExcSetEmpty)
                 (delObj + putObj, excSet ++ putExcSet)
               }
             }
           }
-          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top), HashSet(TypeError))
+          case ConMany() => (arr.update(AbsStr.Number, AbsDataProp.Top), HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, excSet ++ retExcSet)
@@ -677,12 +677,12 @@ object BuiltinArrayHelper {
         val lenVal = obj.Get("length", h)
         // 3. Let len be ToUint32(lenVal).
         val len = TypeConversionHelper.ToUInt32(lenVal)
-        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
-          case ConZero() => (AbsObject.Bot, AbsValue.Bot, ExcSetEmpty)
+        val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
+          case ConZero() => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           // 4. If len is zero, then
           case ConOne(Num(0)) => {
             // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
-            val (retObj, retExcSet) = obj.Put(AbsString("length"), AbsValue(0), true, h)
+            val (retObj, retExcSet) = obj.Put(AbsStr("length"), AbsValue(0), true, h)
             // b. Return undefined.
             (retObj, AbsValue(AbsUndef.Top), retExcSet)
           }
@@ -695,9 +695,9 @@ object BuiltinArrayHelper {
             var excSet = ExcSetEmpty
             val retObj = (1 until len).foldLeft(obj)((obj, k) => {
               // a. Let from be ToString(k).
-              val from = AbsString(k.toString)
+              val from = AbsStr(k.toString)
               // b. Let to be ToString(k–1).
-              val to = AbsString((k - 1).toString)
+              val to = AbsStr((k - 1).toString)
               // c. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
               val fromPresent = obj.HasProperty(from, h)
               val trueV = if (AbsBool.True <= fromPresent) {
@@ -708,26 +708,26 @@ object BuiltinArrayHelper {
                 val (retObj, retExcSet) = obj.Put(to, fromVal, true, h)
                 excSet ++= retExcSet
                 retObj
-              } else AbsObject.Bot
+              } else AbsObj.Bot
               val falseV = if (AbsBool.False <= fromPresent) {
                 // e. Else, fromPresent is false
                 // i. Call the [[Delete]] internal method of O with arguments to and true.
                 val (retObj, _) = obj.Delete(to) //XXX: missing second argument Throw = true.
                 // f. Increase k by 1.
                 retObj
-              } else AbsObject.Bot
+              } else AbsObj.Bot
               trueV + falseV
             })
             // 8. Call the [[Delete]] internal method of O with arguments ToString(len–1) and true.
-            val (delObj, _) = retObj.Delete(AbsString((len - 1).toString)) //XXX: missing second argument Throw = true.
+            val (delObj, _) = retObj.Delete(AbsStr((len - 1).toString)) //XXX: missing second argument Throw = true.
             // 9. Call the [[Put]] internal method of O with arguments "length", (len–1) , and true.
-            val (putObj, putExcSet) = delObj.Put(AbsString("length"), AbsNumber(len - 1), true, h)
+            val (putObj, putExcSet) = delObj.Put(AbsStr("length"), AbsNum(len - 1), true, h)
             // 10. Return first.
             val retExcSet = excSet ++ putExcSet
             (putObj, first, retExcSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (obj.update(AbsString.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (obj.update(AbsStr.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
@@ -738,8 +738,8 @@ object BuiltinArrayHelper {
   }
 
   def slice(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
-    val start = Helper.propLoad(args, Set(AbsString("0")), st.heap)
-    val end = Helper.propLoad(args, Set(AbsString("1")), st.heap)
+    val start = Helper.propLoad(args, Set(AbsStr("0")), st.heap)
+    val end = Helper.propLoad(args, Set(AbsStr("1")), st.heap)
 
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = sliceObjASite
@@ -748,7 +748,7 @@ object BuiltinArrayHelper {
     val h = state.heap
     val obj = h.get(thisLoc)
     // 2. Let A be a new array created as if by the expression new Array().
-    val arr = AbsObject.newArrayObject()
+    val arr = AbsObj.newArrayObject()
     // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
     val lenVal = obj.Get("length", h)
     // 4. Let len be ToUint32(lenVal).
@@ -757,14 +757,14 @@ object BuiltinArrayHelper {
     val relativeStart = TypeConversionHelper.ToInteger(start)
     // 6. If end is undefined, let relativeEnd be len; else let relativeEnd be ToInteger(end).
     val undefLen =
-      if (end.pvalue.undefval.isBottom) AbsNumber.Bot
+      if (end.pvalue.undefval.isBottom) AbsNum.Bot
       else len
     val numLen =
-      if (end.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && end.locset.isBottom) AbsNumber.Bot
+      if (end.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && end.locset.isBottom) AbsNum.Bot
       else TypeConversionHelper.ToInteger(end)
     val relativeEnd = undefLen + numLen
-    val (retObj: AbsObject, retExcSet: Set[Exception]) = (len.getSingle, relativeStart.getSingle, relativeEnd.getSingle) match {
-      case (ConZero(), _, _) | (_, ConZero(), _) | (_, _, ConZero()) => (AbsObject.Bot, ExcSetEmpty)
+    val (retObj: AbsObj, retExcSet: Set[Exception]) = (len.getSingle, relativeStart.getSingle, relativeEnd.getSingle) match {
+      case (ConZero(), _, _) | (_, ConZero(), _) | (_, _, ConZero()) => (AbsObj.Bot, ExcSetEmpty)
       case (ConOne(Num(l)), ConOne(Num(from)), ConOne(Num(to))) => {
         val len = l.toInt
         val relativeStart = from.toInt
@@ -783,12 +783,12 @@ object BuiltinArrayHelper {
         val length =
           if (start > finalN) 0
           else finalN - start
-        val (initArr, _) = arr.Put(AbsString("length"), AbsNumber(length), false, h)
+        val (initArr, _) = arr.Put(AbsStr("length"), AbsNum(length), false, h)
         (start until finalN).foldLeft((initArr, ExcSetEmpty)) {
           case ((arr, excSet), k) => {
             val n = k - start
             // a. Let Pk be ToString(k).
-            val Pk = AbsString(k.toString)
+            val Pk = AbsStr(k.toString)
             // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
             val kPresent = obj.HasProperty(Pk, h)
             // c. If kPresent is true, then
@@ -799,17 +799,17 @@ object BuiltinArrayHelper {
               //     {[[Value]]: kValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
               val AT = (AbsBool.True, AbsAbsent.Bot)
               val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
-              val (retObj, _, excSet) = arr.DefineOwnProperty(h, AbsString(n.toString), desc, false)
+              val (retObj, _, excSet) = arr.DefineOwnProperty(h, AbsStr(n.toString), desc, false)
               (retObj, excSet)
-            } else (AbsObject.Bot, ExcSetEmpty)
-            val falseObj = if (AbsBool.False <= kPresent) obj else AbsObject.Bot
+            } else (AbsObj.Bot, ExcSetEmpty)
+            val falseObj = if (AbsBool.False <= kPresent) obj else AbsObj.Bot
             // d. Increase k by 1.
             // e. Increase n by 1.
             (retObj + falseObj, excSet ++ retExcSet)
           }
         }
       }
-      case _ => (arr.update(AbsString.Top, AbsDataProp.Top), HashSet(TypeError))
+      case _ => (arr.update(AbsStr.Top, AbsDataProp.Top), HashSet(TypeError))
     }
     // 11. Return A.
     val arrLoc = Loc(sliceArrASite)
@@ -821,8 +821,8 @@ object BuiltinArrayHelper {
 
   def splice(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
-    val start = Helper.propLoad(args, Set(AbsString("0")), h)
-    val deleteCount = Helper.propLoad(args, Set(AbsString("1")), h)
+    val start = Helper.propLoad(args, Set(AbsStr("0")), h)
+    val deleteCount = Helper.propLoad(args, Set(AbsStr("1")), h)
 
     val argLoc = args.locset
     val argObj = h.get(args.locset)
@@ -833,14 +833,14 @@ object BuiltinArrayHelper {
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val thisLoc = st.context.thisBinding.locset
-    val Top = AbsObject
-      .newArrayObject(AbsNumber.Top)
-      .update(AbsString.Number, AbsDataProp.Top)
-    val (retH: AbsHeap, retArr: AbsObject, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObject.Bot, ExcSetEmpty)) {
+    val Top = AbsObj
+      .newArrayObject(AbsNum.Top)
+      .update(AbsStr.Number, AbsDataProp.Top)
+    val (retH: AbsHeap, retArr: AbsObj, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObj.Bot, ExcSetEmpty)) {
       case ((h, arr, excSet), loc) => {
         val thisObj = h.get(loc)
         val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
-        val (retObj: AbsObject, retArr: AbsObject, retExcSet: Set[Exception]) = (
+        val (retObj: AbsObj, retArr: AbsObj, retExcSet: Set[Exception]) = (
           thisLen.getSingle,
           argLen.getSingle,
           relativeStart.getSingle,
@@ -849,7 +849,7 @@ object BuiltinArrayHelper {
             case (ConZero(), _, _, _)
             | (_, ConZero(), _, _)
             | (_, _, ConZero(), _)
-            | (_, _, _, ConZero()) => (AbsObject.Bot, AbsObject.Bot, ExcSetEmpty)
+            | (_, _, _, ConZero()) => (AbsObj.Bot, AbsObj.Bot, ExcSetEmpty)
             case (ConOne(Num(tl)), ConOne(Num(al)), ConOne(Num(rs)), ConOne(Num(rd))) => {
               val thisLen = tl.toInt
               val argLen = al.toInt
@@ -859,33 +859,33 @@ object BuiltinArrayHelper {
                 if (relativeStart < 0) Math.max((thisLen + relativeStart), 0)
                 else Math.min(relativeStart, thisLen)
               val actualDeleteCount = Math.min(Math.max(relativeDeleteCount, 0), thisLen - actualStart)
-              val arr = AbsObject.newArrayObject(AbsNumber(actualDeleteCount))
-              val retArr: AbsObject = (0 until actualDeleteCount).foldLeft(arr)((arr, k) => {
+              val arr = AbsObj.newArrayObject(AbsNum(actualDeleteCount))
+              val retArr: AbsObj = (0 until actualDeleteCount).foldLeft(arr)((arr, k) => {
                 val kValue = thisObj.Get((actualStart + k).toString, h)
                 val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
-                val (newArr, _, _) = arr.DefineOwnProperty(h, AbsString(k.toString), desc, false)
+                val (newArr, _, _) = arr.DefineOwnProperty(h, AbsStr(k.toString), desc, false)
                 newArr
               })
               val newLen = Math.max(argLen - 2, 0)
               val remainFrom = actualStart + actualDeleteCount
               val remainTo = actualStart + newLen
               val remainLen = thisLen - (actualStart + actualDeleteCount)
-              val (remainObj: AbsObject, remainExcSet: Set[Exception]) = (0 until remainLen).foldLeft((thisObj, ExcSetEmpty)) {
+              val (remainObj: AbsObj, remainExcSet: Set[Exception]) = (0 until remainLen).foldLeft((thisObj, ExcSetEmpty)) {
                 case ((obj, excSet), k) => {
                   val kValue = thisObj.Get((remainFrom + k).toString, h)
-                  val (newObj, newExcSet) = obj.Put(AbsString((remainTo + k).toString), kValue, true, h)
+                  val (newObj, newExcSet) = obj.Put(AbsStr((remainTo + k).toString), kValue, true, h)
                   (newObj, excSet ++ newExcSet)
                 }
               }
-              val (newObj: AbsObject, newExcSet: Set[Exception]) = (0 until newLen).foldLeft((remainObj, remainExcSet)) {
+              val (newObj: AbsObj, newExcSet: Set[Exception]) = (0 until newLen).foldLeft((remainObj, remainExcSet)) {
                 case ((obj, excSet), k) => {
                   val kValue = argObj.Get((k + 2).toString, h)
-                  val (newObj, newExcSet) = obj.Put(AbsString((actualStart + k).toString), kValue, true, h)
+                  val (newObj, newExcSet) = obj.Put(AbsStr((actualStart + k).toString), kValue, true, h)
                   (newObj, excSet ++ newExcSet)
                 }
               }
               val length = remainTo + remainLen
-              val delObj: AbsObject =
+              val delObj: AbsObj =
                 if (length < thisLen) (length until thisLen).foldLeft(newObj) {
                   case (obj, k) => {
                     val (delArr, _) = obj.Delete(k.toString) // XXX: missing second argument Throw = true.
@@ -893,7 +893,7 @@ object BuiltinArrayHelper {
                   }
                 }
                 else newObj
-              val (lenObj, _) = delObj.Put(AbsString("length"), AbsNumber(length), false, h)
+              val (lenObj, _) = delObj.Put(AbsStr("length"), AbsNum(length), false, h)
               (lenObj, retArr, newExcSet)
             }
             case _ => (Top, Top, HashSet(TypeError))
@@ -918,36 +918,36 @@ object BuiltinArrayHelper {
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val thisLoc = st.context.thisBinding.locset
-    val Top = AbsObject
-      .newArrayObject(AbsNumber.Top)
-      .update(AbsString.Number, AbsDataProp.Top)
+    val Top = AbsObj
+      .newArrayObject(AbsNum.Top)
+      .update(AbsStr.Number, AbsDataProp.Top)
     val (retH: AbsHeap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         val thisObj = h.get(loc)
         val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
-        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = (thisLen.getSingle, argLen.getSingle) match {
-          case (ConZero(), _) | (_, ConZero()) => (AbsObject.Bot, AbsValue.Bot, ExcSetEmpty)
+        val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = (thisLen.getSingle, argLen.getSingle) match {
+          case (ConZero(), _) | (_, ConZero()) => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           case (ConOne(Num(tl)), ConOne(Num(al))) => {
             val thisLen = tl.toInt
             val argLen = al.toInt
 
             val newLen = argLen + thisLen
-            val (pushObj: AbsObject, pushExcSet: Set[Exception]) = (thisLen - 1 to 0 by -1).foldLeft((thisObj, ExcSetEmpty)) {
+            val (pushObj: AbsObj, pushExcSet: Set[Exception]) = (thisLen - 1 to 0 by -1).foldLeft((thisObj, ExcSetEmpty)) {
               case ((obj, excSet), k) => {
                 val kValue = thisObj.Get(k.toString, h)
-                val (newObj, newExcSet) = obj.Put(AbsString((argLen + k).toString), kValue, true, h)
+                val (newObj, newExcSet) = obj.Put(AbsStr((argLen + k).toString), kValue, true, h)
                 (newObj, excSet ++ newExcSet)
               }
             }
-            val (newObj: AbsObject, newExcSet: Set[Exception]) = (0 until argLen).foldLeft((pushObj, pushExcSet)) {
+            val (newObj: AbsObj, newExcSet: Set[Exception]) = (0 until argLen).foldLeft((pushObj, pushExcSet)) {
               case ((obj, excSet), k) => {
                 val kValue = argObj.Get(k.toString, h)
-                val (newObj, newExcSet) = obj.Put(AbsString(k.toString), kValue, true, h)
+                val (newObj, newExcSet) = obj.Put(AbsStr(k.toString), kValue, true, h)
                 (newObj, excSet ++ newExcSet)
               }
             }
-            val newAbsLen = AbsNumber(newLen)
-            val (lenObj, _) = newObj.Put(AbsString("length"), newAbsLen, false, h)
+            val newAbsLen = AbsNum(newLen)
+            val (lenObj, _) = newObj.Put(AbsStr("length"), newAbsLen, false, h)
             (lenObj, AbsValue(newAbsLen), newExcSet)
           }
           case _ => (Top, AbsValue.Top, HashSet(TypeError))
@@ -966,34 +966,34 @@ object BuiltinArrayHelper {
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val h = state.heap
-    val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
-    val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
-    val result = thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
+    val searchElement = Helper.propLoad(args, Set(AbsStr("0")), h)
+    val fromIndex = Helper.propLoad(args, Set(AbsStr("1")), h)
+    val result = thisLoc.foldLeft[AbsNum](AbsNum.Bot)((num, loc) => {
       val thisObj = h.get(loc)
       // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
       val lenValue = thisObj.Get("length", h)
       // 3. Let len be ToUint32(lenValue).
       val len = TypeConversionHelper.ToUInt32(lenValue)
-      val retN: AbsNumber = len.getSingle match {
-        case ConZero() => AbsNumber.Bot
+      val retN: AbsNum = len.getSingle match {
+        case ConZero() => AbsNum.Bot
         // 4. If len is 0, return -1.
-        case ConOne(Num(0)) => AbsNumber(-1)
+        case ConOne(Num(0)) => AbsNum(-1)
         case ConOne(Num(l)) => {
           val len = l.toInt
           // 5. If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be 0.
           val undefN =
-            if (fromIndex.pvalue.undefval.isBottom) AbsNumber.Bot
-            else AbsNumber(0)
+            if (fromIndex.pvalue.undefval.isBottom) AbsNum.Bot
+            else AbsNum(0)
           val otherN =
-            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNumber.Bot
+            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNum.Bot
             else TypeConversionHelper.ToInteger(fromIndex)
           val n = undefN + otherN
           n.getSingle match {
-            case ConZero() => AbsNumber.Bot
+            case ConZero() => AbsNum.Bot
             case ConOne(Num(num)) => {
               val n = num.toInt
               // 6. If n ≥ len, return -1.
-              if (n >= len) AbsNumber(-1)
+              if (n >= len) AbsNum(-1)
               else {
                 val k =
                   // 7. If n ≥ 0, then
@@ -1007,10 +1007,10 @@ object BuiltinArrayHelper {
                     if (k < 0) 0 else k
                   }
                 // 9. Repeat, while k < len
-                val (retN, retB) = (k until len).foldLeft[(AbsNumber, AbsBool)]((AbsNumber.Bot, AbsBool.False)) {
+                val (retN, retB) = (k until len).foldLeft[(AbsNum, AbsBool)]((AbsNum.Bot, AbsBool.False)) {
                   case ((num, b), k) => {
                     // a. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument ToString(k).
-                    val kPresent = thisObj.HasProperty(AbsString(k.toString), h)
+                    val kPresent = thisObj.HasProperty(AbsStr(k.toString), h)
                     // b. If kPresent is true, then
                     // i. Let elementK be the result of calling the [[Get]] internal method of O with the argument
                     //    ToString(k).
@@ -1021,23 +1021,23 @@ object BuiltinArrayHelper {
                     val same = elementK.pvalue === searchElement.pvalue
                     // iii. If same is true, return k.
                     val retN = if (AbsBool.False <= b && AbsBool.True <= kPresent && AbsBool.True <= same) {
-                      AbsNumber(k)
-                    } else AbsNumber.Bot
+                      AbsNum(k)
+                    } else AbsNum.Bot
                     // c. Increase k by 1.
                     (num + retN, b || same)
                   }
                 }
                 // 10. Return -1.
                 val notFound =
-                  if (AbsBool.False <= retB) AbsNumber(-1)
-                  else AbsNumber.Bot
+                  if (AbsBool.False <= retB) AbsNum(-1)
+                  else AbsNum.Bot
                 retN + notFound
               }
             }
-            case ConMany() => AbsNumber.Top
+            case ConMany() => AbsNum.Top
           }
         }
-        case ConMany() => AbsNumber.Top
+        case ConMany() => AbsNum.Top
       }
       num + retN
     })
@@ -1051,30 +1051,30 @@ object BuiltinArrayHelper {
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val h = state.heap
-    val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
-    val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
-    val result = thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
+    val searchElement = Helper.propLoad(args, Set(AbsStr("0")), h)
+    val fromIndex = Helper.propLoad(args, Set(AbsStr("1")), h)
+    val result = thisLoc.foldLeft[AbsNum](AbsNum.Bot)((num, loc) => {
       val thisObj = h.get(loc)
       // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
       val lenValue = thisObj.Get("length", h)
       // 3. Let len be ToUint32(lenValue).
       val len = TypeConversionHelper.ToUInt32(lenValue)
-      val retN: AbsNumber = len.getSingle match {
-        case ConZero() => AbsNumber.Bot
+      val retN: AbsNum = len.getSingle match {
+        case ConZero() => AbsNum.Bot
         // 4. If len is 0, return -1.
-        case ConOne(Num(0)) => AbsNumber(-1)
+        case ConOne(Num(0)) => AbsNum(-1)
         case ConOne(Num(l)) => {
           val len = l.toInt
           // 5. If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be 0.
           val undefN =
-            if (fromIndex.pvalue.undefval.isBottom) AbsNumber.Bot
-            else AbsNumber(len - 1)
+            if (fromIndex.pvalue.undefval.isBottom) AbsNum.Bot
+            else AbsNum(len - 1)
           val otherN =
-            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNumber.Bot
+            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNum.Bot
             else TypeConversionHelper.ToInteger(fromIndex)
           val n = undefN + otherN
           n.getSingle match {
-            case ConZero() => AbsNumber.Bot
+            case ConZero() => AbsNum.Bot
             case ConOne(Num(num)) => {
               val n = num.toInt
               val k =
@@ -1084,10 +1084,10 @@ object BuiltinArrayHelper {
                 //   a. Let k be len - abs(n).
                 else len - Math.abs(n)
               // 8. Repeat, while k ≥ 0
-              val (retN, retB) = (k to 0 by -1).foldLeft[(AbsNumber, AbsBool)]((AbsNumber.Bot, AbsBool.False)) {
+              val (retN, retB) = (k to 0 by -1).foldLeft[(AbsNum, AbsBool)]((AbsNum.Bot, AbsBool.False)) {
                 case ((num, b), k) => {
                   // a. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument ToString(k).
-                  val kPresent = thisObj.HasProperty(AbsString(k.toString), h)
+                  val kPresent = thisObj.HasProperty(AbsStr(k.toString), h)
                   // b. If kPresent is true, then
                   // i. Let elementK be the result of calling the [[Get]] internal method of O with the argument
                   //    ToString(k).
@@ -1098,22 +1098,22 @@ object BuiltinArrayHelper {
                   val same = elementK.pvalue === searchElement.pvalue
                   // iii. If same is true, return k.
                   val retN = if (AbsBool.False <= b && AbsBool.True <= kPresent && AbsBool.True <= same) {
-                    AbsNumber(k)
-                  } else AbsNumber.Bot
+                    AbsNum(k)
+                  } else AbsNum.Bot
                   // c. Decrease k by 1.
                   (num + retN, b || same)
                 }
               }
               // 9. Return -1.
               val notFound =
-                if (AbsBool.False <= retB) AbsNumber(-1)
-                else AbsNumber.Bot
+                if (AbsBool.False <= retB) AbsNum(-1)
+                else AbsNum.Bot
               retN + notFound
             }
-            case ConMany() => AbsNumber.Top
+            case ConMany() => AbsNum.Top
           }
         }
-        case ConMany() => AbsNumber.Top
+        case ConMany() => AbsNum.Top
       }
       num + retN
     })

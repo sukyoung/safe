@@ -21,19 +21,19 @@ import scala.collection.immutable.{ HashMap, HashSet }
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with abstract keys
 ////////////////////////////////////////////////////////////////////////////////
-object AKeyObject extends AbsObjectUtil {
+object AKeyObject extends ObjDomain {
   private lazy val atrue = AbsBool.True
   private lazy val afalse = AbsBool.False
 
-  case object Top extends Dom
+  case object Top extends Elem
   case class ObjMap(
     val amap: APropMap,
     val imap: ObjInternalMap = ObjEmptyIMap
-  ) extends Dom
-  lazy val Bot: AbsObject = ObjMap(APropMapBot)
-  lazy val Empty: AbsObject = ObjMap(APropMapEmpty)
+  ) extends Elem
+  lazy val Bot: Elem = ObjMap(APropMapBot)
+  lazy val Empty: Elem = ObjMap(APropMapEmpty)
 
-  def alpha(obj: Object): Dom = {
+  def alpha(obj: Obj): Elem = {
     val amap: APropMap = obj.amap.foldLeft[APropMap](APropMapEmpty) {
       case (map, (key, dp)) => map.update(key, AbsDataProp(dp))
     }
@@ -47,15 +47,12 @@ object AKeyObject extends AbsObjectUtil {
     ObjMap(amap, imap)
   }
 
-  sealed abstract class Dom extends AbsObject {
-    def gamma: ConSet[Object] = ConInf() // TODO more precise
+  sealed abstract class Elem extends ElemTrait {
+    def gamma: ConSet[Obj] = ConInf() // TODO more precise
 
-    def getSingle: ConSingle[Object] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Obj] = ConMany() // TODO more precise
 
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
-
-    def <=(that: AbsObject): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true
       case (Top, _) => false
       case (left: ObjMap, right: ObjMap) =>
@@ -73,7 +70,7 @@ object AKeyObject extends AbsObjectUtil {
           }
     }
 
-    def +(that: AbsObject): AbsObject = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (left: ObjMap, right: ObjMap) =>
         val newAMap = left.amap + right.amap
@@ -93,7 +90,7 @@ object AKeyObject extends AbsObjectUtil {
         ObjMap(newAMap, newIMap)
     }
 
-    def <>(that: AbsObject): AbsObject = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Top, right) => right
       case (left, Top) => left
       case (left: ObjMap, right: ObjMap) =>
@@ -127,13 +124,13 @@ object AKeyObject extends AbsObjectUtil {
     ///////////////////////////////////////////////////////////////
     def isEmpty: Boolean = this == Empty
 
-    def oldify(loc: Loc): AbsObject = loc match {
+    def oldify(loc: Loc): Elem = loc match {
       case locR @ Recency(subLoc, Recent) => subsLoc(locR, Recency(subLoc, Old))
       case _ => this
     }
 
     /* substitute locR by locO */
-    def subsLoc(locR: Recency, locO: Recency): AbsObject = this match {
+    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
       case Top => Top
       case obj @ ObjMap(amap, imap) =>
         if (obj.isEmpty) obj
@@ -148,7 +145,7 @@ object AKeyObject extends AbsObjectUtil {
         }
     }
 
-    def weakSubsLoc(locR: Recency, locO: Recency): AbsObject = this match {
+    def weakSubsLoc(locR: Recency, locO: Recency): Elem = this match {
       case Top => Top
       case obj @ ObjMap(amap, imap) =>
         if (obj.isEmpty) obj
@@ -171,7 +168,7 @@ object AKeyObject extends AbsObjectUtil {
         else AbsDataProp.Bot
     }
 
-    def apply(astr: AbsString): AbsDataProp = this match {
+    def apply(astr: AbsStr): AbsDataProp = this match {
       case Top => AbsDataProp.Top
       case ObjMap(amap, imap) =>
         val (dpset, success) = amap.lookup(astr)
@@ -187,26 +184,26 @@ object AKeyObject extends AbsObjectUtil {
       }
     }
 
-    def initializeUpdate(str: String, dp: AbsDataProp): AbsObject = this match {
+    def initializeUpdate(str: String, dp: AbsDataProp): Elem = this match {
       case Top => Top
       case ObjMap(amap, imap) => ObjMap(amap.initializeUpdate(str, dp), imap)
     }
 
     // absent value is set to AbsentBot because it is strong update.
-    def update(str: String, dp: AbsDataProp, weak: Boolean = false): AbsObject = this match {
+    def update(str: String, dp: AbsDataProp, weak: Boolean = false): Elem = this match {
       case Top => Top
       case obj @ ObjMap(amap, imap) =>
         if (obj.isBottom) obj
         else ObjMap(amap.update(str, dp, weak), imap)
     }
 
-    def update(astr: AbsString, dp: AbsDataProp): AbsObject = this match {
+    def update(astr: AbsStr, dp: AbsDataProp): Elem = this match {
       case Top => Top
       case ObjMap(amap, imap) =>
         ObjMap(amap.update(astr, dp), imap)
     }
 
-    def update(in: IName, iv: AbsIValue): AbsObject = this match {
+    def update(in: IName, iv: AbsIValue): Elem = this match {
       case Top => Top
       case ObjMap(amap, imap) =>
         // val newIv = iv + this(in)
@@ -225,7 +222,7 @@ object AKeyObject extends AbsObjectUtil {
         strSet.foldLeft(AbsBool.Bot)((absB, str) => absB + (obj contains str))
     }
 
-    def contains(astr: AbsString): AbsBool = this match {
+    def contains(astr: AbsStr): AbsBool = this match {
       case Top => AbsBool.Top
       case ObjMap(amap, imap) => amap contains astr
     }
@@ -239,11 +236,11 @@ object AKeyObject extends AbsObjectUtil {
         }
     }
 
-    def abstractKeySet: ConSet[AbsString] = this match {
+    def abstractKeySet: ConSet[AbsStr] = this match {
       case Top => ConInf()
       case ObjMap(amap, _) => ConFin(amap.abstractKeySet)
     }
-    def abstractKeySet(filter: (AbsString, AbsDataProp) => Boolean): ConSet[AbsString] = this match {
+    def abstractKeySet(filter: (AbsStr, AbsDataProp) => Boolean): ConSet[AbsStr] = this match {
       case Top => ConInf()
       case ObjMap(amap, _) => ConFin(amap.abstractKeySet(filter))
     }
@@ -251,14 +248,14 @@ object AKeyObject extends AbsObjectUtil {
       case Top => ConInf()
       case ObjMap(amap, _) => amap.collectKeySet(prefix)
     }
-    def keySetPair: (List[String], AbsString) = this match {
-      case Top => (Nil, AbsString.Top)
+    def keySetPair: (List[String], AbsStr) = this match {
+      case Top => (Nil, AbsStr.Top)
       case ObjMap(amap, _) => {
         val (strSet, astr) = amap.keySetPair
         (strSet.toList.sortBy { _.toString }, astr) // TODO for-in order
       }
     }
-    def isDefinite(str: AbsString): Boolean = this match {
+    def isDefinite(str: AbsStr): Boolean = this match {
       case Top => false
       case ObjMap(amap, _) => amap.isDefinite(str)
     }
@@ -268,9 +265,9 @@ object AKeyObject extends AbsObjectUtil {
     ///////////////////////////////////////////////////////////////
     // Section 8.12.1 [[GetOwnProperty]](P)
     def GetOwnProperty(P: String): (AbsDesc, AbsUndef) =
-      GetOwnProperty(AbsString(P))
+      GetOwnProperty(AbsStr(P))
 
-    def GetOwnProperty(P: AbsString): (AbsDesc, AbsUndef) = this match {
+    def GetOwnProperty(P: AbsStr): (AbsDesc, AbsUndef) = this match {
       case Top => (AbsDesc.Top, AbsUndef.Top)
       case ObjMap(amap, imap) =>
         val (dpset, definite) = amap.lookup(P)
@@ -288,13 +285,13 @@ object AKeyObject extends AbsObjectUtil {
 
     // Section 8.12.2 [[GetProperty]](P)
     def GetProperty(P: String, h: AbsHeap): (AbsDesc, AbsUndef) =
-      GetProperty(AbsString(P), h)
+      GetProperty(AbsStr(P), h)
 
-    def GetProperty(P: AbsString, h: AbsHeap): (AbsDesc, AbsUndef) = this match {
+    def GetProperty(P: AbsStr, h: AbsHeap): (AbsDesc, AbsUndef) = this match {
       case Top => (AbsDesc.Top, AbsUndef.Top)
       case obj @ ObjMap(amap, imap) =>
         var visited = HashSet[Loc]()
-        def visit(currObj: AbsObject): (AbsDesc, AbsUndef) = {
+        def visit(currObj: Elem): (AbsDesc, AbsUndef) = {
           val (desc, undef) = currObj.GetOwnProperty(P)
           val (parentDesc, parentUndef) =
             if (undef.isBottom) (AbsDesc.Bot, AbsUndef.Bot)
@@ -325,7 +322,7 @@ object AKeyObject extends AbsObjectUtil {
       case obj @ ObjMap(amap, imap) =>
         var visited = HashSet[Loc]()
         val valueBot = AbsValue.Bot
-        def visit(currentObj: AbsObject): AbsValue = {
+        def visit(currentObj: Elem): AbsValue = {
           val test = currentObj contains str
           val v1 =
             if (AbsBool.True <= test) currentObj(str).value
@@ -349,12 +346,12 @@ object AKeyObject extends AbsObjectUtil {
         visit(obj)
     }
 
-    def Get(astr: AbsString, h: AbsHeap): AbsValue = this match {
+    def Get(astr: AbsStr, h: AbsHeap): AbsValue = this match {
       case Top => AbsValue.Top
       case obj @ ObjMap(amap, imap) =>
         var visited = HashSet[Loc]()
         val valueBot = AbsValue.Bot
-        def visit(currentObj: AbsObject): AbsValue = {
+        def visit(currentObj: Elem): AbsValue = {
           val test = currentObj contains astr
           val v1 =
             if (AbsBool.True <= test) currentObj(astr).value
@@ -379,9 +376,9 @@ object AKeyObject extends AbsObjectUtil {
     }
 
     // Section 8.12.4 [[CanPut]](P)
-    def CanPut(P: String, h: AbsHeap): AbsBool = CanPut(AbsString(P), h)
+    def CanPut(P: String, h: AbsHeap): AbsBool = CanPut(AbsStr(P), h)
 
-    def CanPut(P: AbsString, h: AbsHeap): AbsBool = this match {
+    def CanPut(P: AbsStr, h: AbsHeap): AbsBool = this match {
       case Top => AbsBool.Top
       case obj @ ObjMap(amap, imap) =>
         val (desc, undef) = GetOwnProperty(P)
@@ -403,10 +400,17 @@ object AKeyObject extends AbsObjectUtil {
             val undefInheritCase =
               if (inheritUndef.isBottom) AbsBool.Bot
               else extensible
-            val inheritCase = extensible.map[AbsBool](
-              elseV = AbsBool.False,
-              thenV = { val (b, _) = inheritDesc.writable; b }
-            )(AbsBool)
+            val b = extensible
+            val f =
+              if (AF <= b) {
+                AbsBool.False
+              } else AbsBool.Bot
+            val t =
+              if (AT <= b) {
+                val (b, _) = inheritDesc.writable
+                b
+              } else AbsBool.Bot
+            val inheritCase = t + f
             nullProtoCase + undefInheritCase + inheritCase
           }
         }
@@ -414,11 +418,11 @@ object AKeyObject extends AbsObjectUtil {
     }
 
     // Section 8.12.5 [[Put]](P, V, Throw)
-    def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: AbsHeap): (AbsObject, Set[Exception]) = this match {
+    def Put(P: AbsStr, V: AbsValue, Throw: Boolean = true, h: AbsHeap): (Elem, Set[Exception]) = this match {
       case Top => (Top, HashSet(TypeError, RangeError))
       case obj @ ObjMap(amap, imap) =>
         val canPut = CanPut(P, h)
-        val (falseObj: AbsObject, falseExcSet: Set[Exception]) =
+        val (falseObj: Elem, falseExcSet: Set[Exception]) =
           if (AbsBool.False <= canPut) {
             if (Throw) (Bot, HashSet(TypeError))
             else (obj, ExcSetEmpty)
@@ -452,11 +456,11 @@ object AKeyObject extends AbsObjectUtil {
     }
 
     // Section 8.12.6 [[HasProperty]](P)
-    def HasProperty(P: AbsString, h: AbsHeap): AbsBool = this match {
+    def HasProperty(P: AbsStr, h: AbsHeap): AbsBool = this match {
       case Top => AbsBool.Top
       case obj @ ObjMap(amap, imap) =>
         var visited = AbsLoc.Bot
-        def visit(currObj: AbsObject): AbsBool = {
+        def visit(currObj: Elem): AbsBool = {
           val test = currObj contains P
           val b1 =
             if (AbsBool.True <= test) AbsBool.True
@@ -478,7 +482,7 @@ object AKeyObject extends AbsObjectUtil {
     }
 
     // Section 8.12.7 [[Delete]](P, Throw)
-    def Delete(str: String): (AbsObject, AbsBool) = this match {
+    def Delete(str: String): (Elem, AbsBool) = this match {
       case Top => (Top, AbsBool.Top)
       case obj @ ObjMap(amap, imap) =>
         if (obj.isBottom) (obj, AbsBool.Bot)
@@ -488,7 +492,7 @@ object AKeyObject extends AbsObjectUtil {
         }
     }
 
-    def Delete(astr: AbsString): (AbsObject, AbsBool) = this match {
+    def Delete(astr: AbsStr): (Elem, AbsBool) = this match {
       case Top => (Top, AbsBool.Top)
       case obj @ ObjMap(amap, imap) =>
         if (obj.isBottom) (obj, AbsBool.Bot)
@@ -508,20 +512,29 @@ object AKeyObject extends AbsObjectUtil {
     }
 
     def DefaultValue(h: AbsHeap): AbsPValue = this match {
-      case Top => AbsPValue(numval = AbsNumber.Top, strval = AbsString.Top)
+      case Top => AbsPValue(numval = AbsNum.Top, strval = AbsStr.Top)
       case obj @ ObjMap(amap, imap) =>
         val className = obj(IClass)
-        val isDateClass = className.value.pvalue.strval === AbsString("Date")
-        isDateClass.map(DefaultValueAsString(h), DefaultValueAsNumber(h))(AbsPValue)
+        val isDateClass = className.value.pvalue.strval === AbsStr("Date")
+        val b = isDateClass
+        val t =
+          if (AT <= b) {
+            DefaultValueAsString(h)
+          } else AbsPValue.Bot
+        val f =
+          if (AF <= b) {
+            DefaultValueAsNumber(h)
+          } else AbsPValue.Bot
+        t + f
     }
 
     private def DefaultValueAsString(h: AbsHeap): AbsPValue = this match {
-      case Top => AbsString.Top
+      case Top => AbsStr.Top
       case ObjMap(_, _) =>
         val toString = Get("toString", h)
         val isCallable = TypeConversionHelper.IsCallable(toString, h)
         val str =
-          if (AbsBool.True <= isCallable) AbsPValue(strval = AbsString.Top)
+          if (AbsBool.True <= isCallable) AbsPValue(strval = AbsStr.Top)
           else AbsPValue.Bot
         if (AbsBool.False <= isCallable) {
           val valueOf = Get("valueOf", h)
@@ -533,7 +546,7 @@ object AKeyObject extends AbsObjectUtil {
     }
 
     private def DefaultValueAsNumber(h: AbsHeap): AbsPValue = this match {
-      case Top => AbsNumber.Top
+      case Top => AbsNum.Top
       case ObjMap(_, _) =>
         val valueOf = Get("valueOf", h)
         val isCallable = TypeConversionHelper.IsCallable(valueOf, h)
@@ -543,14 +556,14 @@ object AKeyObject extends AbsObjectUtil {
         if (AbsBool.False <= isCallable) {
           val toString = Get("toString", h)
           val str =
-            if (AbsBool.True <= TypeConversionHelper.IsCallable(toString, h)) AbsPValue(strval = AbsString.Top)
+            if (AbsBool.True <= TypeConversionHelper.IsCallable(toString, h)) AbsPValue(strval = AbsStr.Top)
             else AbsPValue.Bot
           value + str
         } else value
     }
 
     //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
-    def DefineOwnProperty(h: AbsHeap, P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = this match {
+    def DefineOwnProperty(h: AbsHeap, P: AbsStr, Desc: AbsDesc, Throw: Boolean = true): (Elem, AbsBool, Set[Exception]) = this match {
       case Top => (Top, AbsBool.Top, HashSet(TypeError, RangeError))
       case obj @ ObjMap(_, _) =>
         val Reject =
@@ -571,7 +584,7 @@ object AKeyObject extends AbsObjectUtil {
               val changedObj = update(P, AbsDataProp(Desc))
               (changedObj, AbsBool.True, ExcSetEmpty)
             } else BotTriple
-          val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
+          val (obj2: Elem, b2, excSet2: Set[Exception]) =
             // 3. If current is undefined and extensible is false, then Reject.
             if (AbsBool.False <= extensible) Reject
             else BotTriple
@@ -601,7 +614,7 @@ object AKeyObject extends AbsObjectUtil {
           else (Bot, AbsBool.Bot)
 
         // 7. If the [[Configurable]] field of current is false then
-        val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
+        val (obj2: Elem, b2, excSet2: Set[Exception]) =
           if (AbsBool.False <= cc) {
             // a. Reject, if the [[Configurable]] field of Desc is true.
             if (AbsBool.True <= dc) Reject
@@ -613,7 +626,7 @@ object AKeyObject extends AbsObjectUtil {
           } else BotTriple
 
         // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
-        val (obj7: AbsObject, b7: AbsBool, excSet7: Set[Exception]) =
+        val (obj7: Elem, b7, excSet7: Set[Exception]) =
           // a. If the [[Configurable]] field of current is false, then
           if (AbsBool.False <= cc) {
             // i. Reject, if the [[Writable]] field of current is false and the [[Writable]] field of Desc is true.
@@ -640,8 +653,8 @@ object AKeyObject extends AbsObjectUtil {
           } else BotTriple
 
         val excSet4 =
-          if (AbsString("Array") <= obj(IClass).value.pvalue.strval &&
-            AbsString("length") <= P &&
+          if (AbsStr("Array") <= obj(IClass).value.pvalue.strval &&
+            AbsStr("length") <= P &&
             AbsBool.False <= (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
           else ExcSetEmpty
 
@@ -655,49 +668,49 @@ object AKeyObject extends AbsObjectUtil {
   ////////////////////////////////////////////////////////////////
   // new Object constructors
   ////////////////////////////////////////////////////////////////
-  def newObject: AbsObject = newObject(BuiltinObjectProto.loc)
+  def newObject: Elem = newObject(BuiltinObjectProto.loc)
 
-  def newObject(loc: Loc): AbsObject = newObject(AbsLoc(loc))
+  def newObject(loc: Loc): Elem = newObject(AbsLoc(loc))
 
-  def newObject(locSet: AbsLoc): AbsObject = {
+  def newObject(locSet: AbsLoc): Elem = {
     Empty
-      .update(IClass, AbsIValue(AbsString("Object")))
+      .update(IClass, AbsIValue(AbsStr("Object")))
       .update(IPrototype, AbsIValue(locSet))
       .update(IExtensible, AbsIValue(atrue))
   }
 
-  def newArgObject(absLength: AbsNumber = AbsNumber(0)): AbsObject = {
+  def newArgObject(absLength: AbsNum = AbsNum(0)): Elem = {
     Empty
-      .update(IClass, AbsIValue(AbsString("Arguments")))
+      .update(IClass, AbsIValue(AbsStr("Arguments")))
       .update(IPrototype, AbsIValue(BuiltinObjectProto.loc))
       .update(IExtensible, AbsIValue(atrue))
       .update("length", AbsDataProp(absLength, atrue, afalse, atrue))
   }
 
-  def newArrayObject(absLength: AbsNumber = AbsNumber(0)): AbsObject = {
+  def newArrayObject(absLength: AbsNum = AbsNum(0)): Elem = {
     Empty
-      .update(IClass, AbsIValue(AbsString("Array")))
+      .update(IClass, AbsIValue(AbsStr("Array")))
       .update(IPrototype, AbsIValue(BuiltinArrayProto.loc))
       .update(IExtensible, AbsIValue(atrue))
       .update("length", AbsDataProp(absLength, atrue, afalse, afalse))
   }
 
-  def newFunctionObject(fid: FunctionId, env: AbsValue, l: Loc, n: AbsNumber): AbsObject = {
+  def newFunctionObject(fid: FunctionId, env: AbsValue, l: Loc, n: AbsNum): Elem = {
     newFunctionObject(Some(fid), Some(fid), env, Some(l), n)
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], n: AbsNumber): AbsObject = {
+    locOpt: Option[Loc], n: AbsNum): Elem = {
     newFunctionObject(fidOpt, constructIdOpt, env,
       locOpt, atrue, afalse, afalse, n)
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
-    absLength: AbsNumber): AbsObject = {
+    absLength: AbsNum): Elem = {
     val obj1 =
       Empty
-        .update(IClass, AbsIValue(AbsString("Function")))
+        .update(IClass, AbsIValue(AbsStr("Function")))
         .update(IPrototype, AbsIValue(BuiltinFunctionProto.loc))
         .update(IExtensible, AbsIValue(atrue))
         .update(IScope, AbsIValue(env))
@@ -721,23 +734,23 @@ object AKeyObject extends AbsObjectUtil {
     obj4
   }
 
-  def newBooleanObj(absB: AbsBool): AbsObject = {
+  def newBooleanObj(absB: AbsBool): Elem = {
     val newObj = newObject(BuiltinBooleanProto.loc)
-    newObj.update(IClass, AbsIValue(AbsString("Boolean")))
+    newObj.update(IClass, AbsIValue(AbsStr("Boolean")))
       .update(IPrimitiveValue, AbsIValue(absB))
   }
 
-  def newNumberObj(absNum: AbsNumber): AbsObject = {
+  def newNumberObj(absNum: AbsNum): Elem = {
     val newObj = newObject(BuiltinNumberProto.loc)
-    newObj.update(IClass, AbsIValue(AbsString("Number")))
+    newObj.update(IClass, AbsIValue(AbsStr("Number")))
       .update(IPrimitiveValue, AbsIValue(absNum))
   }
 
-  def newStringObj(absStr: AbsString): AbsObject = {
+  def newStringObj(absStr: AbsStr): Elem = {
     val newObj = newObject(BuiltinStringProto.loc)
 
     val newObj2 = newObj
-      .update(IClass, AbsIValue(AbsString("String")))
+      .update(IClass, AbsIValue(AbsStr("String")))
       .update(IPrimitiveValue, AbsIValue(absStr))
 
     absStr.gamma match {
@@ -745,7 +758,7 @@ object AKeyObject extends AbsObjectUtil {
         strSet.foldLeft(Bot)((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
-            val charAbsStr = AbsString(str.charAt(tmpIdx).toString)
+            val charAbsStr = AbsStr(str.charAt(tmpIdx).toString)
             val charVal = AbsValue(charAbsStr)
             tmpObj.update(tmpIdx.toString, AbsDataProp(charVal, afalse, atrue, afalse))
           })
@@ -754,14 +767,14 @@ object AKeyObject extends AbsObjectUtil {
         })
       case _ =>
         newObj2
-          .update(AbsString.Number, AbsDataProp(AbsValue(AbsString.Top), afalse, atrue, afalse))
+          .update(AbsStr.Number, AbsDataProp(AbsValue(AbsStr.Top), afalse, atrue, afalse))
           .update("length", AbsDataProp(absStr.length, afalse, afalse, afalse))
     }
   }
 
-  def newErrorObj(errorName: String, protoLoc: Loc): AbsObject = {
+  def newErrorObj(errorName: String, protoLoc: Loc): Elem = {
     Empty
-      .update(IClass, AbsIValue(AbsString(errorName)))
+      .update(IClass, AbsIValue(AbsStr(errorName)))
       .update(IPrototype, AbsIValue(protoLoc))
       .update(IExtensible, AbsIValue(AbsBool.True))
   }
@@ -775,8 +788,8 @@ object AKeyObject extends AbsObjectUtil {
     if (locSet.isBottom) AbsPValue.Bot
     else {
       preferredType match {
-        case "Number" => AbsPValue(numval = AbsNumber.Top)
-        case "String" => AbsPValue(strval = AbsString.Top)
+        case "Number" => AbsPValue(numval = AbsNum.Top)
+        case "String" => AbsPValue(strval = AbsStr.Top)
         case _ => AbsPValue.Top
       }
     }
@@ -788,16 +801,16 @@ object AKeyObject extends AbsObjectUtil {
   }
 
   // 8.10.4 FromPropertyDescriptor ( Desc )
-  def FromPropertyDescriptor(h: AbsHeap, desc: AbsDesc): (AbsObject, Set[Exception]) = {
+  def FromPropertyDescriptor(h: AbsHeap, desc: AbsDesc): (Elem, Set[Exception]) = {
     def put(
-      obj: AbsObject,
+      obj: Elem,
       name: String,
       pair: (AbsValue, AbsAbsent)
-    ): (AbsObject, AbsBool, Set[Exception]) = {
+    ): (Elem, AbsBool, Set[Exception]) = {
       val T = (AbsBool.True, AbsAbsent.Bot)
       obj.DefineOwnProperty(
         h,
-        AbsString(name),
+        AbsStr(name),
         AbsDesc(pair, T, T, T),
         false
       )
@@ -818,7 +831,7 @@ object AKeyObject extends AbsObjectUtil {
 // abstract map with abstract key
 ////////////////////////////////////////////////////////////////////////////////
 sealed abstract class APropMap(
-    private val map: Map[AbsString, AbsDataProp],
+    private val map: Map[AbsStr, AbsDataProp],
     private val defset: DefSet
 ) {
   override def toString: String = {
@@ -872,7 +885,7 @@ sealed abstract class APropMap(
       case _ =>
         val thisKeys = this.map.keySet
         val thatKeys = that.map.keySet
-        val map1 = (thisKeys -- thatKeys).foldLeft(HashMap[AbsString, AbsDataProp]())((m, key) => {
+        val map1 = (thisKeys -- thatKeys).foldLeft(HashMap[AbsStr, AbsDataProp]())((m, key) => {
           m + (key -> this.map(key))
         })
         val map2 = (thatKeys -- thisKeys).foldLeft(map1)((m, key) => {
@@ -887,7 +900,7 @@ sealed abstract class APropMap(
   /* property read */
   def lookup(str: String): (Set[AbsDataProp], Boolean) = {
     val emptySet = HashSet[AbsDataProp]()
-    val astr = AbsString(str)
+    val astr = AbsStr(str)
     val domIn = (this.map.keySet contains astr) && (this.defset contains str)
     this match {
       case APropMapBot => (emptySet, false)
@@ -902,7 +915,7 @@ sealed abstract class APropMap(
     }
   }
 
-  def lookup(astr: AbsString): (Set[AbsDataProp], Boolean) = {
+  def lookup(astr: AbsStr): (Set[AbsDataProp], Boolean) = {
     val emptySet = HashSet[AbsDataProp]()
     (this, astr.gamma) match {
       case (APropMapBot, _) => (emptySet, false)
@@ -919,7 +932,7 @@ sealed abstract class APropMap(
 
   /* property write */
   def initializeUpdate(str: String, dp: AbsDataProp): APropMap = {
-    val astr = AbsString(str)
+    val astr = AbsStr(str)
     val domIn = this.map.keySet contains astr
 
     this match {
@@ -934,7 +947,7 @@ sealed abstract class APropMap(
 
   def update(str: String, dp: AbsDataProp, weak: Boolean = false): APropMap = {
     // TODO: add Map[String, AbsDataProp] for performance
-    val astr = AbsString(str)
+    val astr = AbsStr(str)
     val domIn = this.map.keySet contains astr
 
     this match {
@@ -951,7 +964,7 @@ sealed abstract class APropMap(
     }
   }
 
-  def update(astr: AbsString, dp: AbsDataProp): APropMap = {
+  def update(astr: AbsStr, dp: AbsDataProp): APropMap = {
     val domIn = this.map.keySet contains astr
 
     (this, astr.gamma) match {
@@ -971,7 +984,7 @@ sealed abstract class APropMap(
 
   /* property delete */
   def delete(str: String): (APropMap, AbsBool) = {
-    val astr = AbsString(str)
+    val astr = AbsStr(str)
     val (domIn, configurable) =
       if (this.map.keySet contains astr) (true, this.map(astr).configurable)
       else (false, AbsBool.Bot)
@@ -996,7 +1009,7 @@ sealed abstract class APropMap(
     }
   }
 
-  def delete(astr: AbsString): (APropMap, AbsBool) = {
+  def delete(astr: AbsStr): (APropMap, AbsBool) = {
     val (domIn, configurable) =
       if (this.map.keySet contains astr) (true, this.map(astr).configurable)
       else (false, AbsBool.Bot)
@@ -1043,7 +1056,7 @@ sealed abstract class APropMap(
     }
   }
 
-  def contains(astr: AbsString): AbsBool = {
+  def contains(astr: AbsStr): AbsBool = {
     if (this.isBottom) AbsBool.Bot
     else {
       val domIn = this.map.keySet.exists(_.isRelated(astr))
@@ -1071,17 +1084,17 @@ sealed abstract class APropMap(
     }
 
   def mapValue(f: AbsDataProp => AbsDataProp): APropMap = {
-    val newMap = map.foldLeft(HashMap[AbsString, AbsDataProp]())((tmp, kv) => {
+    val newMap = map.foldLeft(HashMap[AbsStr, AbsDataProp]())((tmp, kv) => {
       val (k, v) = kv
       tmp + (k -> f(v))
     })
     APropMapFin(newMap, defset)
   }
 
-  def abstractKeySet: Set[AbsString] = map.keySet
+  def abstractKeySet: Set[AbsStr] = map.keySet
 
-  def abstractKeySet(filter: (AbsString, AbsDataProp) => Boolean): Set[AbsString] = {
-    map.foldLeft(HashSet[AbsString]()) {
+  def abstractKeySet(filter: (AbsStr, AbsDataProp) => Boolean): Set[AbsStr] = {
+    map.foldLeft(HashSet[AbsStr]()) {
       case (set, (key, dp)) => {
         if (filter(key, dp)) set + key
         else set
@@ -1102,13 +1115,13 @@ sealed abstract class APropMap(
     case ConFin(set) => ConFin(set.filter(_.startsWith(prefix)))
   }
 
-  def isDefinite(str: AbsString): Boolean = str.gamma match {
+  def isDefinite(str: AbsStr): Boolean = str.gamma match {
     case ConFin(set) if set.forall(defset contains _) => true
     case _ => false
   }
 
-  def keySetPair: (Set[String], AbsString) = map.keySet.foldLeft(
-    (HashSet[String](), AbsString.Bot)
+  def keySetPair: (Set[String], AbsStr) = map.keySet.foldLeft(
+    (HashSet[String](), AbsStr.Bot)
   ) {
       case ((strSet, astr), akey) => akey.gamma match {
         case ConInf() => (strSet, astr + akey)
@@ -1118,16 +1131,16 @@ sealed abstract class APropMap(
             if (AbsBool.True <= isEnum) {
               val isDef = defset contains key
               if (isDef && (AbsBool.Top != isEnum)) (strSet + key, astr)
-              else (strSet, astr + AbsString(key))
+              else (strSet, astr + AbsStr(key))
             } else (strSet, astr)
           }
         }
       }
     }
 }
-case class APropMapFin(private val map: Map[AbsString, AbsDataProp], private val defset: DefSet) extends APropMap(map, defset)
-case object APropMapEmpty extends APropMap(HashMap[AbsString, AbsDataProp](), DefSet.Empty)
-case object APropMapBot extends APropMap(HashMap[AbsString, AbsDataProp](), DefSet.Top)
+case class APropMapFin(private val map: Map[AbsStr, AbsDataProp], private val defset: DefSet) extends APropMap(map, defset)
+case object APropMapEmpty extends APropMap(HashMap[AbsStr, AbsDataProp](), DefSet.Empty)
+case object APropMapBot extends APropMap(HashMap[AbsStr, AbsDataProp](), DefSet.Top)
 
 ////////////////////////////////////////////////////////////////////////////////
 // definite key set
@@ -1180,7 +1193,7 @@ sealed abstract class DefSet {
       case DefSetFin(a) => a contains elem
     }
 
-  def contains(elem: AbsString): Boolean =
+  def contains(elem: AbsStr): Boolean =
     (this, elem.gamma) match {
       case (DefSetTop, _) => true
       case (DefSetFin(_), conset) if conset.isBottom => true

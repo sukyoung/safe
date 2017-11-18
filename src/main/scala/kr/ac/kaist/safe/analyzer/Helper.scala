@@ -23,8 +23,8 @@ object Helper {
   private val afalse = AbsBool.False
   private val atrue = AbsBool.True
 
-  def arrayLenghtStore(heap: AbsHeap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): (AbsHeap, Set[Exception]) = {
-    if (AbsString("length") <= idxAbsStr) {
+  def arrayLenghtStore(heap: AbsHeap, idxAbsStr: AbsStr, storeV: AbsValue, l: Loc): (AbsHeap, Set[Exception]) = {
+    if (AbsStr("length") <= idxAbsStr) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val nNewLen = typeHelper.ToUInt32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
@@ -34,7 +34,7 @@ object Helper {
         if ((atrue <= (nOldLen < nNewLen)
           || atrue <= (nOldLen === nNewLen))
           && (atrue <= bCanPut))
-          heap.propStore(l, AbsString("length"), storeV)
+          heap.propStore(l, AbsStr("length"), storeV)
         else
           AbsHeap.Bot
 
@@ -44,16 +44,16 @@ object Helper {
 
       val arrLengthHeap4 =
         if ((atrue <= (nNewLen < nOldLen)) && (atrue <= bCanPut)) {
-          val hi = heap.propStore(l, AbsString("length"), storeV)
+          val hi = heap.propStore(l, AbsStr("length"), storeV)
           (nNewLen.getSingle, nOldLen.getSingle) match {
             case (ConOne(n1), ConOne(n2)) =>
               (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) => {
-                val (tmpHeap, _) = hj.delete(l, AbsString(i.toString))
+                val (tmpHeap, _) = hj.delete(l, AbsStr(i.toString))
                 tmpHeap
               })
             case (ConZero(), _) | (_, ConZero()) => AbsHeap.Bot
             case _ =>
-              val (tmpHeap, _) = hi.delete(l, AbsString.Number)
+              val (tmpHeap, _) = hi.delete(l, AbsStr.Number)
               tmpHeap
           }
         } else {
@@ -75,7 +75,7 @@ object Helper {
     }
   }
 
-  def arrayIdxStore(heap: AbsHeap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): AbsHeap = {
+  def arrayIdxStore(heap: AbsHeap, idxAbsStr: AbsStr, storeV: AbsValue, l: Loc): AbsHeap = {
     if (atrue <= idxAbsStr.isArrayIndex) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val num = typeHelper.ToNumber(idxAbsStr)
@@ -98,14 +98,14 @@ object Helper {
           val hi = heap.propStore(l, idxAbsStr, storeV)
           val idxVal = AbsValue(nIndex)
           val vNewIndex = bopPlus(idxVal, AbsValue(1))
-          hi.propStore(l, AbsString("length"), vNewIndex)
+          hi.propStore(l, AbsStr("length"), vNewIndex)
         } else AbsHeap.Bot
       arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
     } else
       AbsHeap.Bot
   }
 
-  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsString, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
+  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsStr, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
       (afalse <= heap.isArray(l)) && atrue <= heap.get(l).CanPut(idxAbsStr, heap))
@@ -119,12 +119,12 @@ object Helper {
       else AbsHeap.Bot
 
     // store for non-array object
-    val nArrHeap = locSetNArr.foldLeft(AbsHeap.Bot)((iHeap, l) => {
+    val nArrHeap = locSetNArr.foldLeft[AbsHeap](AbsHeap.Bot)((iHeap, l) => {
       iHeap + heap.propStore(l, idxAbsStr, storeV)
     })
 
     // 15.4.5.1 [[DefineOwnProperty]] of Array
-    val (arrHeap, arrExcSet) = locSetArr.foldLeft((AbsHeap.Bot, ExcSetEmpty))((res2, l) => {
+    val (arrHeap, arrExcSet) = locSetArr.foldLeft[(AbsHeap, Set[Exception])]((AbsHeap.Bot, ExcSetEmpty))((res2, l) => {
       // 3. s is length
       val (lengthHeap, lengthExcSet) = arrayLenghtStore(heap, idxAbsStr, storeV, l)
       // 4. s is array index
@@ -132,7 +132,7 @@ object Helper {
 
       // 5. other
       val otherHeap =
-        if (idxAbsStr != AbsString("length") && afalse <= idxAbsStr.isArrayIndex)
+        if (idxAbsStr != AbsStr("length") && afalse <= idxAbsStr.isArrayIndex)
           heap.propStore(l, idxAbsStr, storeV)
         else
           AbsHeap.Bot
@@ -156,14 +156,17 @@ object Helper {
         visited += l1
         val locVal1 = AbsValue(l1)
         val eqVal = bopSEq(h, locVal1, locVal2)
-        eqVal.pvalue.boolval.map(
-          thenV = boolTrueVal,
-          elseV = {
-          val protoVal = h.get(l1)(IPrototype).value
-          val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-          v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
-        }
-        )(AbsValue)
+        val b = eqVal.pvalue.boolval
+        val t =
+          if (AT <= b) boolTrueVal
+          else AbsValue.Bot
+        val f =
+          if (AF <= b) {
+            val protoVal = h.get(l1)(IPrototype).value
+            val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
+            v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+          } else AbsValue.Bot
+        t + f
       }
     }
 
@@ -263,16 +266,16 @@ object Helper {
         AbsValue(resAbsNum)
       case (false, true) =>
         val resVal = AbsValue(primLPV.strval.concat(TypeConversionHelper.ToString(primRPV)))
-        resVal + bopPlus(AbsValue(primLPV.copyWith(strval = AbsString.Bot)), AbsValue(primRPV))
+        resVal + bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV))
       case (true, false) =>
         val resVal = AbsValue(TypeConversionHelper.ToString(primLPV).concat(primRPV.strval))
-        resVal + bopPlus(AbsValue(primLPV), AbsValue(primRPV.copyWith(strval = AbsString.Bot)))
+        resVal + bopPlus(AbsValue(primLPV), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
       case (false, false) =>
         val lStr = TypeConversionHelper.ToString(primLPV).concat(primRPV.strval)
         val rStr = primLPV.strval.concat(TypeConversionHelper.ToString(primRPV))
         val resVal = AbsValue(lStr + rStr)
 
-        resVal + bopPlus(AbsValue(primLPV.copyWith(strval = AbsString.Bot)), AbsValue(primRPV.copyWith(strval = AbsString.Bot)))
+        resVal + bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
     }
   }
 
@@ -330,24 +333,24 @@ object Helper {
     val b4 = (leftPV.numval.isBottom, rightPV.strval.isBottom) match {
       case (true, _) | (_, true) => AbsBool.Bot
       case _ =>
-        val rightNumVal = rightPV.strval.toAbsNumber
+        val rightNumVal = rightPV.strval.toAbsNum
         (leftPV.numval === rightNumVal)
     }
     val b5 = (leftPV.strval.isBottom, rightPV.numval.isBottom) match {
       case (true, _) | (_, true) => AbsBool.Bot
       case _ =>
-        val leftNumVal = leftPV.strval.toAbsNumber
+        val leftNumVal = leftPV.strval.toAbsNum
         (leftNumVal === rightPV.numval)
     }
     val b6 = leftPV.boolval.isBottom match {
       case true => AbsBool.Bot
       case false =>
-        val leftNumVal = leftPV.boolval.toAbsNumber
+        val leftNumVal = leftPV.boolval.toAbsNum
         val b61 = rightPV.numval.fold(AbsBool.Bot)(rightNumVal => {
           (leftNumVal === rightNumVal)
         })
         val b62 = rightPV.strval.fold(AbsBool.Bot)(rightStrVal => {
-          val rightNumVal = rightStrVal.toAbsNumber
+          val rightNumVal = rightStrVal.toAbsNum
           (leftNumVal === rightNumVal)
         })
         val b63 = right.locset.fold(AbsBool.Bot) {
@@ -363,12 +366,12 @@ object Helper {
     val b7 = rightPV.boolval.isBottom match {
       case true => AbsBool.Bot
       case false =>
-        val rightNumVal = rightPV.boolval.toAbsNumber
+        val rightNumVal = rightPV.boolval.toAbsNum
         val b71 = leftPV.numval.fold(AbsBool.Bot)(leftNumVal => {
           (leftNumVal === rightNumVal)
         })
         val b72 = leftPV.strval.fold(AbsBool.Bot)(leftStrVal => {
-          val leftNumVal = leftStrVal.toAbsNumber
+          val leftNumVal = leftStrVal.toAbsNum
           (leftNumVal === rightNumVal)
         })
         val b73 = left.locset.fold(AbsBool.Bot) {
@@ -473,8 +476,8 @@ object Helper {
   private def bopCompareHelp(
     leftPV: AbsPValue,
     rightPV: AbsPValue,
-    cmpAbsNum: (AbsNumber, AbsNumber) => AbsBool,
-    cmpAbsStr: (AbsString, AbsString) => AbsBool
+    cmpAbsNum: (AbsNum, AbsNum) => AbsBool,
+    cmpAbsStr: (AbsStr, AbsStr) => AbsBool
   ): AbsValue = {
     (leftPV.strval.isBottom, rightPV.strval.isBottom) match {
       case (true, _) | (_, true) =>
@@ -482,8 +485,8 @@ object Helper {
         val rightAbsNum = typeHelper.ToNumber(rightPV)
         AbsValue(cmpAbsNum(leftAbsNum, rightAbsNum))
       case _ =>
-        val leftPV2 = leftPV.copyWith(strval = AbsString.Bot)
-        val rightPV2 = rightPV.copyWith(strval = AbsString.Bot)
+        val leftPV2 = leftPV.copyWith(strval = AbsStr.Bot)
+        val rightPV2 = rightPV.copyWith(strval = AbsStr.Bot)
         val resAbsBool = cmpAbsStr(leftPV.strval, rightPV.strval)
         AbsValue(resAbsBool) +
           bopCompareHelp(leftPV, rightPV2, cmpAbsNum, cmpAbsStr) +
@@ -541,7 +544,7 @@ object Helper {
       (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr).negate)
   }
 
-  def propLoad(objV: AbsValue, absStrSet: Set[AbsString], h: AbsHeap): AbsValue = {
+  def propLoad(objV: AbsValue, absStrSet: Set[AbsStr], h: AbsHeap): AbsValue = {
     val objLocSet = objV.locset
     val v1 = objLocSet.foldLeft(AbsValue.Bot)((tmpVal1, loc) => {
       val tmpObj = h.get(loc)

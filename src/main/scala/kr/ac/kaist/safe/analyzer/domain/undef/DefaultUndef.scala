@@ -12,20 +12,17 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // default undefined abstract domain
-object DefaultUndef extends AbsUndefUtil {
-  case object Top extends Dom
-  case object Bot extends Dom
+object DefaultUndef extends UndefDomain {
+  case object Top extends Elem
+  case object Bot extends Elem
 
-  def alpha(undef: Undef): AbsUndef = Top
+  def alpha(undef: Undef): Elem = Top
 
-  sealed abstract class Dom extends AbsUndef {
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Undef] = this match {
       case Bot => ConFin()
       case Top => ConFin(Undef)
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Undef] = this match {
       case Bot => ConZero()
@@ -37,22 +34,22 @@ object DefaultUndef extends AbsUndefUtil {
       case Top => "Top(undefined)"
     }
 
-    def <=(that: AbsUndef): Boolean = (this, check(that)) match {
+    def <=(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false
       case _ => true
     }
 
-    def +(that: AbsUndef): AbsUndef = (this, check(that)) match {
+    def +(that: Elem): Elem = (this, that) match {
       case (Bot, Bot) => Bot
       case _ => Top
     }
 
-    def <>(that: AbsUndef): AbsUndef = (this, check(that)) match {
+    def <>(that: Elem): Elem = (this, that) match {
       case (Top, Top) => Top
       case _ => Bot
     }
 
-    def ===(that: AbsUndef): AbsBool = (this, check(that)) match {
+    def ===(that: Elem): AbsBool = (this, that) match {
       case (Top, Top) => AbsBool.True
       case _ => AbsBool.Bot
     }

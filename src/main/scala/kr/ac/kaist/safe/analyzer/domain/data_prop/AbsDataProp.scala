@@ -38,39 +38,42 @@ case class DataProp(
 ////////////////////////////////////////////////////////////////////////////////
 // data property abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsDataProp extends AbsDomain[DataProp, AbsDataProp] {
-  val value: AbsValue
-  val writable: AbsBool
-  val enumerable: AbsBool
-  val configurable: AbsBool
-
-  def copyWith(
-    value: AbsValue = this.value,
-    writable: AbsBool = this.writable,
-    enumerable: AbsBool = this.enumerable,
-    configurable: AbsBool = this.configurable
-  ): AbsDataProp
-}
-
-trait AbsDataPropUtil extends AbsDomainUtil[DataProp, AbsDataProp] {
+trait DataPropDomain extends AbsDomain[DataProp] { domain: DataPropDomain =>
   def apply(
     value: AbsValue = AbsUndef.Top,
     writable: AbsBool = AbsBool.False,
     enumerable: AbsBool = AbsBool.False,
     configurable: AbsBool = AbsBool.False
-  ): AbsDataProp
+  ): Elem
 
-  def apply(desc: AbsDesc): AbsDataProp
+  def apply(desc: AbsDesc): Elem
+
+  // abstract boolean element
+  type Elem <: ElemTrait
+
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    val value: AbsValue
+    val writable: AbsBool
+    val enumerable: AbsBool
+    val configurable: AbsBool
+
+    def copyWith(
+      value: AbsValue = this.value,
+      writable: AbsBool = this.writable,
+      enumerable: AbsBool = this.enumerable,
+      configurable: AbsBool = this.configurable
+    ): Elem
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default data property abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultDataProp extends AbsDataPropUtil {
-  lazy val Bot: Dom = Dom(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
-  lazy val Top: Dom = Dom(AbsValue.Top, AbsBool.Top, AbsBool.Top, AbsBool.Top)
+object DefaultDataProp extends DataPropDomain {
+  lazy val Bot: Elem = Elem(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
+  lazy val Top: Elem = Elem(AbsValue.Top, AbsBool.Top, AbsBool.Top, AbsBool.Top)
 
-  def alpha(prop: DataProp): AbsDataProp = Dom(
+  def alpha(prop: DataProp): Elem = Elem(
     AbsValue(prop.value),
     AbsBool(prop.writable),
     AbsBool(prop.enumerable),
@@ -82,9 +85,9 @@ object DefaultDataProp extends AbsDataPropUtil {
     writable: AbsBool,
     enumerable: AbsBool,
     configurable: AbsBool
-  ): AbsDataProp = Dom(value, writable, enumerable, configurable)
+  ): Elem = Elem(value, writable, enumerable, configurable)
 
-  def apply(desc: AbsDesc): AbsDataProp = {
+  def apply(desc: AbsDesc): Elem = {
     val (v, va) = desc.value
     val (w, wa) = desc.writable
     val (e, ea) = desc.enumerable
@@ -102,33 +105,30 @@ object DefaultDataProp extends AbsDataPropUtil {
     val configurable =
       if (ca.isTop) c + AbsBool.False
       else c
-    Dom(value, writable, enumerable, configurable)
+    Elem(value, writable, enumerable, configurable)
   }
 
-  case class Dom(
+  case class Elem(
       value: AbsValue,
       writable: AbsBool,
       enumerable: AbsBool,
       configurable: AbsBool
-  ) extends AbsDataProp {
+  ) extends ElemTrait {
     def gamma: ConSet[DataProp] = ConInf() // TODO more precise
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[DataProp] = ConMany() // TODO more precise
 
-    def <=(that: AbsDataProp): Boolean = {
-      val (left, right) = (this, check(that))
+    def <=(that: Elem): Boolean = {
+      val (left, right) = (this, that)
       left.value <= right.value &&
         left.writable <= right.writable &&
         left.enumerable <= right.enumerable &&
         left.configurable <= right.configurable
     }
 
-    def +(that: AbsDataProp): AbsDataProp = {
-      val (left, right) = (this, check(that))
-      Dom(
+    def +(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.value + right.value,
         left.writable + right.writable,
         left.enumerable + right.enumerable,
@@ -136,9 +136,9 @@ object DefaultDataProp extends AbsDataPropUtil {
       )
     }
 
-    def <>(that: AbsDataProp): AbsDataProp = {
-      val (left, right) = (this, check(that))
-      Dom(
+    def <>(that: Elem): Elem = {
+      val (left, right) = (this, that)
+      Elem(
         left.value <> right.value,
         left.writable <> right.writable,
         left.enumerable <> right.enumerable,
@@ -161,6 +161,6 @@ object DefaultDataProp extends AbsDataPropUtil {
       writable: AbsBool,
       enumerable: AbsBool,
       configurable: AbsBool
-    ): AbsDataProp = Dom(value, writable, enumerable, configurable)
+    ): Elem = Elem(value, writable, enumerable, configurable)
   }
 }
