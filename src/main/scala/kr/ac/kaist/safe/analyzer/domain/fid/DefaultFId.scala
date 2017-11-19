@@ -47,13 +47,13 @@ case object DefaultFId extends FIdDomain {
       case FIdSet(set) => set.mkString("fid(", ", ", ")")
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true
       case (Top, _) => false
       case (FIdSet(lset), FIdSet(rset)) => lset subsetOf rset
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (FIdSet(lset), FIdSet(rset)) => FIdSet(lset ++ rset)
     }

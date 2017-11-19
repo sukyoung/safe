@@ -21,7 +21,7 @@ trait AbsDomain[V] extends Domain {
   // abstraction functions for values
   def alpha(v: V): Elem
   def alpha(set: Set[V]): Elem = set.foldLeft(Bot) {
-    case (elem, v) => elem + alpha(v)
+    case (elem, v) => elem ⊔ alpha(v)
   }
   def alpha(seq: V*): Elem = alpha(seq.toSet)
   def apply(set: Set[V]): Elem = alpha(set)

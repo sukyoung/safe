@@ -52,7 +52,7 @@ object AKeyObject extends ObjDomain {
 
     def getSingle: ConSingle[Obj] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true
       case (Top, _) => false
       case (left: ObjMap, right: ObjMap) =>
@@ -64,13 +64,13 @@ object AKeyObject extends ObjDomain {
             case (key, rightIV) => {
               left.imap.get(key) match {
                 case None => false
-                case Some(leftIV) => leftIV <= rightIV
+                case Some(leftIV) => leftIV ⊑ rightIV
               }
             }
           }
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (left: ObjMap, right: ObjMap) =>
         val newAMap = left.amap + right.amap
@@ -83,7 +83,7 @@ object AKeyObject extends ObjDomain {
             case (None, None) => im
             case (None, Some(iv)) => im + (key -> iv)
             case (Some(iv), None) => im + (key -> iv)
-            case (Some(iv1), Some(iv2)) => im + (key -> (iv1 + iv2))
+            case (Some(iv1), Some(iv2)) => im + (key -> (iv1 ⊔ iv2))
           }
         })
 
@@ -164,7 +164,7 @@ object AKeyObject extends ObjDomain {
       case Top => AbsDataProp.Top
       case ObjMap(amap, imap) =>
         val (dpset, success) = amap.lookup(str)
-        if (dpset.nonEmpty) dpset.reduce(_ + _)
+        if (dpset.nonEmpty) dpset.reduce(_ ⊔ _)
         else AbsDataProp.Bot
     }
 
@@ -172,7 +172,7 @@ object AKeyObject extends ObjDomain {
       case Top => AbsDataProp.Top
       case ObjMap(amap, imap) =>
         val (dpset, success) = amap.lookup(astr)
-        if (dpset.nonEmpty) dpset.reduce(_ + _)
+        if (dpset.nonEmpty) dpset.reduce(_ ⊔ _)
         else AbsDataProp.Bot
     }
 
@@ -219,7 +219,7 @@ object AKeyObject extends ObjDomain {
     def contains(strSet: Set[String]): AbsBool = this match {
       case Top => AbsBool.Top
       case obj @ ObjMap(amap, imap) =>
-        strSet.foldLeft(AbsBool.Bot)((absB, str) => absB + (obj contains str))
+        strSet.foldLeft(AbsBool.Bot)((absB, str) => absB ⊔ (obj contains str))
     }
 
     def contains(astr: AbsStr): AbsBool = this match {
@@ -271,7 +271,7 @@ object AKeyObject extends ObjDomain {
       case Top => (AbsDesc.Top, AbsUndef.Top)
       case ObjMap(amap, imap) =>
         val (dpset, definite) = amap.lookup(P)
-        val dp = dpset.foldLeft(AbsDataProp.Bot)(_ + _)
+        val dp = dpset.foldLeft(AbsDataProp.Bot)(_ ⊔ _)
         val undef =
           if (definite) AbsUndef.Bot else AbsUndef.Top
         val desc = AbsDesc(
@@ -306,12 +306,12 @@ object AKeyObject extends ObjDomain {
                   else {
                     visited += loc
                     val (newDesc, newUndef) = visit(h.get(loc))
-                    (desc + newDesc, undef + newUndef)
+                    (desc ⊔ newDesc, undef ⊔ newUndef)
                   }
                 }
               }
             }
-          (desc + parentDesc, undef + parentUndef)
+          (desc ⊔ parentDesc, undef ⊔ parentUndef)
         }
         visit(obj)
     }
@@ -325,23 +325,23 @@ object AKeyObject extends ObjDomain {
         def visit(currentObj: Elem): AbsValue = {
           val test = currentObj contains str
           val v1 =
-            if (AbsBool.True <= test) currentObj(str).value
+            if (AbsBool.True ⊑ test) currentObj(str).value
             else valueBot
           val v2 =
-            if (AbsBool.False <= test) {
+            if (AbsBool.False ⊑ test) {
               val protoV = currentObj(IPrototype).value
               val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
                 AbsUndef.Top
               })
-              v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
+              v3 ⊔ protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
                 if (visited contains protoLoc) v
                 else {
                   visited += protoLoc
-                  v + visit(h.get(protoLoc))
+                  v ⊔ visit(h.get(protoLoc))
                 }
               })
             } else valueBot
-          v1 + v2
+          v1 ⊔ v2
         }
         visit(obj)
     }
@@ -354,23 +354,23 @@ object AKeyObject extends ObjDomain {
         def visit(currentObj: Elem): AbsValue = {
           val test = currentObj contains astr
           val v1 =
-            if (AbsBool.True <= test) currentObj(astr).value
+            if (AbsBool.True ⊑ test) currentObj(astr).value
             else valueBot
           val v2 =
-            if (AbsBool.False <= test) {
+            if (AbsBool.False ⊑ test) {
               val protoV = currentObj(IPrototype).value
               val v3 = protoV.pvalue.nullval.fold(valueBot)({ _ =>
                 AbsUndef.Top
               })
-              v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
+              v3 ⊔ protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
                 if (visited contains protoLoc) v
                 else {
                   visited += protoLoc
-                  v + visit(h.get(protoLoc))
+                  v ⊔ visit(h.get(protoLoc))
                 }
               })
             } else valueBot
-          v1 + v2
+          v1 ⊔ v2
         }
         visit(obj)
     }
@@ -394,7 +394,7 @@ object AKeyObject extends ObjDomain {
             val (inheritDesc, inheritUndef) = proto.locset.foldLeft((AbsDesc.Bot, AbsUndef.Bot)) {
               case ((desc, undef), loc) => {
                 val (newDesc, newUndef) = GetProperty(P, h)
-                (desc + newDesc, undef + newUndef)
+                (desc ⊔ newDesc, undef ⊔ newUndef)
               }
             }
             val undefInheritCase =
@@ -402,19 +402,19 @@ object AKeyObject extends ObjDomain {
               else extensible
             val b = extensible
             val f =
-              if (AF <= b) {
+              if (AF ⊑ b) {
                 AbsBool.False
               } else AbsBool.Bot
             val t =
-              if (AT <= b) {
+              if (AT ⊑ b) {
                 val (b, _) = inheritDesc.writable
                 b
               } else AbsBool.Bot
-            val inheritCase = t + f
-            nullProtoCase + undefInheritCase + inheritCase
+            val inheritCase = t ⊔ f
+            nullProtoCase ⊔ undefInheritCase ⊔ inheritCase
           }
         }
-        b + newB
+        b ⊔ newB
     }
 
     // Section 8.12.5 [[Put]](P, V, Throw)
@@ -423,12 +423,12 @@ object AKeyObject extends ObjDomain {
       case obj @ ObjMap(amap, imap) =>
         val canPut = CanPut(P, h)
         val (falseObj: Elem, falseExcSet: Set[Exception]) =
-          if (AbsBool.False <= canPut) {
+          if (AbsBool.False ⊑ canPut) {
             if (Throw) (Bot, HashSet(TypeError))
             else (obj, ExcSetEmpty)
           } else (Bot, ExcSetEmpty)
         val (trueObj, trueExcSet) =
-          if (AbsBool.True <= canPut) {
+          if (AbsBool.True ⊑ canPut) {
             val (ownDesc, ownUndef) = GetOwnProperty(P)
             val (ownObj, ownExcSet) =
               if (ownDesc.isBottom) (Bot, ExcSetEmpty)
@@ -450,9 +450,9 @@ object AKeyObject extends ObjDomain {
                 val (o, _, e) = DefineOwnProperty(h, P, newDesc, Throw)
                 (o, e)
               }
-            (ownObj + undefObj, ownExcSet ++ undefExcSet)
+            (ownObj ⊔ undefObj, ownExcSet ++ undefExcSet)
           } else (Bot, ExcSetEmpty)
-        (falseObj + trueObj, falseExcSet ++ trueExcSet)
+        (falseObj ⊔ trueObj, falseExcSet ++ trueExcSet)
     }
 
     // Section 8.12.6 [[HasProperty]](P)
@@ -463,20 +463,20 @@ object AKeyObject extends ObjDomain {
         def visit(currObj: Elem): AbsBool = {
           val test = currObj contains P
           val b1 =
-            if (AbsBool.True <= test) AbsBool.True
+            if (AbsBool.True ⊑ test) AbsBool.True
             else AbsBool.Bot
           val b2 =
-            if (AbsBool.False <= test) {
+            if (AbsBool.False ⊑ test) {
               val protoV = currObj(IPrototype).value
               val b3 = protoV.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
-              b3 + protoV.locset.foldLeft[AbsBool](AbsBool.Bot)((b, protoLoc) =>
+              b3 ⊔ protoV.locset.foldLeft[AbsBool](AbsBool.Bot)((b, protoLoc) =>
                 if (visited contains protoLoc) b
                 else {
                   visited += protoLoc
-                  b + visit(h.get(protoLoc))
+                  b ⊔ visit(h.get(protoLoc))
                 })
             } else AbsBool.Bot
-          b1 + b2
+          b1 ⊔ b2
         }
         visit(obj)
     }
@@ -518,14 +518,14 @@ object AKeyObject extends ObjDomain {
         val isDateClass = className.value.pvalue.strval === AbsStr("Date")
         val b = isDateClass
         val t =
-          if (AT <= b) {
+          if (AT ⊑ b) {
             DefaultValueAsString(h)
           } else AbsPValue.Bot
         val f =
-          if (AF <= b) {
+          if (AF ⊑ b) {
             DefaultValueAsNumber(h)
           } else AbsPValue.Bot
-        t + f
+        t ⊔ f
     }
 
     private def DefaultValueAsString(h: AbsHeap): AbsPValue = this match {
@@ -534,14 +534,14 @@ object AKeyObject extends ObjDomain {
         val toString = Get("toString", h)
         val isCallable = TypeConversionHelper.IsCallable(toString, h)
         val str =
-          if (AbsBool.True <= isCallable) AbsPValue(strval = AbsStr.Top)
+          if (AbsBool.True ⊑ isCallable) AbsPValue(strval = AbsStr.Top)
           else AbsPValue.Bot
-        if (AbsBool.False <= isCallable) {
+        if (AbsBool.False ⊑ isCallable) {
           val valueOf = Get("valueOf", h)
           val value =
-            if (AbsBool.True <= TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
+            if (AbsBool.True ⊑ TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
             else AbsPValue.Bot
-          str + value
+          str ⊔ value
         } else str
     }
 
@@ -551,14 +551,14 @@ object AKeyObject extends ObjDomain {
         val valueOf = Get("valueOf", h)
         val isCallable = TypeConversionHelper.IsCallable(valueOf, h)
         val value =
-          if (AbsBool.True <= isCallable) AbsPValue.Top
+          if (AbsBool.True ⊑ isCallable) AbsPValue.Top
           else AbsPValue.Bot
-        if (AbsBool.False <= isCallable) {
+        if (AbsBool.False ⊑ isCallable) {
           val toString = Get("toString", h)
           val str =
-            if (AbsBool.True <= TypeConversionHelper.IsCallable(toString, h)) AbsPValue(strval = AbsStr.Top)
+            if (AbsBool.True ⊑ TypeConversionHelper.IsCallable(toString, h)) AbsPValue(strval = AbsStr.Top)
             else AbsPValue.Bot
-          value + str
+          value ⊔ str
         } else value
     }
 
@@ -578,7 +578,7 @@ object AKeyObject extends ObjDomain {
         val (obj1, b1, excSet1) = if (curUndef.isTop) {
           val (obj1, b1, excSet1) =
             // 4. If current is undefined and extensible is true, then
-            if (AbsBool.True <= extensible) {
+            if (AbsBool.True ⊑ extensible) {
               // i. Create an own data property named P of object O whose [[Value]], [[Writable]],
               // [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
               val changedObj = update(P, AbsDataProp(Desc))
@@ -586,9 +586,9 @@ object AKeyObject extends ObjDomain {
             } else BotTriple
           val (obj2: Elem, b2, excSet2: Set[Exception]) =
             // 3. If current is undefined and extensible is false, then Reject.
-            if (AbsBool.False <= extensible) Reject
+            if (AbsBool.False ⊑ extensible) Reject
             else BotTriple
-          (obj1 + obj2, b1 + b2, excSet1 ++ excSet2)
+          (obj1 ⊔ obj2, b1 ⊔ b2, excSet1 ++ excSet2)
         } else BotTriple
 
         val (cv, cva) = current.value
@@ -607,42 +607,42 @@ object AKeyObject extends ObjDomain {
         // 6. Return true, if every field in Desc also occurs in current and the value of every field in Desc is the
         // same value as the corresponding field in current when compared using the SameValue algorithm (9.12).
         val (obj6, b6) =
-          if ((dva.isTop || (!dv.isBottom && AbsBool.True <= (TypeConversionHelper.SameValue(h, dv, cv)))) &&
-            (dwa.isTop || (!dw.isBottom && AbsBool.True <= (dw === cw))) &&
-            (dea.isTop || (!de.isBottom && AbsBool.True <= (de === ce))) &&
-            (dca.isTop || (!dc.isBottom && AbsBool.True <= (dc === cc)))) (obj, AbsBool.True)
+          if ((dva.isTop || (!dv.isBottom && AbsBool.True ⊑ (TypeConversionHelper.SameValue(h, dv, cv)))) &&
+            (dwa.isTop || (!dw.isBottom && AbsBool.True ⊑ (dw === cw))) &&
+            (dea.isTop || (!de.isBottom && AbsBool.True ⊑ (de === ce))) &&
+            (dca.isTop || (!dc.isBottom && AbsBool.True ⊑ (dc === cc)))) (obj, AbsBool.True)
           else (Bot, AbsBool.Bot)
 
         // 7. If the [[Configurable]] field of current is false then
         val (obj2: Elem, b2, excSet2: Set[Exception]) =
-          if (AbsBool.False <= cc) {
+          if (AbsBool.False ⊑ cc) {
             // a. Reject, if the [[Configurable]] field of Desc is true.
-            if (AbsBool.True <= dc) Reject
+            if (AbsBool.True ⊑ dc) Reject
             // b. Reject, if the [[Enumerable]] field of Desc is present and the [[Enumerable]] fields of current and
             // Desc are the Boolean negation of each other.
             else if (!de.isBottom &&
-              (AbsBool.True <= de && AbsBool.False <= ce || AbsBool.True <= ce && AbsBool.False <= de)) Reject
+              (AbsBool.True ⊑ de && AbsBool.False ⊑ ce || AbsBool.True ⊑ ce && AbsBool.False ⊑ de)) Reject
             else BotTriple
           } else BotTriple
 
         // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
         val (obj7: Elem, b7, excSet7: Set[Exception]) =
           // a. If the [[Configurable]] field of current is false, then
-          if (AbsBool.False <= cc) {
+          if (AbsBool.False ⊑ cc) {
             // i. Reject, if the [[Writable]] field of current is false and the [[Writable]] field of Desc is true.
-            if (AbsBool.False <= cw && AbsBool.True <= dw) Reject
+            if (AbsBool.False ⊑ cw && AbsBool.True ⊑ dw) Reject
             // ii. If the [[Writable]] field of current is false, then
-            else if (AbsBool.False <= cw &&
+            else if (AbsBool.False ⊑ cw &&
               // 1. Reject, if the [[Value]] field of Desc is present and SameValue(Desc.[[Value]],
               // current.[[Value]]) is false.
-              !dv.isBottom && AbsBool.False <= (TypeConversionHelper.SameValue(h, dv, cv))) Reject
+              !dv.isBottom && AbsBool.False ⊑ (TypeConversionHelper.SameValue(h, dv, cv))) Reject
             else BotTriple
           } else BotTriple
 
         // 12. For each attribute field of Desc that is present, set the correspondingly named attribute of the
         // property named P of object O to the value of the field.
         val (obj3, b3, excSet3) =
-          if (AbsBool.True <= cc || AbsBool.True <= cw) {
+          if (AbsBool.True ⊑ cc || AbsBool.True ⊑ cw) {
             var newDP = obj(P)
             if (!dv.isBottom) newDP = newDP.copyWith(value = dv)
             if (!dw.isBottom) newDP = newDP.copyWith(writable = dw)
@@ -653,15 +653,15 @@ object AKeyObject extends ObjDomain {
           } else BotTriple
 
         val excSet4 =
-          if (AbsStr("Array") <= obj(IClass).value.pvalue.strval &&
-            AbsStr("length") <= P &&
-            AbsBool.False <= (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
+          if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
+            AbsStr("length") ⊑ P &&
+            AbsBool.False ⊑ (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
           else ExcSetEmpty
 
         // TODO: unsound. Should Reject if an array element could not be deleted, i.e., it's not configurable.
         // TODO: Implement DefineOwnProperty for Array objects (15.4.5.1).
 
-        (obj1 + obj2 + obj3 + obj5 + obj6 + obj7, b1 + b2 + b3 + b5 + b6 + b7, excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet7)
+        (obj1 ⊔ obj2 ⊔ obj3 ⊔ obj5 ⊔ obj6 ⊔ obj7, b1 ⊔ b2 ⊔ b3 ⊔ b5 ⊔ b6 ⊔ b7, excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet7)
     }
   }
 
@@ -763,7 +763,7 @@ object AKeyObject extends ObjDomain {
             tmpObj.update(tmpIdx.toString, AbsDataProp(charVal, afalse, atrue, afalse))
           })
           val lengthVal = AbsValue(length)
-          obj + newObj3.update("length", AbsDataProp(lengthVal, afalse, afalse, afalse))
+          obj ⊔ newObj3.update("length", AbsDataProp(lengthVal, afalse, afalse, afalse))
         })
       case _ =>
         newObj2
@@ -864,15 +864,15 @@ sealed abstract class APropMap(
           val (key1, value1) = kv1
           val test = that.map.exists(kv2 => {
             val (key2, value2) = kv2
-            (key1 <= key2) && (value1 <= value2)
+            (key1 ⊑ key2) && (value1 ⊑ value2)
           })
           if (!test) {
             val value2 = that.map.foldLeft(AbsDataProp.Bot)((adp, kv2) => {
               val (key2, value2) = kv2
-              if (key1 isRelated key2) adp + value2
+              if (key1 isRelated key2) adp ⊔ value2
               else adp
             })
-            value1 <= value2
+            value1 ⊑ value2
           } else test
         })
     }
@@ -892,7 +892,7 @@ sealed abstract class APropMap(
           m + (key -> that.map(key))
         })
         val mapCap = (thisKeys intersect thatKeys).foldLeft(map2)((m, key) => {
-          m + (key -> (this.map(key) + that.map(key)))
+          m + (key -> (this.map(key) ⊔ that.map(key)))
         })
         APropMapFin(mapCap, this.defset intersect that.defset)
     }
@@ -940,7 +940,7 @@ sealed abstract class APropMap(
       case _ if !domIn => APropMapFin(this.map + (astr -> dp), this.defset + str)
       case _ if domIn =>
         val old = this.map(astr)
-        val newMap = this.map + (astr -> (old + dp))
+        val newMap = this.map + (astr -> (old ⊔ dp))
         APropMapFin(newMap, this.defset + str)
     }
   }
@@ -959,7 +959,7 @@ sealed abstract class APropMap(
         APropMapFin(this.map + (astr -> dp), this.defset + str)
       case _ if domIn && weak => // Weak update
         val old = this.map(astr)
-        val newMap = this.map + (astr -> (old + dp))
+        val newMap = this.map + (astr -> (old ⊔ dp))
         APropMapFin(newMap, this.defset)
     }
   }
@@ -977,7 +977,7 @@ sealed abstract class APropMap(
       case (_, ConInf()) if !domIn => APropMapFin(this.map + (astr -> dp), this.defset)
       case (_, ConInf()) if domIn =>
         val old = this.map(astr)
-        val newMap = this.map + (astr -> (old + dp))
+        val newMap = this.map + (astr -> (old ⊔ dp))
         APropMapFin(newMap, this.defset)
     }
   }
@@ -997,14 +997,14 @@ sealed abstract class APropMap(
         (newAPropMap, AbsBool.Top)
       case _ if domIn => {
         val (falseMap, falseB) =
-          if (AbsBool.False <= configurable) (this, AbsBool.False)
+          if (AbsBool.False ⊑ configurable) (this, AbsBool.False)
           else (APropMapBot, AbsBool.Bot)
         val (trueMap, trueB) =
-          if (AbsBool.True <= configurable) {
+          if (AbsBool.True ⊑ configurable) {
             val newAPropMap = APropMapFin(this.map - astr, newDefSet)
             (newAPropMap, AbsBool.True)
           } else (APropMapBot, AbsBool.Bot)
-        (falseMap + trueMap, falseB + trueB)
+        (falseMap + trueMap, falseB ⊔ trueB)
       }
     }
   }
@@ -1029,14 +1029,14 @@ sealed abstract class APropMap(
         (newAPropMap, AbsBool.Top)
       case (_, ConInf()) if domIn => {
         val (falseMap, falseB) =
-          if (AbsBool.False <= configurable) (this, AbsBool.Top)
+          if (AbsBool.False ⊑ configurable) (this, AbsBool.Top)
           else (APropMapBot, AbsBool.Bot)
         val (trueMap, trueB) =
-          if (AbsBool.True <= configurable) {
+          if (AbsBool.True ⊑ configurable) {
             val newAPropMap = APropMapFin(this.map - astr, defSetEmpty)
             (newAPropMap, AbsBool.Top)
           } else (APropMapBot, AbsBool.Bot)
-        (falseMap + trueMap, falseB + trueB)
+        (falseMap + trueMap, falseB ⊔ trueB)
       }
     }
   }
@@ -1124,14 +1124,14 @@ sealed abstract class APropMap(
     (HashSet[String](), AbsStr.Bot)
   ) {
       case ((strSet, astr), akey) => akey.gamma match {
-        case ConInf() => (strSet, astr + akey)
+        case ConInf() => (strSet, astr ⊔ akey)
         case ConFin(keySet) => keySet.foldLeft((strSet, astr)) {
           case ((strSet, astr), key) => {
             val isEnum = map(akey).enumerable
-            if (AbsBool.True <= isEnum) {
+            if (AbsBool.True ⊑ isEnum) {
               val isDef = defset contains key
               if (isDef && (AbsBool.Top != isEnum)) (strSet + key, astr)
-              else (strSet, astr + AbsStr(key))
+              else (strSet, astr ⊔ AbsStr(key))
             } else (strSet, astr)
           }
         }

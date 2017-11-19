@@ -72,7 +72,7 @@ object DefaultNumber extends NumDomain {
         else v.toString
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Top) => true
       case (left, right) if left == right => true
@@ -83,9 +83,9 @@ object DefaultNumber extends NumDomain {
       case _ => false
     }
 
-    def +(that: Elem): Elem = (this, that) match {
-      case (left, right) if left <= right => right
-      case (left, right) if right <= left => left
+    def ⊔(that: Elem): Elem = (this, that) match {
+      case (left, right) if left ⊑ right => right
+      case (left, right) if right ⊑ left => left
       case (PosInf, NegInf) => Inf
       case (NegInf, PosInf) => Inf
       case (UIntConst(a), UIntConst(b)) if a == b => this
@@ -96,8 +96,8 @@ object DefaultNumber extends NumDomain {
     }
 
     def ⊓(that: Elem): Elem = (this, that) match {
-      case (left, right) if left <= right => left
-      case (left, right) if right <= left => right
+      case (left, right) if left ⊑ right => left
+      case (left, right) if right ⊑ left => right
       case _ => Bot
     }
 
@@ -125,7 +125,7 @@ object DefaultNumber extends NumDomain {
       case (NUIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)
       case (NUIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
       case (NegInf, NegInf) | (PosInf, PosInf) => AbsBool.True
-      case (left, right) if !(left <= right) && !(right <= left) => AbsBool.False
+      case (left, right) if !(left ⊑ right) && !(right ⊑ left) => AbsBool.False
       case _ => AbsBool.Top
     }
 
@@ -435,7 +435,7 @@ object DefaultNumber extends NumDomain {
       case (UIntConst(0), NUIntConst(x)) if x < 0 => alpha(scala.math.Pi)
       case (UIntConst(0), NegInf) => alpha(scala.math.Pi)
       // if (this == + 0) & (that ? 0) then (0 or PI)
-      case (UIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(0.0) + alpha(scala.math.Pi)
+      case (UIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(0.0) ⊔ alpha(scala.math.Pi)
       // if (this == - 0) & (that >= +0) then - 0
       case (NUIntConst(0), UIntConst(_)) => alpha(-0.0)
       case (NUIntConst(0), NUIntConst(x)) if x > 0 => alpha(-0.0)
@@ -446,7 +446,7 @@ object DefaultNumber extends NumDomain {
       case (NUIntConst(0), NUIntConst(x)) if x < 0 => alpha(-scala.math.Pi)
       case (NUIntConst(0), NegInf) => alpha(-scala.math.Pi)
       // if (this == - 0) & (that ? 0) then (- 0 or - PI)
-      case (NUIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(-0.0) + alpha(-scala.math.Pi)
+      case (NUIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(-0.0) ⊔ alpha(-scala.math.Pi)
       // if (this < 0) & (that == + 0 | that == - 0) then - PI/2
       case (NUIntConst(x), UIntConst(0)) if x < 0 => alpha(-scala.math.Pi / 2)
       case (NUIntConst(x), NUIntConst(0)) if x < 0 => alpha(-scala.math.Pi / 2)

@@ -54,7 +54,7 @@ object Initialize {
   def addSnapshot(st: AbsState, snapshot: String): AbsState = {
     val concreteHeap = Heap.parse(snapshot)
     val abstractHeap = AbsHeap.alpha(concreteHeap)
-    AbsState(st.heap + abstractHeap, st.context)
+    AbsState(st.heap ⊔ abstractHeap, st.context)
   }
 }
 

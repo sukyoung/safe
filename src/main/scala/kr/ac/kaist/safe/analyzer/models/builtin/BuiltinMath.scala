@@ -149,24 +149,24 @@ object BuiltinMath extends ObjModel(
           case ConOne(Num(num)) if uintCheck(num) => {
             val len = num.toInt
             val nanN =
-              if ((0 until len).exists(AbsNum.NaN <= nArg(_))) AbsNum.NaN
+              if ((0 until len).exists(AbsNum.NaN ⊑ nArg(_))) AbsNum.NaN
               else AbsNum.Bot
             val maxN = (1 until len).foldLeft(nArg(0)) {
               case (absN, i) => {
                 val curN = nArg(i)
                 val b = absN < curN
                 val t =
-                  if (AT <= b) {
+                  if (AT ⊑ b) {
                     curN
                   } else AbsNum.Bot
                 val f =
-                  if (AF <= b) {
+                  if (AF ⊑ b) {
                     absN
                   } else AbsNum.Bot
-                t + f
+                t ⊔ f
               }
             }
-            nanN + maxN
+            nanN ⊔ maxN
           }
           case ConMany() => AbsNum.Top
         }
@@ -193,24 +193,24 @@ object BuiltinMath extends ObjModel(
           case ConOne(Num(num)) if uintCheck(num) => {
             val len = num.toInt
             val nanN =
-              if ((0 until len).exists(AbsNum.NaN <= nArg(_))) AbsNum.NaN
+              if ((0 until len).exists(AbsNum.NaN ⊑ nArg(_))) AbsNum.NaN
               else AbsNum.Bot
             val minN = (1 until len).foldLeft(nArg(0)) {
               case (absN, i) => {
                 val curN = nArg(i)
                 val b = absN < curN
                 val t =
-                  if (AT <= b) {
+                  if (AT ⊑ b) {
                     absN
                   } else AbsNum.Bot
                 val f =
-                  if (AF <= b) {
+                  if (AF ⊑ b) {
                     curN
                   } else AbsNum.Bot
-                t + f
+                t ⊔ f
               }
             }
-            nanN + minN
+            nanN ⊔ minN
           }
           case ConMany() => AbsNum.Top
         }

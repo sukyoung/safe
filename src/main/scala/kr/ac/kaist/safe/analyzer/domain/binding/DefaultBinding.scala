@@ -39,11 +39,11 @@ object DefaultBinding extends BindingDomain {
       case ConInf() => ConInf()
       case ConFin(valSet) => {
         var bindSet: Set[Binding] = HashSet()
-        if (AbsBool.True <= mutable) {
+        if (AbsBool.True ⊑ mutable) {
           bindSet ++= valSet.map(MBinding(_))
         }
-        if (AbsBool.False <= mutable) {
-          if (AbsAbsent.Top <= uninit) bindSet += IBinding(None)
+        if (AbsBool.False ⊑ mutable) {
+          if (AbsAbsent.Top ⊑ uninit) bindSet += IBinding(None)
           bindSet ++= valSet.map(v => IBinding(Some(v)))
         }
         ConFin(bindSet)
@@ -60,20 +60,20 @@ object DefaultBinding extends BindingDomain {
       }
     }
 
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val right = that
-      this.value <= right.value &&
-        this.uninit <= right.uninit &&
-        this.mutable <= right.mutable
+      this.value ⊑ right.value &&
+        this.uninit ⊑ right.uninit &&
+        this.mutable ⊑ right.mutable
     }
 
     /* join */
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val right = that
       Elem(
-        this.value + right.value,
-        this.uninit + right.uninit,
-        this.mutable + right.mutable
+        this.value ⊔ right.value,
+        this.uninit ⊔ right.uninit,
+        this.mutable ⊔ right.mutable
       )
     }
 

@@ -24,26 +24,26 @@ object Helper {
   private val atrue = AbsBool.True
 
   def arrayLenghtStore(heap: AbsHeap, idxAbsStr: AbsStr, storeV: AbsValue, l: Loc): (AbsHeap, Set[Exception]) = {
-    if (AbsStr("length") <= idxAbsStr) {
+    if (AbsStr("length") ⊑ idxAbsStr) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val nNewLen = typeHelper.ToUInt32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
       val bCanPut = heap.get(l).CanPut("length", heap)
 
       val arrLengthHeap2 =
-        if ((atrue <= (nOldLen < nNewLen)
-          || atrue <= (nOldLen === nNewLen))
-          && (atrue <= bCanPut))
+        if ((atrue ⊑ (nOldLen < nNewLen)
+          || atrue ⊑ (nOldLen === nNewLen))
+          && (atrue ⊑ bCanPut))
           heap.propStore(l, AbsStr("length"), storeV)
         else
           AbsHeap.Bot
 
       val arrLengthHeap3 =
-        if (afalse <= bCanPut) heap
+        if (afalse ⊑ bCanPut) heap
         else AbsHeap.Bot
 
       val arrLengthHeap4 =
-        if ((atrue <= (nNewLen < nOldLen)) && (atrue <= bCanPut)) {
+        if ((atrue ⊑ (nNewLen < nOldLen)) && (atrue ⊑ bCanPut)) {
           val hi = heap.propStore(l, AbsStr("length"), storeV)
           (nNewLen.getSingle, nOldLen.getSingle) match {
             case (ConOne(n1), ConOne(n2)) =>
@@ -61,13 +61,13 @@ object Helper {
         }
 
       val arrLengthHeap1 =
-        if (atrue <= (nValue === nNewLen))
-          arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
+        if (atrue ⊑ (nValue === nNewLen))
+          arrLengthHeap2 ⊔ arrLengthHeap3 ⊔ arrLengthHeap4
         else
           AbsHeap.Bot
 
       val lenExcSet1 =
-        if (afalse <= (nValue === nNewLen)) HashSet[Exception](RangeError)
+        if (afalse ⊑ (nValue === nNewLen)) HashSet[Exception](RangeError)
         else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {
@@ -76,31 +76,31 @@ object Helper {
   }
 
   def arrayIdxStore(heap: AbsHeap, idxAbsStr: AbsStr, storeV: AbsValue, l: Loc): AbsHeap = {
-    if (atrue <= idxAbsStr.isArrayIndex) {
+    if (atrue ⊑ idxAbsStr.isArrayIndex) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val num = typeHelper.ToNumber(idxAbsStr)
       val nIndex = typeHelper.ToUInt32(num)
-      val bGtEq = atrue <= (nOldLen < nIndex) ||
-        atrue <= (nOldLen === nIndex)
+      val bGtEq = atrue ⊑ (nOldLen < nIndex) ||
+        atrue ⊑ (nOldLen === nIndex)
       val bCanPutLen = heap.get(l).CanPut("length", heap)
       // 4.b
       val arrIndexHeap1 =
-        if (bGtEq && afalse <= bCanPutLen) heap
+        if (bGtEq && afalse ⊑ bCanPutLen) heap
         else AbsHeap.Bot
       // 4.c
       val arrIndexHeap2 =
-        if (atrue <= (nIndex < nOldLen))
+        if (atrue ⊑ (nIndex < nOldLen))
           heap.propStore(l, idxAbsStr, storeV)
         else AbsHeap.Bot
       // 4.e
       val arrIndexHeap3 =
-        if (bGtEq && atrue <= bCanPutLen) {
+        if (bGtEq && atrue ⊑ bCanPutLen) {
           val hi = heap.propStore(l, idxAbsStr, storeV)
           val idxVal = AbsValue(nIndex)
           val vNewIndex = bopPlus(idxVal, AbsValue(1))
           hi.propStore(l, AbsStr("length"), vNewIndex)
         } else AbsHeap.Bot
-      arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
+      arrIndexHeap1 ⊔ arrIndexHeap2 ⊔ arrIndexHeap3
     } else
       AbsHeap.Bot
   }
@@ -108,19 +108,19 @@ object Helper {
   def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsStr, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
-      (afalse <= heap.isArray(l)) && atrue <= heap.get(l).CanPut(idxAbsStr, heap))
+      (afalse ⊑ heap.isArray(l)) && atrue ⊑ heap.get(l).CanPut(idxAbsStr, heap))
     // array objects
     val locSetArr = objLocSet.filter(l =>
-      (atrue <= heap.isArray(l)) && atrue <= heap.get(l).CanPut(idxAbsStr, heap))
+      (atrue ⊑ heap.isArray(l)) && atrue ⊑ heap.get(l).CanPut(idxAbsStr, heap))
 
     // can not store
     val cantPutHeap =
-      if (objLocSet.exists((l) => afalse <= heap.get(l).CanPut(idxAbsStr, heap))) heap
+      if (objLocSet.exists((l) => afalse ⊑ heap.get(l).CanPut(idxAbsStr, heap))) heap
       else AbsHeap.Bot
 
     // store for non-array object
     val nArrHeap = locSetNArr.foldLeft[AbsHeap](AbsHeap.Bot)((iHeap, l) => {
-      iHeap + heap.propStore(l, idxAbsStr, storeV)
+      iHeap ⊔ heap.propStore(l, idxAbsStr, storeV)
     })
 
     // 15.4.5.1 [[DefineOwnProperty]] of Array
@@ -132,15 +132,15 @@ object Helper {
 
       // 5. other
       val otherHeap =
-        if (idxAbsStr != AbsStr("length") && afalse <= idxAbsStr.isArrayIndex)
+        if (idxAbsStr != AbsStr("length") && afalse ⊑ idxAbsStr.isArrayIndex)
           heap.propStore(l, idxAbsStr, storeV)
         else
           AbsHeap.Bot
       val (tmpHeap2, tmpExcSet2) = res2
-      (tmpHeap2 + lengthHeap + arrIndexHeap + otherHeap, tmpExcSet2 ++ lengthExcSet)
+      (tmpHeap2 ⊔ lengthHeap ⊔ arrIndexHeap ⊔ otherHeap, tmpExcSet2 ++ lengthExcSet)
     })
 
-    (cantPutHeap + nArrHeap + arrHeap, arrExcSet)
+    (cantPutHeap ⊔ nArrHeap ⊔ arrHeap, arrExcSet)
   }
 
   def inherit(h: AbsHeap, loc1: Loc, loc2: Loc): AbsValue = {
@@ -158,15 +158,15 @@ object Helper {
         val eqVal = bopSEq(h, locVal1, locVal2)
         val b = eqVal.pvalue.boolval
         val t =
-          if (AT <= b) boolTrueVal
+          if (AT ⊑ b) boolTrueVal
           else AbsValue.Bot
         val f =
-          if (AF <= b) {
+          if (AF ⊑ b) {
             val protoVal = h.get(l1)(IPrototype).value
             val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-            v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+            v1 ⊔ protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal ⊔ iter(protoLoc))
           } else AbsValue.Bot
-        t + f
+        t ⊔ f
       }
     }
 
@@ -266,16 +266,16 @@ object Helper {
         AbsValue(resAbsNum)
       case (false, true) =>
         val resVal = AbsValue(primLPV.strval.concat(TypeConversionHelper.ToString(primRPV)))
-        resVal + bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV))
+        resVal ⊔ bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV))
       case (true, false) =>
         val resVal = AbsValue(TypeConversionHelper.ToString(primLPV).concat(primRPV.strval))
-        resVal + bopPlus(AbsValue(primLPV), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
+        resVal ⊔ bopPlus(AbsValue(primLPV), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
       case (false, false) =>
         val lStr = TypeConversionHelper.ToString(primLPV).concat(primRPV.strval)
         val rStr = primLPV.strval.concat(TypeConversionHelper.ToString(primRPV))
-        val resVal = AbsValue(lStr + rStr)
+        val resVal = AbsValue(lStr ⊔ rStr)
 
-        resVal + bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
+        resVal ⊔ bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
     }
   }
 
@@ -316,11 +316,11 @@ object Helper {
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot
-    val b1 = (leftPV.undefval === rightPV.undefval) +
-      (leftPV.nullval === rightPV.nullval) +
-      (leftPV.numval === rightPV.numval) +
-      (leftPV.strval === rightPV.strval) +
-      (leftPV.boolval === rightPV.boolval) +
+    val b1 = (leftPV.undefval === rightPV.undefval) ⊔
+      (leftPV.nullval === rightPV.nullval) ⊔
+      (leftPV.numval === rightPV.numval) ⊔
+      (leftPV.strval === rightPV.strval) ⊔
+      (leftPV.boolval === rightPV.boolval) ⊔
       locsetTest
     val b2 = (leftPV.nullval.isBottom, rightPV.undefval.isBottom) match {
       case (false, false) => atrue
@@ -360,7 +360,7 @@ object Helper {
         }
         val b64 = rightPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         val b65 = rightPV.nullval.fold(AbsBool.Bot)(_ => afalse)
-        b61 + b62 + b63 + b64 + b65
+        b61 ⊔ b62 ⊔ b63 ⊔ b64 ⊔ b65
     }
 
     val b7 = rightPV.boolval.isBottom match {
@@ -381,7 +381,7 @@ object Helper {
         }
         val b74 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         val b75 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
-        b71 + b72 + b73 + b74 + b75
+        b71 ⊔ b72 ⊔ b73 ⊔ b74 ⊔ b75
     }
 
     val b8 = right.locset.fold(AbsBool.Bot) {
@@ -394,7 +394,7 @@ object Helper {
           val rightStrVal = objToPrimitive(right, "String").strval
           (leftStrVal === rightStrVal)
         })
-        b81 + b82
+        b81 ⊔ b82
     }
 
     val b9 = left.locset.fold(AbsBool.Bot) {
@@ -407,7 +407,7 @@ object Helper {
           val leftStrVal = objToPrimitive(left, "String").strval
           (leftStrVal === rightStrVal)
         })
-        b91 + b92
+        b91 ⊔ b92
     }
 
     def testUndefNull(value: AbsValue): AbsBool = {
@@ -419,14 +419,14 @@ object Helper {
       val falseV =
         if (!pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom || !locset.isBottom) afalse
         else AbsBool.Bot
-      trueV + falseV
+      trueV ⊔ falseV
     }
 
     val b10 =
-      if (AbsBool.True <= (testUndefNull(left) xor testUndefNull(right))) afalse
+      if (AbsBool.True ⊑ (testUndefNull(left) xor testUndefNull(right))) afalse
       else AbsBool.Bot
 
-    AbsValue(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)
+    AbsValue(b1 ⊔ b2 ⊔ b3 ⊔ b4 ⊔ b5 ⊔ b6 ⊔ b7 ⊔ b8 ⊔ b9 ⊔ b10)
   }
 
   def bopEqBetter(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
@@ -446,7 +446,7 @@ object Helper {
   /* === */
   def bopSEq(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
     val isMultiType =
-      if ((left + right).typeCount > 1) afalse
+      if ((left ⊔ right).typeCount > 1) afalse
       else AbsBool.Bot
     val isLocsetSame =
       if (!left.locset.isBottom && !right.locset.isBottom) {
@@ -458,13 +458,13 @@ object Helper {
         }
       } else AbsBool.Bot
     val isSame =
-      (left.pvalue.undefval === right.pvalue.undefval) +
-        (left.pvalue.nullval === right.pvalue.nullval) +
-        (left.pvalue.numval === right.pvalue.numval) +
-        (left.pvalue.strval === right.pvalue.strval) +
-        (left.pvalue.boolval === right.pvalue.boolval) +
+      (left.pvalue.undefval === right.pvalue.undefval) ⊔
+        (left.pvalue.nullval === right.pvalue.nullval) ⊔
+        (left.pvalue.numval === right.pvalue.numval) ⊔
+        (left.pvalue.strval === right.pvalue.strval) ⊔
+        (left.pvalue.boolval === right.pvalue.boolval) ⊔
         isLocsetSame
-    AbsValue(isMultiType + isSame)
+    AbsValue(isMultiType ⊔ isSame)
   }
 
   /* !== */
@@ -488,8 +488,8 @@ object Helper {
         val leftPV2 = leftPV.copyWith(strval = AbsStr.Bot)
         val rightPV2 = rightPV.copyWith(strval = AbsStr.Bot)
         val resAbsBool = cmpAbsStr(leftPV.strval, rightPV.strval)
-        AbsValue(resAbsBool) +
-          bopCompareHelp(leftPV, rightPV2, cmpAbsNum, cmpAbsStr) +
+        AbsValue(resAbsBool) ⊔
+          bopCompareHelp(leftPV, rightPV2, cmpAbsNum, cmpAbsStr) ⊔
           bopCompareHelp(leftPV2, rightPV, cmpAbsNum, cmpAbsStr)
     }
   }
@@ -549,7 +549,7 @@ object Helper {
     val v1 = objLocSet.foldLeft(AbsValue.Bot)((tmpVal1, loc) => {
       val tmpObj = h.get(loc)
       absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
-        tmpVal2 + tmpObj.Get(absStr, h)
+        tmpVal2 ⊔ tmpObj.Get(absStr, h)
       })
     })
     v1

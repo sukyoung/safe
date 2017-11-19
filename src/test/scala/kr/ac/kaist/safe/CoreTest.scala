@@ -173,8 +173,8 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
               assert(expectKeySet contains expectKey)
-              assert(globalObj(expectKey) <= globalObj(resultKey))
-              b && (globalObj(resultKey) <= globalObj(expectKey))
+              assert(globalObj(expectKey) ⊑ globalObj(resultKey))
+              b && (globalObj(resultKey) ⊑ globalObj(expectKey))
             })) Precise
             else Imprecise
           }

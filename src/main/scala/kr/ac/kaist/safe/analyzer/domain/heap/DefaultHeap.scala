@@ -36,7 +36,7 @@ object DefaultHeap extends HeapDomain {
 
     def getSingle: ConSingle[Heap] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) | (Bot, _) => true
       case (Top, _) | (_, Bot) => false
       case (left: HeapMap, right: HeapMap) =>
@@ -48,13 +48,13 @@ object DefaultHeap extends HeapDomain {
         else right.map.forall((kv) => {
           val (l, obj) = kv
           left.map.get(l) match {
-            case Some(leftObj) => leftObj <= obj
+            case Some(leftObj) => leftObj ⊑ obj
             case None => false
           }
         }))
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (left, Bot) => left
       case (Bot, right) => right
@@ -67,7 +67,7 @@ object DefaultHeap extends HeapDomain {
             val joinKeySet = left.map.keySet ++ right.map.keySet
             joinKeySet.foldLeft(HashMap[Loc, AbsObj]())((m, key) => {
               val joinObj = (left.map.get(key), right.map.get(key)) match {
-                case (Some(obj1), Some(obj2)) => Some(obj1 + obj2)
+                case (Some(obj1), Some(obj2)) => Some(obj1 ⊔ obj2)
                 case (Some(obj1), None) => Some(obj1)
                 case (None, Some(obj2)) => Some(obj2)
                 case (None, None) => None
@@ -131,11 +131,11 @@ object DefaultHeap extends HeapDomain {
     }
 
     def get(locSet: AbsLoc): AbsObj = locSet.foldLeft(AbsObj.Bot) {
-      case (obj, loc) => obj + get(loc)
+      case (obj, loc) => obj ⊔ get(loc)
     }
 
     private def weakUpdated(m: Map[Loc, AbsObj], loc: Loc, newObj: AbsObj): Map[Loc, AbsObj] = m.get(loc) match {
-      case Some(oldObj) => m.updated(loc, oldObj + newObj)
+      case Some(oldObj) => m.updated(loc, oldObj ⊔ newObj)
       case None => m.updated(loc, newObj)
     }
 
@@ -221,30 +221,30 @@ object DefaultHeap extends HeapDomain {
     def hasConstruct(loc: Loc): AbsBool = {
       val isElemIn = get(loc).fold(AbsBool.False) { obj => (obj contains IConstruct) }
       val b1 =
-        if (AbsBool.True <= isElemIn) AbsBool.True
+        if (AbsBool.True ⊑ isElemIn) AbsBool.True
         else AbsBool.Bot
       val b2 =
-        if (AbsBool.False <= isElemIn) AbsBool.False
+        if (AbsBool.False ⊑ isElemIn) AbsBool.False
         else AbsBool.Bot
-      b1 + b2
+      b1 ⊔ b2
     }
 
     def hasInstance(loc: Loc): AbsBool = {
       val isElemIn = get(loc).fold(AbsBool.False) { obj => (obj contains IHasInstance) }
       val b1 =
-        if (AbsBool.True <= isElemIn) AbsBool.True
+        if (AbsBool.True ⊑ isElemIn) AbsBool.True
         else AbsBool.Bot
       val b2 =
-        if (AbsBool.False <= isElemIn) AbsBool.False
+        if (AbsBool.False ⊑ isElemIn) AbsBool.False
         else AbsBool.Bot
-      b1 + b2
+      b1 ⊔ b2
     }
 
     def isArray(loc: Loc): AbsBool = {
       val className = get(loc)(IClass).value.pvalue.strval
       val arrayAbsStr = AbsStr.alpha("Array")
       val b1 =
-        if (arrayAbsStr <= className)
+        if (arrayAbsStr ⊑ className)
           AbsBool.True
         else
           AbsBool.Bot
@@ -253,7 +253,7 @@ object DefaultHeap extends HeapDomain {
           AbsBool.False
         else
           AbsBool.Bot
-      b1 + b2
+      b1 ⊔ b2
     }
 
     def isObject(loc: Loc): Boolean = !get(loc).isBottom
@@ -263,12 +263,12 @@ object DefaultHeap extends HeapDomain {
       val globalObj = get(globalLoc)
       val domIn = globalObj contains x
       val b1 =
-        if (AbsBool.True <= domIn) globalObj(x).writable
+        if (AbsBool.True ⊑ domIn) globalObj(x).writable
         else AbsBool.Bot
       val b2 =
-        if (AbsBool.False <= domIn) get(globalLoc).CanPut(x, this)
+        if (AbsBool.False ⊑ domIn) get(globalLoc).CanPut(x, this)
         else AbsBool.Bot
-      b1 + b2
+      b1 ⊔ b2
     }
 
     ////////////////////////////////////////////////////////////////
@@ -283,24 +283,24 @@ object DefaultHeap extends HeapDomain {
           visited += currentLoc
           val test = this.get(currentLoc) contains absStr
           val v1 =
-            if (AbsBool.True <= test) {
+            if (AbsBool.True ⊑ test) {
               this.get(currentLoc)(absStr).value
             } else {
               valueBot
             }
           val v2 =
-            if (AbsBool.False <= test) {
+            if (AbsBool.False ⊑ test) {
               val protoV = this.get(currentLoc)(IPrototype).value
               val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
                 AbsValue(Undef)
               })
-              v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
-                v + visit(protoLoc)
+              v3 ⊔ protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
+                v ⊔ visit(protoLoc)
               })
             } else {
               valueBot
             }
-          v1 + v2
+          v1 ⊔ v2
         }
       }
       visit(loc)
@@ -315,18 +315,18 @@ object DefaultHeap extends HeapDomain {
           val obj = this.get(l)
           val isElemIn = (obj contains absStr)
           val locSet1 =
-            if (AbsBool.True <= isElemIn) AbsLoc(l)
+            if (AbsBool.True ⊑ isElemIn) AbsLoc(l)
             else AbsLoc.Bot
           val locSet2 =
-            if (AbsBool.False <= isElemIn) {
+            if (AbsBool.False ⊑ isElemIn) {
               val protoLocSet = obj(IPrototype).value.locset
               protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
-                res + visit(protoLoc)
+                res ⊔ visit(protoLoc)
               })
             } else {
               AbsLoc.Bot
             }
-          locSet1 + locSet2
+          locSet1 ⊔ locSet2
         }
       }
       visit(loc)

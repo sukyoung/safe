@@ -25,15 +25,15 @@ object BuiltinBooleanHelper {
     val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
     val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
     val emptyB =
-      if (AbsNum(0) <= argL) AbsBool(false)
+      if (AbsNum(0) ⊑ argL) AbsBool(false)
       else AbsBool.Bot
-    TypeConversionHelper.ToBoolean(argV) + emptyB
+    TypeConversionHelper.ToBoolean(argV) ⊔ emptyB
   }
 
   def getValue(thisV: AbsValue, h: AbsHeap): AbsBool = {
-    thisV.pvalue.boolval + thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
-      if ((AbsStr("Boolean") <= h.get(loc)(IClass).value.pvalue.strval))
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.boolval
+    thisV.pvalue.boolval ⊔ thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
+      if ((AbsStr("Boolean") ⊑ h.get(loc)(IClass).value.pvalue.strval))
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.boolval
       else res
     })
   }

@@ -69,16 +69,16 @@ private object BuiltinErrorHelper {
       .update(IExtensible, AbsIValue(AbsBool.True))
 
     val undefObject =
-      if (message.pvalue.undefval </ AbsUndef.Bot) defaultError
+      if (message.pvalue.undefval !⊑ AbsUndef.Bot) defaultError
       else AbsObj.Bot
 
     val notUndefObject =
-      if (message </ AbsUndef.Top) {
+      if (message !⊑ AbsUndef.Top) {
         val msg = TypeConversionHelper.ToString(message)
         defaultError.update("message", AbsDataProp(msg))
       } else AbsObj.Bot
 
-    val errorObj = undefObject + notUndefObject
+    val errorObj = undefObject ⊔ notUndefObject
 
     val errorLoc = Loc(instanceASite(errorName))
     val st1 = st.oldify(errorLoc)
@@ -99,34 +99,34 @@ private object BuiltinErrorHelper {
       val O = st.heap.get(loc)
       val name3 = O.Get("name", st.heap)
       val nameUndef =
-        if (name3.pvalue.undefval </ AbsUndef.Top) AbsStr("Error")
+        if (name3.pvalue.undefval !⊑ AbsUndef.Top) AbsStr("Error")
         else AbsStr.Bot
       val nameNotUndef =
-        if (name3 </ AbsUndef.Top) TypeConversionHelper.ToString(name3)
+        if (name3 !⊑ AbsUndef.Top) TypeConversionHelper.ToString(name3)
         else AbsStr.Bot
-      val name4 = nameUndef + nameNotUndef
+      val name4 = nameUndef ⊔ nameNotUndef
       val msg5 = O.Get("message", st.heap)
       val msgUndef =
-        if (msg5.pvalue.undefval </ AbsUndef.Top) AbsStr("")
+        if (msg5.pvalue.undefval !⊑ AbsUndef.Top) AbsStr("")
         else AbsStr.Bot
       val msgNotUndef =
-        if (msg5 </ AbsUndef.Top) TypeConversionHelper.ToString(msg5)
+        if (msg5 !⊑ AbsUndef.Top) TypeConversionHelper.ToString(msg5)
         else AbsStr.Bot
-      val msg6 = msgUndef + msgNotUndef
+      val msg6 = msgUndef ⊔ msgNotUndef
 
       val emptyString = AbsStr("")
       val res8 =
-        if (AbsBool.True <= (name4 === emptyString)) msg6
+        if (AbsBool.True ⊑ (name4 === emptyString)) msg6
         else AbsStr.Bot
       val res9 =
-        if ((AbsBool.False <= (name4 === emptyString))
-          && (AbsBool.True <= (msg6 === emptyString))) name4
+        if ((AbsBool.False ⊑ (name4 === emptyString))
+          && (AbsBool.True ⊑ (msg6 === emptyString))) name4
         else AbsStr.Bot
       val res10 =
-        if ((AbsBool.False <= (name4 === emptyString))
-          && (AbsBool.False <= (msg6 === emptyString))) name4.concat(AbsStr(": ")).concat(msg6)
+        if ((AbsBool.False ⊑ (name4 === emptyString))
+          && (AbsBool.False ⊑ (msg6 === emptyString))) name4.concat(AbsStr(": ")).concat(msg6)
         else AbsStr.Bot
-      res + (res8 + res9 + res10)
+      res ⊔ (res8 ⊔ res9 ⊔ res10)
     })
     (st, st.raiseException(excSet), result)
   }

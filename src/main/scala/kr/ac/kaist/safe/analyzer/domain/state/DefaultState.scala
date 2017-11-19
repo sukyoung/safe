@@ -34,11 +34,11 @@ object DefaultState extends StateDomain {
 
     def getSingle: ConSingle[State] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean =
-      this.heap <= that.heap && this.context <= that.context
+    def ⊑(that: Elem): Boolean =
+      this.heap ⊑ that.heap && this.context ⊑ that.context
 
-    def +(that: Elem): Elem =
-      Elem(this.heap + that.heap, this.context + that.context)
+    def ⊔(that: Elem): Elem =
+      Elem(this.heap ⊔ that.heap, this.context ⊔ that.context)
 
     def ⊓(that: Elem): Elem =
       Elem(this.heap ⊓ that.heap, this.context ⊓ that.context)
@@ -61,7 +61,7 @@ object DefaultState extends StateDomain {
         val excValue = AbsValue(newExcSet)
         val localEnv = newSt.context.pureLocal
         val (envRec1, _) = localEnv.record.decEnvRec.SetMutableBinding("@exception", excValue)
-        val (envRec2, _) = envRec1.SetMutableBinding("@exception_all", excValue + oldValue)
+        val (envRec2, _) = envRec1.SetMutableBinding("@exception_all", excValue ⊔ oldValue)
         val newCtx = newSt.context.subsPureLocal(localEnv.copyWith(record = envRec2))
         Elem(newSt.heap, newCtx)
       }
@@ -153,7 +153,7 @@ object DefaultState extends StateDomain {
             val (newEnvRec, _) = envRec
               .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
               .SetMutableBinding(x, value)
-            tmpCtx + context.update(loc, env.copyWith(record = newEnvRec))
+            tmpCtx ⊔ context.update(loc, env.copyWith(record = newEnvRec))
           })
           Elem(heap, newCtx)
         case CapturedCatchVar =>
@@ -181,7 +181,7 @@ object DefaultState extends StateDomain {
       val absStr = AbsStr(str)
       val (newHeap, b1) = heap.delete(loc, absStr)
       val (newCtx, b2) = context.delete(loc, str)
-      (Elem(newHeap, newCtx), b1 + b2)
+      (Elem(newHeap, newCtx), b1 ⊔ b2)
     }
 
     override def toString: String = toString(false)

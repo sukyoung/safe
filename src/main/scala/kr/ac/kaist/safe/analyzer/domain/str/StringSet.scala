@@ -114,11 +114,11 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
           case s if isHex(s) => AbsNum((s + "p0").toDouble)
           case s => Try(AbsNum(s.toDouble)).getOrElse(AbsNum.NaN)
         }
-        absNum + tmpAbsNum
+        absNum ⊔ tmpAbsNum
       })
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Top) => true
       //      case (StrSet(v1), StrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasOther || b.hasOther) && a.values.subsetOf(b.values)
@@ -131,11 +131,11 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case _ => false
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) if v1 == v2 => this
       case (a: StrSet, b: StrSet) => alpha(a.values ++ b.values)
       case _ =>
-        (this <= that, that <= this) match {
+        (this ⊑ that, that ⊑ this) match {
           case (true, _) => that
           case (_, true) => this
           case _ => Top
@@ -165,7 +165,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case (Other, Other) => Other
 
       case _ =>
-        (this <= that, that <= this) match {
+        (this ⊑ that, that ⊑ this) match {
           case (true, _) => this
           case (_, true) => that
           case _ => Bot
@@ -176,7 +176,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       (this.getSingle, that.getSingle) match {
         case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
         case (ConZero(), _) | (_, ConZero()) => AbsBool.Bot
-        case _ => (this <= that, that <= this) match {
+        case _ => (this ⊑ that, that ⊑ this) match {
           case (false, false) => AbsBool.False
           case _ => AbsBool.Top
         }
@@ -186,7 +186,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (StrSet(leftStrSet), StrSet(rightStrSet)) =>
         leftStrSet.foldLeft(AbsBool.Bot)((r1, x) => {
-          r1 + rightStrSet.foldLeft(AbsBool.Bot)((r2, y) => r2 + AbsBool(x < y))
+          r1 ⊔ rightStrSet.foldLeft(AbsBool.Bot)((r2, y) => r2 ⊔ AbsBool(x < y))
         })
       case _ => AbsBool.Top
     }
@@ -207,9 +207,9 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     def trim: Elem =
       this match {
         case StrSet(vs) =>
-          vs.foldLeft[Elem](Bot)((r: Elem, s: String) => r + alpha(s.trim))
+          vs.foldLeft[Elem](Bot)((r: Elem, s: String) => r ⊔ alpha(s.trim))
         case Number => Number
-        case Other => Other + Number
+        case Other => Other ⊔ Number
         case Bot => Bot
         case _ => Top
       }
@@ -238,10 +238,10 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
           case (res, d) => vs.foldLeft(res) {
             case (res, str) =>
               if (d >= str.length || d < 0)
-                res + alpha("")
+                res ⊔ alpha("")
               else {
                 val i = d.toInt
-                res + alpha(str.substring(i, i + 1))
+                res ⊔ alpha(str.substring(i, i + 1))
               }
           }
         }
@@ -255,10 +255,10 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         case ConOne(d) =>
           vs.foldLeft[AbsNum](AbsNum.Bot)((r, s) => {
             if (d >= s.length || d < 0)
-              r + AbsNum.NaN
+              r ⊔ AbsNum.NaN
             else {
               val i = d.toInt
-              r + AbsNum(s.substring(i, i + 1).head.toInt)
+              r ⊔ AbsNum(s.substring(i, i + 1).head.toInt)
             }
           })
         case _ => AbsNum.UInt
@@ -273,7 +273,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
           case ConMany() => AbsBool.Top
           case ConZero() => AbsBool.Bot
           case ConOne(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
-            result + AbsBool(v.contains(s))
+            result ⊔ AbsBool(v.contains(s))
           })
         }
         case Top => AbsBool.Top
@@ -284,7 +284,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       this match {
         case Number => AbsNum.UInt
         case Other => AbsNum.UInt
-        case StrSet(vs) => vs.foldLeft[AbsNum](AbsNum.Bot)((result, v) => result + AbsNum(v.length))
+        case StrSet(vs) => vs.foldLeft[AbsNum](AbsNum.Bot)((result, v) => result ⊔ AbsNum(v.length))
         case Top => AbsNum.UInt
         case Bot => AbsNum.Bot
       }
@@ -293,7 +293,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       this match {
         case Number => Top
         case Other => Other
-        case StrSet(vs) => vs.foldLeft[Elem](Bot)((result, v) => result + alpha(v.toLowerCase))
+        case StrSet(vs) => vs.foldLeft[Elem](Bot)((result, v) => result ⊔ alpha(v.toLowerCase))
         case Top => Top
         case Bot => Bot
       }
@@ -302,7 +302,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       this match {
         case Number => Top
         case Other => Other
-        case StrSet(vs) => vs.foldLeft[Elem](Bot)((result, v) => result + alpha(v.toUpperCase))
+        case StrSet(vs) => vs.foldLeft[Elem](Bot)((result, v) => result ⊔ alpha(v.toUpperCase))
         case Top => Top
         case Bot => Bot
       }
@@ -313,7 +313,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case StrSet(set) => {
         val upper = scala.math.pow(2, 32) - 1
         set.foldLeft(AbsBool.Bot)((res, v) => {
-          res + AbsBool({
+          res ⊔ AbsBool({
             isNumber(v) && {
               val num = v.toDouble
               num % 1 == 0 && 0 <= num && num < upper
@@ -358,7 +358,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case ConInf() => Top
       case ConFin(vs) =>
         vs.foldLeft[Elem](Bot)((r, v) => {
-          r + alpha("%c".format(v.toInt))
+          r ⊔ alpha("%c".format(v.toInt))
         })
     }
   }

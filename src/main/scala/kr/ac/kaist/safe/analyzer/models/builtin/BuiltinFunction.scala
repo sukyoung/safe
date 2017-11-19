@@ -50,7 +50,7 @@ object BuiltinFunctionProto extends FuncModel(
         val functionClass = AbsStr("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {
           val thisClass = st.heap.get(loc)(IClass).value.pvalue.strval
-          AbsBool.True </ (thisClass === functionClass)
+          AbsBool.True !⊑ (thisClass === functionClass)
         })
         val excSet =
           if (notAllFunctionClass) ExcSetEmpty + TypeError
@@ -116,25 +116,25 @@ private object BuiltinFunctionProtoHelper {
 
     // 1. If IsCallable(func) is false, then throw a TypeError exception.
     val notAllCallable = func.exists(loc => {
-      AbsBool.False <= TypeConversionHelper.IsCallable(loc, heap)
+      AbsBool.False ⊑ TypeConversionHelper.IsCallable(loc, heap)
     })
     val excSet1 =
       if (notAllCallable) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
     val callableFunc = func.locset.filter(loc => {
-      AbsBool.True <= TypeConversionHelper.IsCallable(loc, heap)
+      AbsBool.True ⊑ TypeConversionHelper.IsCallable(loc, heap)
     })
 
     // 2. If argArray is null or undefined, then
-    val nullOrUndef = (argArray.pvalue.nullval </ AbsNull.Bot) || (argArray.pvalue.undefval </ AbsUndef.Bot)
+    val nullOrUndef = (argArray.pvalue.nullval !⊑ AbsNull.Bot) || (argArray.pvalue.undefval !⊑ AbsUndef.Bot)
     val argList1 =
       if (nullOrUndef) AbsObj.newArgObject(AbsNum(0.0))
       else AbsObj.Bot
 
     // 3. If Type(argArray) is not Object, then throw a TypeError exception.
     val excSet2 =
-      if (argArray.pvalue </ AbsPValue.Bot) ExcSetEmpty + TypeError
+      if (argArray.pvalue !⊑ AbsPValue.Bot) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
     // 4. - 8.
@@ -146,14 +146,14 @@ private object BuiltinFunctionProtoHelper {
         case ConInf() =>
           val indexName = AbsStr.Number
           val nextArg = argObj.Get(indexName, heap)
-          aobj + AbsObj.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+          aobj ⊔ AbsObj.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
             (0 until num.toInt).foldLeft(AbsObj.newArgObject(n))((tmpArg, i) => {
               val indexName = AbsNum(i).toAbsStr
               val nextArg = argObj.Get(indexName, heap)
               tmpArg.update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
-            }) + aobj2
+            }) ⊔ aobj2
           })
       }
     })
@@ -161,7 +161,7 @@ private object BuiltinFunctionProtoHelper {
     // 9. [[Call]]
     val argsLoc = Loc(asite)
     val st1 = st.oldify(argsLoc)
-    val h3 = st1.heap.update(argsLoc, argList1 + argList2)
+    val h3 = st1.heap.update(argsLoc, argList1 ⊔ argList2)
     val newState =
       AbsState(h3, st1.context)
         .varStore(funcId, callableFunc)
@@ -178,14 +178,14 @@ private object BuiltinFunctionProtoHelper {
     val heap = st.heap
     // 1. If IsCallable(func) is false, then throw a TypeError exception.
     val notAllCallable = func.exists(loc => {
-      AbsBool.False <= TypeConversionHelper.IsCallable(loc, heap)
+      AbsBool.False ⊑ TypeConversionHelper.IsCallable(loc, heap)
     })
     val excSet1 =
       if (notAllCallable) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
     val callableFunc = func.locset.filter(loc => {
-      AbsBool.True <= TypeConversionHelper.IsCallable(loc, heap)
+      AbsBool.True ⊑ TypeConversionHelper.IsCallable(loc, heap)
     })
 
     // 2. - 3.
@@ -205,7 +205,7 @@ private object BuiltinFunctionProtoHelper {
             (0 until num.toInt).foldLeft(AbsObj.newArgObject(len))((tmpArg, i) => {
               val nextArg = argObj.Get(AbsNum(i + 1).toAbsStr, heap)
               tmpArg.update(AbsNum(i).toAbsStr, AbsDataProp(nextArg, atrue, atrue, atrue))
-            }) + aobj2
+            }) ⊔ aobj2
           })
       }
     })

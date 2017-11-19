@@ -43,8 +43,8 @@ class Fixpoint(
       case lst => lst.foreach(block => {
         val succCP = cp.next(block, CFGEdgeNormal)
         val oldSt = semantics.getState(succCP)
-        if (!(nextSt <= oldSt)) {
-          val newSt = oldSt + nextSt
+        if (!(nextSt ⊑ oldSt)) {
+          val newSt = oldSt ⊔ nextSt
           semantics.setState(succCP, newSt)
           worklist.add(succCP)
         }
@@ -63,8 +63,8 @@ class Fixpoint(
       case lst => lst.foreach(block => {
         val excSuccCP = cp.next(block, CFGEdgeExc)
         val oldExcSt = semantics.getState(excSuccCP)
-        if (!(nextExcSt <= oldExcSt)) {
-          val newExcSet = oldExcSt + nextExcSt
+        if (!(nextExcSt ⊑ oldExcSt)) {
+          val newExcSet = oldExcSt ⊔ nextExcSt
           semantics.setState(excSuccCP, newExcSet)
           worklist.add(excSuccCP)
         }
@@ -83,8 +83,8 @@ class Fixpoint(
           case (succCP, data) => {
             val oldSt = semantics.getState(succCP)
             val nextSt2 = semantics.E(cp, succCP, data, nextSt)
-            if (!(nextSt2 <= oldSt)) {
-              val newSt = oldSt + nextSt2
+            if (!(nextSt2 ⊑ oldSt)) {
+              val newSt = oldSt ⊔ nextSt2
               semantics.setState(succCP, newSt)
               worklist.add(succCP)
             }

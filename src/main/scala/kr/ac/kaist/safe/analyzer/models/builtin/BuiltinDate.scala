@@ -21,9 +21,9 @@ object BuiltinDateHelper {
   val instanceASite = PredAllocSite("Date<instance>")
 
   def getValue(thisV: AbsValue, h: AbsHeap): AbsNum = {
-    thisV.pvalue.numval + thisV.locset.foldLeft[AbsNum](AbsNum.Bot)((res, loc) => {
-      if ((AbsStr("Date") <= h.get(loc)(IClass).value.pvalue.strval)) {
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.numval
+    thisV.pvalue.numval ⊔ thisV.locset.foldLeft[AbsNum](AbsNum.Bot)((res, loc) => {
+      if ((AbsStr("Date") ⊑ h.get(loc)(IClass).value.pvalue.strval)) {
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.numval
       } else res
     })
   }
@@ -64,22 +64,22 @@ object BuiltinDateHelper {
           // 1. Let v be ToPrimitive(value).
           val v = TypeConversionHelper.ToPrimitive(Helper.propLoad(args, Set(AbsStr("0")), h))
           // 2. If Type(v) is String, then
-          val b = AbsBool(AbsStr("string") <= TypeConversionHelper.typeTag(v, h))
+          val b = AbsBool(AbsStr("string") ⊑ TypeConversionHelper.typeTag(v, h))
           val t =
-            if (AT <= b) {
+            if (AT ⊑ b) {
               //   a. Parse v as a date, in exactly the same manner as for the parse method (15.9.4.2);
               //      let V be the time value for this date.
               // XXX: give up the precision! (Room for the analysis precision improvement!)
               AbsNum.Top
             } else AbsNum.Bot
           val f =
-            if (AF <= b) {
+            if (AF ⊑ b) {
               // 3. Else, let V be ToNumber(v).
               timeClip(TypeConversionHelper.ToNumber(v))
             } else AbsNum.Bot
           // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
           // to TimeClip(V) and return.
-          t + f
+          t ⊔ f
         // 15.9.3.1 new Date( year, month [, date [, hours [, minutes [, seconds [, ms ]]]]] )
         // 15.9.3.3 new Date()
         // XXX: give up the precision! (Room for the analysis precision improvement!)
@@ -106,14 +106,14 @@ object BuiltinDateHelper {
     // XXX: give up the precision! (Room for the analysis precision improvement!)
     val b = BuiltinHelper.isNaN(time)
     val t =
-      if (AT <= b) {
+      if (AT ⊑ b) {
         AbsNum.NaN
       } else AbsNum.Bot
     val f =
-      if (AF <= b) {
+      if (AF ⊑ b) {
         AbsNum.Top
       } else AbsNum.Bot
-    val res = t + f
+    val res = t ⊔ f
     (st, st.raiseException(excSet), AbsValue(res))
   })
 

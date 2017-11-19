@@ -85,20 +85,20 @@ private object BuiltinRegExpHelper {
 
     // case for pattern is undefined.
     val pattern1 =
-      if (pattern.pvalue.undefval </ AbsUndef.Bot) AbsStr("")
+      if (pattern.pvalue.undefval !⊑ AbsUndef.Bot) AbsStr("")
       else AbsStr.Bot
     // case for flags is undefined.
     val flags1 =
-      if (flags.pvalue.undefval </ AbsUndef.Bot) AbsStr("")
+      if (flags.pvalue.undefval !⊑ AbsUndef.Bot) AbsStr("")
       else AbsStr.Bot
 
     // case for pattern is an object whose [[class]] is RegExp.
     val aRegExp = AbsStr("RegExp")
-    val locSetRE = pattern.locset.filter(loc => aRegExp <= heap.get(loc)(IClass).value)
+    val locSetRE = pattern.locset.filter(loc => aRegExp ⊑ heap.get(loc)(IClass).value)
     // case for pattern is an object whose [[class]] is not a RegExp
     val locSetNotRE = pattern.locset.filter(loc => {
       val aclass = heap.get(loc)(IClass).value.pvalue.strval
-      aRegExp != aclass && aclass </ AbsStr.Bot
+      aRegExp != aclass && aclass !⊑ AbsStr.Bot
     })
 
     // case for pattern is a value which is not an undefined or an object whose [[class] is not a RegExp.
@@ -111,13 +111,13 @@ private object BuiltinRegExpHelper {
     // If pattern is an object R whose [[Class] internal property is "RegExp" and
     // flags is not undefined, then throw a "TypeError" exception.
     val excSet1 =
-      if (!locSetRE.isBottom && notUndefFlags </ AbsValue.Bot) ExcSetEmpty + TypeError
+      if (!locSetRE.isBottom && notUndefFlags !⊑ AbsValue.Bot) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
     // case for pattern is a value or an object whose [[class]] is not a RegExp.
-    val P = pattern1 + pattern3
+    val P = pattern1 ⊔ pattern3
     // case for flags is a value or an object.
-    val F = flags1 + flags3
+    val F = flags1 ⊔ flags3
 
     val (objOpt, excSet2) =
       (P.gamma, F.gamma) match {
@@ -132,11 +132,11 @@ private object BuiltinRegExpHelper {
               // val (source, excSet3) = parsePattern(spattern)
               // val (g, i, m, excSet4) = parseFlag(sflags)
               val newR = newREObject(AbsStr(pattern), AbsBool.Top, AbsBool.Top, AbsBool.Top)
-              (aR + newR, excSet)
+              (aR ⊔ newR, excSet)
             })
           })
           (Some(obj), exc)
-        case _ if P </ AbsStr.Bot && F </ AbsStr.Bot =>
+        case _ if P !⊑ AbsStr.Bot && F !⊑ AbsStr.Bot =>
           (Some(newREObject(P, AbsBool.Top, AbsBool.Top, AbsBool.Top)), ExcSetEmpty + SyntaxError)
         case _ => (None, ExcSetEmpty)
       }
@@ -151,10 +151,10 @@ private object BuiltinRegExpHelper {
     }
 
     val result2 =
-      if (!locSetRE.isBottom && flags.pvalue.undefval </ AbsUndef.Bot) AbsValue(locSetRE)
+      if (!locSetRE.isBottom && flags.pvalue.undefval !⊑ AbsUndef.Bot) AbsValue(locSetRE)
       else AbsValue.Bot
 
-    (st2, st.raiseException(excSet1 ++ excSet2), result1 + result2)
+    (st2, st.raiseException(excSet1 ++ excSet2), result1 ⊔ result2)
   }
 
   // 15.10.4.1 new RegExp(pattern, flags)
@@ -165,26 +165,26 @@ private object BuiltinRegExpHelper {
 
     // case for pattern is undefined.
     val pattern1 =
-      if (pattern.pvalue.undefval </ AbsUndef.Bot) AbsStr("")
+      if (pattern.pvalue.undefval !⊑ AbsUndef.Bot) AbsStr("")
       else AbsStr.Bot
     // case for flags is undefined.
     val flags1 =
-      if (flags.pvalue.undefval </ AbsUndef.Bot) AbsStr("")
+      if (flags.pvalue.undefval !⊑ AbsUndef.Bot) AbsStr("")
       else AbsStr.Bot
 
     // case for pattern is an object whose [[class]] is RegExp.
     val aRegExp = AbsStr("RegExp")
-    val locSetRE = pattern.locset.filter(loc => aRegExp <= heap.get(loc)(IClass).value)
+    val locSetRE = pattern.locset.filter(loc => aRegExp ⊑ heap.get(loc)(IClass).value)
     // case for pattern is an object whose [[class]] is not a RegExp
     val locSetNotRE = pattern.locset.filter(loc => {
       val aclass = heap.get(loc)(IClass).value.pvalue.strval
-      aRegExp != aclass && aclass </ AbsStr.Bot
+      aRegExp != aclass && aclass !⊑ AbsStr.Bot
     })
 
     // If pattern is an object R whose [[Class]] internal property is "RegExp" and flags is undefined,
     // then let P be the pattern used to construct R and let F be the flags used to construct R.
     val (pattern2, flags2) =
-      if (!locSetRE.isBottom && flags.pvalue.undefval </ AbsUndef.Bot) (AbsStr.Top, AbsStr.Top)
+      if (!locSetRE.isBottom && flags.pvalue.undefval !⊑ AbsUndef.Bot) (AbsStr.Top, AbsStr.Top)
       else (AbsStr.Top, AbsStr.Top)
 
     // case for pattern is a value which is not an undefined or an object whose [[class] is not a RegExp.
@@ -197,13 +197,13 @@ private object BuiltinRegExpHelper {
     // If pattern is an object R whose [[Class] internal property is "RegExp" and
     // flags is not undefined, then throw a "TypeError" exception.
     val excSet1 =
-      if (!locSetRE.isBottom && notUndefFlags </ AbsValue.Bot) ExcSetEmpty + TypeError
+      if (!locSetRE.isBottom && notUndefFlags !⊑ AbsValue.Bot) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
     // case for pattern is a value or an object whose [[class]] is not a RegExp.
-    val P = pattern1 + pattern2 + pattern3
+    val P = pattern1 ⊔ pattern2 ⊔ pattern3
     // case for flags is a value or an object.
-    val F = flags1 + flags2 + flags3
+    val F = flags1 ⊔ flags2 ⊔ flags3
 
     val (objOpt, excSet2) =
       (P.gamma, F.gamma) match {
@@ -218,11 +218,11 @@ private object BuiltinRegExpHelper {
               // val (source, excSet3) = parsePattern(spattern)
               // val (g, i, m, excSet4) = parseFlag(sflags)
               val newR = newREObject(AbsStr(pattern), AbsBool.Top, AbsBool.Top, AbsBool.Top)
-              (aR + newR, excSet)
+              (aR ⊔ newR, excSet)
             })
           })
           (Some(obj), exc)
-        case _ if P </ AbsStr.Bot && F </ AbsStr.Bot =>
+        case _ if P !⊑ AbsStr.Bot && F !⊑ AbsStr.Bot =>
           (Some(newREObject(P, AbsBool.Top, AbsBool.Top, AbsBool.Top)), ExcSetEmpty + SyntaxError)
         case _ => (None, ExcSetEmpty)
       }

@@ -59,7 +59,7 @@ object DefaultDesc extends DescDomain {
 
     def getSingle: ConSingle[Desc] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)
       val (lv, lva) = left.value
       val (lw, lwa) = left.writable
@@ -69,13 +69,13 @@ object DefaultDesc extends DescDomain {
       val (rw, rwa) = right.writable
       val (re, rea) = right.enumerable
       val (rc, rca) = right.configurable
-      lv <= rv && lva <= rva &&
-        lw <= rw && lwa <= rwa &&
-        le <= re && lea <= rea &&
-        lc <= rc && lca <= rca
+      lv ⊑ rv && lva ⊑ rva &&
+        lw ⊑ rw && lwa ⊑ rwa &&
+        le ⊑ re && lea ⊑ rea &&
+        lc ⊑ rc && lca ⊑ rca
     }
 
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val (left, right) = (this, that)
       val (lv, lva) = left.value
       val (lw, lwa) = left.writable
@@ -86,10 +86,10 @@ object DefaultDesc extends DescDomain {
       val (re, rea) = right.enumerable
       val (rc, rca) = right.configurable
       Elem(
-        (lv + rv, lva + rva),
-        (lw + rw, lwa + rwa),
-        (le + re, lea + rea),
-        (lc + rc, lca + rca)
+        (lv ⊔ rv, lva ⊔ rva),
+        (lw ⊔ rw, lwa ⊔ rwa),
+        (le ⊔ re, lea ⊔ rea),
+        (lc ⊔ rc, lca ⊔ rca)
       )
     }
 
@@ -137,7 +137,7 @@ object DefaultDesc extends DescDomain {
       val falseV =
         if (va.isBottom || wa.isBottom) AbsBool.Bot
         else AbsBool.False
-      trueV + falseV
+      trueV ⊔ falseV
     }
 
     def IsGenericDescriptor: AbsBool =
@@ -148,11 +148,11 @@ object DefaultDesc extends DescDomain {
     def get(str: String): (AbsValue, AbsAbsent) = {
       val has = obj.HasProperty(AbsStr(str), h)
       val v =
-        if (AbsBool.True <= has) obj.Get(str, h)
+        if (AbsBool.True ⊑ has) obj.Get(str, h)
         else AbsValue.Bot
 
       val va =
-        if (AbsBool.False <= has) AbsAbsent.Top
+        if (AbsBool.False ⊑ has) AbsAbsent.Top
         else AbsAbsent.Bot
       (v, va)
     }

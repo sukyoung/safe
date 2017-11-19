@@ -37,16 +37,16 @@ object DefaultDataProp extends DataPropDomain {
     val (c, ca) = desc.configurable
 
     val value =
-      if (va.isTop) v + AbsUndef.Top
+      if (va.isTop) v ⊔ AbsUndef.Top
       else v
     val writable =
-      if (wa.isTop) w + AbsBool.False
+      if (wa.isTop) w ⊔ AbsBool.False
       else w
     val enumerable =
-      if (ea.isTop) e + AbsBool.False
+      if (ea.isTop) e ⊔ AbsBool.False
       else e
     val configurable =
-      if (ca.isTop) c + AbsBool.False
+      if (ca.isTop) c ⊔ AbsBool.False
       else c
     Elem(value, writable, enumerable, configurable)
   }
@@ -61,21 +61,21 @@ object DefaultDataProp extends DataPropDomain {
 
     def getSingle: ConSingle[DataProp] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)
-      left.value <= right.value &&
-        left.writable <= right.writable &&
-        left.enumerable <= right.enumerable &&
-        left.configurable <= right.configurable
+      left.value ⊑ right.value &&
+        left.writable ⊑ right.writable &&
+        left.enumerable ⊑ right.enumerable &&
+        left.configurable ⊑ right.configurable
     }
 
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val (left, right) = (this, that)
       Elem(
-        left.value + right.value,
-        left.writable + right.writable,
-        left.enumerable + right.enumerable,
-        left.configurable + right.configurable
+        left.value ⊔ right.value,
+        left.writable ⊔ right.writable,
+        left.enumerable ⊔ right.enumerable,
+        left.configurable ⊔ right.configurable
       )
     }
 

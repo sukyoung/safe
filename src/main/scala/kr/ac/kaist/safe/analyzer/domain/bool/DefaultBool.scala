@@ -56,14 +56,14 @@ object DefaultBool extends BoolDomain {
       case Top => AbsNum(1, +0)
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (a, b) if a == b => true
       case (Bot, _) => true
       case (_, Top) => true
       case _ => false
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (a, b) if a == b => this
       case (Bot, _) => that
       case (_, Bot) => this

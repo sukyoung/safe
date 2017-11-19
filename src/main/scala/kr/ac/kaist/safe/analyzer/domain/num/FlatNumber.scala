@@ -62,22 +62,22 @@ object FlatNumber extends NumDomain {
       case Top => "Top(number)"
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Top) => true
       case (left, right) if left == right => true
       case _ => false
     }
 
-    def +(that: Elem): Elem = (this, that) match {
-      case (left, right) if left <= right => right
-      case (left, right) if right <= left => left
+    def ⊔(that: Elem): Elem = (this, that) match {
+      case (left, right) if left ⊑ right => right
+      case (left, right) if right ⊑ left => left
       case _ => Top
     }
 
     def ⊓(that: Elem): Elem = (this, that) match {
-      case (left, right) if left <= right => left
-      case (left, right) if right <= left => right
+      case (left, right) if left ⊑ right => left
+      case (left, right) if right ⊑ left => right
       case _ => Bot
     }
 

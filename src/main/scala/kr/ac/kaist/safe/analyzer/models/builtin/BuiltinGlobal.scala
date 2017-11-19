@@ -64,8 +64,8 @@ object BuiltinGlobal extends ObjModel(
         num.gamma match {
           case ConFin(set) if set.size <= 3 => set.foldLeft(AbsBool.Bot) {
             case (b, Num(n)) =>
-              if (n.isNaN || n.isInfinity) b + AbsBool.False
-              else b + AbsBool.True
+              if (n.isNaN || n.isInfinity) b ⊔ AbsBool.False
+              else b ⊔ AbsBool.True
           }
           case _ => AbsBool.Top
         }

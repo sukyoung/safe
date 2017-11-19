@@ -52,13 +52,13 @@ case object DefaultLoc extends LocDomain {
       case LocSet(set) => set.mkString(", ")
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true
       case (Top, _) => false
       case (LocSet(lset), LocSet(rset)) => lset subsetOf rset
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Top, _) | (_, Top) => Top
       case (LocSet(lset), LocSet(rset)) => LocSet(lset ++ rset)
     }

@@ -33,12 +33,12 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
       case Top => ConOne(GlobalEnvRec)
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false
       case _ => true
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Bot, Bot) => Bot
       case _ => Top
     }
@@ -77,7 +77,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
         val bindings = getGlobalObj(heap)
         // 3. Assert: The result of calling the [[HasProperty]] internal method
         //    of bindings, passing N as the property name, is false.
-        if (AbsBool.False <= heap.get(GLOBAL_LOC).HasProperty(AbsStr(name), heap)) {
+        if (AbsBool.False ⊑ heap.get(GLOBAL_LOC).HasProperty(AbsStr(name), heap)) {
           // 4. If D is true then let configValue be true
           //    otherwise let configValue be false.
           val configValue = del
@@ -134,7 +134,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
         var excSet = ExcSetEmpty
         val b = value
         val f: AbsValue =
-          if (AF <= b) {
+          if (AF ⊑ b) {
             // 4. If value is false, then
             //    a. If S is false, return the value undefined,
             //       otherwise throw a ReferenceError exception.
@@ -142,12 +142,12 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
             else { AbsUndef.Top }
           } else AbsValue.Bot
         val t =
-          if (AT <= b) {
+          if (AT ⊑ b) {
             // 5. Return the result of calling the [[Get]] internal method of
             //    bindings, passing N for the argument.
             heap.get(GLOBAL_LOC).Get(name, heap)
           } else AbsValue.Bot
-        val retV = f + t
+        val retV = f ⊔ t
         (retV, excSet)
     }
 

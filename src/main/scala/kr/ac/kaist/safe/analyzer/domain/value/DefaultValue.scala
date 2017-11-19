@@ -36,17 +36,17 @@ object DefaultValue extends ValueDomain {
 
     def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
 
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)
-      left.pvalue <= right.pvalue &&
-        left.locset <= right.locset
+      left.pvalue ⊑ right.pvalue &&
+        left.locset ⊑ right.locset
     }
 
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val (left, right) = (this, that)
       Elem(
-        left.pvalue + right.pvalue,
-        left.locset + right.locset
+        left.pvalue ⊔ right.pvalue,
+        left.locset ⊔ right.locset
       )
     }
 
@@ -104,7 +104,7 @@ object DefaultValue extends ValueDomain {
         else tmpLocSet
       })
 
-      locSet1 + locSet2 + locSet3
+      locSet1 ⊔ locSet2 ⊔ locSet3
     }
   }
 }

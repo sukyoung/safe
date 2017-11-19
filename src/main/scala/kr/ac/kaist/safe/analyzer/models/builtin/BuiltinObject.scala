@@ -253,7 +253,7 @@ object BuiltinObjectHelper {
       if (pv.undefval.isBottom && pv.nullval.isBottom) (AbsValue.Bot, AbsState.Bot)
       else newObjSt(st, asite)
 
-    (st1 + st2, AbsState.Bot, v1 + v2)
+    (st1 ⊔ st2, AbsState.Bot, v1 ⊔ v2)
   }
 
   def getPrototypeOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
@@ -265,7 +265,7 @@ object BuiltinObjectHelper {
 
     // 2. Return the value of [[Prototype]] internal property of O.
     val protoV = argV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
-      v + h.get(loc)(IPrototype).value
+      v ⊔ h.get(loc)(IPrototype).value
     })
 
     val excSt = st.raiseException(excSet)
@@ -311,7 +311,7 @@ object BuiltinObjectHelper {
           case ConInf() => (AbsStr.Top, None)
           case ConFin(set) => (AbsStr(set), Some(set.size))
         }
-        (str + keys, lenSet + size)
+        (str ⊔ keys, lenSet + size)
       }
     }
     val (maxOpt, len) =
@@ -319,7 +319,7 @@ object BuiltinObjectHelper {
       else {
         val (opt, num) = lenSet.foldLeft[(Option[Int], AbsNum)]((Some(0), AbsNum.Bot)) {
           case ((None, _), _) | (_, None) => (None, AbsNum.Top)
-          case ((Some(k), num), Some(t)) => (Some(math.max(k, t)), num + AbsNum(t))
+          case ((Some(k), num), Some(t)) => (Some(math.max(k, t)), num ⊔ AbsNum(t))
         }
         (Some(opt), num)
       }
@@ -342,7 +342,7 @@ object BuiltinObjectHelper {
           //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
           //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
           val (newObj, _, excSet) = obj.DefineOwnProperty(h, prop, desc, false)
-          (obj + newObj, e ++ excSet)
+          (obj ⊔ newObj, e ++ excSet)
         }
       }
       case Some(None) => (AbsObj.Top, excSet + TypeError + RangeError)
@@ -375,7 +375,7 @@ object BuiltinObjectHelper {
     // 2. Let obj be the result of creating a new object.
     val obj = AbsObj.newObject
     // 3. Set the [[Prototype]] internal property of obj to O.
-    val protoV = AbsValue(objV.locset) + objV.pvalue.nullval
+    val protoV = AbsValue(objV.locset) ⊔ objV.pvalue.nullval
     val newObj = obj.update(IPrototype, AbsIValue(protoV))
     // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
@@ -384,7 +384,7 @@ object BuiltinObjectHelper {
     val newH = state.heap.update(loc, newObj.oldify(loc))
     val retV = AbsLoc(loc)
     val (retSt, e) =
-      if (propsV <= AbsUndef.Top) (AbsState(newH, state.context), ExcSetEmpty)
+      if (propsV ⊑ AbsUndef.Top) (AbsState(newH, state.context), ExcSetEmpty)
       else defProps(retV, propsV, AbsState(newH, state.context))
     // 5. Return obj.
     val excSt = state.raiseException(excSet ++ e)
@@ -586,10 +586,10 @@ object BuiltinObjectHelper {
     val objV = Helper.propLoad(args, Set(AbsStr("0")), h)
     val obj = h.get(objV.locset)
     val keyStr = obj.abstractKeySet((key, dp) => {
-      AbsBool.True <= dp.enumerable
+      AbsBool.True ⊑ dp.enumerable
     }) match {
       case ConInf() => AbsStr.Top
-      case ConFin(set) => set.foldLeft(AbsStr.Bot)(_ + _)
+      case ConFin(set) => set.foldLeft(AbsStr.Bot)(_ ⊔ _)
     }
 
     // 1. If the Type(O) is not Object, throw a TypeError exception.
@@ -653,9 +653,9 @@ object BuiltinObjectHelper {
     // 4. Let class be the value of the [[Class]] internal property of O.
     val className = obj(IClass).value.pvalue.strval
     // 5. Return the String value that is the result of concatenating the three Strings "[object ", class, and "]".
-    val result = undef + nu + (AbsStr("[object ") concat className concat AbsStr("]"))
+    val result = undef ⊔ nu ⊔ (AbsStr("[object ") concat className concat AbsStr("]"))
     val finalSt =
-      if (checkU || checkN) st + st1
+      if (checkU || checkN) st ⊔ st1
       else st1
     (finalSt, AbsState.Bot, result)
   }
@@ -690,7 +690,7 @@ object BuiltinObjectHelper {
     val trueV = desc.fold(AbsBool.Bot)(_ => AbsBool.True)
     val excSt = st.raiseException(excSet)
 
-    (state, excSt, falseV + trueV)
+    (state, excSt, falseV ⊔ trueV)
   }
 
   def isPrototypeOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
@@ -715,12 +715,12 @@ object BuiltinObjectHelper {
         val falseV = value.pvalue.nullval.fold(AbsBool.Bot)(_ => AbsBool.False)
         // c. If O and V refer to the same object, return true.
         val trueV =
-          if (AbsLoc(loc) <= thisLoc) AbsBool.True
+          if (AbsLoc(loc) ⊑ thisLoc) AbsBool.True
           else AbsBool.Bot
-        value.locset.foldLeft(falseV + trueV)(_ + repeat(_))
+        value.locset.foldLeft(falseV ⊔ trueV)(_ ⊔ repeat(_))
       }
     }
-    val result = value.locset.foldLeft(v1)(_ + repeat(_))
+    val result = value.locset.foldLeft(v1)(_ ⊔ repeat(_))
     val excSt = st.raiseException(excSet)
     (state, excSt, result)
   }
@@ -741,7 +741,7 @@ object BuiltinObjectHelper {
     val undefV = undef.fold(AbsBool.Bot)(_ => AbsBool.False)
     // 5. Return the value of desc.[[Enumerable]].
     val (enum, _) = desc.enumerable
-    val result = undefV + enum
+    val result = undefV ⊔ enum
     val excSt = st.raiseException(excSet)
     (state, excSt, result)
   }
@@ -809,7 +809,7 @@ object BuiltinObjectHelper {
     val props = h1.get(loc1)
     // 4. For each enumerable property of props whose name String is P
     val keyStrSet = props.abstractKeySet((key, dp) => {
-      AbsBool.True <= dp.enumerable
+      AbsBool.True ⊑ dp.enumerable
     })
     val (retH, retExcSet) = objV.locset.foldLeft((h1, excSet ++ toExcSet)) {
       case ((heap, e), loc) => {

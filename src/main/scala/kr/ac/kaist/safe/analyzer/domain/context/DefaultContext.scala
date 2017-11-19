@@ -45,7 +45,7 @@ object DefaultContext extends ContextDomain {
 
     def getSingle: ConSingle[Context] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Bot) => false
       case (_, Top) => true
@@ -58,16 +58,16 @@ object DefaultContext extends ContextDomain {
           else thisMap.forall {
             case (loc, thisEnv) => thatMap.get(loc) match {
               case None => false
-              case Some(thatEnv) => thisEnv <= thatEnv
+              case Some(thatEnv) => thisEnv ⊑ thatEnv
             }
           }
         val oldB = thisOld <= thatOld
-        val thisB = thisThis <= thatThis
+        val thisB = thisThis ⊑ thatThis
         mapB && oldB && thisB
       }
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Bot, _) => that
       case (_, Bot) => this
       case (Top, _) | (_, Top) => Top
@@ -79,11 +79,11 @@ object DefaultContext extends ContextDomain {
             case (m, (loc, thatEnv)) => m.get(loc) match {
               case None => m + (loc -> thatEnv)
               case Some(thisEnv) =>
-                m + (loc -> (thisEnv + thatEnv))
+                m + (loc -> (thisEnv ⊔ thatEnv))
             }
           }
           val newOld = thisOld + thatOld
-          val newThis = thisThis + thatThis
+          val newThis = thisThis ⊔ thatThis
           CtxMap(newMap, newOld, newThis)
         }
       }
@@ -119,11 +119,11 @@ object DefaultContext extends ContextDomain {
     }
 
     def apply(locSet: Set[Loc]): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
-      case (envRec, loc) => envRec + getOrElse(loc, AbsLexEnv.Bot)
+      case (envRec, loc) => envRec ⊔ getOrElse(loc, AbsLexEnv.Bot)
     }
 
     def apply(locSet: AbsLoc): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
-      case (envRec, loc) => envRec + getOrElse(loc, AbsLexEnv.Bot)
+      case (envRec, loc) => envRec ⊔ getOrElse(loc, AbsLexEnv.Bot)
     }
 
     def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv =
@@ -141,7 +141,7 @@ object DefaultContext extends ContextDomain {
 
     private def weakUpdated(m: Map[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): Map[Loc, AbsLexEnv] =
       m.get(loc) match {
-        case Some(oldEnv) => m.updated(loc, oldEnv + newEnv)
+        case Some(oldEnv) => m.updated(loc, oldEnv ⊔ newEnv)
         case None => m.updated(loc, newEnv)
       }
 
@@ -275,7 +275,7 @@ object DefaultContext extends ContextDomain {
     def delete(loc: Loc, str: String): (Elem, AbsBool) = {
       getOrElse(loc)((this, AbsBool.Bot))(_ => {
         val test = hasOwnProperty(loc, str)
-        if (AbsBool.True <= test)
+        if (AbsBool.True ⊑ test)
           (this, AbsBool.False)
         else
           (Bot, AbsBool.Bot)

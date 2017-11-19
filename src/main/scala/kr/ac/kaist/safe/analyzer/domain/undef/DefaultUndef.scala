@@ -34,12 +34,12 @@ object DefaultUndef extends UndefDomain {
       case Top => "Top(undefined)"
     }
 
-    def <=(that: Elem): Boolean = (this, that) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false
       case _ => true
     }
 
-    def +(that: Elem): Elem = (this, that) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Bot, Bot) => Bot
       case _ => Top
     }

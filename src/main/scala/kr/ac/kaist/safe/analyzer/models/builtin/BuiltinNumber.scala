@@ -25,15 +25,15 @@ object BuiltinNumberHelper {
     val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
     val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
     val emptyN =
-      if (AbsNum(0) <= argL) AbsNum(0)
+      if (AbsNum(0) ⊑ argL) AbsNum(0)
       else AbsNum.Bot
-    TypeConversionHelper.ToNumber(argV) + emptyN
+    TypeConversionHelper.ToNumber(argV) ⊔ emptyN
   }
 
   def getValue(thisV: AbsValue, h: AbsHeap): AbsNum = {
-    thisV.pvalue.numval + thisV.locset.foldLeft(AbsNum.Bot)((res, loc) => {
-      if ((AbsStr("Number") <= h.get(loc)(IClass).value.pvalue.strval))
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.numval
+    thisV.pvalue.numval ⊔ thisV.locset.foldLeft(AbsNum.Bot)((res, loc) => {
+      if ((AbsStr("Number") ⊑ h.get(loc)(IClass).value.pvalue.strval))
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.numval
       else res
     })
   }
@@ -118,14 +118,14 @@ object BuiltinNumberProto extends ObjModel(
         val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
         // If radix not present or is undefined the Number 10 is used as the value of radix.
         val emptyN =
-          if (AbsNum(0) <= argL || AbsUndef.Top <= argV) AbsNum(10)
+          if (AbsNum(0) ⊑ argL || AbsUndef.Top ⊑ argV) AbsNum(10)
           else AbsNum.Bot
-        val radix = TypeConversionHelper.ToInteger(argV) + emptyN
+        val radix = TypeConversionHelper.ToInteger(argV) ⊔ emptyN
 
         // If ToInteger(radix) is not an integer between 2 and 36 inclusive
         // throw a RangeError exception.
-        if (AbsBool.True <= Helper.bopGreater(radix, AbsNum(36)) ||
-          AbsBool.True <= Helper.bopLess(radix, AbsNum(2))) {
+        if (AbsBool.True ⊑ Helper.bopGreater(radix, AbsNum(36)) ||
+          AbsBool.True ⊑ Helper.bopLess(radix, AbsNum(2))) {
           excSet += RangeError
         }
 
@@ -136,16 +136,16 @@ object BuiltinNumberProto extends ObjModel(
         val s = {
           val b = TypeConversionHelper.SameValue(h, AbsNum(10), radix)
           val t =
-            if (AT <= b) {
+            if (AT ⊑ b) {
               TypeConversionHelper.ToString(n)
             } else AbsStr.Bot
           val f =
-            if (AF <= b) {
+            if (AF ⊑ b) {
               // If ToInteger(radix) is an integer from 2 to 36, but not 10,
               // XXX: give up the precision! (Room for the analysis precision improvement!)
               AbsStr.Top
             } else AbsStr.Bot
-          t + f
+          t ⊔ f
         }
         (st, st.raiseException(excSet), AbsValue(s))
       })
@@ -197,11 +197,11 @@ object BuiltinNumberProto extends ObjModel(
         // 1. Let f be ToInteger(fractionDigits).
         // (If fractionDigits is undefined, this step produces the value 0).
         val frac = Helper.propLoad(args, Set(AbsStr("0")), h)
-        val undefV = (if (AbsUndef.Top <= frac) AbsNum(0) else AbsNum.Bot)
-        val f = TypeConversionHelper.ToInteger(frac) + undefV
+        val undefV = (if (AbsUndef.Top ⊑ frac) AbsNum(0) else AbsNum.Bot)
+        val f = TypeConversionHelper.ToInteger(frac) ⊔ undefV
         // 2. If f < 0 or f > 20, throw a RangeError exception.
-        if (AbsBool.True <= Helper.bopGreater(f, AbsNum(20)) ||
-          AbsBool.True <= Helper.bopLess(f, AbsNum(0))) {
+        if (AbsBool.True ⊑ Helper.bopGreater(f, AbsNum(20)) ||
+          AbsBool.True ⊑ Helper.bopLess(f, AbsNum(0))) {
           excSet += RangeError
         }
         // XXX: give up the precision! (Room for the analysis precision improvement!)
@@ -225,7 +225,7 @@ object BuiltinNumberProto extends ObjModel(
         val f = TypeConversionHelper.ToInteger(argV)
         // 7. If fractionDigits is not undefined and (f < 0 or f > 20), throw a RangeError exception.
         if ((!argV.locset.isBottom || !argV.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom) &&
-          (AbsBool.True <= (
+          (AbsBool.True ⊑ (
             Helper.bopLess(f, AbsNum(0)).pvalue.boolval ||
             Helper.bopGreater(f, AbsNum(20)).pvalue.boolval
           )))
@@ -249,8 +249,8 @@ object BuiltinNumberProto extends ObjModel(
         // 3. Let p be ToInteger(precision).
         val p = TypeConversionHelper.ToInteger(argV)
         // 8. If p < 1 or p > 21, throw a RangeError exception.
-        if (AbsBool.True <= Helper.bopGreater(p, AbsNum(21)) ||
-          AbsBool.True <= Helper.bopLess(p, AbsNum(1))) {
+        if (AbsBool.True ⊑ Helper.bopGreater(p, AbsNum(21)) ||
+          AbsBool.True ⊑ Helper.bopLess(p, AbsNum(1))) {
           excSet += RangeError
         }
         // XXX: give up the precision! (Room for the analysis precision improvement!)

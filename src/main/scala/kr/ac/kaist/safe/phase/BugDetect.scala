@@ -66,7 +66,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
           val propStr = propV.pvalue.strval
           val heap = state.heap
           val propExist = heap.get(objLoc).HasProperty(propStr, heap)
-          if (!propExist.isBottom && propExist <= AbsBool.False)
+          if (!propExist.isBottom && propExist ⊑ AbsBool.False)
             absentProp(expr, propStr, obj) :: bugs
           else bugs
         } else bugs
@@ -88,9 +88,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
               val (v, _) = semantics.V(cond, state)
               val bv = TypeConversionHelper.ToBoolean(v)
               val (res, _) = semantics.I(i, state, AbsState.Bot)
-              if (!bv.isBottom && ((bv === AbsBool.True) <= AbsBool.True))
+              if (!bv.isBottom && ((bv === AbsBool.True) ⊑ AbsBool.True))
                 (always(cond, true) :: exprBugs ++ bs, res)
-              else if (!bv.isBottom && ((bv === AbsBool.False) <= AbsBool.True))
+              else if (!bv.isBottom && ((bv === AbsBool.False) ⊑ AbsBool.True))
                 (always(cond, false) :: exprBugs ++ bs, res)
               else (exprBugs ++ bs, res)
 

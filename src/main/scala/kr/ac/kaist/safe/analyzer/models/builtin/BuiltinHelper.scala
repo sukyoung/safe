@@ -21,10 +21,10 @@ object BuiltinHelper {
   def checkExn(h: AbsHeap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
     val exist = absValue.locset.foldLeft[AbsBool](AbsBool.Bot)((b, loc) => {
       val clsStr = h.get(loc)(IClass).value.pvalue.strval
-      b + (clsStr === AbsStr(clsName))
+      b ⊔ (clsStr === AbsStr(clsName))
     })
     val pv = absValue.pvalue
-    if (AbsBool.False <= exist)
+    if (AbsBool.False ⊑ exist)
       HashSet[Exception](TypeError)
     else HashSet[Exception]()
   }
@@ -42,32 +42,32 @@ object BuiltinHelper {
   }
 
   def max(left: AbsNum, right: AbsNum): AbsNum =
-    if (AbsNum.NaN <= left || AbsNum.NaN <= right) AbsNum.NaN
+    if (AbsNum.NaN ⊑ left || AbsNum.NaN ⊑ right) AbsNum.NaN
     else {
       val b = left < right
       val t =
-        if (AT <= b) {
+        if (AT ⊑ b) {
           right
         } else AbsNum.Bot
       val f =
-        if (AF <= b) {
+        if (AF ⊑ b) {
           left
         } else AbsNum.Bot
-      t + f
+      t ⊔ f
     }
 
   def min(left: AbsNum, right: AbsNum): AbsNum =
-    if (AbsNum.NaN <= left || AbsNum.NaN <= right) AbsNum.NaN
+    if (AbsNum.NaN ⊑ left || AbsNum.NaN ⊑ right) AbsNum.NaN
     else {
       val b = left < right
       val t =
-        if (AT <= b) {
+        if (AT ⊑ b) {
           left
         } else AbsNum.Bot
       val f =
-        if (AF <= b) {
+        if (AF ⊑ b) {
           right
         } else AbsNum.Bot
-      t + f
+      t ⊔ f
     }
 }

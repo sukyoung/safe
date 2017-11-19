@@ -39,13 +39,13 @@ trait Domain {
     }
 
     // partial order
-    def <=(that: Elem): Boolean
+    def ⊑(that: Elem): Boolean
 
     // not partial order
-    def </(that: Elem): Boolean = !(this <= that)
+    def !⊑(that: Elem): Boolean = !(this ⊑ that)
 
     // join operator
-    def +(that: Elem): Elem
+    def ⊔(that: Elem): Elem
 
     // meet operator
     def ⊓(that: Elem): Elem

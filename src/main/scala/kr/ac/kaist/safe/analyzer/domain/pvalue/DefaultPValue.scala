@@ -48,29 +48,29 @@ object DefaultPValue extends PValueDomain {
     def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
 
     /* partial order */
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)
       if (left eq right) true
       else {
-        (left.undefval <= right.undefval) &&
-          (left.nullval <= right.nullval) &&
-          (left.boolval <= right.boolval) &&
-          (left.numval <= right.numval) &&
-          (left.strval <= right.strval)
+        (left.undefval ⊑ right.undefval) &&
+          (left.nullval ⊑ right.nullval) &&
+          (left.boolval ⊑ right.boolval) &&
+          (left.numval ⊑ right.numval) &&
+          (left.strval ⊑ right.strval)
       }
     }
 
     /* join */
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val (left, right) = (this, that)
       if (left eq right) left
       else {
         Elem(
-          left.undefval + right.undefval,
-          left.nullval + right.nullval,
-          left.boolval + right.boolval,
-          left.numval + right.numval,
-          left.strval + right.strval
+          left.undefval ⊔ right.undefval,
+          left.nullval ⊔ right.nullval,
+          left.boolval ⊔ right.boolval,
+          left.numval ⊔ right.numval,
+          left.strval ⊔ right.strval
         )
       }
     }
@@ -105,13 +105,13 @@ object DefaultPValue extends PValueDomain {
     def ===(that: Elem): AbsBool = {
       val right = that
       val falseV =
-        if ((this + right).typeCount > 1) AbsBool.False
+        if ((this ⊔ right).typeCount > 1) AbsBool.False
         else AbsBool.Bot
-      (this.undefval === right.undefval) +
-        (this.nullval === right.nullval) +
-        (this.boolval === right.boolval) +
-        (this.numval === right.numval) +
-        (this.strval === right.strval) +
+      (this.undefval === right.undefval) ⊔
+        (this.nullval === right.nullval) ⊔
+        (this.boolval === right.boolval) ⊔
+        (this.numval === right.numval) ⊔
+        (this.strval === right.strval) ⊔
         falseV
     }
 
@@ -131,15 +131,15 @@ object DefaultPValue extends PValueDomain {
       this.undefval.foldUnit(set += AbsStr("undefined"))
       this.nullval.foldUnit(set += AbsStr("null"))
 
-      if (AbsBool.True <= this.boolval) set += AbsStr("true")
-      if (AbsBool.False <= this.boolval) set += AbsStr("false")
+      if (AbsBool.True ⊑ this.boolval) set += AbsStr("true")
+      if (AbsBool.False ⊑ this.boolval) set += AbsStr("false")
 
       set += this.numval.toAbsStr
 
       this.strval.foldUnit(set += this.strval)
 
       // remove redundancies
-      set.filter(s => !set.exists(o => s != o && s <= o))
+      set.filter(s => !set.exists(o => s != o && s ⊑ o))
     }
 
     def copyWith(

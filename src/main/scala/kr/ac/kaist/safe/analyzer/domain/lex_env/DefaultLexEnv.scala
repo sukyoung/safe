@@ -41,19 +41,19 @@ object DefaultLexEnv extends LexEnvDomain {
 
     def getSingle: ConSingle[LexEnv] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val right = that
-      this.record <= right.record &&
-        this.outer <= right.outer &&
-        this.nullOuter <= right.nullOuter
+      this.record ⊑ right.record &&
+        this.outer ⊑ right.outer &&
+        this.nullOuter ⊑ right.nullOuter
     }
 
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val right = that
       Elem(
-        this.record + right.record,
-        this.outer + right.outer,
-        this.nullOuter + right.nullOuter
+        this.record ⊔ right.record,
+        this.outer ⊔ right.outer,
+        this.nullOuter ⊔ right.nullOuter
       )
     }
 
@@ -106,23 +106,23 @@ object DefaultLexEnv extends LexEnvDomain {
         val exists = envRec.HasBinding(name)(heap)
         val b = exists
         val t: AbsValue =
-          if (AT <= b) {
+          if (AT ⊑ b) {
             AbsLoc(loc)
           } else AbsValue.Bot
         val f =
-          if (AF <= b) {
+          if (AF ⊑ b) {
             var initV: AbsValue =
               if (env.nullOuter.isTop) AbsUndef.Top
               else AbsValue.Bot
             env.outer.foldLeft(initV) {
-              case (v, loc) => v + visit(loc)
+              case (v, loc) => v ⊔ visit(loc)
             }
           } else AbsValue.Bot
-        t + f
+        t ⊔ f
       }
     }
     locSet.foldLeft(AbsValue.Bot) {
-      case (v, loc) => v + visit(loc)
+      case (v, loc) => v ⊔ visit(loc)
     }
   }
 
@@ -144,23 +144,23 @@ object DefaultLexEnv extends LexEnvDomain {
         val exists = envRec.HasBinding(name)(heap)
         val b = exists
         val t =
-          if (AT <= b) {
+          if (AT ⊑ b) {
             val (v, e) = envRec.GetBindingValue(name, strict)(heap)
             excSet ++= e
             v
           } else AbsValue.Bot
         val f =
-          if (AF <= b) {
+          if (AF ⊑ b) {
             if (env.nullOuter.isTop) excSet += ReferenceError
             env.outer.foldLeft(AbsValue.Bot) {
-              case (v, loc) => v + visit(loc)
+              case (v, loc) => v ⊔ visit(loc)
             }
           } else AbsValue.Bot
-        t + f
+        t ⊔ f
       }
     }
     val resV = locSet.foldLeft(AbsValue.Bot) {
-      case (v, loc) => v + visit(loc)
+      case (v, loc) => v ⊔ visit(loc)
     }
     (resV, excSet)
   }
@@ -183,7 +183,7 @@ object DefaultLexEnv extends LexEnvDomain {
       val exists = envRec.HasBinding(name)(st.heap)
       val b = exists
       val t =
-        if (AT <= b) {
+        if (AT ⊑ b) {
           val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
           val newEnv = env.copyWith(record = er)
           ctxUpdatePairSet += ((loc, newEnv))
@@ -192,7 +192,7 @@ object DefaultLexEnv extends LexEnvDomain {
           AbsAbsent.Bot
         } else AbsAbsent.Bot
       val f =
-        if (AF <= b) {
+        if (AF ⊑ b) {
           if (env.nullOuter.isTop) {
             if (strict) excSet += ReferenceError
             else {
@@ -205,7 +205,7 @@ object DefaultLexEnv extends LexEnvDomain {
           env.outer.foreach(visit(_))
           AbsAbsent.Bot
         } else AbsAbsent.Bot
-      t + f
+      t ⊔ f
     }
     locSet.foreach(visit(_))
     ctxUpdatePairSet.size match {

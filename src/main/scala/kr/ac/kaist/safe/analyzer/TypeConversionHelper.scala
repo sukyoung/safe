@@ -26,16 +26,16 @@ object TypeConversionHelper {
   // 9.1 ToPrimitive
   ////////////////////////////////////////////////////////////////
   def ToPrimitive(value: AbsValue): AbsPValue =
-    value.pvalue + AbsObj.defaultValue(value.locset)
+    value.pvalue ⊔ AbsObj.defaultValue(value.locset)
 
   def ToPrimitive(value: AbsValue, preferredType: String): AbsPValue =
-    value.pvalue + AbsObj.defaultValue(value.locset, preferredType)
+    value.pvalue ⊔ AbsObj.defaultValue(value.locset, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
     AbsObj.defaultValue(locSet, preferredType)
 
   def ToPrimitive(value: AbsValue, h: AbsHeap, preferredType: String = "String"): AbsPValue =
-    value.pvalue + AbsObj.defaultValue(value.locset, h, preferredType)
+    value.pvalue ⊔ AbsObj.defaultValue(value.locset, h, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue =
     AbsObj.defaultValue(locSet, h, preferredType)
@@ -47,14 +47,14 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def ToBoolean(value: AbsValue): AbsBool = {
     val abool6 = if (value.locset.isBottom) AbsBool.Bot else AbsBool.True
-    ToBoolean(value.pvalue) + abool6
+    ToBoolean(value.pvalue) ⊔ abool6
   }
 
   def ToBoolean(pvalue: AbsPValue): AbsBool =
-    ToBoolean(pvalue.undefval) +
-      ToBoolean(pvalue.nullval) +
-      ToBoolean(pvalue.boolval) +
-      ToBoolean(pvalue.numval) +
+    ToBoolean(pvalue.undefval) ⊔
+      ToBoolean(pvalue.nullval) ⊔
+      ToBoolean(pvalue.boolval) ⊔
+      ToBoolean(pvalue.numval) ⊔
       ToBoolean(pvalue.strval)
 
   def ToBoolean(undef: AbsUndef): AbsBool =
@@ -76,19 +76,19 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def ToNumber(value: AbsValue): AbsNum = {
     val anum6 = ToNumber(ToPrimitive(value.locset, preferredType = "Number"))
-    ToNumber(value.pvalue) + anum6
+    ToNumber(value.pvalue) ⊔ anum6
   }
 
   def ToNumber(value: AbsValue, h: AbsHeap): AbsNum = {
     val anum6 = ToNumber(ToPrimitive(value.locset, h, preferredType = "Number"))
-    ToNumber(value.pvalue) + anum6
+    ToNumber(value.pvalue) ⊔ anum6
   }
 
   def ToNumber(pvalue: AbsPValue): AbsNum =
-    ToNumber(pvalue.undefval) +
-      ToNumber(pvalue.nullval) +
-      ToNumber(pvalue.boolval) +
-      ToNumber(pvalue.numval) +
+    ToNumber(pvalue.undefval) ⊔
+      ToNumber(pvalue.nullval) ⊔
+      ToNumber(pvalue.boolval) ⊔
+      ToNumber(pvalue.numval) ⊔
       ToNumber(pvalue.strval)
 
   def ToNumber(undef: AbsUndef): AbsNum =
@@ -154,19 +154,19 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def ToString(value: AbsValue): AbsStr = {
     val astr6 = ToString(ToPrimitive(value.locset, preferredType = "String"))
-    ToString(value.pvalue) + astr6
+    ToString(value.pvalue) ⊔ astr6
   }
 
   def ToString(value: AbsValue, h: AbsHeap): AbsStr = {
     val astr6 = ToString(ToPrimitive(value.locset, h, preferredType = "String"))
-    ToString(value.pvalue) + astr6
+    ToString(value.pvalue) ⊔ astr6
   }
 
   def ToString(pvalue: AbsPValue): AbsStr =
-    ToString(pvalue.undefval) +
-      ToString(pvalue.nullval) +
-      ToString(pvalue.boolval) +
-      ToString(pvalue.numval) +
+    ToString(pvalue.undefval) ⊔
+      ToString(pvalue.nullval) ⊔
+      ToString(pvalue.boolval) ⊔
+      ToString(pvalue.numval) ⊔
       ToString(pvalue.strval)
 
   def ToString(undef: AbsUndef): AbsStr =
@@ -191,7 +191,7 @@ object TypeConversionHelper {
     val obj3 = pvalue.numval.fold(AbsObj.Bot) { AbsObj.newNumberObj(_) }
     val obj4 = pvalue.boolval.fold(AbsObj.Bot) { AbsObj.newBooleanObj(_) }
     val obj5 = pvalue.strval.fold(AbsObj.Bot) { AbsObj.newStringObj(_) }
-    (obj3 + obj4 + obj5, excSet)
+    (obj3 ⊔ obj4 ⊔ obj5, excSet)
   }
 
   def ToObject(value: AbsValue, st: AbsState, asite: AllocSite): (AbsLoc, AbsState, Set[Exception]) = {
@@ -208,7 +208,7 @@ object TypeConversionHelper {
       if (!locSet.isBottom) (locSet, st)
       else (AbsLoc.Bot, AbsState.Bot)
 
-    (locSet1 + locSet2, st1 + st2, excSet)
+    (locSet1 ⊔ locSet2, st1 ⊔ st2, excSet)
   }
 
   ////////////////////////////////////////////////////////////////
@@ -234,7 +234,7 @@ object TypeConversionHelper {
     val abool4 = value.pvalue.numval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool5 = value.pvalue.strval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool6 = if (value.locset.isBottom) AbsBool.Bot else AbsBool.Top
-    abool1 + abool2 + abool3 + abool4 + abool5 + abool6
+    abool1 ⊔ abool2 ⊔ abool3 ⊔ abool4 ⊔ abool5 ⊔ abool6
   }
 
   def IsCallable(value: AbsValue, h: AbsHeap): AbsBool = {
@@ -244,19 +244,19 @@ object TypeConversionHelper {
     val abool4 = value.pvalue.numval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool5 = value.pvalue.strval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool6 = value.locset.foldLeft(AbsBool.Bot)((tmpAbool, l) =>
-      tmpAbool + IsCallable(l, h))
-    abool1 + abool2 + abool3 + abool4 + abool5 + abool6
+      tmpAbool ⊔ IsCallable(l, h))
+    abool1 ⊔ abool2 ⊔ abool3 ⊔ abool4 ⊔ abool5 ⊔ abool6
   }
 
   def IsCallable(loc: Loc, h: AbsHeap): AbsBool = {
     val isDomIn = h.get(loc).fold(AbsBool.False) { obj => (obj contains ICall) }
     val b1 =
-      if (AbsBool.True <= isDomIn) AbsBool.True
+      if (AbsBool.True ⊑ isDomIn) AbsBool.True
       else AbsBool.Bot
     val b2 =
-      if (AbsBool.False <= isDomIn) AbsBool.False
+      if (AbsBool.False ⊑ isDomIn) AbsBool.False
       else AbsBool.Bot
-    b1 + b2
+    b1 ⊔ b2
   }
 
   ////////////////////////////////////////////////////////////////
@@ -266,7 +266,7 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def SameValue(h: AbsHeap, left: AbsValue, right: AbsValue): AbsBool = {
     val isMultiType =
-      if ((left + right).typeCount > 1) AbsBool.False
+      if ((left ⊔ right).typeCount > 1) AbsBool.False
       else AbsBool.Bot
 
     val isSame1 = (left.pvalue.undefval === right.pvalue.undefval)
@@ -284,7 +284,7 @@ object TypeConversionHelper {
         }
       } else AbsBool.Bot
 
-    isMultiType + isSame1 + isSame2 + isSame3 + isSame4 + isSame5 + isSame6
+    isMultiType ⊔ isSame1 ⊔ isSame2 ⊔ isSame3 ⊔ isSame4 ⊔ isSame5 ⊔ isSame6
   }
 
   ////////////////////////////////////////////////////////////////
@@ -307,16 +307,16 @@ object TypeConversionHelper {
       AbsStr("string")
     })
 
-    val isCallableLocSet = value.locset.foldLeft(AbsBool.Bot)((tmpAbsB, l) => tmpAbsB + IsCallable(l, h))
+    val isCallableLocSet = value.locset.foldLeft(AbsBool.Bot)((tmpAbsB, l) => tmpAbsB ⊔ IsCallable(l, h))
     val s6 =
-      if (!value.locset.isBottom && (AbsBool.False <= isCallableLocSet))
+      if (!value.locset.isBottom && (AbsBool.False ⊑ isCallableLocSet))
         AbsStr("object")
       else AbsStr.Bot
     val s7 =
-      if (!value.locset.isBottom && (AbsBool.True <= isCallableLocSet))
+      if (!value.locset.isBottom && (AbsBool.True ⊑ isCallableLocSet))
         AbsStr("function")
       else AbsStr.Bot
 
-    s1 + s2 + s3 + s4 + s5 + s6 + s7
+    s1 ⊔ s2 ⊔ s3 ⊔ s4 ⊔ s5 ⊔ s6 ⊔ s7
   }
 }

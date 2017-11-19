@@ -40,27 +40,27 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
 
     def getSingle: ConSingle[DecEnvRec] = ConMany() // TODO more precise
 
-    def <=(that: Elem): Boolean = {
+    def ⊑(that: Elem): Boolean = {
       val right = that
       (this, right) match {
         case (Bot, _) => true
         case (LBindMap(lmap), _) => lmap.forall {
           case (name, (lbind, labs)) => {
             val (rbind, rabs) = right.get(name)
-            lbind <= rbind && labs <= rabs
+            lbind ⊑ rbind && labs ⊑ rabs
           }
         }
         case (_, UBindMap(rmap)) => rmap.forall {
           case (name, (rbind, rabs)) => {
             val (lbind, labs) = this.get(name)
-            lbind <= rbind && labs <= rabs
+            lbind ⊑ rbind && labs ⊑ rabs
           }
         }
         case _ => false
       }
     }
 
-    def +(that: Elem): Elem = {
+    def ⊔(that: Elem): Elem = {
       val right = that
       (this, right) match {
         case _ if this eq right => this
@@ -69,14 +69,14 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
         case (LBindMap(lmap), LBindMap(_)) => lmap.foldLeft(right) {
           case (envRec, (name, (lbind, labs))) => {
             val (rbind, rabs) = right.get(name)
-            envRec.update(name, (lbind + rbind, labs + rabs))
+            envRec.update(name, (lbind ⊔ rbind, labs ⊔ rabs))
           }
         }
-        case (LBindMap(_), _) => right + this
+        case (LBindMap(_), _) => right ⊔ this
         case (UBindMap(lmap), _) => lmap.foldLeft(this) {
           case (envRec, (name, (lbind, labs))) => {
             val (rbind, rabs) = right.get(name)
-            envRec.update(name, (lbind + rbind, labs + rabs))
+            envRec.update(name, (lbind ⊔ rbind, labs ⊔ rabs))
           }
         }
       }
@@ -93,7 +93,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
             envRec.update(name, (lbind ⊓ rbind, labs ⊓ rabs))
           }
         }
-        case (UBindMap(_), _) => right + this
+        case (UBindMap(_), _) => right ⊔ this
         case (LBindMap(lmap), _) => {
           val nameSet = (right match {
             case Bot => HashSet() // XXX: not fisible
@@ -189,20 +189,20 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
           var excSet = ExcSetEmpty
           val b = bind.mutable
           val t =
-            if (AT <= b) {
+            if (AT ⊑ b) {
               // 3. If the binding for N in envRec is a mutable binding,
               //    change its bound value to V.
               update(name, (bind.copyWith(value = v), AbsAbsent.Bot))
             } else Bot
           val f =
-            if (AF <= b) {
+            if (AF ⊑ b) {
               // 4. Else this must be an attempt to change the value of
               //    an immutable binding so if S is true, throw a TypeError
               //    exception.
               if (strict) { excSet += TypeError; Bot }
               else this
             } else Bot
-          val envRec = t + f
+          val envRec = t ⊔ f
           (envRec, excSet)
         }
       }
@@ -222,7 +222,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
           var excSet = ExcSetEmpty
           val b = bind.mutable.negate && AbsBool(!bind.uninit.isBottom)
           val t =
-            if (AT <= b) {
+            if (AT ⊑ b) {
               // 3. If the binding for N in envRec is
               //    an uninitialised immutable binding, then
               //    a. If S is false, return the value undefined,
@@ -231,11 +231,11 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
               else AbsValue(Undef)
             } else AbsValue.Bot
           val f =
-            if (AF <= b) {
+            if (AF ⊑ b) {
               // 4. Else, return the value currently bound to N in envRec.
               bind.value
             } else AbsValue.Bot
-          val retV = t + f
+          val retV = t ⊔ f
           (retV, excSet)
         }
       }
@@ -247,7 +247,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     ): (Elem, AbsBool) = {
       val b = HasBinding(name)
       val (f1, f2) =
-        if (AF <= b) {
+        if (AF ⊑ b) {
           // 1. Let envRec be the declarative environment record for
           //    which the method was invoked.
           // 2. If envRec does not have a binding for
@@ -255,14 +255,14 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
           (this, AbsBool.True)
         } else (Bot, AbsBool.Bot)
       val (t1, t2) =
-        if (AT <= b) {
+        if (AT ⊑ b) {
           // 3. If the binding for N in envRec is cannot be deleted, return false.
           //    (XXX: we do not consider explicit design)
           // 4. Remove the binding for N from envRec.
           // 5. Return true.
           (this - name, AbsBool.True)
         } else (Bot, AbsBool.Bot)
-      (f1 + t1, f2 + t2)
+      (f1 ⊔ t1, f2 ⊔ t2)
     }
 
     // 10.2.1.1.6 ImplicitThisValue()
@@ -295,7 +295,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       // 1. Let envRec be the declarative environment record for
       //    which the method was invoked.
       case (bind, absent) => {
-        (AbsBool.False <= bind.mutable && bind.uninit.isTop) match {
+        (AbsBool.False ⊑ bind.mutable && bind.uninit.isTop) match {
           // 2. Assert: envRec must have an uninitialised immutable binding for N.
           case false => Bot
           case true => {
