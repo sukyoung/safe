@@ -142,7 +142,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         }
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) => alpha(v1 intersect v2)
 
       case (StrSet(v), Number) if hasNum(v) =>

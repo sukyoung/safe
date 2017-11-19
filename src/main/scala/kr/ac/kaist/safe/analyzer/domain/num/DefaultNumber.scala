@@ -95,7 +95,7 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (left, right) if left <= right => left
       case (left, right) if right <= left => right
       case _ => Bot

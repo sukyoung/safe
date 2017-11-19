@@ -76,14 +76,14 @@ object DefaultPValue extends PValueDomain {
     }
 
     /* meet */
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val (left, right) = (this, that)
       Elem(
-        left.undefval <> right.undefval,
-        left.nullval <> right.nullval,
-        left.boolval <> right.boolval,
-        left.numval <> right.numval,
-        left.strval <> right.strval
+        left.undefval ⊓ right.undefval,
+        left.nullval ⊓ right.nullval,
+        left.boolval ⊓ right.boolval,
+        left.numval ⊓ right.numval,
+        left.strval ⊓ right.strval
       )
     }
 

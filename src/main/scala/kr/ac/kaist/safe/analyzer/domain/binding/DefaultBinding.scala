@@ -78,12 +78,12 @@ object DefaultBinding extends BindingDomain {
     }
 
     /* meet */
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val right = that
       Elem(
-        this.value <> right.value,
-        this.uninit <> right.uninit,
-        this.mutable <> right.mutable
+        this.value ⊓ right.value,
+        this.uninit ⊓ right.uninit,
+        this.mutable ⊓ right.mutable
       )
     }
 

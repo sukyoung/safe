@@ -40,8 +40,8 @@ object DefaultState extends StateDomain {
     def +(that: Elem): Elem =
       Elem(this.heap + that.heap, this.context + that.context)
 
-    def <>(that: Elem): Elem =
-      Elem(this.heap <> that.heap, this.context <> that.context)
+    def ⊓(that: Elem): Elem =
+      Elem(this.heap ⊓ that.heap, this.context ⊓ that.context)
 
     def raiseException(excSet: Set[Exception]): Elem = {
       if (excSet.isEmpty) Bot

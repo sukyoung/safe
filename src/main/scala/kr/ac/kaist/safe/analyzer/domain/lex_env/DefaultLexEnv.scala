@@ -57,12 +57,12 @@ object DefaultLexEnv extends LexEnvDomain {
       )
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val right = that
       Elem(
-        this.record <> right.record,
-        this.outer <> right.outer,
-        this.nullOuter <> right.nullOuter
+        this.record ⊓ right.record,
+        this.outer ⊓ right.outer,
+        this.nullOuter ⊓ right.nullOuter
       )
     }
 

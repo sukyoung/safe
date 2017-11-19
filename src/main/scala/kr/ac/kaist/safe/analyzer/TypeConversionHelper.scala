@@ -276,7 +276,7 @@ object TypeConversionHelper {
     val isSame5 = (left.pvalue.strval === right.pvalue.strval)
     val isSame6 =
       if (!left.locset.isBottom && !right.locset.isBottom) {
-        val intersect = left.locset <> right.locset
+        val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => AbsBool.False
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => AbsBool.True

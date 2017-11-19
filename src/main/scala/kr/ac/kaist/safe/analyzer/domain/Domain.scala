@@ -48,6 +48,6 @@ trait Domain {
     def +(that: Elem): Elem
 
     // meet operator
-    def <>(that: Elem): Elem
+    def ⊓(that: Elem): Elem
   }
 }

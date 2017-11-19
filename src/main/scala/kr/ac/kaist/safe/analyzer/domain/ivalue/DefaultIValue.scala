@@ -57,11 +57,11 @@ object DefaultIValue extends IValueDomain {
       )
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val (left, right) = (this, that)
       Elem(
-        left.value <> right.value,
-        left.fidset <> right.fidset
+        left.value ⊓ right.value,
+        left.fidset ⊓ right.fidset
       )
     }
   }

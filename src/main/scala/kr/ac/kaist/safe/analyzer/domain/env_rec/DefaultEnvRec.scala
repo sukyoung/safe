@@ -49,11 +49,11 @@ object DefaultEnvRec extends EnvRecDomain {
       )
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val right = that
       Elem(
-        this.decEnvRec <> right.decEnvRec,
-        this.globalEnvRec <> right.globalEnvRec
+        this.decEnvRec ⊓ right.decEnvRec,
+        this.globalEnvRec ⊓ right.globalEnvRec
       )
     }
 

@@ -82,7 +82,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val right = that
       (this, right) match {
         case _ if this eq right => this
@@ -90,7 +90,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
         case (UBindMap(lmap), UBindMap(_)) => lmap.foldLeft(right) {
           case (envRec, (name, (lbind, labs))) => {
             val (rbind, rabs) = right.get(name)
-            envRec.update(name, (lbind <> rbind, labs <> rabs))
+            envRec.update(name, (lbind ⊓ rbind, labs ⊓ rabs))
           }
         }
         case (UBindMap(_), _) => right + this
@@ -104,7 +104,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
             case (envRec, name) => {
               val (lbind, labs) = this.get(name)
               val (rbind, rabs) = right.get(name)
-              envRec.update(name, (lbind <> rbind, labs <> rabs))
+              envRec.update(name, (lbind ⊓ rbind, labs ⊓ rabs))
             }
           }
         }

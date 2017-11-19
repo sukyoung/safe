@@ -39,7 +39,7 @@ object DefaultAbsent extends AbsentDomain {
       case _ => Top
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (Top, Top) => Top
       case _ => Bot
     }

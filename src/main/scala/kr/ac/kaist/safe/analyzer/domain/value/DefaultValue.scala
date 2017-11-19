@@ -50,11 +50,11 @@ object DefaultValue extends ValueDomain {
       )
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val (left, right) = (this, that)
       Elem(
-        left.pvalue <> right.pvalue,
-        left.locset <> right.locset
+        left.pvalue ⊓ right.pvalue,
+        left.locset ⊓ right.locset
       )
     }
 

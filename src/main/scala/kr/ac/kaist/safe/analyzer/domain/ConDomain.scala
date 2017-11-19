@@ -35,7 +35,7 @@ sealed abstract class ConSingle[T] {
     case _ => ConMany[T]()
   }
 
-  def <>(that: ConSingle[T]): ConSingle[T] = (this, that) match {
+  def ⊓(that: ConSingle[T]): ConSingle[T] = (this, that) match {
     case (ConMany(), _) => that
     case (_, ConMany()) => this
     case (ConOne(t), ConOne(u)) if t == u => this
@@ -69,7 +69,7 @@ sealed abstract class ConSet[T] {
     case (ConFin(lset), ConFin(rset)) => ConFin(lset ++ rset)
   }
 
-  def <>(that: ConSet[T]): ConSet[T] = (this, that) match {
+  def ⊓(that: ConSet[T]): ConSet[T] = (this, that) match {
     case (ConInf(), _) => that
     case (_, ConInf()) => this
     case (ConFin(lset), ConFin(rset)) => ConFin(lset intersect rset)

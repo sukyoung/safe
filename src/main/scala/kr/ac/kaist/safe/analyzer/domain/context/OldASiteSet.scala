@@ -48,7 +48,7 @@ case class OldASiteSet(mayOld: Set[Loc], mustOld: Set[Loc]) {
   }
 
   /* meet */
-  def <>(that: OldASiteSet): OldASiteSet = {
+  def ⊓(that: OldASiteSet): OldASiteSet = {
     if (this eq that) this
     else {
       val newMustOld =

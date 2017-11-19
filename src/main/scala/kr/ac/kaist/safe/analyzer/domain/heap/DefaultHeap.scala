@@ -81,7 +81,7 @@ object DefaultHeap extends HeapDomain {
         HeapMap(newMap)
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (left, Top) => left
       case (Top, right) => right
       case (Bot, _) | (_, Bot) => Bot
@@ -95,7 +95,7 @@ object DefaultHeap extends HeapDomain {
               (m, kv) => kv match {
                 case (k, v) => m.get(k) match {
                   case None => m - k
-                  case Some(vv) => m + (k -> (v <> vv))
+                  case Some(vv) => m + (k -> (v ⊓ vv))
                 }
               }
             )

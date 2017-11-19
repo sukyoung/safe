@@ -309,7 +309,7 @@ object Helper {
     val rightPV = right.pvalue
     val locsetTest =
       if (!left.locset.isBottom && !right.locset.isBottom) {
-        val intersect = left.locset <> right.locset
+        val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
@@ -450,7 +450,7 @@ object Helper {
       else AbsBool.Bot
     val isLocsetSame =
       if (!left.locset.isBottom && !right.locset.isBottom) {
-        val intersect = left.locset <> right.locset
+        val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue

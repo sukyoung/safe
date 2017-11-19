@@ -90,7 +90,7 @@ object AKeyObject extends ObjDomain {
         ObjMap(newAMap, newIMap)
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (Top, right) => right
       case (left, Top) => left
       case (left: ObjMap, right: ObjMap) =>

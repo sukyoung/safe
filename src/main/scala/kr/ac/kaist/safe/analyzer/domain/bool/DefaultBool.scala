@@ -70,7 +70,7 @@ object DefaultBool extends BoolDomain {
       case _ => Top
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (a, b) if a == b => this
       case (Top, _) => that
       case (_, Top) => this

@@ -79,13 +79,13 @@ object DefaultDataProp extends DataPropDomain {
       )
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val (left, right) = (this, that)
       Elem(
-        left.value <> right.value,
-        left.writable <> right.writable,
-        left.enumerable <> right.enumerable,
-        left.configurable <> right.configurable
+        left.value ⊓ right.value,
+        left.writable ⊓ right.writable,
+        left.enumerable ⊓ right.enumerable,
+        left.configurable ⊓ right.configurable
       )
     }
 

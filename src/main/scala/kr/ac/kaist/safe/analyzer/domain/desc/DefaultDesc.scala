@@ -93,7 +93,7 @@ object DefaultDesc extends DescDomain {
       )
     }
 
-    def <>(that: Elem): Elem = {
+    def ⊓(that: Elem): Elem = {
       val (left, right) = (this, that)
       val (lv, lva) = left.value
       val (lw, lwa) = left.writable
@@ -104,10 +104,10 @@ object DefaultDesc extends DescDomain {
       val (re, rea) = right.enumerable
       val (rc, rca) = right.configurable
       Elem(
-        (lv <> rv, lva <> rva),
-        (lw <> rw, lwa <> rwa),
-        (le <> re, lea <> rea),
-        (lc <> rc, lca <> rca)
+        (lv ⊓ rv, lva ⊓ rva),
+        (lw ⊓ rw, lwa ⊓ rwa),
+        (le ⊓ re, lea ⊓ rea),
+        (lc ⊓ rc, lca ⊓ rca)
       )
     }
 

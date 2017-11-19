@@ -63,7 +63,7 @@ case object DefaultLoc extends LocDomain {
       case (LocSet(lset), LocSet(rset)) => LocSet(lset ++ rset)
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (Top, _) => that
       case (_, Top) => this
       case (LocSet(lset), LocSet(rset)) => LocSet(lset intersect rset)

@@ -89,7 +89,7 @@ object DefaultContext extends ContextDomain {
       }
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Top, _) => that
       case (_, Top) => this
@@ -102,11 +102,11 @@ object DefaultContext extends ContextDomain {
             case (m, loc) => {
               val thisEnv = thisMap(loc)
               val thatEnv = thatMap(loc)
-              m + (loc -> (thisEnv <> thatEnv))
+              m + (loc -> (thisEnv ⊓ thatEnv))
             }
           }
-          val newOld = thisOld <> thatOld
-          val newThis = thisThis <> thatThis
+          val newOld = thisOld ⊓ thatOld
+          val newThis = thisThis ⊓ thatThis
           CtxMap(newMap, newOld, newThis)
         }
       }

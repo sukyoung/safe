@@ -58,7 +58,7 @@ case object DefaultFId extends FIdDomain {
       case (FIdSet(lset), FIdSet(rset)) => FIdSet(lset ++ rset)
     }
 
-    def <>(that: Elem): Elem = (this, that) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (Top, _) => that
       case (_, Top) => this
       case (FIdSet(lset), FIdSet(rset)) => FIdSet(lset intersect rset)
