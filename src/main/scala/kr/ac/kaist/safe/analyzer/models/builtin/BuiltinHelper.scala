@@ -15,7 +15,7 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.{ IClass, PredAllocSite }
+import kr.ac.kaist.safe.util.PredAllocSite
 
 object BuiltinHelper {
   def checkExn(h: AbsHeap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
