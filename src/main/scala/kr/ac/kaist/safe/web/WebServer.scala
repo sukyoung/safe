@@ -24,6 +24,7 @@ import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.json.JsonImplicits._
 import kr.ac.kaist.safe.web.actors.CmdActor
+import kr.ac.kaist.safe.web.domain._
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
@@ -64,7 +65,6 @@ object WebServer extends {
       Flow[Message]
         .collect {
           case TextMessage.Strict(msg) => msg // unpack incoming WS text messages
-          // FIXME: We need to handle TextMessage.Streamed as well.
         }
         .via(handlerFlow(uid)) // route them through the chatFlow
         .map { resp: Protocol.Message => TextMessage.Strict(resp.toJson) } // pack outgoing messages into WS JSON messages

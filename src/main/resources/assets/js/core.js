@@ -27,7 +27,7 @@ webix.ready(function(){
         { view: 'button', id: 'next',
           type: 'iconButton', icon: 'play', label: 'Next', width: 80,
           click () {
-            conn.send('next')
+            conn.cmd('next')
           },
         },
         { view: 'icon', icon: 'bars',
@@ -154,31 +154,11 @@ function drawGraph () {
     },
   });
 
-  var blocks = cy.nodes().filter(function() { var a = this.id().includes(':'); return a; });
+  const blocks = cy.nodes().filter(function() { var a = this.id().includes(':'); return a; });
   blocks.on('click', function(e){
-    $$('side-bar').expand();
-    var target = e.cyTarget;
-    var id = target.id();
-    var insts_data = safe_DB.insts[id];
-    var state_data = safe_DB.state[id];
-
-    // reset insts data
-    var insts = $$('insts');
-    insts.clearAll();
-    for (var i in insts_data) insts.add(insts_data[i]);
-
-    // reset state data
-    var state = $$('state');
-    state.clearAll();
-    for (var i in state_data) state.add(state_data[i].value, undefined, state_data[i].parent);
-
-    $$('insts').select('block');
-    cy.center(target);
-    // TODO zoom is better?
-    // cy.zoom({
-    //   level: 2.0,
-    //   position: target.position(),
-    // });
+    const target = e.cyTarget;
+    const id = target.id();
+    conn.getBlockState(id)
   });
 }
 

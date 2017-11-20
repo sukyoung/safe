@@ -17,6 +17,7 @@ import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.web.domain.BlockStates
 import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
 import org.apache.commons.io.FileUtils
 
@@ -88,7 +89,8 @@ object HTMLWriter {
         val label = func.toString
         s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', inWL: false, bc: 'white'} },""" + LINE_SEP
       case _ => ""
-    }) + s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
+    }) +
+      s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
   }
 
   def drawEdge(block: CFGBlock, sem: Semantics): String = {
@@ -207,7 +209,7 @@ object HTMLWriter {
     sb.toString
   }
 
-  def renderGraphStates(cfg: CFG, sem: Semantics, wlOpt: Option[Worklist]): String = {
+  def renderGraphStates(cfg: CFG, sem: Semantics, wlOpt: Option[Worklist], simplified: Boolean = false): String = {
     // computes reachable fid_set
     val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry, sem))
 
@@ -216,12 +218,39 @@ object HTMLWriter {
       case (func, lst) => func.getAllBlocks ++ lst
     }.reverse
 
-    return s"""{
-      "nodes": [${blocks.map(block => drawBlock(block, wlOpt, sem)).mkString("")}],
-      "edges": [${blocks.map(block => drawEdge(block, sem)).mkString("")}],
-      "insts": {${blocks.map(block => addInsts(block)).mkString("")}},
-      "state": {${blocks.map(block => addState(block, sem)).mkString("")}}
-    }""".stripMargin
+    if (simplified) {
+      s"""{
+        "nodes": [${blocks.map(block => drawBlock(block, wlOpt, sem)).mkString("")}],
+        "edges": [${blocks.map(block => drawEdge(block, sem)).mkString("")}],
+      }""".stripMargin
+    } else {
+      s"""{
+        "nodes": [${blocks.map(block => drawBlock(block, wlOpt, sem)).mkString("")}],
+        "edges": [${blocks.map(block => drawEdge(block, sem)).mkString("")}],
+        "insts": {${blocks.map(block => addInsts(block)).mkString("")}},
+        "state": {${blocks.map(block => addState(block, sem)).mkString("")}}
+      }""".stripMargin
+    }
+  }
+
+  def getBlockStates(cfg: CFG, sem: Semantics, bid: String): BlockStates = {
+    // computes reachable fid_set
+    val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry, sem))
+
+    // dump each function node
+    val blocks = reachableFunSet.foldRight(List[CFGBlock]()) {
+      case (func, lst) => func.getAllBlocks ++ lst
+    }.reverse
+
+    val blockOpt = blocks.find(block => getId(block) == bid)
+    if (blockOpt.isDefined) {
+      BlockStates(
+        "{" + addInsts(blockOpt.get) + "}",
+        "{" + addState(blockOpt.get, sem) + "}"
+      )
+    } else {
+      throw new IllegalArgumentException
+    }
   }
 
   def drawGraph(
@@ -238,7 +267,8 @@ object HTMLWriter {
     }.reverse
 
     val sb = new StringBuilder
-    sb.append(s"""<!doctype html>
+    sb.append(
+      s"""<!doctype html>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -257,7 +287,8 @@ object HTMLWriter {
     <body>
         <div id="cy"></div>
     </body>
-</html>""")
+</html>"""
+    )
     sb.toString
   }
 

@@ -11,16 +11,19 @@
 
 package kr.ac.kaist.safe.web.actors
 
-import akka.actor.{ Actor, ActorRef, Status, Terminated }
+import akka.actor.{Actor, ActorRef, Status, Terminated}
 import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.json.JsonUtil
-import kr.ac.kaist.safe.web.{ NewParticipant, ParticipantLeft, ReceivedCmd }
-import kr.ac.kaist.safe.web.Protocol.{ Result, Run, Message }
+import kr.ac.kaist.safe.web.domain.Protocol._
+import kr.ac.kaist.safe.web.domain.Actions
+import kr.ac.kaist.safe.web.{ ReceivedCmd, NewParticipant, ParticipantLeft }
 
 class CmdActor(fixpoint: Fixpoint) extends Actor {
   var subscribers = Set.empty[(String, ActorRef)]
+
+  lazy val console: Interactive = fixpoint.consoleOpt.get
 
   def dispatch(msg: Message): Unit = subscribers.foreach(_._2 ! msg)
 
@@ -30,8 +33,14 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
       subscribers += (uid -> subscriber)
       dispatch(getStatus(fixpoint))
 
-    case ReceivedCmd(cmd: String) => // Someone send command
-      dispatch(processCmd(cmd, fixpoint))
+    case ReceivedCmd(msg: String) => // Someone send command
+      val base = JsonUtil.fromJson[Base](msg)
+      base.action match {
+        case Actions.CMD => dispatch(processCmd(msg))
+        case Actions.getBlockState => dispatch(getBlockState(msg))
+        case x: String =>
+          println("Unmatched command : " + x)
+      }
     case ParticipantLeft(uid: String) => // Participant has left
       val entry = subscribers.find(p => p._1 == uid).orNull
       if (entry != null) {
@@ -43,21 +52,26 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
       subscribers = subscribers.filterNot(_._2 == sub)
   }
 
-  def processCmd(cmd: String, fixpoint: Fixpoint): Result = {
+  def processCmd(cmd: String): Result = {
     val req = JsonUtil.fromJson[Run](cmd)
-    val console = fixpoint.consoleOpt.get
     console.runCmd(req.cmd) match {
       case CmdResultContinue(output) =>
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist))
-        Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
+        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultBreak(output) =>
         fixpoint.computeOneStep()
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist))
-        Result(req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
+        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultRestart =>
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist))
-        Result(req.cmd, console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
+        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
     }
+  }
+
+  def getBlockState(req: String): BlockState = {
+    val fetchBlockStateReq = JsonUtil.fromJson[FetchBlockState](req)
+    val states = HTMLWriter.getBlockStates(console.cfg, console.sem, fetchBlockStateReq.bid)
+    BlockState(Actions.getBlockState, fetchBlockStateReq.bid, states.insts, states.state)
   }
 
   def getStatus(fixpoint: Fixpoint): Result = {
@@ -65,8 +79,9 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
     val state = HTMLWriter.renderGraphStates(
       console.cfg,
       console.sem,
-      Some(console.worklist)
+      Some(console.worklist),
+      simplified = true,
     )
-    Result("", console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+    Result(Actions.CMD, "", console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
   }
 }

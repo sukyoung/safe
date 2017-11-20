@@ -65,34 +65,17 @@ class Connection {
       this.retry = 0
       console.log('WebSocket is connected!')
     }
-    s.onmessage = (msg) => {
-      const { cmd, prompt, iter, output, state, done } = JSON.parse(msg.data)
-      // TODO: remove eval
-      eval(`safe_DB = ${state}`)
-      redrawGraph()
-      if (cmd !== '') {
-        this.print(cmd, MSG_TYPE.COMMAND)
-        this.print(output, MSG_TYPE.RESULT)
-      }
-      this.prompt = prompt
-      this.iter = iter
-      this.done = done
-
-      if (this.done) {
-        this.prompt = 'Analysis is finished\nDo you want to restart?'
-        this.iter = -1
-
-        $$('next').config.label = 'Restart'
-        $$('next').config.width = 90
-        $$('next').config.icon = 'refresh'
-        $$('next').refresh()
-        $$('next').resize()
-      } else {
-        $$('next').config.label = 'Next'
-        $$('next').config.width = 80
-        $$('next').config.icon = 'play'
-        $$('next').refresh()
-        $$('next').resize()
+    s.onmessage = ({ data }) => {
+      const resp = JSON.parse(data)
+      switch (resp.action) {
+        case "cmd":
+          this.processCmd(resp)
+          break
+        case "getBlockState":
+          this.processBlockState(resp)
+          break
+        default:
+          console.error(`Cannot find handler for action ${resp.action}`)
       }
     }
     s.onclose = () => {
@@ -117,20 +100,87 @@ class Connection {
     return s
   }
 
-  send (cmd) {
+  cmd (cmd) {
     if (this.isConnected()) {
       if (!this.done) {
         this.socket.send(JSON.stringify({
-          cmd: cmd,
+          action: 'cmd',
+          cmd,
         }))
       } else {
         if (cmd.toLowerCase() === 'y' ||
           cmd.toLowerCase() === 'yes' ||
           cmd.toLowerCase() === 'next') {
-          this.socket.send(JSON.stringify({cmd: 'restart'}))
+          this.socket.send(JSON.stringify({ action: 'cmd', cmd: 'restart' }))
+          $$('next').config.label = 'Next'
+          $$('next').config.width = 80
+          $$('next').config.icon = 'play'
+          $$('next').refresh()
+          $$('next').resize()
         }
       }
     }
+  }
+
+  processCmd (resp) {
+    const { cmd, prompt, iter, output, state, done } = resp
+    // TODO: remove eval
+    eval(`safe_DB = ${state}`)
+    redrawGraph()
+    if (cmd !== '') {
+      this.print(cmd, MSG_TYPE.COMMAND)
+      this.print(output, MSG_TYPE.RESULT)
+    }
+    this.prompt = prompt
+    this.iter = iter
+    this.done = done
+
+    if (this.done) {
+      this.prompt = 'Analysis is finished\nDo you want to restart?'
+      this.iter = -1
+
+      $$('next').config.label = 'Restart'
+      $$('next').config.width = 90
+      $$('next').config.icon = 'refresh'
+      $$('next').refresh()
+      $$('next').resize()
+    }
+  }
+
+  getBlockState (bid) {
+    if (this.isConnected()) {
+      this.socket.send(JSON.stringify({
+        action: 'getBlockState',
+        bid,
+      }))
+    }
+  }
+
+  processBlockState (resp) {
+    const { state, insts, bid } = resp
+    $$('side-bar').expand()
+
+    // TODO: Remove eval by update Protocol to send JSON not JS
+    eval(`safe_DB.insts = ${insts}`)
+    eval(`safe_DB.state = ${state}`)
+
+    const insts_data = safe_DB.insts[bid];
+    const state_data = safe_DB.state[bid];
+
+    // reset insts data
+    const instsElem = $$('insts');
+    instsElem.clearAll();
+    for (const i in insts_data) instsElem.add(insts_data[i]);
+
+    // reset state data
+    const stateElem = $$('state');
+    stateElem.clearAll();
+    for (const i in state_data) {
+      stateElem.add(state_data[i].value, undefined, state_data[i].parent);
+    }
+
+    instsElem.select('block');
+    cy.center(e.cyTarget);
   }
 
   close () {
@@ -211,7 +261,7 @@ $(function () {
   $('.console-input').keypress(function(e) {
     if (e.which === 13) {
       const cmd = $(this).val() || 'next'
-      conn.send(cmd)
+      conn.cmd(cmd)
       $(this).val('')
     }
   })
