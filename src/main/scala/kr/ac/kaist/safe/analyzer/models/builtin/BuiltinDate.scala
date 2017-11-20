@@ -476,7 +476,7 @@ object BuiltinDateProto extends ObjModel(
         val v = BuiltinDateHelper.getValue(thisV, h)
         // If the time value of this object is not a finite Number a RangeError exception is thrown.
         v.gamma match {
-          case ConInf() => excSet += RangeError
+          case ConInf => excSet += RangeError
           case _ =>
         }
         (st, st.raiseException(excSet), AbsValue(AbsStr.Top))

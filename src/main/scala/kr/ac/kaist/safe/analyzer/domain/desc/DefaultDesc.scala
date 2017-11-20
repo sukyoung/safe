@@ -55,7 +55,7 @@ object DefaultDesc extends DescDomain {
       enumerable: (AbsBool, AbsAbsent),
       configurable: (AbsBool, AbsAbsent)
   ) extends ElemTrait {
-    def gamma: ConSet[Desc] = ConInf() // TODO more precise
+    def gamma: ConSet[Desc] = ConInf // TODO more precise
 
     def getSingle: ConSingle[Desc] = ConMany() // TODO more precise
 

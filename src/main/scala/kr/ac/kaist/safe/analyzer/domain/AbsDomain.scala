@@ -31,7 +31,7 @@ trait AbsDomain[V] extends Domain {
   def alpha[U, D <: AbsDomain[U]](
     f: V => U
   )(domain: D): Elem => domain.Elem = elem => elem.gamma match {
-    case ConInf() => domain.Top
+    case ConInf => domain.Top
     case ConFin(vset) => domain.alpha(vset.map(f(_)))
   }
   def alpha[U, D <: AbsDomain[U]](

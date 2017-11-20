@@ -30,7 +30,7 @@ object DefaultState extends StateDomain {
       heap: AbsHeap,
       context: AbsContext
   ) extends ElemTrait {
-    def gamma: ConSet[State] = ConInf() // TODO more precise
+    def gamma: ConSet[State] = ConInf // TODO more precise
 
     def getSingle: ConSingle[State] = ConMany() // TODO more precise
 

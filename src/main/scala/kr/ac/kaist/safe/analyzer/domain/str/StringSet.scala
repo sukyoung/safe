@@ -66,8 +66,8 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     }
 
     def gamma: ConSet[Str] = this match {
-      case StrSet(set) => ConFin(set)
-      case Top | Number | Other => ConInf()
+      case StrSet(set) => ConFin(set.map(Str(_)))
+      case Top | Number | Other => ConInf
     }
 
     def getSingle: ConSingle[Str] = this match {
@@ -250,7 +250,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     }
 
     def charCodeAt(pos: AbsNum): AbsNum = gamma match {
-      case ConInf() => AbsNum.UInt
+      case ConInf => AbsNum.UInt
       case ConFin(vs) => pos.getSingle match {
         case ConOne(d) =>
           vs.foldLeft[AbsNum](AbsNum.Bot)((r, s) => {
@@ -355,7 +355,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
 
   def fromCharCode(n: AbsNum): Elem = {
     n.gamma match {
-      case ConInf() => Top
+      case ConInf => Top
       case ConFin(vs) =>
         vs.foldLeft[Elem](Bot)((r, v) => {
           r ⊔ alpha("%c".format(v.toInt))

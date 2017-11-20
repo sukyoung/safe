@@ -43,7 +43,7 @@ object DefaultNumber extends NumDomain {
       case NaN => ConFin(Double.NaN)
       case UIntConst(v) => ConFin(v)
       case NUIntConst(v) => ConFin(v)
-      case Top | UInt | NUInt => ConInf()
+      case Top | UInt | NUInt => ConInf
     }
 
     def getSingle: ConSingle[Num] = this match {

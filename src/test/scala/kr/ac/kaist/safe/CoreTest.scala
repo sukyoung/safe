@@ -152,7 +152,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
                 }
             }
             val resultKeySet: Set[String] = globalObj.abstractKeySet(prefixCheck(resultPrefix)) match {
-              case ConInf() =>
+              case ConInf =>
                 assert(false); HashSet()
               case ConFin(set) => set.map(_.getSingle match {
                 case ConOne(Str(str)) => str
@@ -160,7 +160,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
               })
             }
             val expectKeySet: Set[String] = globalObj.abstractKeySet(prefixCheck(expectPrefix)) match {
-              case ConInf() =>
+              case ConInf =>
                 assert(false); HashSet()
               case ConFin(set) => set.map(_.getSingle match {
                 case ConOne(Str(str)) => str

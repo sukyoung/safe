@@ -308,7 +308,7 @@ object BuiltinArrayHelper {
         val arr = AbsObj.newArrayObject(len)
         val aKeySet = argObj.abstractKeySet((aKey, _) => aKey ⊑ AbsStr.Number)
         val arrObj = aKeySet match {
-          case ConInf() => AbsObj.Top
+          case ConInf => AbsObj.Top
           case ConFin(set) => set.foldLeft(arr)((arr, aKey) => {
             val value = argObj(aKey).value
             val dp = AbsDataProp(value, AT, AT, AT)

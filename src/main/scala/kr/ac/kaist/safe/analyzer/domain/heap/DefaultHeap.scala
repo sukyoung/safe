@@ -32,7 +32,7 @@ object DefaultHeap extends HeapDomain {
   def apply(map: Map[Loc, AbsObj]): Elem = HeapMap(map)
 
   sealed abstract class Elem extends ElemTrait {
-    def gamma: ConSet[Heap] = ConInf() // TODO more precise
+    def gamma: ConSet[Heap] = ConInf // TODO more precise
 
     def getSingle: ConSingle[Heap] = ConMany() // TODO more precise
 

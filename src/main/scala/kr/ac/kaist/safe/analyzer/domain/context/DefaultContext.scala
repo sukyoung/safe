@@ -41,7 +41,7 @@ object DefaultContext extends ContextDomain {
   ): Elem = CtxMap(map, old, thisBinding)
 
   sealed abstract class Elem extends ElemTrait {
-    def gamma: ConSet[Context] = ConInf() // TODO more precise
+    def gamma: ConSet[Context] = ConInf // TODO more precise
 
     def getSingle: ConSingle[Context] = ConMany() // TODO more precise
 

@@ -57,7 +57,7 @@ object DefaultDataProp extends DataPropDomain {
       enumerable: AbsBool,
       configurable: AbsBool
   ) extends ElemTrait {
-    def gamma: ConSet[DataProp] = ConInf() // TODO more precise
+    def gamma: ConSet[DataProp] = ConInf // TODO more precise
 
     def getSingle: ConSingle[DataProp] = ConMany() // TODO more precise
 

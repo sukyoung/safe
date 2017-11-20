@@ -49,33 +49,16 @@ case class ConMany[T]() extends ConSingle[T]
 ////////////////////////////////////////////////////////////////////////////////
 // concrete finite set domain
 ////////////////////////////////////////////////////////////////////////////////
-sealed abstract class ConSet[T] {
+sealed abstract class ConSet[+T] {
 
   override def toString: String = this match {
     case ConFin(set) => "[" + set.mkString(", ") + "]"
-    case ConInf() => "[< infinite values >]"
+    case ConInf => "[< infinite values >]"
   }
 
   def isBottom: Boolean = this == ConFin()
-
-  def <=(that: ConSet[T]): Boolean = (this, that) match {
-    case (_, ConInf()) => true
-    case (ConFin(lset), ConFin(rset)) => lset subsetOf rset
-    case _ => false
-  }
-
-  def +(that: ConSet[T]): ConSet[T] = (this, that) match {
-    case (ConInf(), _) | (_, ConInf()) => ConInf[T]()
-    case (ConFin(lset), ConFin(rset)) => ConFin(lset ++ rset)
-  }
-
-  def ⊓(that: ConSet[T]): ConSet[T] = (this, that) match {
-    case (ConInf(), _) => that
-    case (_, ConInf()) => this
-    case (ConFin(lset), ConFin(rset)) => ConFin(lset intersect rset)
-  }
 }
-case class ConInf[T]() extends ConSet[T]
+case object ConInf extends ConSet[Nothing]
 case class ConFin[T](values: Set[T]) extends ConSet[T]
 object ConFin {
   def apply[T](seq: T*): ConFin[T] = ConFin(seq.toSet)

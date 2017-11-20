@@ -47,7 +47,7 @@ object FlatNumber extends NumDomain {
     def gamma: ConSet[Num] = this match {
       case Bot => ConFin()
       case Const(v) => ConFin(v)
-      case Top => ConInf()
+      case Top => ConInf
     }
 
     def getSingle: ConSingle[Num] = this match {

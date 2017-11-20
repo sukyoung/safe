@@ -43,7 +43,7 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum,
       strval: AbsStr
   ) extends ElemTrait {
-    def gamma: ConSet[PValue] = ConInf() // TODO more precisely
+    def gamma: ConSet[PValue] = ConInf // TODO more precisely
 
     def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
 

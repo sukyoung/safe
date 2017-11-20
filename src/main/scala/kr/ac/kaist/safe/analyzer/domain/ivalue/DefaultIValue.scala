@@ -29,7 +29,7 @@ object DefaultIValue extends IValueDomain {
   def apply(value: AbsValue, fidset: AbsFId): Elem = Elem(value, fidset)
 
   case class Elem(value: AbsValue, fidset: AbsFId) extends ElemTrait {
-    def gamma: ConSet[IValue] = ConInf() // TODO more precisely
+    def gamma: ConSet[IValue] = ConInf // TODO more precisely
 
     def getSingle: ConSingle[IValue] = ConMany()
 

@@ -143,7 +143,7 @@ private object BuiltinFunctionProtoHelper {
       val len = argObj.Get("length", heap)
       val n = TypeConversionHelper.ToUInt32(len)
       n.gamma match {
-        case ConInf() =>
+        case ConInf =>
           val indexName = AbsStr.Number
           val nextArg = argObj.Get(indexName, heap)
           aobj ⊔ AbsObj.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
@@ -196,7 +196,7 @@ private object BuiltinFunctionProtoHelper {
     val argList = args.locset.foldLeft(AbsObj.Bot)((aobj, loc) => {
       val argObj = heap.get(loc)
       len.gamma match {
-        case ConInf() =>
+        case ConInf =>
           val indexName = AbsStr.Number
           val nextArg = argObj.Get(indexName, heap)
           AbsObj.newArgObject(len).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))

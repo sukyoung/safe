@@ -37,7 +37,7 @@ object DefaultLexEnv extends LexEnvDomain {
       outer: AbsLoc,
       nullOuter: AbsAbsent
   ) extends ElemTrait {
-    def gamma: ConSet[LexEnv] = ConInf() // TODO more precise
+    def gamma: ConSet[LexEnv] = ConInf // TODO more precise
 
     def getSingle: ConSingle[LexEnv] = ConMany() // TODO more precise
 

@@ -48,7 +48,7 @@ object AKeyObject extends ObjDomain {
   }
 
   sealed abstract class Elem extends ElemTrait {
-    def gamma: ConSet[Obj] = ConInf() // TODO more precise
+    def gamma: ConSet[Obj] = ConInf // TODO more precise
 
     def getSingle: ConSingle[Obj] = ConMany() // TODO more precise
 
@@ -237,15 +237,15 @@ object AKeyObject extends ObjDomain {
     }
 
     def abstractKeySet: ConSet[AbsStr] = this match {
-      case Top => ConInf()
+      case Top => ConInf
       case ObjMap(amap, _) => ConFin(amap.abstractKeySet)
     }
     def abstractKeySet(filter: (AbsStr, AbsDataProp) => Boolean): ConSet[AbsStr] = this match {
-      case Top => ConInf()
+      case Top => ConInf
       case ObjMap(amap, _) => ConFin(amap.abstractKeySet(filter))
     }
     def collectKeySet(prefix: String): ConSet[String] = this match {
-      case Top => ConInf()
+      case Top => ConInf
       case ObjMap(amap, _) => amap.collectKeySet(prefix)
     }
     def keySetPair: (List[String], AbsStr) = this match {
@@ -974,8 +974,8 @@ sealed abstract class APropMap(
 
       case (_, ConFin(strSet)) if strSet.size == 1 => this.update(strSet.head, dp)
       case (_, ConFin(strSet)) => strSet.foldLeft(this)((am, str) => am.update(str, dp, true))
-      case (_, ConInf()) if !domIn => APropMapFin(this.map + (astr -> dp), this.defset)
-      case (_, ConInf()) if domIn =>
+      case (_, ConInf) if !domIn => APropMapFin(this.map + (astr -> dp), this.defset)
+      case (_, ConInf) if domIn =>
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old ⊔ dp))
         APropMapFin(newMap, this.defset)
@@ -1024,10 +1024,10 @@ sealed abstract class APropMap(
           val (am, ab) = tpl
           am.delete(str)
         })
-      case (_, ConInf()) if !domIn =>
+      case (_, ConInf) if !domIn =>
         val newAPropMap = APropMapFin(this.map, defSetEmpty)
         (newAPropMap, AbsBool.Top)
-      case (_, ConInf()) if domIn => {
+      case (_, ConInf) if domIn => {
         val (falseMap, falseB) =
           if (AbsBool.False ⊑ configurable) (this, AbsBool.Top)
           else (APropMapBot, AbsBool.Bot)
@@ -1103,15 +1103,15 @@ sealed abstract class APropMap(
   }
 
   def concreteKeySet: ConSet[String] = map.keySet.foldLeft[ConSet[String]](ConFin()) {
-    case (ConInf(), _) => ConInf()
+    case (ConInf, _) => ConInf
     case (ConFin(keyset), astr) => astr.gamma match {
-      case ConInf() => ConInf()
+      case ConInf => ConInf
       case ConFin(set) => ConFin(keyset ++ set.map(_.str))
     }
   }
 
   def collectKeySet(prefix: String): ConSet[String] = concreteKeySet match {
-    case ConInf() => ConInf()
+    case ConInf => ConInf
     case ConFin(set) => ConFin(set.filter(_.startsWith(prefix)))
   }
 
@@ -1124,7 +1124,7 @@ sealed abstract class APropMap(
     (HashSet[String](), AbsStr.Bot)
   ) {
       case ((strSet, astr), akey) => akey.gamma match {
-        case ConInf() => (strSet, astr ⊔ akey)
+        case ConInf => (strSet, astr ⊔ akey)
         case ConFin(keySet) => keySet.foldLeft((strSet, astr)) {
           case ((strSet, astr), key) => {
             val isEnum = map(akey).enumerable
@@ -1197,7 +1197,7 @@ sealed abstract class DefSet {
     (this, elem.gamma) match {
       case (DefSetTop, _) => true
       case (DefSetFin(_), conset) if conset.isBottom => true
-      case (DefSetFin(_), ConInf()) => false
+      case (DefSetFin(_), ConInf) => false
       case (DefSetFin(a), ConFin(b)) => b subsetOf a
     }
 

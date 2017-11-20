@@ -36,7 +36,7 @@ object DefaultBinding extends BindingDomain {
       mutable: AbsBool
   ) extends ElemTrait {
     def gamma: ConSet[Binding] = value.gamma match {
-      case ConInf() => ConInf()
+      case ConInf => ConInf
       case ConFin(valSet) => {
         var bindSet: Set[Binding] = HashSet()
         if (AbsBool.True ⊑ mutable) {

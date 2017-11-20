@@ -705,7 +705,7 @@ class Semantics(
         case ((str, lenSet), loc) => {
           val obj = h.get(loc)
           val (keys, size) = obj.collectKeySet("") match {
-            case ConInf() => (AbsStr.Top, None)
+            case ConInf => (AbsStr.Top, None)
             case ConFin(set) => (AbsStr(set), Some(set.size))
           }
           (str ⊔ keys, lenSet + size)
@@ -1000,7 +1000,7 @@ class Semantics(
       val locset = v.locset
       val cur = v.pvalue.numval
       val boolV = cur.gamma match {
-        case ConInf() => AbsBool.Top
+        case ConInf => AbsBool.Top
         case ConFin(idxSet) => idxSet.foldLeft(AbsBool.Bot) {
           case (b, idx) => locset.foldLeft(b) {
             case (b, loc) => {
@@ -1025,7 +1025,7 @@ class Semantics(
           val obj = heap.get(loc)
           val (strList, astr) = heap.get(loc).keySetPair
           cur.gamma match {
-            case ConInf() => str ⊔ AbsStr(strList.toSet) ⊔ astr
+            case ConInf => str ⊔ AbsStr(strList.toSet) ⊔ astr
             case ConFin(idxSet) => idxSet.foldLeft(str) {
               case (str, Num(idx)) => {
                 if (idx < strList.length) str ⊔ AbsStr(strList(idx.toInt))
@@ -1052,7 +1052,7 @@ class Semantics(
     case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
       val (v, excSetV) = V(exprV, st)
       val locset = v.pvalue.strval.gamma match {
-        case ConInf() => AbsLoc.Top
+        case ConInf => AbsLoc.Top
         case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
       }
       val newSt = st.varStore(lhs, locset)
@@ -1137,7 +1137,7 @@ class Semantics(
     case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
       val (v, excSetV) = V(exprV, st)
       val locset = v.pvalue.strval.gamma match {
-        case ConInf() => AbsLoc.Top
+        case ConInf => AbsLoc.Top
         case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
       }
       val newSt = st.varStore(lhs, locset)

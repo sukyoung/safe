@@ -308,7 +308,7 @@ object BuiltinObjectHelper {
       case ((str, lenSet), loc) => {
         val obj = h.get(loc)
         val (keys, size) = obj.collectKeySet("") match {
-          case ConInf() => (AbsStr.Top, None)
+          case ConInf => (AbsStr.Top, None)
           case ConFin(set) => (AbsStr(set), Some(set.size))
         }
         (str ⊔ keys, lenSet + size)
@@ -588,7 +588,7 @@ object BuiltinObjectHelper {
     val keyStr = obj.abstractKeySet((key, dp) => {
       AbsBool.True ⊑ dp.enumerable
     }) match {
-      case ConInf() => AbsStr.Top
+      case ConInf => AbsStr.Top
       case ConFin(set) => set.foldLeft(AbsStr.Bot)(_ ⊔ _)
     }
 
@@ -765,7 +765,7 @@ object BuiltinObjectHelper {
   private def changeProps(h: AbsHeap, obj: AbsObj, f: AbsDesc => AbsDesc): (AbsObj, Set[Exception]) = {
     // For each named own property name P of O,
     obj.abstractKeySet match {
-      case ConInf() => (AbsObj.Top, HashSet(TypeError, RangeError))
+      case ConInf => (AbsObj.Top, HashSet(TypeError, RangeError))
       case ConFin(set) => set.foldLeft(obj, ExcSetEmpty) {
         case ((o, e), key) => {
           // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
@@ -785,7 +785,7 @@ object BuiltinObjectHelper {
     else {
       // For each named own property name P of O,
       obj.abstractKeySet match {
-        case ConInf() => AbsBool.Top
+        case ConInf => AbsBool.Top
         case ConFin(set) => set.foldLeft(AbsBool.True) {
           case (b, key) => {
             // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
@@ -815,7 +815,7 @@ object BuiltinObjectHelper {
       case ((heap, e), loc) => {
         val obj = h1.get(loc)
         val (retObj: AbsObj, excSet: Set[Exception]) = keyStrSet match {
-          case ConInf() => (AbsObj.Top, HashSet(TypeError, RangeError))
+          case ConInf => (AbsObj.Top, HashSet(TypeError, RangeError))
           case ConFin(set) => set.foldLeft((obj, e)) {
             case ((obj, e), astr) => {
               // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.

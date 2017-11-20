@@ -31,7 +31,7 @@ object DefaultEnvRec extends EnvRecDomain {
       decEnvRec: AbsDecEnvRec,
       globalEnvRec: AbsGlobalEnvRec
   ) extends ElemTrait {
-    def gamma: ConSet[EnvRec] = ConInf() // TODO more precise
+    def gamma: ConSet[EnvRec] = ConInf // TODO more precise
 
     def getSingle: ConSingle[EnvRec] = ConMany() // TODO more precise
 
