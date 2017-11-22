@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsNumParseError
 import spray.json._
 
 // default number abstract domain
@@ -36,18 +37,18 @@ object DefaultNumber extends NumDomain {
       else NUIntConst(num)
   }
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case JsString("+inf|-inf") => Some(Inf)
-    case JsString("+inf") => Some(PosInf)
-    case JsString("-inf") => Some(NegInf)
-    case JsString("NaN") => Some(NaN)
-    case JsString("uint") => Some(UInt)
-    case JsString("nuint") => Some(NUInt)
-    case JsArray(Vector(JsString("uint"), JsNumber(v))) => Some(UIntConst(v.toLong))
-    case JsArray(Vector(JsString("nuint"), JsNumber(v))) => Some(NUIntConst(v.toDouble))
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case JsString("+inf|-inf") => Inf
+    case JsString("+inf") => PosInf
+    case JsString("-inf") => NegInf
+    case JsString("NaN") => NaN
+    case JsString("uint") => UInt
+    case JsString("nuint") => NUInt
+    case JsArray(Vector(JsString("uint"), JsNumber(v))) => UIntConst(v.toLong)
+    case JsArray(Vector(JsString("nuint"), JsNumber(v))) => NUIntConst(v.toDouble)
+    case _ => throw AbsNumParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {

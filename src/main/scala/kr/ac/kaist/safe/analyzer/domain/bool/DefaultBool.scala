@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsBoolParseError
 import spray.json._
 
 // default boolean abstract domain
@@ -22,12 +23,12 @@ object DefaultBool extends BoolDomain {
 
   def alpha(bool: Bool): Elem = if (bool) True else False
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("true") => Some(True)
-    case JsString("false") => Some(False)
-    case JsString("⊥") => Some(Bot)
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("true") => True
+    case JsString("false") => False
+    case JsString("⊥") => Bot
+    case _ => throw AbsBoolParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {

@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsPValueParseError
 import scala.collection.immutable.HashSet
 import spray.json._
 
@@ -37,18 +38,18 @@ object DefaultPValue extends PValueDomain {
     strval: AbsStr
   ): Elem = Elem(undefval, nullval, boolval, numval, strval)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("undefval").flatMap(AbsUndef.fromJson _),
-      m.get("nullval").flatMap(AbsNull.fromJson _),
-      m.get("boolval").flatMap(AbsBool.fromJson _),
-      m.get("numval").flatMap(AbsNum.fromJson _),
-      m.get("strval").flatMap(AbsStr.fromJson _)
+      m.get("undefval").map(AbsUndef.fromJson _),
+      m.get("nullval").map(AbsNull.fromJson _),
+      m.get("boolval").map(AbsBool.fromJson _),
+      m.get("numval").map(AbsNum.fromJson _),
+      m.get("strval").map(AbsStr.fromJson _)
     ) match {
-        case (Some(u), Some(l), Some(b), Some(n), Some(s)) => Some(Elem(u, l, b, n, s))
-        case _ => None
+        case (Some(u), Some(l), Some(b), Some(n), Some(s)) => Elem(u, l, b, n, s)
+        case _ => throw AbsPValueParseError(v)
       }
-    case _ => None
+    case _ => throw AbsPValueParseError(v)
   }
 
   case class Elem(

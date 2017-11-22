@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.errors.error.AbsStateParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
@@ -27,15 +28,15 @@ object DefaultState extends StateDomain {
 
   def apply(heap: AbsHeap, context: AbsContext): Elem = Elem(heap, context)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("heap").flatMap(AbsHeap.fromJson _),
-      m.get("context").flatMap(AbsContext.fromJson _)
+      m.get("heap").map(AbsHeap.fromJson _),
+      m.get("context").map(AbsContext.fromJson _)
     ) match {
-        case (Some(h), Some(c)) => Some(Elem(h, c))
-        case _ => None
+        case (Some(h), Some(c)) => Elem(h, c)
+        case _ => throw AbsStateParseError(v)
       }
-    case _ => None
+    case _ => throw AbsStateParseError(v)
   }
 
   case class Elem(

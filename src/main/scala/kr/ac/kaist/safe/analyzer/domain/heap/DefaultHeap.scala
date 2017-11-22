@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsHeapParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
@@ -32,11 +33,10 @@ object DefaultHeap extends HeapDomain {
 
   def apply(map: Map[Loc, AbsObj]): Elem = HeapMap(map)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case _ => json2map(v, Loc.fromJson, AbsObj.fromJson)
-      .map(HeapMap(_))
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case _ => HeapMap(json2map(v, Loc.fromJson, AbsObj.fromJson))
   }
 
   sealed abstract class Elem extends ElemTrait {

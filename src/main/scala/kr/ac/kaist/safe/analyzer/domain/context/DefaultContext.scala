@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.errors.error.AbsContextParseError
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
 import scala.collection.immutable.{ HashMap, HashSet }
@@ -41,18 +42,18 @@ object DefaultContext extends ContextDomain {
     thisBinding: AbsValue
   ): Elem = CtxMap(map, old, thisBinding)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
     case JsObject(m) => (
-      m.get("map").flatMap(json2map[Loc, AbsLexEnv](_, Loc.fromJson, AbsLexEnv.fromJson)),
-      m.get("old").flatMap(OldASiteSet.fromJson(_)),
-      m.get("thisBinding").flatMap(AbsValue.fromJson(_))
+      m.get("map").map(json2map[Loc, AbsLexEnv](_, Loc.fromJson, AbsLexEnv.fromJson)),
+      m.get("old").map(OldASiteSet.fromJson(_)),
+      m.get("thisBinding").map(AbsValue.fromJson(_))
     ) match {
-        case (Some(m), Some(o), Some(t)) => Some(CtxMap(m, o, t))
-        case _ => None
+        case (Some(m), Some(o), Some(t)) => CtxMap(m, o, t)
+        case _ => throw AbsContextParseError(v)
       }
-    case JsString("⊥") => Some(Bot)
-    case _ => None
+    case JsString("⊥") => Bot
+    case _ => throw AbsContextParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {

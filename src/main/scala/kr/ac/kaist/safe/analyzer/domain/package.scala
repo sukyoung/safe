@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
+import kr.ac.kaist.safe.errors.error._
 import scala.collection.immutable.{ HashMap, HashSet }
 import spray.json._
 
@@ -219,58 +220,49 @@ package object domain {
   // load from JSON for general structures
   ////////////////////////////////////////////////////////////////
   // for string
-  def json2str(v: JsValue): Option[String] = v match {
-    case JsString(str) => Some(str)
-    case _ => None
+  def json2str(v: JsValue): String = v match {
+    case JsString(str) => str
+    case _ => throw StringParseError(v)
   }
 
   // for integer
-  def json2int(v: JsValue): Option[Int] = v match {
-    case JsNumber(n) => Some(n.toInt)
-    case _ => None
+  def json2int(v: JsValue): Int = v match {
+    case JsNumber(n) => n.toInt
+    case _ => throw IntParseError(v)
   }
 
   // for map structure
   def json2map[K, V](
-    m: JsValue,
-    kFromJson: JsValue => Option[K],
-    vFromJson: JsValue => Option[V]
-  ): Option[Map[K, V]] = m match {
-    case JsArray(vec) => vec.foldLeft[Option[Map[K, V]]](Some(HashMap())) {
-      case (Some(m), JsArray(Vector(k, v))) => (
-        kFromJson(k),
-        vFromJson(v)
-      ) match {
-          case (Some(k), Some(v)) => Some(m + (k -> v))
-          case _ => None
-        }
-      case _ => None
+    v: JsValue,
+    kFromJson: JsValue => K,
+    vFromJson: JsValue => V
+  ): Map[K, V] = v match {
+    case JsArray(vec) => vec.foldLeft[Map[K, V]](HashMap()) {
+      case (m, JsArray(Vector(k, v))) => m + (kFromJson(k) -> vFromJson(v))
+      case _ => throw MapParseError(v)
     }
-    case _ => None
+    case _ => throw MapParseError(v)
   }
 
   // for set structure
   def json2set[X](
     v: JsValue,
-    fromJson: JsValue => Option[X]
-  ): Option[Set[X]] = v match {
-    case JsArray(vec) => vec.foldLeft[Option[Set[X]]](Some(HashSet())) {
-      case (Some(set), JsArray(Vector(x))) => fromJson(x).map(set + _)
-      case _ => None
+    fromJson: JsValue => X
+  ): Set[X] = v match {
+    case JsArray(vec) => vec.foldLeft[Set[X]](HashSet()) {
+      case (set, JsArray(Vector(x))) => set + fromJson(x)
+      case _ => throw SetParseError(v)
     }
-    case _ => None
+    case _ => throw SetParseError(v)
   }
 
   // for pair structure
   def json2pair[L, R](
     v: JsValue,
-    lFromJson: JsValue => Option[L],
-    rFromJson: JsValue => Option[R]
-  ): Option[(L, R)] = v match {
-    case JsArray(Vector(l, r)) => (lFromJson(l), rFromJson(r)) match {
-      case (Some(l), Some(r)) => Some((l, r))
-      case _ => None
-    }
-    case _ => None
+    lFromJson: JsValue => L,
+    rFromJson: JsValue => R
+  ): (L, R) = v match {
+    case JsArray(Vector(l, r)) => (lFromJson(l), rFromJson(r))
+    case _ => throw PairParseError(v)
   }
 }

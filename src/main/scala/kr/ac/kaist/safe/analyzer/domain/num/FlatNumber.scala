@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import Double._
+import kr.ac.kaist.safe.errors.error.AbsNumParseError
 import spray.json._
 
 // flat number abstract domain
@@ -28,11 +29,11 @@ object FlatNumber extends NumDomain {
 
   def alpha(num: Num): Elem = Const(num.num)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case JsNumber(n) => Some(Const(n.toDouble))
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case JsNumber(n) => Const(n.toDouble)
+    case _ => throw AbsNumParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {

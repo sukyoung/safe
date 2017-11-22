@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsUndefParseError
 import spray.json._
 
 // default undefined abstract domain
@@ -20,10 +21,10 @@ object DefaultUndef extends UndefDomain {
 
   def alpha(undef: Undef): Elem = Top
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case _ => throw AbsUndefParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {

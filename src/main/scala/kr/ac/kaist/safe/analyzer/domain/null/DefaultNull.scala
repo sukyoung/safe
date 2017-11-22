@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsNullParseError
 import spray.json._
 
 // default null abstract domain
@@ -20,10 +21,10 @@ object DefaultNull extends NullDomain {
 
   def alpha(x: Null): Elem = Top
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case _ => throw AbsNullParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {

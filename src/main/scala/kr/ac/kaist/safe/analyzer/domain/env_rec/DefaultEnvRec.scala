@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsEnvRecParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import spray.json._
@@ -28,15 +29,15 @@ object DefaultEnvRec extends EnvRecDomain {
   def apply(envRec: AbsDecEnvRec): Elem = Bot.copy(decEnvRec = envRec)
   def apply(envRec: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = envRec)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("decEnvRec").flatMap(AbsDecEnvRec.fromJson _),
-      m.get("globalEnvRec").flatMap(AbsGlobalEnvRec.fromJson _)
+      m.get("decEnvRec").map(AbsDecEnvRec.fromJson _),
+      m.get("globalEnvRec").map(AbsGlobalEnvRec.fromJson _)
     ) match {
-        case (Some(d), Some(g)) => Some(Elem(d, g))
-        case _ => None
+        case (Some(d), Some(g)) => Elem(d, g)
+        case _ => throw AbsEnvRecParseError(v)
       }
-    case _ => None
+    case _ => throw AbsEnvRecParseError(v)
   }
 
   case class Elem(

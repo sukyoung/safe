@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.ContextAssertionError
+import kr.ac.kaist.safe.errors.error.{ ContextAssertionError, AbsContextParseError }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
@@ -36,20 +36,22 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     case true => UBindMap(m)
   }
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊥") => Some(Bot)
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊥") => Bot
     case JsObject(m) => m.get("map")
-      .flatMap(json2map(
+      .map(json2map(
         _,
         json2str,
         json2pair(_, AbsBinding.fromJson, AbsAbsent.fromJson)
-      ))
-      .flatMap(map => m.get("kind") match {
-        case Some(JsString("lower")) => Some(LBindMap(map))
-        case Some(JsString("upper")) => Some(UBindMap(map))
-        case _ => None
-      })
-    case _ => None
+      )) match {
+        case Some(map) => m.get("kind") match {
+          case Some(JsString("lower")) => LBindMap(map)
+          case Some(JsString("upper")) => UBindMap(map)
+          case _ => throw AbsContextParseError(v)
+        }
+        case None => throw AbsContextParseError(v)
+      }
+    case _ => throw AbsContextParseError(v)
   }
 
   abstract class Elem extends ElemTrait {

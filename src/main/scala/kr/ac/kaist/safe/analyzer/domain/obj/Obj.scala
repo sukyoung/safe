@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.INameParseError
 import spray.json._
 
 // concrete object type
@@ -42,19 +43,19 @@ sealed abstract class IName(name: String) {
   def toJson: JsValue = JsString(name)
 }
 object IName {
-  def fromJson(v: JsValue): Option[IName] = v match {
-    case JsString("Prototype") => Some(IPrototype)
-    case JsString("Class") => Some(IClass)
-    case JsString("Extensible") => Some(IExtensible)
-    case JsString("PrimitiveValue") => Some(IPrimitiveValue)
-    case JsString("Call") => Some(ICall)
-    case JsString("Construct") => Some(IConstruct)
-    case JsString("Scope") => Some(IScope)
-    case JsString("HasInstance") => Some(IHasInstance)
-    case JsString("TargetFunction") => Some(ITargetFunction)
-    case JsString("BoundThis") => Some(IBoundThis)
-    case JsString("BoundArgs") => Some(IBoundArgs)
-    case _ => None
+  def fromJson(v: JsValue): IName = v match {
+    case JsString("Prototype") => IPrototype
+    case JsString("Class") => IClass
+    case JsString("Extensible") => IExtensible
+    case JsString("PrimitiveValue") => IPrimitiveValue
+    case JsString("Call") => ICall
+    case JsString("Construct") => IConstruct
+    case JsString("Scope") => IScope
+    case JsString("HasInstance") => IHasInstance
+    case JsString("TargetFunction") => ITargetFunction
+    case JsString("BoundThis") => IBoundThis
+    case JsString("BoundArgs") => IBoundArgs
+    case _ => throw INameParseError(v)
   }
 }
 case object IPrototype extends IName("Prototype")

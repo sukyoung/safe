@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError, UserAllocSiteError }
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
@@ -35,10 +35,9 @@ case object DefaultLoc extends LocDomain {
   def alpha(loc: Loc): Elem = LocSet(loc)
   override def alpha(locset: Set[Loc]): Elem = LocSet(locset)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case _ => json2set(v, Loc.fromJson)
-      .map(LocSet(_))
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case _ => LocSet(json2set(v, Loc.fromJson))
   }
 
   sealed abstract class Elem extends ElemTrait {

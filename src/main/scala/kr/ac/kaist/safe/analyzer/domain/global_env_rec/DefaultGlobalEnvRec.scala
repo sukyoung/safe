@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsGlobalEnvRecParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import scala.collection.immutable.HashMap
@@ -23,10 +24,10 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
 
   def alpha(g: GlobalEnvRec): Elem = Top
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case _ => throw AbsGlobalEnvRecParseError(v)
   }
 
   abstract class Elem extends ElemTrait {

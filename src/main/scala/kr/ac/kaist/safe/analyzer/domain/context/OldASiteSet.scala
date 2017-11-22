@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.errors.error.OldASiteSetParseError
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 import spray.json._
@@ -107,14 +108,14 @@ case class OldASiteSet(mayOld: Set[Loc], mustOld: Set[Loc]) {
 object OldASiteSet {
   val Bot: OldASiteSet = OldASiteSet(HashSet[Loc](), null)
   val Empty: OldASiteSet = OldASiteSet(HashSet[Loc](), HashSet[Loc]())
-  def fromJson(v: JsValue): Option[OldASiteSet] = v match {
+  def fromJson(v: JsValue): OldASiteSet = v match {
     case JsObject(m) => (
-      m.get("mayOld").flatMap(json2set(_, Loc.fromJson)),
-      m.get("mustOld").flatMap(json2set(_, Loc.fromJson))
+      m.get("mayOld").map(json2set(_, Loc.fromJson)),
+      m.get("mustOld").map(json2set(_, Loc.fromJson))
     ) match {
-        case (Some(may), Some(must)) => Some(OldASiteSet(may, must))
-        case _ => None
+        case (Some(may), Some(must)) => OldASiteSet(may, must)
+        case _ => throw OldASiteSetParseError(v)
       }
-    case _ => None
+    case _ => throw OldASiteSetParseError(v)
   }
 }

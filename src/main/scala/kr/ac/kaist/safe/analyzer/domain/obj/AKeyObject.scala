@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
@@ -48,16 +49,16 @@ object AKeyObject extends ObjDomain {
     ObjMap(amap, imap)
   }
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
     case JsObject(m) => (
-      m.get("amap").flatMap(APropMap.fromJson _),
-      m.get("imap").flatMap(json2map(_, IName.fromJson, AbsIValue.fromJson))
+      m.get("amap").map(APropMap.fromJson _),
+      m.get("imap").map(json2map(_, IName.fromJson, AbsIValue.fromJson))
     ) match {
-        case (Some(a), Some(i)) => Some(ObjMap(a, i))
-        case _ => None
+        case (Some(a), Some(i)) => ObjMap(a, i)
+        case _ => throw AbsObjParseError(v)
       }
-    case _ => None
+    case _ => throw AbsObjParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {
@@ -1173,17 +1174,17 @@ sealed abstract class APropMap(
   }
 }
 object APropMap {
-  def fromJson(v: JsValue): Option[APropMap] = v match {
-    case JsString("⊥") => Some(APropMapBot)
-    case JsString("empty") => Some(APropMapEmpty)
+  def fromJson(v: JsValue): APropMap = v match {
+    case JsString("⊥") => APropMapBot
+    case JsString("empty") => APropMapEmpty
     case JsObject(m) => (
-      m.get("map").flatMap(json2map(_, AbsStr.fromJson, AbsDataProp.fromJson)),
-      m.get("defset").flatMap(DefSet.fromJson)
+      m.get("map").map(json2map(_, AbsStr.fromJson, AbsDataProp.fromJson)),
+      m.get("defset").map(DefSet.fromJson)
     ) match {
-        case (Some(m), Some(d)) => Some(APropMapFin(m, d))
-        case _ => None
+        case (Some(m), Some(d)) => APropMapFin(m, d)
+        case _ => throw APropMapParseError(v)
       }
-    case _ => None
+    case _ => throw APropMapParseError(v)
   }
 }
 case class APropMapFin(private val map: Map[AbsStr, AbsDataProp], private val defset: DefSet) extends APropMap(map, defset)
@@ -1196,10 +1197,9 @@ case object APropMapBot extends APropMap(HashMap[AbsStr, AbsDataProp](), DefSet.
 object DefSet {
   val Empty: DefSet = DefSetFin(HashSet[String]())
   val Top: DefSet = DefSetTop
-  def fromJson(v: JsValue): Option[DefSet] = v match {
-    case JsString("⊤") => Some(DefSetTop)
-    case _ => json2set(v, json2str(_))
-      .map(DefSetFin(_))
+  def fromJson(v: JsValue): DefSet = v match {
+    case JsString("⊤") => DefSetTop
+    case _ => DefSetFin(json2set(v, json2str(_)))
   }
 }
 

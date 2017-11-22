@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsIValueParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import spray.json._
@@ -29,15 +30,15 @@ object DefaultIValue extends IValueDomain {
   def apply(fidset: AbsFId): Elem = Bot.copy(fidset = fidset)
   def apply(value: AbsValue, fidset: AbsFId): Elem = Elem(value, fidset)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("value").flatMap(AbsValue.fromJson _),
-      m.get("fidset").flatMap(AbsFId.fromJson _)
+      m.get("value").map(AbsValue.fromJson _),
+      m.get("fidset").map(AbsFId.fromJson _)
     ) match {
-        case (Some(v), Some(f)) => Some(Elem(v, f))
-        case _ => None
+        case (Some(v), Some(f)) => Elem(v, f)
+        case _ => throw AbsIValueParseError(v)
       }
-    case _ => None
+    case _ => throw AbsIValueParseError(v)
   }
 
   case class Elem(value: AbsValue, fidset: AbsFId) extends ElemTrait {

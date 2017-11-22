@@ -25,7 +25,7 @@ trait Domain {
   type Elem <: ElemTrait
 
   // load from JSON format
-  def fromJson(v: JsValue): Option[Elem]
+  def fromJson(v: JsValue): Elem
 
   // element traits
   protected trait ElemTrait { this: Elem =>

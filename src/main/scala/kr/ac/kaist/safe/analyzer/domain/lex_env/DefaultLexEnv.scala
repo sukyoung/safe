@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.errors.error.AbsLexEnvParseError
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.{ HashSet, HashMap }
@@ -33,16 +34,16 @@ object DefaultLexEnv extends LexEnvDomain {
     nullOuter: AbsAbsent
   ): Elem = Elem(record, outer, nullOuter)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("record").flatMap(AbsEnvRec.fromJson _),
-      m.get("outer").flatMap(AbsLoc.fromJson _),
-      m.get("nullOuter").flatMap(AbsAbsent.fromJson _)
+      m.get("record").map(AbsEnvRec.fromJson _),
+      m.get("outer").map(AbsLoc.fromJson _),
+      m.get("nullOuter").map(AbsAbsent.fromJson _)
     ) match {
-        case (Some(r), Some(o), Some(n)) => Some(Elem(r, o, n))
-        case _ => None
+        case (Some(r), Some(o), Some(n)) => Elem(r, o, n)
+        case _ => throw AbsLexEnvParseError(v)
       }
-    case _ => None
+    case _ => throw AbsLexEnvParseError(v)
   }
 
   case class Elem(

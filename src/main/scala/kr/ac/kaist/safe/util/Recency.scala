@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.util
 
+import kr.ac.kaist.safe.errors.error.RecencyTagParseError
 import kr.ac.kaist.safe.analyzer.domain.Loc
 import spray.json._
 
@@ -38,10 +39,10 @@ sealed abstract class RecencyTag(prefix: String) {
   def toJson: JsValue = JsString(prefix)
 }
 object RecencyTag {
-  def fromJson(v: JsValue): Option[RecencyTag] = v match {
-    case JsString("R") => Some(Recent)
-    case JsString("O") => Some(Old)
-    case _ => None
+  def fromJson(v: JsValue): RecencyTag = v match {
+    case JsString("R") => Recent
+    case JsString("O") => Old
+    case _ => throw RecencyTagParseError(v)
   }
 }
 case object Recent extends RecencyTag("R")

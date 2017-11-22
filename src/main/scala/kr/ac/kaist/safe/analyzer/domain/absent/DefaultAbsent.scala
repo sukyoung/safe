@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsAbsentParseError
 import spray.json._
 
 // default absent abstract domain
@@ -20,10 +21,10 @@ object DefaultAbsent extends AbsentDomain {
 
   def alpha(abs: Absent): Elem = Top
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("⊥") => Some(Bot)
-    case _ => None
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case _ => throw AbsAbsentParseError(v)
   }
 
   abstract class Elem extends ElemTrait {

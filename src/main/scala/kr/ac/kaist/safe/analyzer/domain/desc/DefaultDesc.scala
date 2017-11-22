@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.errors.error.AbsDescParseError
 import spray.json._
 
 // default descriptor abstract domain
@@ -50,17 +51,17 @@ object DefaultDesc extends DescDomain {
     configurable: (AbsBool, AbsAbsent)
   ): Elem = Elem(value, writable, enumerable, configurable)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("value").flatMap(json2pair(_, AbsValue.fromJson, AbsAbsent.fromJson)),
-      m.get("writable").flatMap(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
-      m.get("enumerable").flatMap(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
-      m.get("configurable").flatMap(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson))
+      m.get("value").map(json2pair(_, AbsValue.fromJson, AbsAbsent.fromJson)),
+      m.get("writable").map(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
+      m.get("enumerable").map(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
+      m.get("configurable").map(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson))
     ) match {
-        case (Some(v), Some(w), Some(e), Some(c)) => Some(Elem(v, w, e, c))
-        case _ => None
+        case (Some(v), Some(w), Some(e), Some(c)) => Elem(v, w, e, c)
+        case _ => throw AbsDescParseError(v)
       }
-    case _ => None
+    case _ => throw AbsDescParseError(v)
   }
 
   case class Elem(

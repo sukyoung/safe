@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.errors.error.AbsValueParseError
 import kr.ac.kaist.safe.util._
 import spray.json._
 
@@ -32,15 +33,15 @@ object DefaultValue extends ValueDomain {
   def apply(locset: AbsLoc): Elem = Bot.copy(locset = locset)
   def apply(pvalue: AbsPValue, locset: AbsLoc): Elem = Elem(pvalue, locset)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("pvalue").flatMap(AbsPValue.fromJson _),
-      m.get("locset").flatMap(AbsLoc.fromJson _)
+      m.get("pvalue").map(AbsPValue.fromJson _),
+      m.get("locset").map(AbsLoc.fromJson _)
     ) match {
-        case (Some(p), Some(l)) => Some(Elem(p, l))
-        case _ => None
+        case (Some(p), Some(l)) => Elem(p, l)
+        case _ => throw AbsValueParseError(v)
       }
-    case _ => None
+    case _ => throw AbsValueParseError(v)
   }
 
   case class Elem(pvalue: AbsPValue, locset: AbsLoc) extends ElemTrait {

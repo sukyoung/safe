@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsBindingParseError
 import scala.collection.immutable.HashSet
 import spray.json._
 
@@ -31,16 +32,16 @@ object DefaultBinding extends BindingDomain {
     mutable: AbsBool
   ): Elem = Elem(value, uninit, mutable)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("value").flatMap(AbsValue.fromJson(_)),
-      m.get("uninit").flatMap(AbsAbsent.fromJson(_)),
-      m.get("mutable").flatMap(AbsBool.fromJson(_))
+      m.get("value").map(AbsValue.fromJson(_)),
+      m.get("uninit").map(AbsAbsent.fromJson(_)),
+      m.get("mutable").map(AbsBool.fromJson(_))
     ) match {
-        case (Some(v), Some(u), Some(m)) => Some(Elem(v, u, m))
-        case _ => None
+        case (Some(v), Some(u), Some(m)) => Elem(v, u, m)
+        case _ => throw AbsBindingParseError(v)
       }
-    case _ => None
+    case _ => throw AbsBindingParseError(v)
   }
 
   case class Elem(

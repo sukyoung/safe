@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.FIdTopGammaError
+import kr.ac.kaist.safe.errors.error.{ FIdTopGammaError, AbsFIdParseError }
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
 import spray.json._
@@ -31,10 +31,9 @@ case object DefaultFId extends FIdDomain {
   def apply(fid: FunctionId): Elem = FIdSet(fid)
   def apply(fidset: Set[FunctionId]): Elem = FIdSet(fidset)
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case _ => json2set(v, json2int(_))
-      .map(FIdSet(_))
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case _ => FIdSet(json2set(v, json2int(_)))
   }
 
   sealed abstract class Elem extends ElemTrait {

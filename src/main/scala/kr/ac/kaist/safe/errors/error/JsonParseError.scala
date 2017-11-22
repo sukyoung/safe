@@ -42,7 +42,17 @@ sealed abstract class JsonFormatError(
   s"${value.prettyPrint}: Format of json for $name is wrong."
 })
 
-case class AllocSiteParseError(value: JsValue) extends JsonFormatError("AllocSite", value)
+case class StringParseError(value: JsValue) extends JsonFormatError("String", value)
+
+case class IntParseError(value: JsValue) extends JsonFormatError("Int", value)
+
+case class MapParseError(value: JsValue) extends JsonFormatError("Map", value)
+
+case class SetParseError(value: JsValue) extends JsonFormatError("Set", value)
+
+case class PairParseError(value: JsValue) extends JsonFormatError("Pair", value)
+
+case class LocParseError(value: JsValue) extends JsonFormatError("Loc", value)
 
 case class CFGParseError(value: JsValue) extends JsonFormatError("CFG", value)
 
@@ -129,6 +139,8 @@ case class AbsGlobalEnvRecParseError(value: JsValue) extends JsonFormatError("Ab
 case class AbsEnvRecParseError(value: JsValue) extends JsonFormatError("AbsEnvRec", value)
 
 case class AbsLexEnvParseError(value: JsValue) extends JsonFormatError("AbsLexEnv", value)
+
+case class AbsDescParseError(value: JsValue) extends JsonFormatError("AbsDesc", value)
 
 case class OldASiteSetParseError(value: JsValue) extends JsonFormatError("OldASiteSet", value)
 

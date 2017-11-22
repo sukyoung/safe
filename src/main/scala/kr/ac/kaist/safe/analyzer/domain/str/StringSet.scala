@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.StrDomainParseError
+import kr.ac.kaist.safe.errors.error.{ AbsStrParseError }
 import scala.collection.immutable.HashSet
 import scala.util.Try
 import spray.json._
@@ -40,12 +40,11 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     else Top
   }
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
-    case JsString("⊤") => Some(Top)
-    case JsString("number") => Some(Number)
-    case JsString("other") => Some(Other)
-    case _ => json2set(v, json2str)
-      .map(StrSet(_))
+  override def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("number") => Number
+    case JsString("other") => Other
+    case _ => StrSet(json2set(v, json2str))
   }
 
   sealed abstract class Elem extends ElemTrait {

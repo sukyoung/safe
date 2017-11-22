@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.AbsDataPropParseError
 import spray.json._
 
 // default data property abstract domain
@@ -53,17 +54,17 @@ object DefaultDataProp extends DataPropDomain {
     Elem(value, writable, enumerable, configurable)
   }
 
-  override def fromJson(v: JsValue): Option[Elem] = v match {
+  override def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
-      m.get("value").flatMap(AbsValue.fromJson _),
-      m.get("writable").flatMap(AbsBool.fromJson _),
-      m.get("enumerable").flatMap(AbsBool.fromJson _),
-      m.get("configurable").flatMap(AbsBool.fromJson _)
+      m.get("value").map(AbsValue.fromJson _),
+      m.get("writable").map(AbsBool.fromJson _),
+      m.get("enumerable").map(AbsBool.fromJson _),
+      m.get("configurable").map(AbsBool.fromJson _)
     ) match {
-        case (Some(v), Some(w), Some(e), Some(c)) => Some(Elem(v, w, e, c))
-        case _ => None
+        case (Some(v), Some(w), Some(e), Some(c)) => Elem(v, w, e, c)
+        case _ => throw AbsDataPropParseError(v)
       }
-    case _ => None
+    case _ => throw AbsDataPropParseError(v)
   }
 
   case class Elem(
