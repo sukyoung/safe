@@ -17,6 +17,7 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
+import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with abstract keys
@@ -45,6 +46,18 @@ object AKeyObject extends ObjDomain {
         }))
     }
     ObjMap(amap, imap)
+  }
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsObject(m) => (
+      m.get("amap").flatMap(APropMap.fromJson _),
+      m.get("imap").flatMap(json2map(_, IName.fromJson, AbsIValue.fromJson))
+    ) match {
+        case (Some(a), Some(i)) => Some(ObjMap(a, i))
+        case _ => None
+      }
+    case _ => None
   }
 
   sealed abstract class Elem extends ElemTrait {
@@ -663,6 +676,16 @@ object AKeyObject extends ObjDomain {
 
         (obj1 ⊔ obj2 ⊔ obj3 ⊔ obj5 ⊔ obj6 ⊔ obj7, b1 ⊔ b2 ⊔ b3 ⊔ b5 ⊔ b6 ⊔ b7, excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet7)
     }
+
+    def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case ObjMap(amap, imap) => JsObject(
+        ("amap", amap.toJson),
+        ("imap", JsArray(imap.toSeq.map {
+          case (n, v) => JsArray(n.toJson, v.toJson)
+        }: _*))
+      )
+    }
   }
 
   ////////////////////////////////////////////////////////////////
@@ -1137,6 +1160,31 @@ sealed abstract class APropMap(
         }
       }
     }
+
+  def toJson: JsValue = this match {
+    case APropMapEmpty => JsString("empty")
+    case APropMapBot => JsString("⊥")
+    case APropMapFin(map, defset) => JsArray(
+      JsArray(map.toSeq.map {
+        case (s, dp) => JsArray(s.toJson, dp.toJson)
+      }: _*),
+      defset.toJson
+    )
+  }
+}
+object APropMap {
+  def fromJson(v: JsValue): Option[APropMap] = v match {
+    case JsString("⊥") => Some(APropMapBot)
+    case JsString("empty") => Some(APropMapEmpty)
+    case JsObject(m) => (
+      m.get("map").flatMap(json2map(_, AbsStr.fromJson, AbsDataProp.fromJson)),
+      m.get("defset").flatMap(DefSet.fromJson)
+    ) match {
+        case (Some(m), Some(d)) => Some(APropMapFin(m, d))
+        case _ => None
+      }
+    case _ => None
+  }
 }
 case class APropMapFin(private val map: Map[AbsStr, AbsDataProp], private val defset: DefSet) extends APropMap(map, defset)
 case object APropMapEmpty extends APropMap(HashMap[AbsStr, AbsDataProp](), DefSet.Empty)
@@ -1148,6 +1196,11 @@ case object APropMapBot extends APropMap(HashMap[AbsStr, AbsDataProp](), DefSet.
 object DefSet {
   val Empty: DefSet = DefSetFin(HashSet[String]())
   val Top: DefSet = DefSetTop
+  def fromJson(v: JsValue): Option[DefSet] = v match {
+    case JsString("⊤") => Some(DefSetTop)
+    case _ => json2set(v, json2str(_))
+      .map(DefSetFin(_))
+  }
 }
 
 sealed abstract class DefSet {
@@ -1207,6 +1260,11 @@ sealed abstract class DefSet {
       case (_, DefSetTop) => this
       case (DefSetFin(a), DefSetFin(b)) => DefSetFin(a intersect b)
     }
+
+  def toJson: JsValue = this match {
+    case DefSetTop => JsString("⊤")
+    case DefSetFin(set) => JsArray(set.toSeq.map(JsString(_)): _*)
+  }
 }
 case class DefSetFin(set: Set[String]) extends DefSet
 case object DefSetTop extends DefSet

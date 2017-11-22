@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import Double._
+import spray.json._
 
 // flat number abstract domain
 object FlatNumber extends NumDomain {
@@ -26,6 +27,13 @@ object FlatNumber extends NumDomain {
   lazy val NUInt = Top
 
   def alpha(num: Num): Elem = Const(num.num)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsString("⊥") => Some(Bot)
+    case JsNumber(n) => Some(Const(n.toDouble))
+    case _ => None
+  }
 
   sealed abstract class Elem extends ElemTrait {
     override def equals(other: Any): Boolean = other match {
@@ -456,6 +464,12 @@ object FlatNumber extends NumDomain {
       case (Bot, _) | (_, Bot) => Bot
       case (Const(l), Const(r)) => Const(l % r)
       case _ => Top
+    }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case Bot => JsString("⊥")
+      case Const(n) => JsNumber(n)
     }
   }
 

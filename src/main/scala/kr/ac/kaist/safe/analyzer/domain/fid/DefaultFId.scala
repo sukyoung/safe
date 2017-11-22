@@ -14,6 +14,8 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.errors.error.FIdTopGammaError
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
+import spray.json._
+
 // default function id abstract domain
 case object DefaultFId extends FIdDomain {
   case object Top extends Elem
@@ -28,6 +30,12 @@ case object DefaultFId extends FIdDomain {
 
   def apply(fid: FunctionId): Elem = FIdSet(fid)
   def apply(fidset: Set[FunctionId]): Elem = FIdSet(fidset)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case _ => json2set(v, json2int(_))
+      .map(FIdSet(_))
+  }
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[FId] = this match {
@@ -102,6 +110,11 @@ case object DefaultFId extends FIdDomain {
     def -(fid: FunctionId): Elem = this match {
       case Top => Top
       case FIdSet(set) => FIdSet(set - fid)
+    }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case FIdSet(set) => JsArray(set.toSeq.map(JsNumber(_)): _*)
     }
   }
 }

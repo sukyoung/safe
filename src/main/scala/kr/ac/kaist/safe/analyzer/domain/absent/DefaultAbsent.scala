@@ -11,12 +11,20 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default absent abstract domain
 object DefaultAbsent extends AbsentDomain {
   case object Bot extends Elem
   case object Top extends Elem
 
   def alpha(abs: Absent): Elem = Top
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsString("⊥") => Some(Bot)
+    case _ => None
+  }
 
   abstract class Elem extends ElemTrait {
     def gamma: ConSet[Absent] = this match {
@@ -47,6 +55,11 @@ object DefaultAbsent extends AbsentDomain {
     override def toString: String = this match {
       case Top => "Top(absent)"
       case Bot => "⊥(absent)"
+    }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case Bot => JsString("⊥")
     }
   }
 }

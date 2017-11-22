@@ -11,10 +11,11 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashMap
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
+import scala.collection.immutable.HashMap
+import spray.json._
 
 // default heap abstract domain
 object DefaultHeap extends HeapDomain {
@@ -30,6 +31,13 @@ object DefaultHeap extends HeapDomain {
   }
 
   def apply(map: Map[Loc, AbsObj]): Elem = HeapMap(map)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsString("⊥") => Some(Bot)
+    case _ => json2map(v, Loc.fromJson, AbsObj.fromJson)
+      .map(HeapMap(_))
+  }
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
@@ -366,6 +374,14 @@ object DefaultHeap extends HeapDomain {
       case Recency(_, Recent) => true
       case l if Loc.predConSet contains l => true
       case _ => false
+    }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case Bot => JsString("⊥")
+      case HeapMap(m) => JsArray(m.toSeq.map {
+        case (k, v) => JsArray(k.toJson, v.toJson)
+      }: _*)
     }
   }
 }

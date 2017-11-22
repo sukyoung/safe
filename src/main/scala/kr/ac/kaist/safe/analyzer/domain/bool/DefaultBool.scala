@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default boolean abstract domain
 object DefaultBool extends BoolDomain {
   case object Bot extends Elem
@@ -19,6 +21,14 @@ object DefaultBool extends BoolDomain {
   case object Top extends Elem
 
   def alpha(bool: Bool): Elem = if (bool) True else False
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsString("true") => Some(True)
+    case JsString("false") => Some(False)
+    case JsString("⊥") => Some(Bot)
+    case _ => None
+  }
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Bool] = this match {
@@ -114,6 +124,13 @@ object DefaultBool extends BoolDomain {
       case (True, False) | (False, True) => True
       case (False, False) | (True, True) => False
       case _ => Top
+    }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case True => JsString("true")
+      case False => JsString("false")
+      case Bot => JsString("⊥")
     }
   }
 }

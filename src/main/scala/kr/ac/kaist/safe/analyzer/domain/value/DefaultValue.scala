@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
+import spray.json._
 
 // default value abstract domain
 object DefaultValue extends ValueDomain {
@@ -30,6 +31,17 @@ object DefaultValue extends ValueDomain {
   def apply(pvalue: AbsPValue): Elem = Bot.copy(pvalue = pvalue)
   def apply(locset: AbsLoc): Elem = Bot.copy(locset = locset)
   def apply(pvalue: AbsPValue, locset: AbsLoc): Elem = Elem(pvalue, locset)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("pvalue").flatMap(AbsPValue.fromJson _),
+      m.get("locset").flatMap(AbsLoc.fromJson _)
+    ) match {
+        case (Some(p), Some(l)) => Some(Elem(p, l))
+        case _ => None
+      }
+    case _ => None
+  }
 
   case class Elem(pvalue: AbsPValue, locset: AbsLoc) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf // TODO more precisely
@@ -106,5 +118,10 @@ object DefaultValue extends ValueDomain {
 
       locSet1 ⊔ locSet2 ⊔ locSet3
     }
+
+    override def toJson: JsValue = JsObject(
+      ("pvalue", pvalue.toJson),
+      ("locset", locset.toJson)
+    )
   }
 }

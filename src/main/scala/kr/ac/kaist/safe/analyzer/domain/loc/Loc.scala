@@ -11,10 +11,11 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.errors.error.{ NoLoc, UserAllocSiteError }
 import kr.ac.kaist.safe.util._
+import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
+import spray.json._
 
 // concrete location type
 abstract class Loc extends Value {
@@ -29,6 +30,8 @@ abstract class Loc extends Value {
     case u @ UserAllocSite(_) => throw UserAllocSiteError(u)
     case p @ PredAllocSite(_) => p.toString
   }
+
+  def toJson: JsValue
 }
 
 object Loc {
@@ -63,4 +66,17 @@ object Loc {
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
     case addrPart => addrPart.toString
   })
+
+  def fromJson(v: JsValue): Option[Loc] = v match {
+    case JsNumber(id) => Some(UserAllocSite(id.toInt))
+    case JsString(str) => Some(PredAllocSite(str))
+    case JsObject(m) => (
+      m.get("loc").flatMap(Loc.fromJson _),
+      m.get("recency").flatMap(RecencyTag.fromJson _)
+    ) match {
+        case (Some(l), Some(r)) => Some(Recency(l, r))
+        case _ => None
+      }
+    case _ => None
+  }
 }

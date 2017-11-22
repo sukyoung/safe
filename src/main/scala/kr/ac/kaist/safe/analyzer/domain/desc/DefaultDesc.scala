@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import spray.json._
 
 // default descriptor abstract domain
 object DefaultDesc extends DescDomain {
@@ -48,6 +49,19 @@ object DefaultDesc extends DescDomain {
     enumerable: (AbsBool, AbsAbsent),
     configurable: (AbsBool, AbsAbsent)
   ): Elem = Elem(value, writable, enumerable, configurable)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("value").flatMap(json2pair(_, AbsValue.fromJson, AbsAbsent.fromJson)),
+      m.get("writable").flatMap(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
+      m.get("enumerable").flatMap(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
+      m.get("configurable").flatMap(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson))
+    ) match {
+        case (Some(v), Some(w), Some(e), Some(c)) => Some(Elem(v, w, e, c))
+        case _ => None
+      }
+    case _ => None
+  }
 
   case class Elem(
       value: (AbsValue, AbsAbsent),
@@ -142,6 +156,17 @@ object DefaultDesc extends DescDomain {
 
     def IsGenericDescriptor: AbsBool =
       IsDataDescriptor.negate
+
+    override def toJson: JsValue = {
+      val ((v, va), (w, wa), (e, ea), (c, ca)) =
+        (value, writable, enumerable, configurable)
+      JsObject(
+        ("value", JsArray(v.toJson, va.toJson)),
+        ("writable", JsArray(w.toJson, wa.toJson)),
+        ("enumerable", JsArray(e.toJson, ea.toJson)),
+        ("configurable", JsArray(c.toJson, ca.toJson))
+      )
+    }
   }
 
   def ToPropertyDescriptor(obj: AbsObj, h: AbsHeap): Elem = {

@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
+import spray.json._
 
 // default primitive value abstract domain
 object DefaultPValue extends PValueDomain {
@@ -35,6 +36,20 @@ object DefaultPValue extends PValueDomain {
     numval: AbsNum,
     strval: AbsStr
   ): Elem = Elem(undefval, nullval, boolval, numval, strval)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("undefval").flatMap(AbsUndef.fromJson _),
+      m.get("nullval").flatMap(AbsNull.fromJson _),
+      m.get("boolval").flatMap(AbsBool.fromJson _),
+      m.get("numval").flatMap(AbsNum.fromJson _),
+      m.get("strval").flatMap(AbsStr.fromJson _)
+    ) match {
+        case (Some(u), Some(l), Some(b), Some(n), Some(s)) => Some(Elem(u, l, b, n, s))
+        case _ => None
+      }
+    case _ => None
+  }
 
   case class Elem(
       undefval: AbsUndef,
@@ -149,5 +164,13 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum = this.numval,
       strval: AbsStr = this.strval
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
+
+    override def toJson: JsValue = JsObject(
+      ("undefval", undefval.toJson),
+      ("nullval", nullval.toJson),
+      ("boolval", boolval.toJson),
+      ("numval", numval.toJson),
+      ("strval", strval.toJson)
+    )
   }
 }

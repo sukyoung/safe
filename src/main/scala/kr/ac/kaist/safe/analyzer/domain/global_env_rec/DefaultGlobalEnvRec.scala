@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import scala.collection.immutable.HashMap
+import spray.json._
 
 // default global environment abstract domain
 object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
@@ -21,6 +22,12 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
   case object Top extends Elem
 
   def alpha(g: GlobalEnvRec): Elem = Top
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsString("⊥") => Some(Bot)
+    case _ => None
+  }
 
   abstract class Elem extends ElemTrait {
     def gamma: ConSet[GlobalEnvRec] = this match {
@@ -185,5 +192,10 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     private def getGlobalObj(heap: AbsHeap): AbsObj =
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case Bot => JsString("⊥")
+    }
   }
 }

@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default data property abstract domain
 object DefaultDataProp extends DataPropDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
@@ -49,6 +51,19 @@ object DefaultDataProp extends DataPropDomain {
       if (ca.isTop) c ⊔ AbsBool.False
       else c
     Elem(value, writable, enumerable, configurable)
+  }
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("value").flatMap(AbsValue.fromJson _),
+      m.get("writable").flatMap(AbsBool.fromJson _),
+      m.get("enumerable").flatMap(AbsBool.fromJson _),
+      m.get("configurable").flatMap(AbsBool.fromJson _)
+    ) match {
+        case (Some(v), Some(w), Some(e), Some(c)) => Some(Elem(v, w, e, c))
+        case _ => None
+      }
+    case _ => None
   }
 
   case class Elem(
@@ -105,5 +120,12 @@ object DefaultDataProp extends DataPropDomain {
       enumerable: AbsBool,
       configurable: AbsBool
     ): Elem = Elem(value, writable, enumerable, configurable)
+
+    override def toJson: JsValue = JsObject(
+      ("value", value.toJson),
+      ("writable", writable.toJson),
+      ("enumerable", enumerable.toJson),
+      ("configurable", configurable.toJson)
+    )
   }
 }

@@ -14,8 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError, UserAllocSiteError }
 import kr.ac.kaist.safe.util._
-import scala.util.{ Try, Success, Failure }
 import scala.collection.immutable.HashSet
+import scala.util.{ Try, Success, Failure }
+import spray.json._
 
 // default location abstract domain
 case object DefaultLoc extends LocDomain {
@@ -33,6 +34,12 @@ case object DefaultLoc extends LocDomain {
 
   def alpha(loc: Loc): Elem = LocSet(loc)
   override def alpha(locset: Set[Loc]): Elem = LocSet(locset)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case _ => json2set(v, Loc.fromJson)
+      .map(LocSet(_))
+  }
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Loc] = this match {
@@ -121,6 +128,11 @@ case object DefaultLoc extends LocDomain {
       case LocSet(set) =>
         if (set contains locR) LocSet(set + locO)
         else this
+    }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case LocSet(set) => JsArray(set.toSeq.map(_.toJson): _*)
     }
   }
 }

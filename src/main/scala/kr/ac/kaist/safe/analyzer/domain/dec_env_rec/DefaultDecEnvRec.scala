@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
+import spray.json._
 
 // default declarative environment record abstract domain
 object DefaultDecEnvRec extends DecEnvRecDomain {
@@ -33,6 +34,22 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
   def apply(m: EnvMap, upper: Boolean): Elem = upper match {
     case false => LBindMap(m)
     case true => UBindMap(m)
+  }
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊥") => Some(Bot)
+    case JsObject(m) => m.get("map")
+      .flatMap(json2map(
+        _,
+        json2str,
+        json2pair(_, AbsBinding.fromJson, AbsAbsent.fromJson)
+      ))
+      .flatMap(map => m.get("kind") match {
+        case Some(JsString("lower")) => Some(LBindMap(map))
+        case Some(JsString("upper")) => Some(UBindMap(map))
+        case _ => None
+      })
+    case _ => None
   }
 
   abstract class Elem extends ElemTrait {
@@ -373,5 +390,20 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     // delete
     def -(name: String): Elem =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
+
+    override def toJson: JsValue = this match {
+      case Bot => JsString("⊥")
+      case LBindMap(m) => JsObject(
+        ("kind", JsString("lower")),
+        ("map", envMapToJson(m))
+      )
+      case UBindMap(m) => JsObject(
+        ("kind", JsString("upper")),
+        ("map", envMapToJson(m))
+      )
+    }
+    private def envMapToJson(m: EnvMap): JsArray = JsArray(m.toSeq.map {
+      case (s, (b, a)) => JsArray(JsString(s), JsArray(b.toJson, a.toJson))
+    }: _*)
   }
 }

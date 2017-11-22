@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
+import spray.json._
 
 // default binding abstract domain
 object DefaultBinding extends BindingDomain {
@@ -29,6 +30,18 @@ object DefaultBinding extends BindingDomain {
     uninit: AbsAbsent,
     mutable: AbsBool
   ): Elem = Elem(value, uninit, mutable)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("value").flatMap(AbsValue.fromJson(_)),
+      m.get("uninit").flatMap(AbsAbsent.fromJson(_)),
+      m.get("mutable").flatMap(AbsBool.fromJson(_))
+    ) match {
+        case (Some(v), Some(u), Some(m)) => Some(Elem(v, u, m))
+        case _ => None
+      }
+    case _ => None
+  }
 
   case class Elem(
       value: AbsValue,
@@ -104,5 +117,11 @@ object DefaultBinding extends BindingDomain {
       uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable
     ): Elem = Elem(value, uninit, mutable)
+
+    override def toJson: JsValue = JsObject(
+      ("value", value.toJson),
+      ("uninit", uninit.toJson),
+      ("mutable", mutable.toJson)
+    )
   }
 }

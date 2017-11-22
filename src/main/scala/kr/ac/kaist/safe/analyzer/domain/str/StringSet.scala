@@ -11,10 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.StrDomainParseError
 import scala.collection.immutable.HashSet
 import scala.util.Try
-import kr.ac.kaist.safe.errors.error.StrDomainParseError
-
 import spray.json._
 
 // string set domain with max set size
@@ -41,30 +40,15 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     else Top
   }
 
-  val jsonMap: Map[Elem, Int] = Map(
-    Top -> 0,
-    Number -> 1,
-    Other -> 2
-  )
-  val jsonIMap: Map[Int, Elem] = jsonMap.map(_.swap)
-
-  def fromJson(value: JsValue): Elem = value match {
-    case JsArray(values) => StrSet(
-      values.map(_ match {
-      case JsString(s) => s
-      case _ => throw StrDomainParseError(value)
-    }).to[Set]
-    )
-    case JsNumber(n) => jsonIMap(n.toInt)
-    case _ => throw StrDomainParseError(value)
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsString("number") => Some(Number)
+    case JsString("other") => Some(Other)
+    case _ => json2set(v, json2str)
+      .map(StrSet(_))
   }
 
   sealed abstract class Elem extends ElemTrait {
-    def json: JsValue = this match {
-      case StrSet(values) => JsArray(values.to[Vector].map(JsString(_)))
-      case _ => JsNumber(jsonMap(this))
-    }
-
     def gamma: ConSet[Str] = this match {
       case StrSet(set) => ConFin(set.map(Str(_)))
       case Top | Number | Other => ConInf
@@ -346,6 +330,13 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         case Other => !isNumber(str)
         case StrSet(v) => v contains str
       }
+
+    override def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case Number => JsString("number")
+      case Other => JsString("other")
+      case StrSet(set) => JsArray(set.toSeq.map(JsString(_)): _*)
+    }
   }
 
   def hasNum(values: Set[String]): Boolean =

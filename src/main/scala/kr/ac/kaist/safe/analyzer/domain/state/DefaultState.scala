@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap }
+import spray.json._
 
 // default state abstract domain
 object DefaultState extends StateDomain {
@@ -25,6 +26,17 @@ object DefaultState extends StateDomain {
   def alpha(st: State): Elem = Top // TODO more precise
 
   def apply(heap: AbsHeap, context: AbsContext): Elem = Elem(heap, context)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("heap").flatMap(AbsHeap.fromJson _),
+      m.get("context").flatMap(AbsContext.fromJson _)
+    ) match {
+        case (Some(h), Some(c)) => Some(Elem(h, c))
+        case _ => None
+      }
+    case _ => None
+  }
 
   case class Elem(
       heap: AbsHeap,
@@ -203,5 +215,10 @@ object DefaultState extends StateDomain {
         "** old allocation site set **" + LINE_SEP +
         context.old.toString
     }
+
+    override def toJson: JsValue = JsObject(
+      ("heap", heap.toJson),
+      ("context", context.toJson)
+    )
   }
 }

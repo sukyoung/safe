@@ -11,9 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
+import scala.collection.immutable.HashSet
+import spray.json._
 
 case class OldASiteSet(mayOld: Set[Loc], mustOld: Set[Loc]) {
   /* partial order */
@@ -96,9 +97,24 @@ case class OldASiteSet(mayOld: Set[Loc], mustOld: Set[Loc]) {
       })
     }
   }
+
+  def toJson: JsValue = JsObject(
+    ("mayOld", JsArray(mayOld.toSeq.map(_.toJson): _*)),
+    ("mustOld", JsArray(mustOld.toSeq.map(_.toJson): _*))
+  )
 }
 
 object OldASiteSet {
   val Bot: OldASiteSet = OldASiteSet(HashSet[Loc](), null)
   val Empty: OldASiteSet = OldASiteSet(HashSet[Loc](), HashSet[Loc]())
+  def fromJson(v: JsValue): Option[OldASiteSet] = v match {
+    case JsObject(m) => (
+      m.get("mayOld").flatMap(json2set(_, Loc.fromJson)),
+      m.get("mustOld").flatMap(json2set(_, Loc.fromJson))
+    ) match {
+        case (Some(may), Some(must)) => Some(OldASiteSet(may, must))
+        case _ => None
+      }
+    case _ => None
+  }
 }

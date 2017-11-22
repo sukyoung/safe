@@ -14,8 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
 import kr.ac.kaist.safe.nodes.cfg._
+import scala.collection.immutable.{ HashMap, HashSet }
+import spray.json._
 
 // default execution context abstract domain
 object DefaultContext extends ContextDomain {
@@ -39,6 +40,20 @@ object DefaultContext extends ContextDomain {
     old: OldASiteSet,
     thisBinding: AbsValue
   ): Elem = CtxMap(map, old, thisBinding)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsString("⊤") => Some(Top)
+    case JsObject(m) => (
+      m.get("map").flatMap(json2map[Loc, AbsLexEnv](_, Loc.fromJson, AbsLexEnv.fromJson)),
+      m.get("old").flatMap(OldASiteSet.fromJson(_)),
+      m.get("thisBinding").flatMap(AbsValue.fromJson(_))
+    ) match {
+        case (Some(m), Some(o), Some(t)) => Some(CtxMap(m, o, t))
+        case _ => None
+      }
+    case JsString("⊥") => Some(Bot)
+    case _ => None
+  }
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
@@ -301,6 +316,18 @@ object DefaultContext extends ContextDomain {
       case Recency(_, Recent) => true
       case l if Loc.predConSet contains l => true
       case _ => false
+    }
+
+    def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case CtxMap(map, old, bind) => JsObject(
+        ("map", JsArray(map.toSeq.map {
+          case (loc, env) => JsArray(loc.toJson, env.toJson)
+        }: _*)),
+        ("old", old.toJson),
+        ("thisBinding", bind.toJson)
+      )
+      case Bot => JsString("⊥")
     }
   }
 }

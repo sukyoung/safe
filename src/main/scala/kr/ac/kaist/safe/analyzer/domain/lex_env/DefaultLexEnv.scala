@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.{ HashSet, HashMap }
+import spray.json._
 
 // default lexical environment abstract domain
 object DefaultLexEnv extends LexEnvDomain {
@@ -31,6 +32,18 @@ object DefaultLexEnv extends LexEnvDomain {
     outer: AbsLoc,
     nullOuter: AbsAbsent
   ): Elem = Elem(record, outer, nullOuter)
+
+  override def fromJson(v: JsValue): Option[Elem] = v match {
+    case JsObject(m) => (
+      m.get("record").flatMap(AbsEnvRec.fromJson _),
+      m.get("outer").flatMap(AbsLoc.fromJson _),
+      m.get("nullOuter").flatMap(AbsAbsent.fromJson _)
+    ) match {
+        case (Some(r), Some(o), Some(n)) => Some(Elem(r, o, n))
+        case _ => None
+      }
+    case _ => None
+  }
 
   case class Elem(
       record: AbsEnvRec,
@@ -87,6 +100,12 @@ object DefaultLexEnv extends LexEnvDomain {
 
     def weakSubsLoc(locR: Recency, locO: Recency): Elem =
       Elem(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
+
+    override def toJson: JsValue = JsObject(
+      ("record", record.toJson),
+      ("outer", outer.toJson),
+      ("nullOuter", nullOuter.toJson)
+    )
   }
 
   def getIdBase(

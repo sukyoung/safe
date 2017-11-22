@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import scala.collection.immutable.{ HashMap, HashSet }
+import spray.json._
 
 package object domain {
   ////////////////////////////////////////////////////////////////
@@ -212,5 +213,64 @@ package object domain {
   private def get[T](opt: Option[T]): T = opt match {
     case Some(choice) => choice
     case None => throw new Error // TODO error handling
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // load from JSON for general structures
+  ////////////////////////////////////////////////////////////////
+  // for string
+  def json2str(v: JsValue): Option[String] = v match {
+    case JsString(str) => Some(str)
+    case _ => None
+  }
+
+  // for integer
+  def json2int(v: JsValue): Option[Int] = v match {
+    case JsNumber(n) => Some(n.toInt)
+    case _ => None
+  }
+
+  // for map structure
+  def json2map[K, V](
+    m: JsValue,
+    kFromJson: JsValue => Option[K],
+    vFromJson: JsValue => Option[V]
+  ): Option[Map[K, V]] = m match {
+    case JsArray(vec) => vec.foldLeft[Option[Map[K, V]]](Some(HashMap())) {
+      case (Some(m), JsArray(Vector(k, v))) => (
+        kFromJson(k),
+        vFromJson(v)
+      ) match {
+          case (Some(k), Some(v)) => Some(m + (k -> v))
+          case _ => None
+        }
+      case _ => None
+    }
+    case _ => None
+  }
+
+  // for set structure
+  def json2set[X](
+    v: JsValue,
+    fromJson: JsValue => Option[X]
+  ): Option[Set[X]] = v match {
+    case JsArray(vec) => vec.foldLeft[Option[Set[X]]](Some(HashSet())) {
+      case (Some(set), JsArray(Vector(x))) => fromJson(x).map(set + _)
+      case _ => None
+    }
+    case _ => None
+  }
+
+  // for pair structure
+  def json2pair[L, R](
+    v: JsValue,
+    lFromJson: JsValue => Option[L],
+    rFromJson: JsValue => Option[R]
+  ): Option[(L, R)] = v match {
+    case JsArray(Vector(l, r)) => (lFromJson(l), rFromJson(r)) match {
+      case (Some(l), Some(r)) => Some((l, r))
+      case _ => None
+    }
+    case _ => None
   }
 }
