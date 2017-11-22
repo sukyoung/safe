@@ -50,7 +50,7 @@ object WebServer extends {
       (uid: String) => {
         val in =
           Flow[String]
-            .map(ReceivedCmd)
+            .map(x => ReceivedCmd(uid, x))
             .to(chatInSink(uid))
 
         val out =

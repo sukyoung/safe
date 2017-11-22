@@ -11,14 +11,15 @@
 
 package kr.ac.kaist.safe.analyzer.html_debugger
 
-import java.io.{ File, FileWriter }
+import java.io.{File, FileWriter}
 
-import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
+import kr.ac.kaist.safe.analyzer.domain.AbsState
+import kr.ac.kaist.safe.analyzer.{Semantics, Worklist}
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.web.domain.BlockStates
-import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
+import kr.ac.kaist.safe.{BASE_DIR, LINE_SEP}
 import org.apache.commons.io.FileUtils
 
 object HTMLWriter {
@@ -133,11 +134,11 @@ object HTMLWriter {
     val label = getLabel(block)
     val func = block.func
     sb.append(s"'$id': [").append(LINE_SEP)
-      .append(s"{ kind: 'Block', id: 'block', value: '$label of $func' },").append(LINE_SEP)
+      .append(s"{ kind: 'Block', id: 'block', bid: '$id', value: '$label of $func' },").append(LINE_SEP)
     block.getInsts.reverse.foreach(inst => {
       val instStr = inst.toString()
         .replaceAll("\'", "\\\\\'")
-      sb.append(s"{ kind: 'Instructions', value: '$instStr' },").append(LINE_SEP)
+      sb.append(s"{ kind: 'Instructions', value: '$instStr', id: '${inst.id}', bid: '${id}' },").append(LINE_SEP)
     })
     sb.append(s"]," + LINE_SEP)
     sb.toString
@@ -146,66 +147,71 @@ object HTMLWriter {
   def addState(block: CFGBlock, sem: Semantics): String = {
     val sb = new StringBuilder
     val id = getId(block)
-    val label = getLabel(block)
-    val func = block.func
     if (isReachable(block, sem)) {
       val (_, st) = sem.getState(block).head // TODO it is working only when for each CFGBlock has only one control point.
-      sb.append(s"'$id': [").append(LINE_SEP)
-      // heap
-      val h = st.heap
-      sb.append("{ value: {value: 'Heap', open: true, id: 'heap'} },").append(LINE_SEP)
-      h.getMap match {
-        case None => {
-          val value =
-            if (h.isBottom) "Bot"
-            else "Top"
-          sb.append(s"{ value: '$value' },")
-        }
-        case Some(map) => {
-          sb.append("{ value: {value: 'Predefined Locations', id: 'predLoc'}, parent: 'heap' },").append(LINE_SEP)
-          map.toSeq
-            .sortBy { case (loc, _) => loc }
-            .foreach {
-              case (loc, obj) =>
-                val parent = loc match {
-                  case BuiltinGlobal.loc => "heap"
-                  case l if !l.isUser => "predLoc"
-                  case _ => "heap"
-                }
-                sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
-                obj.toString.split(LINE_SEP).foreach(prop => {
-                  val propStr = prop.replaceAll("\'", "\\\\\'")
-                  sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
-                })
-            }
-        }
-      }
-      // context
-      val ctx = st.context
-      sb.append("{ value: {value: 'Context', open: true, id: 'ctx'} },").append(LINE_SEP)
-      ctx.getMap.toSeq
-        .sortBy { case (loc, _) => loc }
-        .foreach {
-          case (loc, obj) =>
-            sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
-            obj.toString.split(LINE_SEP).foreach(prop => {
-              val propStr = prop.replaceAll("\'", "\\\\\'")
-              sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
-            })
-        }
-
-      val thisBinding = ctx.thisBinding
-      sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
-      // old allocation site set
-      val old = ctx.old
-      val mayOld = old.mayOld.mkString(", ")
-      val mustOld =
-        if (old.mustOld == null) "bottom"
-        else old.mustOld.mkString(", ")
-      sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
-      sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
-      sb.append(s"],").append(LINE_SEP)
+      sb.append(addSingleState(id, st))
     }
+    sb.toString
+  }
+
+  def addSingleState(id: String, st: AbsState): String = {
+    val sb = new StringBuilder
+    sb.append(s"'$id': [").append(LINE_SEP)
+    // heap
+    val h = st.heap
+    sb.append("{ value: {value: 'Heap', open: true, id: 'heap'} },").append(LINE_SEP)
+    h.getMap match {
+      case None => {
+        val value =
+          if (h.isBottom) "Bot"
+          else "Top"
+        sb.append(s"{ value: '$value' },")
+      }
+      case Some(map) => {
+        sb.append("{ value: {value: 'Predefined Locations', id: 'predLoc'}, parent: 'heap' },").append(LINE_SEP)
+        map.toSeq
+          .sortBy { case (loc, _) => loc }
+          .foreach {
+            case (loc, obj) =>
+              val parent = loc match {
+                case BuiltinGlobal.loc => "heap"
+                case l if !l.isUser => "predLoc"
+                case _ => "heap"
+              }
+              sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
+              obj.toString.split(LINE_SEP).foreach(prop => {
+                val propStr = prop.replaceAll("\'", "\\\\\'")
+                sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
+              })
+          }
+      }
+    }
+    // context
+    val ctx = st.context
+    sb.append("{ value: {value: 'Context', open: true, id: 'ctx'} },").append(LINE_SEP)
+    ctx.getMap.toSeq
+      .sortBy { case (loc, _) => loc }
+      .foreach {
+        case (loc, obj) =>
+          sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
+          obj.toString.split(LINE_SEP).foreach(prop => {
+            val propStr = prop.replaceAll("\'", "\\\\\'")
+            sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
+          })
+      }
+
+    val thisBinding = ctx.thisBinding
+    sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
+    // old allocation site set
+    val old = ctx.old
+    val mayOld = old.mayOld.mkString(", ")
+    val mustOld =
+      if (old.mustOld == null) "bottom"
+      else old.mustOld.mkString(", ")
+    sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
+    sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
+    sb.append(s"],").append(LINE_SEP)
+
     sb.toString
   }
 

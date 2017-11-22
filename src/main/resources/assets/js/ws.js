@@ -74,6 +74,9 @@ class Connection {
         case "getBlockState":
           this.processBlockState(resp)
           break
+        case "runInst":
+          this.processRunInst(resp)
+          break
         default:
           console.error(`Cannot find handler for action ${resp.action}`)
       }
@@ -156,6 +159,16 @@ class Connection {
     }
   }
 
+  runInst (bid, iid) {
+    if (this.isConnected()) {
+      this.socket.send(JSON.stringify({
+        action: 'runInst',
+        bid,
+        iid,
+      }))
+    }
+  }
+
   processBlockState (resp) {
     const { state, insts, bid } = resp
     $$('side-bar').expand()
@@ -170,7 +183,9 @@ class Connection {
     // reset insts data
     const instsElem = $$('insts');
     instsElem.clearAll();
-    for (const i in insts_data) instsElem.add(insts_data[i]);
+    for (const i in insts_data) {
+      instsElem.add(insts_data[i]);
+    }
 
     // reset state data
     const stateElem = $$('state');
@@ -180,7 +195,24 @@ class Connection {
     }
 
     instsElem.select('block');
-    cy.center(e.cyTarget);
+  }
+
+  processRunInst (resp) {
+    const { state, bid, iid } = resp
+    $$('side-bar').expand()
+
+    eval(`safe_DB.state = ${state}`)
+
+    const state_data = safe_DB.state[`${bid}:${iid}`]
+
+    console.log(state_data)
+
+    // reset state data
+    const stateElem = $$('state');
+    stateElem.clearAll();
+    for (const i in state_data) {
+      stateElem.add(state_data[i].value, undefined, state_data[i].parent);
+    }
   }
 
   close () {

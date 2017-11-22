@@ -15,7 +15,16 @@ webix.ready(function(){
     margin: 10, padding: 0, type: 'wide',
     rows:[
       { view: 'unitlist', id: 'insts', uniteBy: function(obj) { return obj.kind; },
-        height: 300, select: true },
+        height: 300, select: true,
+        click (id) {
+          const data = this.getItem(id)
+          if (id === 'block') {
+            conn.getBlockState(data.bid)
+          } else {
+            conn.runInst(data.bid, data.id)
+          }
+        },
+      },
       { view: 'tree', id: 'state' },
     ]
   };

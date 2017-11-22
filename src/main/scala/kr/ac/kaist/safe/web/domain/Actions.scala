@@ -14,4 +14,5 @@ package kr.ac.kaist.safe.web.domain
 object Actions {
   val CMD: String = "cmd"
   val getBlockState: String = "getBlockState"
+  val runInst: String = "runInst"
 }

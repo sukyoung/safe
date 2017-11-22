@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.web.domain
 
+import kr.ac.kaist.safe.analyzer.domain.AbsState
+
 object Protocol {
   sealed trait Message
   case class Base(action: String) extends Message
@@ -20,4 +22,7 @@ object Protocol {
 
   case class FetchBlockState(bid: String) extends Message
   case class BlockState(action: String, bid: String, insts: String, state: String) extends Message
+
+  case class RunInst(bid: String, iid: String) extends Message
+  case class InstState(action: String, bid: String, iid: String, state: String) extends Message
 }
