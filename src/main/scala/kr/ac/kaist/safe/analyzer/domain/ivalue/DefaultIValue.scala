@@ -30,7 +30,7 @@ object DefaultIValue extends IValueDomain {
   def apply(fidset: AbsFId): Elem = Bot.copy(fidset = fidset)
   def apply(value: AbsValue, fidset: AbsFId): Elem = Elem(value, fidset)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("value").map(AbsValue.fromJson _),
       m.get("fidset").map(AbsFId.fromJson _)
@@ -78,7 +78,7 @@ object DefaultIValue extends IValueDomain {
       )
     }
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("value", value.toJson),
       ("fidset", fidset.toJson)
     )

@@ -54,7 +54,7 @@ object DefaultDataProp extends DataPropDomain {
     Elem(value, writable, enumerable, configurable)
   }
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("value").map(AbsValue.fromJson _),
       m.get("writable").map(AbsBool.fromJson _),
@@ -122,7 +122,7 @@ object DefaultDataProp extends DataPropDomain {
       configurable: AbsBool
     ): Elem = Elem(value, writable, enumerable, configurable)
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("value", value.toJson),
       ("writable", writable.toJson),
       ("enumerable", enumerable.toJson),

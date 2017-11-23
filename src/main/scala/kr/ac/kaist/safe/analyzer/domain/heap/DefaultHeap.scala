@@ -33,7 +33,7 @@ object DefaultHeap extends HeapDomain {
 
   def apply(map: Map[Loc, AbsObj]): Elem = HeapMap(map)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case _ => HeapMap(json2map(v, Loc.fromJson, AbsObj.fromJson))
@@ -376,7 +376,7 @@ object DefaultHeap extends HeapDomain {
       case _ => false
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
       case HeapMap(m) => JsArray(m.toSeq.map {

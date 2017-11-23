@@ -21,7 +21,7 @@ object DefaultNull extends NullDomain {
 
   def alpha(x: Null): Elem = Top
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case _ => throw AbsNullParseError(v)
@@ -63,7 +63,7 @@ object DefaultNull extends NullDomain {
       case _ => AbsBool.Bot
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
     }

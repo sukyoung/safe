@@ -31,7 +31,7 @@ case object DefaultFId extends FIdDomain {
   def apply(fid: FunctionId): Elem = FIdSet(fid)
   def apply(fidset: Set[FunctionId]): Elem = FIdSet(fidset)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case _ => FIdSet(json2set(v, json2int(_)))
   }
@@ -111,7 +111,7 @@ case object DefaultFId extends FIdDomain {
       case FIdSet(set) => FIdSet(set - fid)
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case FIdSet(set) => JsArray(set.toSeq.map(JsNumber(_)): _*)
     }

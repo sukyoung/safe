@@ -51,7 +51,7 @@ object DefaultDesc extends DescDomain {
     configurable: (AbsBool, AbsAbsent)
   ): Elem = Elem(value, writable, enumerable, configurable)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("value").map(json2pair(_, AbsValue.fromJson, AbsAbsent.fromJson)),
       m.get("writable").map(json2pair(_, AbsBool.fromJson, AbsAbsent.fromJson)),
@@ -158,7 +158,7 @@ object DefaultDesc extends DescDomain {
     def IsGenericDescriptor: AbsBool =
       IsDataDescriptor.negate
 
-    override def toJson: JsValue = {
+    def toJson: JsValue = {
       val ((v, va), (w, wa), (e, ea), (c, ca)) =
         (value, writable, enumerable, configurable)
       JsObject(

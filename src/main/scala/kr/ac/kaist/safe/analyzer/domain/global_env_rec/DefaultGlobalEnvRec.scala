@@ -24,7 +24,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
 
   def alpha(g: GlobalEnvRec): Elem = Top
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case _ => throw AbsGlobalEnvRecParseError(v)
@@ -194,7 +194,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
     }

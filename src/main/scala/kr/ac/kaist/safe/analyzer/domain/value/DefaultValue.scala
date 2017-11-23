@@ -33,7 +33,7 @@ object DefaultValue extends ValueDomain {
   def apply(locset: AbsLoc): Elem = Bot.copy(locset = locset)
   def apply(pvalue: AbsPValue, locset: AbsLoc): Elem = Elem(pvalue, locset)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("pvalue").map(AbsPValue.fromJson _),
       m.get("locset").map(AbsLoc.fromJson _)
@@ -120,7 +120,7 @@ object DefaultValue extends ValueDomain {
       locSet1 ⊔ locSet2 ⊔ locSet3
     }
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("pvalue", pvalue.toJson),
       ("locset", locset.toJson)
     )

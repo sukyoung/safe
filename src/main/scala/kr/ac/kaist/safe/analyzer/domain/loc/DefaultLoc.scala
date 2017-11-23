@@ -35,7 +35,7 @@ case object DefaultLoc extends LocDomain {
   def alpha(loc: Loc): Elem = LocSet(loc)
   override def alpha(locset: Set[Loc]): Elem = LocSet(locset)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case _ => LocSet(json2set(v, Loc.fromJson))
   }
@@ -129,7 +129,7 @@ case object DefaultLoc extends LocDomain {
         else this
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case LocSet(set) => JsArray(set.toSeq.map(_.toJson): _*)
     }

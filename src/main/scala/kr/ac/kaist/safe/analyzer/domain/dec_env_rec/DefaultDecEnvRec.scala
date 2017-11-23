@@ -36,7 +36,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     case true => UBindMap(m)
   }
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊥") => Bot
     case JsObject(m) => m.get("map")
       .map(json2map(
@@ -393,7 +393,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     def -(name: String): Elem =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Bot => JsString("⊥")
       case LBindMap(m) => JsObject(
         ("kind", JsString("lower")),

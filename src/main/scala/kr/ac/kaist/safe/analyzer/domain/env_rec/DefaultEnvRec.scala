@@ -29,7 +29,7 @@ object DefaultEnvRec extends EnvRecDomain {
   def apply(envRec: AbsDecEnvRec): Elem = Bot.copy(decEnvRec = envRec)
   def apply(envRec: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = envRec)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("decEnvRec").map(AbsDecEnvRec.fromJson _),
       m.get("globalEnvRec").map(AbsGlobalEnvRec.fromJson _)
@@ -132,7 +132,7 @@ object DefaultEnvRec extends EnvRecDomain {
     def weakSubsLoc(locR: Recency, locO: Recency): Elem =
       Elem(decEnvRec.weakSubsLoc(locR, locO), globalEnvRec)
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("decEnvRec", decEnvRec.toJson),
       ("globalEnvRec", globalEnvRec.toJson)
     )

@@ -29,7 +29,7 @@ object FlatNumber extends NumDomain {
 
   def alpha(num: Num): Elem = Const(num.num)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case JsNumber(n) => Const(n.toDouble)
@@ -467,7 +467,7 @@ object FlatNumber extends NumDomain {
       case _ => Top
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
       case Const(n) => JsNumber(n)

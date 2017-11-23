@@ -28,7 +28,7 @@ object DefaultState extends StateDomain {
 
   def apply(heap: AbsHeap, context: AbsContext): Elem = Elem(heap, context)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("heap").map(AbsHeap.fromJson _),
       m.get("context").map(AbsContext.fromJson _)
@@ -217,7 +217,7 @@ object DefaultState extends StateDomain {
         context.old.toString
     }
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("heap", heap.toJson),
       ("context", context.toJson)
     )

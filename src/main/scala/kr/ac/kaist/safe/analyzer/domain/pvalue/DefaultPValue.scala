@@ -38,7 +38,7 @@ object DefaultPValue extends PValueDomain {
     strval: AbsStr
   ): Elem = Elem(undefval, nullval, boolval, numval, strval)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("undefval").map(AbsUndef.fromJson _),
       m.get("nullval").map(AbsNull.fromJson _),
@@ -166,7 +166,7 @@ object DefaultPValue extends PValueDomain {
       strval: AbsStr = this.strval
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("undefval", undefval.toJson),
       ("nullval", nullval.toJson),
       ("boolval", boolval.toJson),

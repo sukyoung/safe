@@ -40,7 +40,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     else Top
   }
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("number") => Number
     case JsString("other") => Other
@@ -330,7 +330,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         case StrSet(v) => v contains str
       }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Number => JsString("number")
       case Other => JsString("other")

@@ -42,7 +42,7 @@ object DefaultContext extends ContextDomain {
     thisBinding: AbsValue
   ): Elem = CtxMap(map, old, thisBinding)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsObject(m) => (
       m.get("map").map(json2map[Loc, AbsLexEnv](_, Loc.fromJson, AbsLexEnv.fromJson)),

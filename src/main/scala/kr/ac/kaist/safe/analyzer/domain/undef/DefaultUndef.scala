@@ -21,7 +21,7 @@ object DefaultUndef extends UndefDomain {
 
   def alpha(undef: Undef): Elem = Top
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case _ => throw AbsUndefParseError(v)
@@ -63,7 +63,7 @@ object DefaultUndef extends UndefDomain {
       case _ => AbsBool.Bot
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
     }

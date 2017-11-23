@@ -32,7 +32,7 @@ object DefaultBinding extends BindingDomain {
     mutable: AbsBool
   ): Elem = Elem(value, uninit, mutable)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("value").map(AbsValue.fromJson(_)),
       m.get("uninit").map(AbsAbsent.fromJson(_)),
@@ -119,7 +119,7 @@ object DefaultBinding extends BindingDomain {
       mutable: AbsBool = this.mutable
     ): Elem = Elem(value, uninit, mutable)
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("value", value.toJson),
       ("uninit", uninit.toJson),
       ("mutable", mutable.toJson)

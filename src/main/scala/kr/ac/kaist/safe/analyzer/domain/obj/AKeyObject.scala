@@ -49,7 +49,7 @@ object AKeyObject extends ObjDomain {
     ObjMap(amap, imap)
   }
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsObject(m) => (
       m.get("amap").map(APropMap.fromJson _),

@@ -34,7 +34,7 @@ object DefaultLexEnv extends LexEnvDomain {
     nullOuter: AbsAbsent
   ): Elem = Elem(record, outer, nullOuter)
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("record").map(AbsEnvRec.fromJson _),
       m.get("outer").map(AbsLoc.fromJson _),
@@ -102,7 +102,7 @@ object DefaultLexEnv extends LexEnvDomain {
     def weakSubsLoc(locR: Recency, locO: Recency): Elem =
       Elem(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
 
-    override def toJson: JsValue = JsObject(
+    def toJson: JsValue = JsObject(
       ("record", record.toJson),
       ("outer", outer.toJson),
       ("nullOuter", nullOuter.toJson)

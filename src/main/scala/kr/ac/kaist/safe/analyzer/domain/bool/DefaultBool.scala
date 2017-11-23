@@ -23,7 +23,7 @@ object DefaultBool extends BoolDomain {
 
   def alpha(bool: Bool): Elem = if (bool) True else False
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("true") => True
     case JsString("false") => False
@@ -127,7 +127,7 @@ object DefaultBool extends BoolDomain {
       case _ => Top
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case True => JsString("true")
       case False => JsString("false")

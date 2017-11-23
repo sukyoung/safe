@@ -37,7 +37,7 @@ object DefaultNumber extends NumDomain {
       else NUIntConst(num)
   }
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case JsString("+inf|-inf") => Inf
@@ -821,7 +821,7 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
       case Inf => JsString("+inf|-inf")

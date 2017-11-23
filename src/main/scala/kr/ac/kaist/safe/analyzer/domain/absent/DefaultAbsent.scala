@@ -21,7 +21,7 @@ object DefaultAbsent extends AbsentDomain {
 
   def alpha(abs: Absent): Elem = Top
 
-  override def fromJson(v: JsValue): Elem = v match {
+  def fromJson(v: JsValue): Elem = v match {
     case JsString("⊤") => Top
     case JsString("⊥") => Bot
     case _ => throw AbsAbsentParseError(v)
@@ -58,7 +58,7 @@ object DefaultAbsent extends AbsentDomain {
       case Bot => "⊥(absent)"
     }
 
-    override def toJson: JsValue = this match {
+    def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
     }
