@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ NoLoc, UserAllocSiteError, LocParseError }
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
@@ -68,15 +68,13 @@ object Loc {
   })
 
   def fromJson(v: JsValue): Loc = v match {
-    case JsNumber(id) => UserAllocSite(id.toInt)
-    case JsString(str) => PredAllocSite(str)
     case JsObject(m) => (
       m.get("loc").map(Loc.fromJson _),
       m.get("recency").map(RecencyTag.fromJson _)
     ) match {
         case (Some(l), Some(r)) => Recency(l, r)
-        case _ => throw LocParseError(v)
+        case _ => throw RecencyParseError(v)
       }
-    case _ => throw LocParseError(v)
+    case _ => AllocSite.fromJson(v)
   }
 }

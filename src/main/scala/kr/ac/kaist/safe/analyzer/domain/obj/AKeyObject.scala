@@ -1165,11 +1165,11 @@ sealed abstract class APropMap(
   def toJson: JsValue = this match {
     case APropMapEmpty => JsString("empty")
     case APropMapBot => JsString("⊥")
-    case APropMapFin(map, defset) => JsArray(
-      JsArray(map.toSeq.map {
+    case APropMapFin(map, defset) => JsObject(
+      ("map", JsArray(map.toSeq.map {
         case (s, dp) => JsArray(s.toJson, dp.toJson)
-      }: _*),
-      defset.toJson
+      }: _*)),
+      ("defset", defset.toJson)
     )
   }
 }

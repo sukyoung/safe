@@ -52,7 +52,7 @@ case class SetParseError(value: JsValue) extends JsonFormatError("Set", value)
 
 case class PairParseError(value: JsValue) extends JsonFormatError("Pair", value)
 
-case class LocParseError(value: JsValue) extends JsonFormatError("Loc", value)
+case class AllocSiteParseError(value: JsValue) extends JsonFormatError("AllocSite", value)
 
 case class CFGParseError(value: JsValue) extends JsonFormatError("CFG", value)
 
@@ -101,6 +101,8 @@ case class AbsBoolParseError(value: JsValue) extends JsonFormatError("AbsBool", 
 case class AbsNumParseError(value: JsValue) extends JsonFormatError("AbsNum", value)
 
 case class AbsStrParseError(value: JsValue) extends JsonFormatError("AbsStr", value)
+
+case class RecencyParseError(value: JsValue) extends JsonFormatError("Recency", value)
 
 case class RecencyTagParseError(value: JsValue) extends JsonFormatError("RecencyTag", value)
 

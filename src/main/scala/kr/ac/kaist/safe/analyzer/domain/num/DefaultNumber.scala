@@ -46,6 +46,7 @@ object DefaultNumber extends NumDomain {
     case JsString("NaN") => NaN
     case JsString("uint") => UInt
     case JsString("nuint") => NUInt
+    case JsString("-0") => NUIntConst(-0.0)
     case JsArray(Vector(JsString("uint"), JsNumber(v))) => UIntConst(v.toLong)
     case JsArray(Vector(JsString("nuint"), JsNumber(v))) => NUIntConst(v.toDouble)
     case _ => throw AbsNumParseError(v)
@@ -831,7 +832,11 @@ object DefaultNumber extends NumDomain {
       case UInt => JsString("uint")
       case NUInt => JsString("nuint")
       case UIntConst(n) => JsArray(JsString("uint"), JsNumber(n))
+      case NUIntConst(n) if isNegZero(n) => JsString("-0")
       case NUIntConst(n) => JsArray(JsString("nuint"), JsNumber(n))
     }
+
   }
+
+  private def isNegZero(v: Double): Boolean = 1 / v == Double.NegativeInfinity
 }

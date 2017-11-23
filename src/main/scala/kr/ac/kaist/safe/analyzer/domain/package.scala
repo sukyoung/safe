@@ -250,8 +250,7 @@ package object domain {
     fromJson: JsValue => X
   ): Set[X] = v match {
     case JsArray(vec) => vec.foldLeft[Set[X]](HashSet()) {
-      case (set, JsArray(Vector(x))) => set + fromJson(x)
-      case _ => throw SetParseError(v)
+      case (set, x) => set + fromJson(x)
     }
     case _ => throw SetParseError(v)
   }
