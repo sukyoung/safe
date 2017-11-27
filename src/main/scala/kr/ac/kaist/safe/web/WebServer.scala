@@ -18,6 +18,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.ws.{Message, TextMessage, UpgradeToWebSocket}
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.ExceptionHandler
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import kr.ac.kaist.safe._
@@ -29,7 +30,7 @@ import kr.ac.kaist.safe.json.JsonImplicits._
 import kr.ac.kaist.safe.json.JsonUtil
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
-import kr.ac.kaist.safe.web.actors.CmdActor
+import kr.ac.kaist.safe.web.actors.{CmdActor, NoFileSelectedException}
 import kr.ac.kaist.safe.web.domain.Protocol.FileUploadResp
 import kr.ac.kaist.safe.web.domain._
 
@@ -40,7 +41,7 @@ import scala.util.{Failure, Success}
 object WebServer extends {
   var cmdActor: ActorRef = _
 
-  def run(defaultFixpoint: Fixpoint, port: Int = 8080) {
+  def run(port: Int) {
     implicit val system: ActorSystem = ActorSystem("web-debugger")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
@@ -50,7 +51,6 @@ object WebServer extends {
     val base = BASE_DIR + SEP
     val assetsPath = Array[String](base + "src", "main", "resources", "assets").mkString(SEP)
     cmdActor = system.actorOf(Props(new CmdActor()))
-    cmdActor ! UpdateFixpoint(defaultFixpoint)
 
     val handlerFlow = {
       // Wraps the chatActor in a sink. When the stream to this sink will be completed
@@ -70,6 +70,16 @@ object WebServer extends {
         Flow.fromSinkAndSource(in, out)
       }
     }
+
+
+    implicit def myExceptionHandler: ExceptionHandler =
+      ExceptionHandler {
+        case _: NoFileSelectedException =>
+          extractUri { uri =>
+            println(s"Request to $uri could not be handled normally")
+            complete(StatusCodes.BadRequest, "File is not selected")
+          }
+      }
 
     def websocketFlow(uid: String): Flow[Message, Message, Any] =
       Flow[Message]

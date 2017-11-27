@@ -158,3 +158,6 @@ case object CmdWALARewrite extends CommandObj("walaModelRewrite", CmdBase >> WAL
 
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)
+
+// web
+case object CmdWeb extends CommandObj("web", CmdBase >> Web)

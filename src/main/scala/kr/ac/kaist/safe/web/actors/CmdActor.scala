@@ -38,19 +38,23 @@ class CmdActor() extends Actor {
   def receive: Receive = {
     case UpdateFixpoint (f) =>
       this.fixpoint = f
+      dispatch(getStatus(fixpoint))
     case NewParticipant(uid, subscriber) => // New Participant has joined
       context.watch(subscriber)
       subscribers += (uid -> subscriber)
       subscriber ! getStatus(fixpoint)
 
     case ReceivedCmd(uid: String, msg: String) => // Someone send command
-      val base = JsonUtil.fromJson[Base](msg)
-      base.action match {
-        case Actions.CMD => dispatch(processCmd(msg))
-        case Actions.getBlockState => finish(uid, getBlockState(msg))
-        case Actions.runInst => finish(uid, runInst(msg))
-        case x: String =>
-          println("Unmatched command : " + x)
+      if (fixpoint == null) {
+        dispatch(InitialState())
+      } else {
+        val base = JsonUtil.fromJson[Base](msg)
+        base.action match {
+          case Actions.CMD => dispatch(processCmd(msg))
+          case Actions.getBlockState => finish(uid, getBlockState(msg))
+          case Actions.runInst => finish(uid, runInst(msg))
+          case x: String => println("Unmatched command : " + x)
+        }
       }
     case ParticipantLeft(uid: String) => // Participant has left
       val entry = subscribers.find(p => p._1 == uid).orNull
@@ -128,14 +132,20 @@ class CmdActor() extends Actor {
     InstState(Actions.runInst, runInstReq.bid, instId, "{" + HTMLWriter.addSingleState(runInstReq.bid + ':' + instId, st) + "}")
   }
 
-  def getStatus(fixpoint: Fixpoint): Result = {
-    val console = fixpoint.consoleOpt.get
-    val state = HTMLWriter.renderGraphStates(
-      console.cfg,
-      console.sem,
-      Some(console.worklist),
-      simplified = true,
-    )
-    Result(Actions.CMD, "", console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+  def getStatus(fixpoint: Fixpoint): Message = {
+    if (fixpoint == null) {
+      InitialState()
+    } else {
+      val console = fixpoint.consoleOpt.get
+      val state = HTMLWriter.renderGraphStates(
+        console.cfg,
+        console.sem,
+        Some(console.worklist),
+        simplified = true,
+      )
+      Result(Actions.CMD, "", console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+    }
   }
 }
+
+class NoFileSelectedException extends Exception

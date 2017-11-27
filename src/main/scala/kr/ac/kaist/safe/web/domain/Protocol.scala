@@ -20,6 +20,8 @@ object Protocol {
   case class Run(cmd: String) extends Message
   case class Result(action: String, cmd: String, prompt: String, iter: Int, output: String, state: String, done: Boolean = false) extends Message
 
+  case class InitialState(action: String = Actions.Initial) extends Message
+
   case class FetchBlockState(bid: String) extends Message
   case class BlockState(action: String, bid: String, insts: String, state: String) extends Message
 

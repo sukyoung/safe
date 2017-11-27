@@ -135,9 +135,6 @@ webix.ready(function(){
       cache: false,
       contentType: false,
       processData: false,
-      success (data, status, xhr) {
-        conn.reload()
-      },
       error (xhr, err, status) {
         const resp = JSON.parse(xhr.responseText)
         alert(`File upload failed. ${resp.reason}`)

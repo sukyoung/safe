@@ -40,21 +40,11 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     val startTime = System.currentTimeMillis
     var iters: Int = 0
 
-    var interOpt: Option[Interactive] = None
-    if (config.web) {
-      interOpt = Some(new WebConsole(cfg, sem, heapConfig, iter))
-    } else if (config.console) {
-      interOpt = Some(new Console(cfg, sem, heapConfig, iter))
-    }
+    var interOpt: Option[Interactive] = Some(new Console(cfg, sem, heapConfig, iter))
 
-    if (config.web) {
-      // interactive analysis using web server
-      WebServer.run(new Fixpoint(sem, interOpt))
-    } else {
-      // calculate fixpoint
-      val fixpoint = new Fixpoint(sem, interOpt)
-      iters = fixpoint.compute(iter + 1)
-    }
+    // calculate fixpoint
+    val fixpoint = new Fixpoint(sem, interOpt)
+    iters = fixpoint.compute(iter + 1)
 
     // display duration time
     if (config.time) {
@@ -98,8 +88,6 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
       "the analysis results will be written to the outfile."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
       "the resulting CFG with states will be drawn to the {string}.html"),
-    ("web", BoolOption(c => c.web = true),
-      "run analytics web server")
   )
 }
 
@@ -107,7 +95,6 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
 case class AnalyzeConfig(
   var silent: Boolean = false,
   var console: Boolean = false,
-  var web: Boolean = false,
   var time: Boolean = false,
   var exitDump: Boolean = false,
   var outFile: Option[String] = None,

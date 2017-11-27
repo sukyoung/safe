@@ -77,6 +77,8 @@ class Connection {
         case "runInst":
           this.processRunInst(resp)
           break
+        case "initial":
+          break
         default:
           console.error(`Cannot find handler for action ${resp.action}`)
       }
