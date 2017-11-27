@@ -205,8 +205,6 @@ class Connection {
 
     const state_data = safe_DB.state[`${bid}:${iid}`]
 
-    console.log(state_data)
-
     // reset state data
     const stateElem = $$('state');
     stateElem.clearAll();
@@ -220,6 +218,11 @@ class Connection {
     this.updateStatusLabel()
     window.onbeforeunload = function () {
     }
+  }
+
+  reload () {
+    this.close()
+    this.connect()
   }
 
   reconnect () {

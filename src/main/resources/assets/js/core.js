@@ -33,6 +33,13 @@ webix.ready(function(){
     rows:[
       { view: 'toolbar', id: 'toolbar', elements: [
         { view: 'label', label: 'SAFE 2.0' },
+        { view: 'button', id: 'open-file',
+          type: 'iconButton', icon: 'folder-open', label: 'Open File', width: 110,
+          click () {
+            $('#file-upload').click()
+            // Goto onFileChange
+          },
+        },
         { view: 'button', id: 'next',
           type: 'iconButton', icon: 'play', label: 'Next', width: 80,
           click () {
@@ -114,6 +121,29 @@ webix.ready(function(){
   $('.console').click(function () {
     $('.console-input').focus()
   })
+
+  $('input[type=file]').change(onFileChange)
+  function onFileChange (e) {
+    const formData = new FormData()
+    formData.append('upload', e.target.files[0])
+
+    $.ajax({
+      url: '/upload',
+      method: 'POST',
+      async: true,
+      data: formData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      success (data, status, xhr) {
+        conn.reload()
+      },
+      error (xhr, err, status) {
+        const resp = JSON.parse(xhr.responseText)
+        alert(`File upload failed. ${resp.reason}`)
+      },
+    })
+  }
 })
 
 function drawGraph () {
