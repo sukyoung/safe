@@ -13,24 +13,34 @@ package kr.ac.kaist.safe.web
 
 import java.io.File
 
-import akka.actor.{ ActorSystem, Props }
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.ws.{ Message, TextMessage, UpgradeToWebSocket }
+import akka.http.scaladsl.model.ws.{Message, TextMessage, UpgradeToWebSocket}
 import akka.http.scaladsl.server.Directives._
-import akka.stream.scaladsl.{ Flow, Sink, Source }
-import akka.stream.{ ActorMaterializer, OverflowStrategy }
-import kr.ac.kaist.safe.BASE_DIR
+import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.{ActorMaterializer, OverflowStrategy}
+import kr.ac.kaist.safe._
 import kr.ac.kaist.safe.analyzer.Fixpoint
+import kr.ac.kaist.safe.analyzer.console.{Interactive, WebConsole}
+import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
+import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.json.JsonImplicits._
+import kr.ac.kaist.safe.json.JsonUtil
+import kr.ac.kaist.safe.parser.Parser
+import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.web.actors.CmdActor
+import kr.ac.kaist.safe.web.domain.Protocol.FileUploadResp
 import kr.ac.kaist.safe.web.domain._
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
+import scala.util.{Failure, Success}
 
 object WebServer extends {
-  def run(fixpoint: Fixpoint, port: Int = 8080) {
+  var cmdActor: ActorRef = _
+
+  def run(defaultFixpoint: Fixpoint, port: Int = 8080) {
     implicit val system: ActorSystem = ActorSystem("web-debugger")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
@@ -39,13 +49,13 @@ object WebServer extends {
     val SEP = File.separator
     val base = BASE_DIR + SEP
     val assetsPath = Array[String](base + "src", "main", "resources", "assets").mkString(SEP)
+    cmdActor = system.actorOf(Props(new CmdActor()))
+    cmdActor ! UpdateFixpoint(defaultFixpoint)
 
     val handlerFlow = {
-      val chatActor = system.actorOf(Props(new CmdActor(fixpoint)))
-
       // Wraps the chatActor in a sink. When the stream to this sink will be completed
       // it sends the `ParticipantLeft` message to the chatActor.
-      def chatInSink(uid: String) = Sink.actorRef[Event](chatActor, ParticipantLeft(uid))
+      def chatInSink(uid: String) = Sink.actorRef[Event](cmdActor, ParticipantLeft(uid))
 
       (uid: String) => {
         val in =
@@ -55,7 +65,7 @@ object WebServer extends {
 
         val out =
           Source.actorRef[Protocol.Message](1, OverflowStrategy.fail)
-            .mapMaterializedValue(chatActor ! NewParticipant(uid, _))
+            .mapMaterializedValue(cmdActor ! NewParticipant(uid, _))
 
         Flow.fromSinkAndSource(in, out)
       }
@@ -78,6 +88,46 @@ object WebServer extends {
         get {
           getFromDirectory(assetsPath)
         }
+      } ~ uploadedFile("upload") {
+        case (metadata, file) =>
+          // Read Content
+          val content = io.Source.fromFile(file).getLines.mkString("\n")
+
+          // Parse
+          Parser.stringToAST(content) match {
+            case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "parse failed")))
+            case Success((pgm, _)) =>
+
+              // AST
+              val (ast, _) = ASTRewrite.rewrite(pgm)
+              complete(ast.toString)
+
+              // Translate AST -> IR.
+              val translator = new Translator(ast)
+              val ir = translator.result
+
+              // Build CFG from IR.
+              val cbResult = new DefaultCFGBuilder(ir, null, null)
+              val cfg = cbResult.cfg
+
+              // HeapBuild
+              HeapBuild(cfg, null, HeapBuild.defaultConfig) match {
+                case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "heap build failed")))
+                case Success(some) =>
+                  val (cfg, sem, initTP, heapConfig, iter) = some
+
+                  // set the start time.
+                  val startTime = System.currentTimeMillis
+                  var iters: Int = 0
+
+                  var interOpt: Option[Interactive] = None
+                  interOpt = Some(new WebConsole(cfg, sem, heapConfig, iter))
+
+                  cmdActor ! UpdateFixpoint(new Fixpoint(sem, interOpt))
+
+                  complete(JsonUtil.toJson(FileUploadResp("complete")))
+              }
+          }
       } ~ path("ws") {
         parameter('uid) { uid =>
           extractRequest {

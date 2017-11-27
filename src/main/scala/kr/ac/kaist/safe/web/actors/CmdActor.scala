@@ -11,23 +11,22 @@
 
 package kr.ac.kaist.safe.web.actors
 
-import scala.util.control.Breaks._
 import akka.actor.{Actor, ActorRef, Status, Terminated}
-import kr.ac.kaist.safe.analyzer.{ControlPoint, Fixpoint, TracePartition}
 import kr.ac.kaist.safe.analyzer.console._
-import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.domain.Utils.AbsState
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
+import kr.ac.kaist.safe.analyzer.{ControlPoint, Fixpoint, TracePartition}
 import kr.ac.kaist.safe.json.JsonUtil
 import kr.ac.kaist.safe.nodes.cfg.{BlockId, CFGCallInst, CFGNormalInst, FunctionId}
-import kr.ac.kaist.safe.web.domain.Protocol._
 import kr.ac.kaist.safe.web.domain.Actions
-import kr.ac.kaist.safe.web.{NewParticipant, ParticipantLeft, ReceivedCmd}
+import kr.ac.kaist.safe.web.domain.Protocol._
+import kr.ac.kaist.safe.web.{NewParticipant, ParticipantLeft, ReceivedCmd, UpdateFixpoint}
 
-class CmdActor(fixpoint: Fixpoint) extends Actor {
+import scala.util.control.Breaks._
+
+class CmdActor() extends Actor {
   var subscribers = Set.empty[(String, ActorRef)]
-
-  lazy val console: Interactive = fixpoint.consoleOpt.get
+  var fixpoint: Fixpoint = _
 
   def dispatch(msg: Message): Unit = subscribers.foreach(_._2 ! msg)
 
@@ -37,6 +36,8 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
   }
 
   def receive: Receive = {
+    case UpdateFixpoint (f) =>
+      this.fixpoint = f
     case NewParticipant(uid, subscriber) => // New Participant has joined
       context.watch(subscriber)
       subscribers += (uid -> subscriber)
@@ -63,6 +64,7 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
   }
 
   def processCmd(cmd: String): Result = {
+    val console: Interactive = fixpoint.consoleOpt.get
     val req = JsonUtil.fromJson[Run](cmd)
     console.runCmd(req.cmd) match {
       case CmdResultContinue(output) =>
@@ -79,6 +81,7 @@ class CmdActor(fixpoint: Fixpoint) extends Actor {
   }
 
   def getBlockState(req: String): BlockState = {
+    val console: Interactive = fixpoint.consoleOpt.get
     val fetchBlockStateReq = JsonUtil.fromJson[FetchBlockState](req)
     val states = HTMLWriter.getBlockStates(console.cfg, console.sem, fetchBlockStateReq.bid)
     BlockState(Actions.getBlockState, fetchBlockStateReq.bid, states.insts, states.state)

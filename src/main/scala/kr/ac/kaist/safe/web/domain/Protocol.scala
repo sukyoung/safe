@@ -25,4 +25,6 @@ object Protocol {
 
   case class RunInst(bid: String, iid: String) extends Message
   case class InstState(action: String, bid: String, iid: String, state: String) extends Message
+
+  case class FileUploadResp(status: String, reason: String = "") extends Message
 }

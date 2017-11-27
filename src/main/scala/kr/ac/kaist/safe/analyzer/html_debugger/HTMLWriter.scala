@@ -11,15 +11,15 @@
 
 package kr.ac.kaist.safe.analyzer.html_debugger
 
-import java.io.{File, FileWriter}
+import java.io.{ File, FileWriter }
 
 import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.{Semantics, Worklist}
+import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.web.domain.BlockStates
-import kr.ac.kaist.safe.{BASE_DIR, LINE_SEP}
+import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
 import org.apache.commons.io.FileUtils
 
 object HTMLWriter {

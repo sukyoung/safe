@@ -12,8 +12,10 @@
 package kr.ac.kaist.safe.web
 
 import akka.actor.ActorRef
+import kr.ac.kaist.safe.analyzer.Fixpoint
 
 sealed trait Event
 case class ReceivedCmd(uid: String, cmd: String) extends Event
 case class ParticipantLeft(uid: String) extends Event
 case class NewParticipant(uid: String, subscriber: ActorRef) extends Event
+case class UpdateFixpoint(f: Fixpoint) extends Event

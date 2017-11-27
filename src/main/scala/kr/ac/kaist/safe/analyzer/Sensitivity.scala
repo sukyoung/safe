@@ -26,7 +26,7 @@ sealed abstract class Sensitivity {
 }
 
 // trace partition
-sealed abstract class TracePartition {
+abstract class TracePartition {
   def next(from: CFGBlock, to: CFGBlock, edgeType: CFGEdgeType): TracePartition
 }
 
