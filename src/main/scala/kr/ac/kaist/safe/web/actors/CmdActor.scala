@@ -74,12 +74,17 @@ class CmdActor() extends Actor {
   def processCmd(cmd: String, fixpoint: Fixpoint): Result = {
     val console: Interactive = fixpoint.consoleOpt.get
     val req = JsonUtil.fromJson[Run](cmd)
+
     console.runCmd(req.cmd) match {
       case CmdResultContinue(output) =>
         val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
         Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultBreak(output) =>
-        fixpoint.computeOneStep()
+        if (req.cmd == "run") {
+          fixpoint.compute()
+        } else {
+          fixpoint.computeOneStep()
+        }
         val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
         Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
       case CmdResultRestart =>

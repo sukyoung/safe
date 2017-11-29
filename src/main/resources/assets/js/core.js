@@ -41,9 +41,21 @@ webix.ready(function(){
           },
         },
         { view: 'button', id: 'next',
-          type: 'iconButton', icon: 'play', label: 'Next', width: 80,
+          type: 'iconButton', icon: 'step-forward', label: 'Next', width: 80,
           click () {
             conn.cmd('next')
+          },
+        },
+        { view: 'button', id: 'restart', type: 'iconButton', icon: 'refresh', label: 'Restart', width: 90, hidden: true,
+          click () {
+            conn.cmd('restart')
+            unsetRestartBtn()
+          },
+        },
+        { view: 'button', id: 'run',
+          type: 'iconButton', icon: 'play', label: 'Run', width: 80,
+          click () {
+            conn.cmd('run')
           },
         },
         { view: 'icon', icon: 'bars',
@@ -207,4 +219,16 @@ function redrawGraph () {
     window.cy.destroy()
   }
   drawGraph()
+}
+
+function setRestartBtn() {
+  $$('next').hide()
+  $$('run').hide()
+  $$('restart').show()
+}
+
+function unsetRestartBtn() {
+  $$('next').show()
+  $$('run').show()
+  $$('restart').hide()
 }

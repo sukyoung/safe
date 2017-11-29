@@ -104,17 +104,11 @@ class Connection {
           action: 'cmd',
           cmd,
         }))
-      } else {
-        if (cmd.toLowerCase() === 'y' ||
-          cmd.toLowerCase() === 'yes' ||
-          cmd.toLowerCase() === 'next') {
-          this.socket.send(JSON.stringify({ action: 'cmd', cmd: 'restart' }))
-          $$('next').config.label = 'Next'
-          $$('next').config.width = 80
-          $$('next').config.icon = 'play'
-          $$('next').refresh()
-          $$('next').resize()
-        }
+      } else if (cmd.toLowerCase() === 'y' ||
+        cmd.toLowerCase() === 'yes' ||
+        cmd.toLowerCase() === 'restart' ||
+        cmd.toLowerCase() === 'next') {
+        this.socket.send(JSON.stringify({ action: 'cmd', cmd: 'restart' }))
       }
     }
   }
@@ -136,11 +130,7 @@ class Connection {
       this.prompt = 'Analysis is finished\nDo you want to restart?'
       this.iter = -1
 
-      $$('next').config.label = 'Restart'
-      $$('next').config.width = 90
-      $$('next').config.icon = 'refresh'
-      $$('next').refresh()
-      $$('next').resize()
+      setRestartBtn()
     }
   }
 
