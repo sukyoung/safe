@@ -55,7 +55,7 @@ webix.ready(function(){
         },
       ]},
       { view: 'accordion', id: 'accord', type: 'wide', collapsed: true, cols:[
-        { id: 'side-bar', header: 'Instructions & State', collapsed: false, width: 500, minWidth: 320, body: side },
+        { id: 'side-bar', header: 'Instructions & State', width: 500, minWidth: 320, body: side },
         { id: 'resizer', view: 'resizer' },
         { id: 'cy', body: { content: 'cy' } },
         { id: 'console', header: 'Console', minWidth: 720, width: '50%', height: '100%', body: { content: 'console' } },
@@ -127,8 +127,12 @@ webix.ready(function(){
     const formData = new FormData()
     formData.append('upload', e.target.files[0])
 
+    $$('insts').clearAll();
+    $$('state').clearAll();
+    $$('side-bar').collapse();
+
     $.ajax({
-      url: '/upload',
+      url: `/upload?uid=${uid}`,
       method: 'POST',
       async: true,
       data: formData,

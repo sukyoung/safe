@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.web
 
 import java.io.File
-import kr.ac.kaist.safe.BASE_DIR
+import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
 import scala.io.Source
 
 object Templates {
@@ -21,6 +21,6 @@ object Templates {
     val SEP = File.separator
     val base = BASE_DIR + SEP
     val baseHtmlPath = new File(Array[String](base + "src", "main", "resources", "templates", "base.html").mkString(SEP))
-    Source.fromFile(baseHtmlPath).getLines.mkString
+    Source.fromFile(baseHtmlPath).getLines.mkString(LINE_SEP)
   }
 }

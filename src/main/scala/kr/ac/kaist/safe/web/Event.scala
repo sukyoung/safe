@@ -18,4 +18,4 @@ sealed trait Event
 case class ReceivedCmd(uid: String, cmd: String) extends Event
 case class ParticipantLeft(uid: String) extends Event
 case class NewParticipant(uid: String, subscriber: ActorRef) extends Event
-case class UpdateFixpoint(f: Fixpoint) extends Event
+case class UpdateFixpoint(uid: String, f: Fixpoint) extends Event

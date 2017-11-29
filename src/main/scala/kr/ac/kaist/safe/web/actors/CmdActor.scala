@@ -22,52 +22,56 @@ import kr.ac.kaist.safe.web.domain.Actions
 import kr.ac.kaist.safe.web.domain.Protocol._
 import kr.ac.kaist.safe.web.{NewParticipant, ParticipantLeft, ReceivedCmd, UpdateFixpoint}
 
+import scala.collection.mutable
 import scala.util.control.Breaks._
 
+case class State(subscriber: ActorRef, var fixpoint: Fixpoint = null)
+
 class CmdActor() extends Actor {
-  var subscribers = Set.empty[(String, ActorRef)]
-  var fixpoint: Fixpoint = _
+  var states = mutable.Map.empty[String, State]
 
-  def dispatch(msg: Message): Unit = subscribers.foreach(_._2 ! msg)
-
-  def finish(uid: String, msg: Message): Unit = {
-    val (_, subscriber) = subscribers.find(p => p._1 == uid).orNull
-    subscriber ! msg
+  def dispatch(uid: String, msg: Message): Unit = {
+    states(uid).subscriber ! msg
   }
 
   def receive: Receive = {
-    case UpdateFixpoint (f) =>
-      this.fixpoint = f
-      dispatch(getStatus(fixpoint))
+    case UpdateFixpoint (uid, fixpoint) =>
+      states(uid).fixpoint = fixpoint
+      dispatch(uid, getStatus(fixpoint))
     case NewParticipant(uid, subscriber) => // New Participant has joined
-      context.watch(subscriber)
-      subscribers += (uid -> subscriber)
-      subscriber ! getStatus(fixpoint)
-
+      println("Participant Joined " + uid)
+      if (states.contains(uid)) {
+        // Error already existing uid
+      } else {
+        context.watch(subscriber)
+        states.put(uid, State(subscriber))
+        dispatch(uid, InitialState())
+      }
     case ReceivedCmd(uid: String, msg: String) => // Someone send command
+      val fixpoint = states(uid).fixpoint
       if (fixpoint == null) {
-        dispatch(InitialState())
+        dispatch(uid, InitialState())
       } else {
         val base = JsonUtil.fromJson[Base](msg)
         base.action match {
-          case Actions.CMD => dispatch(processCmd(msg))
-          case Actions.getBlockState => finish(uid, getBlockState(msg))
-          case Actions.runInst => finish(uid, runInst(msg))
+          case Actions.CMD => dispatch(uid, processCmd(msg, fixpoint))
+          case Actions.getBlockState => dispatch(uid, getBlockState(msg, fixpoint))
+          case Actions.runInst => dispatch(uid, runInst(msg, fixpoint))
           case x: String => println("Unmatched command : " + x)
         }
       }
     case ParticipantLeft(uid: String) => // Participant has left
-      val entry = subscribers.find(p => p._1 == uid).orNull
+      println("Participant Left " + uid)
+      val entry = states(uid)
       if (entry != null) {
-        val ref = entry._2
-        ref ! Status.Success(Unit)
-        subscribers -= entry
+        entry.subscriber ! Status.Success(Unit)
+        states -= uid
       }
     case Terminated(sub) ⇒ // clean up dead subscribers, but should have been removed when `ParticipantLeft`
-      subscribers = subscribers.filterNot(_._2 == sub)
+      states = states.filterNot(_._2.subscriber == sub)
   }
 
-  def processCmd(cmd: String): Result = {
+  def processCmd(cmd: String, fixpoint: Fixpoint): Result = {
     val console: Interactive = fixpoint.consoleOpt.get
     val req = JsonUtil.fromJson[Run](cmd)
     console.runCmd(req.cmd) match {
@@ -84,14 +88,14 @@ class CmdActor() extends Actor {
     }
   }
 
-  def getBlockState(req: String): BlockState = {
+  def getBlockState(req: String, fixpoint: Fixpoint): BlockState = {
     val console: Interactive = fixpoint.consoleOpt.get
     val fetchBlockStateReq = JsonUtil.fromJson[FetchBlockState](req)
     val states = HTMLWriter.getBlockStates(console.cfg, console.sem, fetchBlockStateReq.bid)
     BlockState(Actions.getBlockState, fetchBlockStateReq.bid, states.insts, states.state)
   }
 
-  def runInst(req: String): InstState = {
+  def runInst(req: String, fixpoint: Fixpoint): InstState = {
     val runInstReq = JsonUtil.fromJson[RunInst](req)
     val tmp = runInstReq.bid.split(':').map(x => x.toInt)
     val fid: FunctionId = tmp(0)

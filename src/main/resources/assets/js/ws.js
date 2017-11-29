@@ -21,15 +21,7 @@ const MAX_RETRY = 5
 class Connection {
   constructor () {
     const loc = window.location
-    let uri
-    if (loc.protocol === "https:") {
-      uri = "wss:"
-    } else {
-      uri = "ws:"
-    }
-    const uid = Math.floor(Math.random() * 10000000)
-    console.log(`Generated UID: ${uid}`)
-    uri += `//${loc.host}/ws?uid=${uid}`
+    let uri = `ws://${loc.host}/ws?uid=${uid}`
 
     this.retry = 0
     this.uri = uri

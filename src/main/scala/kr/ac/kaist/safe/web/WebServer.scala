@@ -100,45 +100,47 @@ object WebServer extends {
         }
       } ~ uploadedFile("upload") {
         case (metadata, file) =>
-          // Read Content
-          val content = io.Source.fromFile(file).getLines.mkString("\n")
+          parameter('uid) { uid =>
+            // Read Content
+            val content = io.Source.fromFile(file).getLines.mkString("\n")
 
-          // Parse
-          Parser.stringToAST(content) match {
-            case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "parse failed")))
-            case Success((pgm, _)) =>
+            // Parse
+            Parser.stringToAST(content) match {
+              case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "parse failed")))
+              case Success((pgm, _)) =>
 
-              // AST
-              val (ast, _) = ASTRewrite.rewrite(pgm)
-              complete(ast.toString)
+                // AST
+                val (ast, _) = ASTRewrite.rewrite(pgm)
+                complete(ast.toString)
 
-              // Translate AST -> IR.
-              val translator = new Translator(ast)
-              val ir = translator.result
+                // Translate AST -> IR.
+                val translator = new Translator(ast)
+                val ir = translator.result
 
-              // Build CFG from IR.
-              val cbResult = new DefaultCFGBuilder(ir, null, null)
-              val cfg = cbResult.cfg
+                // Build CFG from IR.
+                val cbResult = new DefaultCFGBuilder(ir, null, null)
+                val cfg = cbResult.cfg
 
-              // HeapBuild
-              HeapBuild(cfg, null, HeapBuild.defaultConfig) match {
-                case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "heap build failed")))
-                case Success(some) =>
-                  val (cfg, sem, initTP, heapConfig, iter) = some
+                // HeapBuild
+                HeapBuild(cfg, null, HeapBuild.defaultConfig) match {
+                  case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "heap build failed")))
+                  case Success(some) =>
+                    val (cfg, sem, initTP, heapConfig, iter) = some
 
-                  // set the start time.
-                  val startTime = System.currentTimeMillis
-                  var iters: Int = 0
+                    // set the start time.
+                    val startTime = System.currentTimeMillis
+                    var iters: Int = 0
 
-                  var interOpt: Option[Interactive] = None
-                  interOpt = Some(new WebConsole(cfg, sem, heapConfig, iter))
+                    var interOpt: Option[Interactive] = None
+                    interOpt = Some(new WebConsole(cfg, sem, heapConfig, iter))
 
-                  cmdActor ! UpdateFixpoint(new Fixpoint(sem, interOpt))
+                    cmdActor ! UpdateFixpoint(uid, new Fixpoint(sem, interOpt))
 
-                  complete(JsonUtil.toJson(FileUploadResp("complete")))
-              }
+                    complete(JsonUtil.toJson(FileUploadResp("complete")))
+                }
+            }
           }
-      } ~ path("ws") {
+        } ~ path("ws") {
         parameter('uid) { uid =>
           extractRequest {
             req =>
