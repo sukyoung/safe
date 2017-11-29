@@ -12,13 +12,14 @@
 package kr.ac.kaist.safe.phase
 
 import kr.ac.kaist.safe.SafeConfig
+import kr.ac.kaist.safe.util.StrOption
 import kr.ac.kaist.safe.web.WebServer
 
 import scala.util.{Success, Try}
 
 // Help phase
 case object Web extends PhaseObj[Unit, WebConfig, Unit] {
-  val name = "Web Server"
+  val name = "web"
   val help = "Run SAFE web for interactive step-by-step analysis"
 
   def apply(
@@ -31,7 +32,10 @@ case object Web extends PhaseObj[Unit, WebConfig, Unit] {
     Success("Done")
   }
   def defaultConfig: WebConfig = WebConfig()
-  val options: List[PhaseOption[WebConfig]] = List()
+  val options: List[PhaseOption[WebConfig]] = List(
+    ("port", StrOption((c, s) => c.port = s.toInt),
+      "the SAFE web server port default is 8080")
+  )
 }
 
 case class WebConfig(var port: Int = 8080) extends Config
