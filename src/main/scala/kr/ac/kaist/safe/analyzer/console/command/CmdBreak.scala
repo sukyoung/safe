@@ -24,8 +24,8 @@ case object CmdBreak extends Command("break", "Add a break point.") {
 
   def run(c: Console, args: List[String]): Option[Target] = {
     val cfg = c.cfg
-    val idPattern = "(\\d+):(\\d+)".r
-    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
+    val idPattern = "(-?\\d+):(\\d+)".r
+    val spPattern = "(-?\\d+):(entry|exit|exit-exc)".r
     args match {
       case subcmd :: Nil => subcmd match {
         case idPattern(fidStr, bidStr) => {

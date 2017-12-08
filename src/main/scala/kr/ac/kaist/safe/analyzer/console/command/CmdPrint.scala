@@ -37,8 +37,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
-    val idPattern = "(\\d+):(\\d+)".r
-    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
+    val idPattern = "(-?\\d+):(\\d+)".r
+    val spPattern = "(-?\\d+):(entry|exit|exit-exc)".r
     args match {
       case Nil => help
       case subcmd :: rest => subcmd match {
@@ -118,7 +118,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
                 val name = func.simpleName
                 println(s"[$fid] $name")
             }
-          case fidStr :: Nil if fidStr.forall(_.isDigit) =>
+          case fidStr :: Nil if fidStr.matches("-?\\d+") =>
             val fid = fidStr.toInt
             c.cfg.getFunc(fid) match {
               case Some(func) =>

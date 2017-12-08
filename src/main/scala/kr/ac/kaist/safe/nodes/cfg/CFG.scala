@@ -132,7 +132,7 @@ class CFG(
   // find block from a given string
   def findBlock(str: String): Try[CFGBlock] = {
     val idPattern = "(-?\\d+):(\\d+)".r
-    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
+    val spPattern = "(-?\\d+):(entry|exit|exit-exc)".r
     str match {
       case idPattern(fidStr, bidStr) => {
         val fid = fidStr.toInt
