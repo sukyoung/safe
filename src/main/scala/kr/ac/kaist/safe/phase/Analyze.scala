@@ -11,38 +11,40 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.console.Console
+import kr.ac.kaist.safe.analyzer.console.{ Console, Interactive, WebConsole }
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
-import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.json.NodeProtocol
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.web.WebServer
+import scala.util.{ Success, Try }
 
 // Analyze phase
-case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
+case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
   val name: String = "analyzer"
   val help: String = "Analyze JavaScript source files."
 
   def apply(
-    in: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int),
+    in: (CFG, Semantics, TracePartition, HeapBuildConfig, Int),
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
-    val (cfg, worklist, sem, initTP, heapConfig, iter) = in
-
-    val consoleOpt = config.console match {
-      case true => Some(new Console(cfg, worklist, sem, heapConfig, iter))
-      case false => None
-    }
+    val (cfg, sem, initTP, heapConfig, iter) = in
+    NodeProtocol.test = safeConfig.testMode
 
     // set the start time.
     val startTime = System.currentTimeMillis
+    var iters: Int = 0
+
+    var interOpt: Option[Interactive] =
+      if (config.console) Some(new Console(cfg, sem, heapConfig, iter))
+      else None
 
     // calculate fixpoint
-    val fixpoint = new Fixpoint(sem, worklist, consoleOpt)
-    val iters = fixpoint.compute(iter + 1)
+    val fixpoint = new Fixpoint(sem, interOpt)
+    iters = fixpoint.compute(iter + 1)
 
     // display duration time
     if (config.time) {
@@ -58,7 +60,7 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, 
     }
 
     // print html file: {htmlName}.html
-    config.htmlName.map(name => {
+    config.htmlName.foreach(name => {
       HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
     })
 

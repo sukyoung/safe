@@ -15,11 +15,9 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // remove break
 case object CmdBreakRemove extends Command("break-rm", "Remove a break point.") {
-  def help: Unit = {
-    println("usage: " + name + " {break-order}")
-  }
+  override val help: String = "usage: " + name + " {break-order}"
 
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     val orderPattern = "(\\d+)".r
     args match {
       case orderPattern(orderStr) :: Nil => {
@@ -30,14 +28,14 @@ case object CmdBreakRemove extends Command("break-rm", "Remove a break point.") 
           val block = breakList(order)
           val fid = block.func.id
           c.removeBreak(block)
-          println(s"* break-point[$order] removed.")
-          println(s"[$order] function[$fid] $block")
+          printResult(s"* break-point[$order] removed.")
+          printResult(s"[$order] function[$fid] $block")
         } else {
-          println(s"* given order is out of bound: $len")
+          printResult(s"* given order is out of bound: $len")
           CmdBreakList.run(c, Nil)
         }
       }
-      case _ => help
+      case _ => printResult(help)
     }
     None
   }

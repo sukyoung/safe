@@ -35,7 +35,7 @@ import spray.json._
 import DefaultJsonProtocol._
 
 // JsonLoad phase
-case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] {
+case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Semantics, TracePartition, HeapBuildConfig, Int)] {
   val name: String = "jsonLoader"
   val help: String =
     "Loads a control flow graph, work list, heap state, and heap build options from a given JSON file."
@@ -44,7 +44,7 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Worklist, Sema
     unit: Unit,
     safeConfig: SafeConfig,
     config: JsonLoadConfig
-  ): Try[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] = safeConfig.fileNames match {
+  ): Try[(CFG, Semantics, TracePartition, HeapBuildConfig, Int)] = safeConfig.fileNames match {
     case Nil => Failure(NoFileError("cfg load"))
     case _ => {
       val fileName = safeConfig.fileNames(0)
@@ -92,7 +92,7 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Worklist, Sema
                 val sens =
                   CallSiteSensitivity(heapConfig.callsiteSensitivity) *
                     LoopSensitivity(heapConfig.loopSensitivity)
-                Success((cfg, worklist, sem, sens.initTP, heapConfig, iter.toInt))
+                Success((cfg, sem, sens.initTP, heapConfig, iter.toInt))
               }
               case _ => {
                 source.close

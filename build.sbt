@@ -34,8 +34,8 @@ lazy val root = (project in file(".")).
         IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
 
       // webix
-      val webixJsFile = new File("./lib/debugger/webix.js")
-      val webixCssFile = new File("./lib/debugger/css/webix.css")
+      val webixJsFile = new File("./src/main/resources/assets/js/webix.js")
+      val webixCssFile = new File("./src/main/resources/assets/css/webix.css")
       if (!webixJsFile.exists)
         IO.download(new URL("http://cdn.webix.com/edge/webix.js"), webixJsFile)
       if (!webixCssFile.exists)
@@ -87,7 +87,9 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test" withSources,
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
-  "io.spray" %% "spray-json" % "1.3.2"
+  "io.spray" %% "spray-json" % "1.3.2",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.2",
+  "com.fasterxml.jackson.module" % "jackson-module-scala_2.12" % "2.9.1"
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")

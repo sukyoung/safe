@@ -16,3 +16,11 @@
   top: 0;
   z-index: 999;
 }
+
+.no-file-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}

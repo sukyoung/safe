@@ -11,9 +11,10 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.util.{ Try, Success }
+import scala.util.{ Success, Try }
 import kr.ac.kaist.safe.SafeConfig
-import kr.ac.kaist.safe.ast_rewriter.{ Hoister, Disambiguator, WithRewriter }
+import kr.ac.kaist.safe.ast_rewriter.{ Disambiguator, Hoister, WithRewriter }
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.util._
 
@@ -28,20 +29,7 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
     safeConfig: SafeConfig,
     config: ASTRewriteConfig
   ): Try[Program] = {
-    // hoist
-    val hoister = new Hoister(pgm)
-    var program = hoister.result
-    var excLog = hoister.excLog
-
-    // disambiguate
-    val disambiguator = new Disambiguator(program)
-    program = disambiguator.result
-    excLog += disambiguator.excLog
-
-    // "with" rewrite
-    val withRewriter = new WithRewriter(program, false)
-    program = withRewriter.result
-    excLog += withRewriter.excLog
+    val (program, excLog) = rewrite(pgm)
 
     // Report errors.
     if (excLog.hasError && !safeConfig.testMode && !safeConfig.silent) {
@@ -57,10 +45,29 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
         writer.close; fw.close
         println("Dumped rewritten AST to " + out)
       }
-      case None => Try(program)
+      case None => return Try(program)
     }
 
     Success(program)
+  }
+
+  def rewrite(pgm: Program): (Program, ExcLog) = {
+    // hoist
+    val hoister = new Hoister(pgm)
+    var program = hoister.result
+    var excLog = hoister.excLog
+
+    // disambiguate
+    val disambiguator = new Disambiguator(program)
+    program = disambiguator.result
+    excLog += disambiguator.excLog
+
+    // "with" rewrite
+    val withRewriter = new WithRewriter(program, false)
+    program = withRewriter.result
+    excLog += withRewriter.excLog
+
+    (program, excLog)
   }
 
   def defaultConfig: ASTRewriteConfig = ASTRewriteConfig()

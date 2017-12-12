@@ -11,20 +11,17 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
-import java.io._
-
-import kr.ac.kaist.safe.analyzer.console.{ Console => Con, Target }
-import kr.ac.kaist.safe.util.Useful
+import kr.ac.kaist.safe.analyzer.console.{ Interactive, Target }
 import kr.ac.kaist.safe.json.CFGProtocol._
-import kr.ac.kaist.safe.json.WorklistProtocol._
 import kr.ac.kaist.safe.json.ConfigProtocol._
-
+import kr.ac.kaist.safe.json.WorklistProtocol._
+import kr.ac.kaist.safe.util.Useful
 import spray.json._
 
 // dump 
 case object CmdDump extends Command("dump", "Dump current analysis data.") {
-  def help: Unit = println("usage: " + name + " {name}")
-  def run(c: Con, args: List[String]): Option[Target] = {
+  override val help: String = "usage: " + name + " {name}"
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
       case name :: Nil =>
         val (fw, writer) = Useful.fileNameToWriters(s"$name.json")
@@ -38,7 +35,7 @@ case object CmdDump extends Command("dump", "Dump current analysis data.") {
         writer.close
         fw.close
         None
-      case _ => help; None
+      case _ => printResult(help); None
     }
   }
 }

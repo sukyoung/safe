@@ -15,11 +15,10 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // run
 case object CmdRun extends Command("run", "Run until meet some break point.") {
-  def help: Unit = println("usage: " + name)
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
       case Nil => Some(TargetIter(-1))
-      case _ => help; None
+      case _ => printResult(help); None
     }
   }
 }

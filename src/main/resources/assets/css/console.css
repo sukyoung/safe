@@ -1,0 +1,103 @@
+/*
+ * ****************************************************************************
+ * Copyright (c) 2016-2017, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ***************************************************************************
+ */
+
+.console {
+    padding: 10px;
+    opacity: 0.8;
+    transition: opacity .3s ease-in-out;
+    overflow-y: scroll;
+    background-color: black;
+    color: white;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+.console:hover {
+    opacity: 1;
+}
+.console-output {
+    font-size: 20px;
+    /*max-height: calc(100% - 90px);*/
+    overflow: scroll;
+}
+
+.console-input-group {
+    height: 50px;
+    width: 100%;
+    font-size: 20px;
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+.console-prompt {
+    display: block;
+    width: 100%;
+    color: lightcoral;
+    white-space: pre-wrap;
+}
+
+.console-input-line {
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    height: 30px;
+}
+
+.console-iter {
+    display: inline-block;
+    padding-right: 10px;
+    line-height: 30px;
+    width: auto;
+    white-space: nowrap;
+    color: lightcoral;
+}
+
+.console-input {
+    color: white;
+    background-color: transparent;
+    font-size: 20px;
+    border: none;
+    height: 30px;
+    flex-grow: 1;
+    padding: 0;
+}
+.console-line {
+    display: block;
+}
+.console-line-command {
+    margin-bottom: 0;
+    white-space: pre;
+}
+.console-line-result {
+    white-space: pre;
+    margin: 0 0 0 20px;
+}
+.console-line-error {
+    color: red;
+}
+
+.console-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.status-connecting {
+    color: yellow;
+}
+.status-connected {
+    color: green;
+}
+.status-closed {
+    color: red;
+}

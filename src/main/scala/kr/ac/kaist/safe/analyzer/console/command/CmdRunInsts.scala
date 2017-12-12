@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.console.command
 
 import jline.console.ConsoleReader
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.LINE_SEP
@@ -19,8 +20,7 @@ import kr.ac.kaist.safe.nodes.cfg.{ CFGCallInst, CFGNormalInst }
 
 // run instructions
 case object CmdRunInsts extends Command("run_insts", "Run instruction by instruction.") {
-  def help: Unit = println("usage: " + name)
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
       case Nil => {
         val cp = c.getCurCP
@@ -29,12 +29,12 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
         val insts = block.getInsts.reverse
         val reader = new ConsoleReader()
         insts match {
-          case Nil => println("* no instructions")
-          case _ => println(c.getCurCP.block.toString(0))
+          case Nil => printResult("* no instructions")
+          case _ => printResult(c.getCurCP.block.toString(0))
         }
         val (resSt, resExcSt, _) = insts.foldLeft((st, AbsState.Bot, true)) {
           case ((oldSt, oldExcSt, true), inst) =>
-            println
+            printResult("\n")
             reader.setPrompt(
               s"inst: [${inst.id}] $inst" + LINE_SEP +
                 s"('s': state / 'q': stop / 'n','': next)" + LINE_SEP +
@@ -45,11 +45,14 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
               line = reader.readLine
               line match {
                 case "s" => {
-                  println("*** state ***")
-                  println(oldSt.toString)
-                  println
-                  println("*** exception state ***")
-                  println(oldExcSt.toString)
+                  printResult("*** state ***")
+                  printResult(oldSt.toString)
+                  printResult()
+                  printResult("*** exception state ***")
+                  printResult(oldExcSt.toString)
+
+                  // TODO: This doesn't support WebConsole
+                  flushTo(System.out)
                   true
                 }
                 case "d" => true // TODO diff
@@ -69,13 +72,13 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
             }
           case (old @ (_, _, false), inst) => old
         }
-        println("*** state ***")
-        println(resSt.toString)
-        println
-        println("*** exception state ***")
-        println(resExcSt.toString)
+        printResult("*** state ***")
+        printResult(resSt.toString)
+        printResult()
+        printResult("*** exception state ***")
+        printResult(resExcSt.toString)
       }
-      case _ => help
+      case _ => printResult(help)
     }
     None
   }

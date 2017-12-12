@@ -15,6 +15,11 @@ import kr.ac.kaist.safe.nodes.cfg._
 import scala.collection.immutable.HashMap
 
 case class Worklist(cfg: CFG) {
+  def init(entryCP: ControlPoint): Unit = {
+    worklist = Nil
+    add(entryCP)
+  }
+
   // work
   case class Work(order: Int, cp: ControlPoint) {
     def <(that: Work): Boolean = this.order < that.order

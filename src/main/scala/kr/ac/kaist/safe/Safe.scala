@@ -80,7 +80,8 @@ object Safe {
     CmdTestRewrite,
     CmdAndroidCheck,
     CmdWALARewrite,
-    CmdHelp
+    CmdHelp,
+    CmdWeb
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
     case (map, cmd) => map + (cmd.name -> cmd)
@@ -97,7 +98,8 @@ object Safe {
     BugDetect,
     TestRewrite,
     AndroidCheck,
-    Help
+    Help,
+    Web
   )
 
   // global options

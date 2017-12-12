@@ -22,10 +22,19 @@ import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 
-class Semantics(
+case class Semantics(
     cfg: CFG,
     worklist: Worklist
 ) {
+  def init: Unit = {
+    val entry = cfg.globalFunc.entry
+    val entryCP = ControlPoint(entry, getState(entry).head match { case (tp, _) => tp })
+    val initSt = getState(entryCP)
+    cpToState.clear
+    setState(entryCP, initSt)
+    worklist.init(entryCP)
+  }
+
   lazy val excLog: ExcLog = new ExcLog
 
   private val AF = AbsBool.False

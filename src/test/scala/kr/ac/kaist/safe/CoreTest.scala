@@ -78,7 +78,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
 
-  def getDumped(filename: String): Try[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] =
+  def getDumped(filename: String): Try[(CFG, Semantics, TracePartition, HeapBuildConfig, Int)] =
     CmdJsonLoad(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {

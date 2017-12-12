@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.errors.error.NoChoiceError
 
 // HeapBuild phase
-case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] {
+case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, TracePartition, HeapBuildConfig, Int)] {
   val name: String = "heapBuilder"
   val help: String = "Build an initial heap."
 
@@ -30,7 +30,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
     cfg: CFG,
     safeConfig: SafeConfig,
     config: HeapBuildConfig
-  ): Try[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] = {
+  ): Try[(CFG, Semantics, TracePartition, HeapBuildConfig, Int)] = {
     // initialization
     register(
       config.AbsUndef,
@@ -56,10 +56,10 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
     val worklist = Worklist(cfg)
     worklist.add(entryCP)
 
-    val sem = new Semantics(cfg, worklist)
+    val sem = Semantics(cfg, worklist)
     sem.setState(entryCP, initSt)
 
-    Success((cfg, worklist, sem, initTP, config, -1))
+    Success((cfg, sem, initTP, config, -1))
   }
 
   def defaultConfig: HeapBuildConfig = HeapBuildConfig()

@@ -13,13 +13,14 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 
-// home
-case object CmdHome extends Command("home", "Reset the current position.") {
-  def run(c: Interactive, args: List[String]): Option[Target] = {
-    args match {
-      case Nil => c.goHome()
-      case _ => printResult(help)
-    }
-    None
+// restart
+case object CmdRestart extends Command("restart", "Restart the analysis.") {
+  def run(c: Interactive, args: List[String]): Option[Target] = args match {
+    case Nil =>
+      c.sem.init
+      Some(TargetStart)
+    case _ =>
+      printResult(help)
+      None
   }
 }

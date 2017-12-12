@@ -208,7 +208,7 @@ object WorklistProtocol extends DefaultJsonProtocol {
 
     def read(value: JsValue): Semantics = value match {
       case JsArray(Vector(JsArray(state), JsArray(succ))) => {
-        val sem = new Semantics(cfg, worklist)
+        val sem = Semantics(cfg, worklist)
         for (cpAndSt <- state)
           cpAndSt match {
             case JsArray(Vector(cp, st)) => sem.setState(
