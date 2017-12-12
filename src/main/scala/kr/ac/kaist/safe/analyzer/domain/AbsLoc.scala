@@ -45,7 +45,7 @@ object Loc {
   def parse(str: String): Try[Loc] = {
     val recency = "(R|O)(.+)".r
     val userASite = "#([0-9]+)".r
-    val predASite = "#([0-9a-zA-Z.<>]+)".r
+    val predASite = "#([0-9a-zA-Z-.<>]+)".r
     str match {
       // allocation site
       case userASite(id) => Try(UserAllocSite(id.toInt))
