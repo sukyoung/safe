@@ -284,7 +284,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
             // TODO is predefined allocation site good? how about incremental user allocation site?
             def mutate(asite: AllocSite): PredAllocSite = asite match {
               case UserAllocSite(id) =>
-                PredAllocSite(s"JSModel-$mid<$asite>")
+                PredAllocSite(s"-$mid$id")
               case pred: PredAllocSite => pred
             }
             func.getAllBlocks.foreach(_.getInsts.foreach {
