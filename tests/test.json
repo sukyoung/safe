@@ -9,7 +9,7 @@
   },
   "heapBuilder": {
     "number": "default",
-    "maxStrSetSize": 1000,
+    "maxStrSetSize": 10,
     "aaddrType": "recency",
     "callsiteSensitivity": 10,
     "loopSensitivity": 0,

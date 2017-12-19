@@ -80,7 +80,7 @@ trait ObjDomain extends AbsDomain[Obj] {
     def abstractKeySet: ConSet[AbsStr]
     def abstractKeySet(filter: (AbsStr, AbsDataProp) => Boolean): ConSet[AbsStr]
     def collectKeySet(prefix: String): ConSet[String]
-    def keySetPair: (List[String], AbsStr)
+    def keySetPair(heap: AbsHeap): (List[String], AbsStr)
     def isDefinite(str: AbsStr): Boolean
 
     ////////////////////////////////////////////////////////////////

@@ -262,12 +262,28 @@ object AKeyObject extends ObjDomain {
       case Top => ConInf
       case ObjMap(amap, _) => amap.collectKeySet(prefix)
     }
-    def keySetPair: (List[String], AbsStr) = this match {
-      case Top => (Nil, AbsStr.Top)
-      case ObjMap(amap, _) => {
-        val (strSet, astr) = amap.keySetPair
-        (strSet.toList.sortBy { _.toString }, astr) // TODO for-in order
+    private def ownKeySetPair: (Set[String], AbsStr) = this match {
+      case Top => (HashSet[String](), AbsStr.Top)
+      case ObjMap(amap, _) => amap.keySetPair
+    }
+    def keySetPair(h: AbsHeap): (List[String], AbsStr) = {
+      var visited = HashSet[Loc]()
+      def visit(currObj: Elem): (Set[String], AbsStr) = {
+        val pair = currObj.ownKeySetPair
+        val proto = currObj(IPrototype)
+        proto.value.locset.foldLeft(pair) {
+          case ((strSet, astr), loc) => {
+            if (visited contains loc) (strSet, astr)
+            else {
+              visited += loc
+              val (newStrSet, newAStr) = visit(h.get(loc))
+              (strSet ++ newStrSet, astr ⊔ newAStr)
+            }
+          }
+        }
       }
+      val (strSet, astr) = visit(this)
+      (strSet.toList.sortBy { _.toString }, astr) // TODO for-in order
     }
     def isDefinite(str: AbsStr): Boolean = this match {
       case Top => false
