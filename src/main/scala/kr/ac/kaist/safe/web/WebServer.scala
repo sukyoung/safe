@@ -153,7 +153,7 @@ object WebServer extends {
         }
       }
 
-    val bindingFuture = Http().bindAndHandle(route, "localhost", port)
+    val bindingFuture = Http().bindAndHandle(route, "0.0.0.0", port)
 
     println(s"Open browser and navigate http://localhost:$port/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
