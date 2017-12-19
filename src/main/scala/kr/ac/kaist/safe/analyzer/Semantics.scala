@@ -754,6 +754,65 @@ class Semantics(
 
       (retSt, excSt)
     }
+    case (NodeUtil.INTERNAL_GET_OWN_ENUM_PROP_NAMES, List(expr), Some(aNew)) => {
+      val h = st.heap
+      val (objV, excSet1) = V(expr, st)
+      val obj = h.get(objV.locset)
+
+      val keyStr = obj.abstractKeySet((key, dp) => {
+        AbsBool.True <= dp.enumerable
+      }) match {
+        case ConInf() => AbsString.Top
+        case ConFin(set) => set.foldLeft(AbsString.Bot)(_ + _)
+      }
+
+      // 1. If Type(O) is not Object throw a TypeError exception.
+      val excSet: Set[Exception] =
+        if (objV.pvalue.isBottom) ExcSetEmpty
+        else HashSet(TypeError)
+
+      val AT = (AbsBool.True, AbsAbsent.Bot)
+      val name = AbsValue(AbsPValue(strval = keyStr))
+      val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
+      val (retObj, retExcSet) = keyStr.gamma match {
+        case ConFin(set) => {
+          // 2. Let n be the number of own properties in O
+          val n = set.size
+          // 3. Let array be the result of creating a new Array object.
+          val array = AbsObject.newArrayObject(AbsNumber(n))
+          // 4. For each named own property P of O (with index n started from 0)
+          (0 until n).foldLeft((array, ExcSetEmpty)) {
+            case ((arr, e), index) => {
+              // b. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(n),
+              //    the PropertyDescriptor {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
+              val (newArr, _, excSet) = arr.DefineOwnProperty(h, AbsString(index.toString), desc, false)
+              (newArr, e ++ excSet)
+            }
+          }
+        }
+        case _ => {
+          // 2. Let n be the number of own properties in O
+          val n = AbsNumber.Top
+          // 3. Let array be the result of creating a new Array object.
+          val array = AbsObject.newArrayObject(n)
+          // 4. For each named own property P of O (with index n started from 0)
+          //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
+          //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+          val (newArr, _, excSet) = array.DefineOwnProperty(h, AbsString.Number, desc, false)
+          (newArr, excSet)
+        }
+      }
+
+      // 5. Return array.
+      val arrLoc = Loc(aNew)
+      val st1 = st.oldify(arrLoc)
+      val retH = st1.heap.update(arrLoc, retObj.oldify(arrLoc))
+      val excSt = st1.raiseException(excSet ++ retExcSet)
+      val st2 = AbsState(retH, st1.context)
+      val retSt = st2.varStore(lhs, AbsValue(arrLoc))
+
+      (retSt, excSt)
+    }
     case (NodeUtil.INTERNAL_STR_OBJ, List(expr), Some(aNew)) => {
       val (v, excSet) = V(expr, st)
       val str = TypeConversionHelper.ToString(v)

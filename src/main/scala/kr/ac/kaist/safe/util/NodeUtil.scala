@@ -89,6 +89,8 @@ object NodeUtil {
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
   // 15.2.3.4 Object.getOwnPropertyNames ( O )
   val INTERNAL_GET_OWN_PROP_NAMES = internalAPIName("getOwnPropertyNames")
+  // 15.2.3.14 Object.keys ( O )
+  val INTERNAL_GET_OWN_ENUM_PROP_NAMES = internalAPIName("getOwnEnumerablePropertyNames")
   // 15.3.4.5 Function.prototype.bind
   val INTERNAL_TARGET_FUN = internalAPIName("TargetFunction")
   // 15.3.4.5 [[BoundThis]]
@@ -163,6 +165,7 @@ object NodeUtil {
     INTERNAL_IS_CALLABLE,
     INTERNAL_SAME_VALUE,
     INTERNAL_GET_OWN_PROP_NAMES,
+    INTERNAL_GET_OWN_ENUM_PROP_NAMES,
     INTERNAL_STR_OBJ,
     INTERNAL_BOOL_OBJ,
     INTERNAL_NUM_OBJ,

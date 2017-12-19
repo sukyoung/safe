@@ -1475,6 +1475,7 @@ Function: {
     // 2. Let props be ToObject(Properties).
     var props = @ToObject(Properties);
     // 3. Let names be an internal list containing the names of each enumerable own property of props.
+    var names = @getOwnEnumerablePropertyNames(props);
     // 4. Let descriptors be an empty internal List.
     // 5. For each element P of names in list order,
       //   a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
@@ -1484,14 +1485,10 @@ Function: {
     //   a. Let P be the first element of pair.
     //   b. Let desc be the second element of pair.
     //   c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-    var names = @getOwnPropertyNames(props);
     for (var i = 0; i < names.length; i++) {
       var P = names[i];
-      var p_desc = @GetOwnProperty(props, P);
-      if (p_desc.enumerable) {
-        var desc = props[P];
-        @DefineOwnProperty(O, P, desc);
-      }
+      var desc = props[P];
+      @DefineOwnProperty(O, P, desc);
     }
     // 7. Return O.
     return O;
@@ -1601,34 +1598,7 @@ Function: {
   \\],
   30: [\\
   function keys (O) {
-    // 1. If the Type(O) is not Object, throw a TypeError exception.
-    if (typeof O !== 'function' && typeof O !== 'object' || O === null) throw new TypeError();
-    // 2. Let n be the number of own enumerable properties of O
-    var names = @getOwnPropertyNames(O);
-    // 3. Let array be the result of creating a new Object as if by the expression new Array(n) where Array is
-    //    the standard built-in constructor with that name.
-    var array = [];
-    var n = 0;
-    // 4. Let index be 0.
-    // 5. For each own enumerable property of O whose name String is P
-    // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index), the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-    // b. Increment index by 1.
-    for (var i = 0; i < names.length; i++) {
-      var P = names[i];
-      var desc = @GetOwnProperty(O, P);
-      if (desc.enumerable) {
-        @DefineOwnProperty(array, @ToString(n), {
-          value: P,
-          writable: true,
-          enumerable: true,
-          configurable: true
-        });
-        n++;
-      }
-    }
-    array.length = n;
-    // 6. Return array.
-    return array;
+    return @getOwnEnumerablePropertyNames(O);
   }
   \\],
   31: [\\
