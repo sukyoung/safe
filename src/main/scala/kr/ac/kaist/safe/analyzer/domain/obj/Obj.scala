@@ -12,12 +12,13 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.errors.error.INameParseError
+import scala.collection.immutable.HashMap
 import spray.json._
 
 // concrete object type
-case class Obj(amap: Map[String, DataProp], imap: Map[IName, IValue]) {
+case class Obj(nmap: Map[String, DataProp], imap: Map[IName, IValue]) {
   def +(other: Obj): Obj = {
-    val newamap = this.amap.foldLeft(other.amap) {
+    val newnmap = this.nmap.foldLeft(other.nmap) {
       case (map, (str, prop)) => {
         map.get(str) match {
           case Some(p) => map + (str -> (prop + p))
@@ -33,7 +34,7 @@ case class Obj(amap: Map[String, DataProp], imap: Map[IName, IValue]) {
         }
       }
     }
-    Obj(newamap, newimap)
+    Obj(newnmap, newimap)
   }
 }
 
@@ -43,6 +44,22 @@ sealed abstract class IName(name: String) {
   def toJson: JsValue = JsString(name)
 }
 object IName {
+  val all: List[IName] = List(
+    IPrototype,
+    IClass,
+    IExtensible,
+    IPrimitiveValue,
+    ICall,
+    IConstruct,
+    IScope,
+    IHasInstance,
+    ITargetFunction,
+    IBoundThis,
+    IBoundArgs
+  )
+  def makeMap[V](value: V): Map[IName, V] = all.foldLeft(HashMap[IName, V]()) {
+    case (map, iname) => map + (iname -> value)
+  }
   def fromJson(v: JsValue): IName = v match {
     case JsString("Prototype") => IPrototype
     case JsString("Class") => IClass

@@ -50,7 +50,7 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
             }
           }
         }
-        val mdfobj = Obj(obj.amap, mdfimap)
+        val mdfobj = Obj(obj.nmap, mdfimap)
         heapMap + (loc -> mdfobj)
       }
     }
@@ -74,9 +74,9 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
         (obj.imap.map {
           case (iname, iv) => s"$S$S$iname: $iv"
         }.mkString(s",$L")) + ({
-          if (!obj.imap.isEmpty && !obj.amap.isEmpty) s",$L"
+          if (!obj.imap.isEmpty && !obj.nmap.isEmpty) s",$L"
           else ""
-        }) + (obj.amap.map {
+        }) + (obj.nmap.map {
           case (name, v) => s"""$S$S"$name": $v"""
         }).mkString(s",$L") + s"$L$S}"
     }.mkString(s",$L"))
@@ -329,7 +329,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
                   }
                 }
               }
-              val mdfobj = Obj(obj.amap, mdfimap)
+              val mdfobj = Obj(obj.nmap, mdfimap)
               heapMap + (loc -> mdfobj)
             }
           }

@@ -36,7 +36,7 @@ object AKeyObject extends ObjDomain {
   lazy val Empty: Elem = ObjMap(APropMapEmpty)
 
   def alpha(obj: Obj): Elem = {
-    val amap: APropMap = obj.amap.foldLeft[APropMap](APropMapEmpty) {
+    val amap: APropMap = obj.nmap.foldLeft[APropMap](APropMapEmpty) {
       case (map, (key, dp)) => map.update(key, AbsDataProp(dp))
     }
     val imap: ObjInternalMap = obj.imap.foldLeft[ObjInternalMap](ObjEmptyIMap) {
