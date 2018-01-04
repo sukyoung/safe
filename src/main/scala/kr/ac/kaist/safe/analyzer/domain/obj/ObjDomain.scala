@@ -62,17 +62,14 @@ trait ObjDomain extends AbsDomain[Obj] {
     def apply(astr: AbsStr): AbsDataProp
     def apply(in: IName): AbsIValue
 
-    def initializeUpdate(str: String, dp: AbsDataProp): Elem
-
     def isEmpty: Boolean
 
     // absent value is set to AbsentBot because it is strong update.
-    def update(str: String, dp: AbsDataProp, weak: Boolean = false): Elem
-    def update(astr: AbsStr, dp: AbsDataProp): Elem
+    def update(str: String, dp: AbsDataProp): Elem
+    def weakUpdate(astr: AbsStr, dp: AbsDataProp): Elem
     def update(in: IName, iv: AbsIValue): Elem
 
     def contains(str: String): AbsBool
-    def contains(strSet: Set[String]): AbsBool
     def contains(astr: AbsStr): AbsBool
     def contains(in: IName): AbsBool
 
@@ -87,19 +84,19 @@ trait ObjDomain extends AbsDomain[Obj] {
     // internal methods of ECMAScript Object
     ///////////////////////////////////////////////////////////////
     // Section 8.12.1 [[GetOwnProperty]](P)
-    def GetOwnProperty(P: String): (AbsDesc, AbsUndef)
+    def GetOwnProperty(P: String): (AbsDesc, AbsUndef) = GetOwnProperty(AbsStr(P))
     def GetOwnProperty(P: AbsStr): (AbsDesc, AbsUndef)
 
     // Section 8.12.2 [[GetProperty]](P)
-    def GetProperty(P: String, h: AbsHeap): (AbsDesc, AbsUndef)
+    def GetProperty(P: String, h: AbsHeap): (AbsDesc, AbsUndef) = GetProperty(AbsStr(P), h)
     def GetProperty(P: AbsStr, h: AbsHeap): (AbsDesc, AbsUndef)
 
     // Section 8.12.3 [[Get]](P)
-    def Get(str: String, h: AbsHeap): AbsValue
+    def Get(str: String, h: AbsHeap): AbsValue = Get(AbsStr(str), h)
     def Get(astr: AbsStr, h: AbsHeap): AbsValue
 
     // Section 8.12.4 [[CanPut]](P)
-    def CanPut(P: String, h: AbsHeap): AbsBool
+    def CanPut(P: String, h: AbsHeap): AbsBool = CanPut(AbsStr(P), h)
     def CanPut(P: AbsStr, h: AbsHeap): AbsBool
 
     // Section 8.12.5 [[Put]](P, V, Throw)
@@ -109,14 +106,16 @@ trait ObjDomain extends AbsDomain[Obj] {
     def HasProperty(P: AbsStr, h: AbsHeap): AbsBool
 
     // Section 8.12.7 [[Delete]](P, Throw)
-    def Delete(str: String): (Elem, AbsBool)
-    def Delete(astr: AbsStr): (Elem, AbsBool)
+    def Delete(str: String): (Elem, AbsBool, Set[Exception]) = Delete(AbsStr(str), false)
+    def Delete(str: String, Throw: Boolean): (Elem, AbsBool, Set[Exception]) = Delete(AbsStr(str), Throw)
+    def Delete(astr: AbsStr): (Elem, AbsBool, Set[Exception]) = Delete(astr, false)
+    def Delete(astr: AbsStr, Throw: Boolean): (Elem, AbsBool, Set[Exception])
 
     // Section 8.12.8 [[DefaultValue]](hint)
     def DefaultValue(hint: String, h: AbsHeap): AbsPValue
     def DefaultValue(h: AbsHeap): AbsPValue
 
     //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
-    def DefineOwnProperty(h: AbsHeap, P: AbsStr, Desc: AbsDesc, Throw: Boolean = true): (Elem, AbsBool, Set[Exception])
+    def DefineOwnProperty(P: AbsStr, Desc: AbsDesc, Throw: Boolean = true, h: AbsHeap): (Elem, AbsBool, Set[Exception])
   }
 }

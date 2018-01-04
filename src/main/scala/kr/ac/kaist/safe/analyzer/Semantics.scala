@@ -608,7 +608,7 @@ case class Semantics(
       val (retH, retExcSet) = objV.locset.foldLeft((h, excSet ++ excSetO ++ excSetP ++ excSetA)) {
         case ((heap, e), loc) => {
           val obj = heap.get(loc)
-          val (retObj, _, newExcSet) = obj.DefineOwnProperty(h, name, desc, true)
+          val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true, h)
           val retH = heap.update(loc, retObj)
           (retH, e ++ newExcSet)
         }
@@ -749,7 +749,7 @@ case class Semantics(
             // b. Call the [[DefineOwnProperty]] internal method of array with arguments
             //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
             //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-            val (newObj, _, excSet) = obj.DefineOwnProperty(h, prop, desc, false)
+            val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false, h)
             (obj ⊔ newObj, e ++ excSet)
           }
         }

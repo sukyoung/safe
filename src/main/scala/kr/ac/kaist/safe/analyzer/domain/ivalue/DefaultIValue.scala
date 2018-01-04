@@ -82,5 +82,10 @@ object DefaultIValue extends IValueDomain {
       ("value", value.toJson),
       ("fidset", fidset.toJson)
     )
+
+    def copyWith(
+      value: AbsValue,
+      fidset: AbsFId
+    ): Elem = Elem(value, fidset)
   }
 }

@@ -35,7 +35,7 @@ trait Domain {
     // top check
     def isTop: Boolean = this == Top
 
-    // fold utils
+    // map/fold utils
     def foldUnit(f: => Unit): Unit = fold(())(_ => f)
     def foldUnit(f: Elem => Unit): Unit = fold(())(f)
     def fold[T](default: T)(f: Elem => T): T = isBottom match {

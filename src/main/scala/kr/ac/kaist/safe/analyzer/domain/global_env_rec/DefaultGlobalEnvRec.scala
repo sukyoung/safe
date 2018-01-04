@@ -94,10 +94,10 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
           //    [[Writable]]: true, [[Enumerable]]: true , [[Configurable]]:
           //    configValue}, and true as arguments.
           val (newObj, _, excSet) = bindings.DefineOwnProperty(
-            heap,
             AbsStr(name),
             AbsDesc(Desc(Some(Undef), Some(true), Some(true), Some(configValue))),
-            true
+            true,
+            heap
           )
           (this, heap.update(BuiltinGlobal.loc, newObj), excSet)
         } else { (Bot, AbsHeap.Bot, ExcSetEmpty) }

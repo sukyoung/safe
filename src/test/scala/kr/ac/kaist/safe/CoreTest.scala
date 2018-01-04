@@ -50,7 +50,8 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     "/tests/semantics/builtin/15.3/15.3.4/15.3.4.5/15.3.4.5_BASE.js",
     "/tests/test262/15.3/15.3.4/15.3.4.5/",
     "/tests/test262/15.3/15.3.4/15.3.4.5.1/",
-    "/tests/test262/15.3/15.3.4/15.3.4.5.2/"
+    "/tests/test262/15.3/15.3.4/15.3.4.5.2/",
+    ".html"
   )
   def noTestCheckForWithoutJSModel(file: File): Boolean = {
     val filename = file.getName
@@ -196,7 +197,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         registerTest(prefix + filename, tag) {
           val safeConfig = testSafeConfig.copy(fileNames = List(name))
           val cfg = getCFG(name)
-          if (filename.endsWith(".html")) heapBuildConfig.jsModel = true
           val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
           val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
           testList ::= relPath

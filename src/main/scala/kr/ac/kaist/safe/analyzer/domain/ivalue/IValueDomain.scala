@@ -24,5 +24,10 @@ trait IValueDomain extends AbsDomain[IValue] {
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     val value: AbsValue
     val fidset: AbsFId
+
+    def copyWith(
+      value: AbsValue = this.value,
+      fidset: AbsFId = this.fidset
+    ): Elem
   }
 }

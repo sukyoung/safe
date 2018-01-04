@@ -42,6 +42,10 @@ sealed abstract class JsonFormatError(
   s"${value.prettyPrint}: Format of json for $name is wrong."
 })
 
+case class AbsOptParseError(value: JsValue) extends JsonFormatError("AbsOpt", value)
+
+case class AbsMapParseError(value: JsValue) extends JsonFormatError("AbsMap", value)
+
 case class StringParseError(value: JsValue) extends JsonFormatError("String", value)
 
 case class IntParseError(value: JsValue) extends JsonFormatError("Int", value)
@@ -123,8 +127,6 @@ case class INameParseError(value: JsValue) extends JsonFormatError("IName", valu
 case class AbsFIdParseError(value: JsValue) extends JsonFormatError("AbsFId", value)
 
 case class AbsIValueParseError(value: JsValue) extends JsonFormatError("AbsIValue", value)
-
-case class ObjInternalMapParseError(value: JsValue) extends JsonFormatError("ObjInternalMap", value)
 
 case class AbsObjParseError(value: JsValue) extends JsonFormatError("AbsObj", value)
 

@@ -356,7 +356,7 @@ object DefaultHeap extends HeapDomain {
     def delete(loc: Loc, absStr: AbsStr): (Elem, AbsBool) = {
       get(loc).fold[(Elem, AbsBool)]((this, AbsBool.Bot))(_ => {
         val targetObj = this.get(loc)
-        val (newObj, asuccess) = targetObj.Delete(absStr)
+        val (newObj, asuccess, _) = targetObj.Delete(absStr)
         (this.update(loc, newObj), asuccess)
       })
     }

@@ -341,7 +341,7 @@ object BuiltinObjectHelper {
           // b. Call the [[DefineOwnProperty]] internal method of array with arguments
           //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
           //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-          val (newObj, _, excSet) = obj.DefineOwnProperty(h, prop, desc, false)
+          val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false, h)
           (obj ⊔ newObj, e ++ excSet)
         }
       }
@@ -409,7 +409,7 @@ object BuiltinObjectHelper {
       case ((heap, e), loc) => {
         // 4. Call the [[DefineOwnProperty]] internal method of O with arguments name, desc, and true.
         val obj = heap.get(loc)
-        val (retObj, _, newExcSet) = obj.DefineOwnProperty(h, name, desc, true)
+        val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true, h)
         // 5. Return O.
         val retH = heap.update(loc, retObj)
         (retH, e ++ newExcSet)
@@ -609,7 +609,7 @@ object BuiltinObjectHelper {
           case ((arr, e), index) => {
             // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
             //    the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-            val (newArr, _, excSet) = arr.DefineOwnProperty(h, AbsStr(index.toString), desc, false)
+            val (newArr, _, excSet) = arr.DefineOwnProperty(AbsStr(index.toString), desc, false, h)
             (newArr, e ++ excSet)
           }
         }
@@ -622,7 +622,7 @@ object BuiltinObjectHelper {
         // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
         //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
         //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-        val (newArr, _, excSet) = array.DefineOwnProperty(h, AbsStr.Number, desc, false)
+        val (newArr, _, excSet) = array.DefineOwnProperty(AbsStr.Number, desc, false, h)
         (newArr, excSet)
       }
     }
@@ -773,7 +773,7 @@ object BuiltinObjectHelper {
           // create new PropertyDescriptor by using f.
           val newDesc = f(desc)
           // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-          val (retObj, _, excSet) = o.DefineOwnProperty(h, key, newDesc, true)
+          val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true, h)
           (retObj, e ++ excSet)
         }
       }
@@ -825,7 +825,7 @@ object BuiltinObjectHelper {
                 // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
                 val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
                 // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-                val (retObj, _, excSet) = obj.DefineOwnProperty(h1, astr, desc, true)
+                val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true, h1)
                 (retObj, e ++ excSet)
               } else (obj, e)
             }

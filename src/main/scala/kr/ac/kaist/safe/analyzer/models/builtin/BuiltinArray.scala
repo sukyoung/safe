@@ -286,7 +286,7 @@ object BuiltinArrayHelper {
           // {[[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}.
           val arr = AbsObj.newArrayObject(AbsNum(1))
           val dp = AbsDataProp(first, AT, AT, AT)
-          arr.initializeUpdate("0", dp)
+          arr.update("0", dp)
         } else AbsObj.Bot
 
         (lenObj ⊔ otherObj, excSet)
@@ -299,7 +299,7 @@ object BuiltinArrayHelper {
           val kStr = k.toString
           val kValue = argObj(kStr).value
           val dp = AbsDataProp(kValue, AT, AT, AT)
-          arr.initializeUpdate(kStr, dp)
+          arr.update(kStr, dp)
         })
         (obj, ExcSetEmpty)
       }
@@ -312,7 +312,7 @@ object BuiltinArrayHelper {
           case ConFin(set) => set.foldLeft(arr)((arr, aKey) => {
             val value = argObj(aKey).value
             val dp = AbsDataProp(value, AT, AT, AT)
-            arr.update(aKey, dp)
+            arr.weakUpdate(aKey, dp)
           })
         }
         (arrObj, HashSet(RangeError))
@@ -374,7 +374,7 @@ object BuiltinArrayHelper {
     val Bot = AbsObj.Bot
     val Top = AbsObj
       .newArrayObject(AbsNum.Top)
-      .update(AbsStr.Number, AbsDataProp.Top)
+      .weakUpdate(AbsStr.Number, AbsDataProp.Top)
     val retObj: AbsObj = length.getSingle match {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
@@ -439,7 +439,7 @@ object BuiltinArrayHelper {
               valueList.reverse.zipWithIndex.foldLeft(arr) {
                 case (arr, (value, idx)) => {
                   val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
-                  val (newArr, _, _) = arr.DefineOwnProperty(h, AbsStr(idx.toString), desc, false)
+                  val (newArr, _, _) = arr.DefineOwnProperty(AbsStr(idx.toString), desc, false, h)
                   newArr
                 }
               }
@@ -547,14 +547,20 @@ object BuiltinArrayHelper {
             // b. Let element be the result of calling the [[Get]] internal method of O with argument indx.
             val element = arr.Get(indx, h)
             // c. Call the [[Delete]] internal method of O with arguments indx and true.
-            val (delArr, _) = arr.Delete(indx) // XXX: missing second argument Throw = true.
+            val (delArr, _, _) = arr.Delete(indx) // XXX: missing second argument Throw = true.
             // d. Call the [[Put]] internal method of O with arguments "length", indx, and true.
             val (putArr, excSet) = delArr.Put(AbsStr("length"), AbsNum(len - 1), true, h)
             // e. Return element.
             (putArr, element, excSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (arr.update(AbsStr.Number, AbsDataProp.Top).update(AbsStr("length"), AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (
+            arr
+            .weakUpdate(AbsStr.Number, AbsDataProp.Top)
+            .weakUpdate(AbsStr("length"), AbsDataProp.Top),
+            AbsValue.Top,
+            HashSet(TypeError)
+          )
         }
         val retH = h.update(loc, retObj)
         (retH, value ⊔ retV, excSet ++ retExcSet)
@@ -603,7 +609,7 @@ object BuiltinArrayHelper {
             // 7. Return n.
             (putObj, AbsValue(n), putExcSet ++ retExcSet)
           }
-          case _ => (arr.update(AbsStr.Number, AbsDataProp.Top), AbsValue(AbsNum.Top), HashSet(TypeError))
+          case _ => (arr.weakUpdate(AbsStr.Number, AbsDataProp.Top), AbsValue(AbsNum.Top), HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value ⊔ retV, excSet ++ retExcSet)
@@ -643,7 +649,7 @@ object BuiltinArrayHelper {
                 val absIdx = AbsStr(idx.toString)
                 val delObj =
                   if (AbsBool.False ⊑ has) {
-                    val (delObj, _) = arr.Delete(absIdx)
+                    val (delObj, _, _) = arr.Delete(absIdx)
                     delObj
                   } else AbsObj.Bot
                 val (putObj, putExcSet) =
@@ -654,7 +660,7 @@ object BuiltinArrayHelper {
               }
             }
           }
-          case ConMany() => (arr.update(AbsStr.Number, AbsDataProp.Top), HashSet(TypeError))
+          case ConMany() => (arr.weakUpdate(AbsStr.Number, AbsDataProp.Top), HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, excSet ++ retExcSet)
@@ -712,14 +718,14 @@ object BuiltinArrayHelper {
               val falseV = if (AbsBool.False ⊑ fromPresent) {
                 // e. Else, fromPresent is false
                 // i. Call the [[Delete]] internal method of O with arguments to and true.
-                val (retObj, _) = obj.Delete(to) //XXX: missing second argument Throw = true.
+                val (retObj, _, _) = obj.Delete(to) //XXX: missing second argument Throw = true.
                 // f. Increase k by 1.
                 retObj
               } else AbsObj.Bot
               trueV ⊔ falseV
             })
             // 8. Call the [[Delete]] internal method of O with arguments ToString(len–1) and true.
-            val (delObj, _) = retObj.Delete(AbsStr((len - 1).toString)) //XXX: missing second argument Throw = true.
+            val (delObj, _, _) = retObj.Delete(AbsStr((len - 1).toString)) //XXX: missing second argument Throw = true.
             // 9. Call the [[Put]] internal method of O with arguments "length", (len–1) , and true.
             val (putObj, putExcSet) = delObj.Put(AbsStr("length"), AbsNum(len - 1), true, h)
             // 10. Return first.
@@ -727,7 +733,7 @@ object BuiltinArrayHelper {
             (putObj, first, retExcSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (obj.update(AbsStr.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (obj.weakUpdate(AbsStr.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value ⊔ retV, excSet ++ retExcSet)
@@ -799,7 +805,7 @@ object BuiltinArrayHelper {
               //     {[[Value]]: kValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
               val AT = (AbsBool.True, AbsAbsent.Bot)
               val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
-              val (retObj, _, excSet) = arr.DefineOwnProperty(h, AbsStr(n.toString), desc, false)
+              val (retObj, _, excSet) = arr.DefineOwnProperty(AbsStr(n.toString), desc, false, h)
               (retObj, excSet)
             } else (AbsObj.Bot, ExcSetEmpty)
             val falseObj = if (AbsBool.False ⊑ kPresent) obj else AbsObj.Bot
@@ -809,7 +815,7 @@ object BuiltinArrayHelper {
           }
         }
       }
-      case _ => (arr.update(AbsStr.Top, AbsDataProp.Top), HashSet(TypeError))
+      case _ => (arr.weakUpdate(AbsStr.Top, AbsDataProp.Top), HashSet(TypeError))
     }
     // 11. Return A.
     val arrLoc = Loc(sliceArrASite)
@@ -835,7 +841,7 @@ object BuiltinArrayHelper {
     val thisLoc = st.context.thisBinding.locset
     val Top = AbsObj
       .newArrayObject(AbsNum.Top)
-      .update(AbsStr.Number, AbsDataProp.Top)
+      .weakUpdate(AbsStr.Number, AbsDataProp.Top)
     val (retH: AbsHeap, retArr: AbsObj, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObj.Bot, ExcSetEmpty)) {
       case ((h, arr, excSet), loc) => {
         val thisObj = h.get(loc)
@@ -863,7 +869,7 @@ object BuiltinArrayHelper {
               val retArr: AbsObj = (0 until actualDeleteCount).foldLeft(arr)((arr, k) => {
                 val kValue = thisObj.Get((actualStart + k).toString, h)
                 val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
-                val (newArr, _, _) = arr.DefineOwnProperty(h, AbsStr(k.toString), desc, false)
+                val (newArr, _, _) = arr.DefineOwnProperty(AbsStr(k.toString), desc, false, h)
                 newArr
               })
               val newLen = Math.max(argLen - 2, 0)
@@ -888,7 +894,7 @@ object BuiltinArrayHelper {
               val delObj: AbsObj =
                 if (length < thisLen) (length until thisLen).foldLeft(newObj) {
                   case (obj, k) => {
-                    val (delArr, _) = obj.Delete(k.toString) // XXX: missing second argument Throw = true.
+                    val (delArr, _, _) = obj.Delete(k.toString) // XXX: missing second argument Throw = true.
                     delArr
                   }
                 }
@@ -920,7 +926,7 @@ object BuiltinArrayHelper {
     val thisLoc = st.context.thisBinding.locset
     val Top = AbsObj
       .newArrayObject(AbsNum.Top)
-      .update(AbsStr.Number, AbsDataProp.Top)
+      .weakUpdate(AbsStr.Number, AbsDataProp.Top)
     val (retH: AbsHeap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         val thisObj = h.get(loc)

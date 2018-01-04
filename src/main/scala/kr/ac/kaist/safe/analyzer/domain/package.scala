@@ -30,9 +30,6 @@ package object domain {
 
   val FidSetEmpty: Set[FunctionId] = HashSet[FunctionId]()
 
-  type ObjInternalMap = Map[IName, AbsIValue]
-  val ObjEmptyIMap: ObjInternalMap = HashMap[IName, AbsIValue]()
-
   ////////////////////////////////////////////////////////////////
   // constant values
   ////////////////////////////////////////////////////////////////
@@ -200,8 +197,8 @@ package object domain {
   type AbsContext = DefaultContext.Elem
 
   // object
-  val AbsObj: AKeyObject.type = AKeyObject
-  type AbsObj = AKeyObject.Elem
+  val AbsObj: CKeyObject.type = CKeyObject
+  type AbsObj = CKeyObject.Elem
 
   // heap
   val AbsHeap: DefaultHeap.type = DefaultHeap
