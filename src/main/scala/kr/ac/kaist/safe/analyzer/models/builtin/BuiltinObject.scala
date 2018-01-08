@@ -404,8 +404,11 @@ object BuiltinObjectHelper {
     val name = TypeConversionHelper.ToString(propV)
     // 3. Let desc be the result of calling ToPropertyDescriptor with Attributes as the argument.
     val attr = h.get(attrV.locset)
+    val notObjExcSet =
+      if (!attrV.pvalue.isBottom) HashSet(TypeError)
+      else ExcSetEmpty
     val desc = AbsDesc.ToPropertyDescriptor(attr, h)
-    val (retH, retExcSet) = objV.locset.foldLeft((h, excSet)) {
+    val (retH, retExcSet) = objV.locset.foldLeft((h, excSet ++ notObjExcSet)) {
       case ((heap, e), loc) => {
         // 4. Call the [[DefineOwnProperty]] internal method of O with arguments name, desc, and true.
         val obj = heap.get(loc)
