@@ -190,7 +190,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   def analyzeHelper(prefix: String, tag: Tag, file: File): Unit = {
     val filename = file.getName
     val name = file.toString
-    val relPath = name.substring(BASE_DIR.length)
+    val relPath = name.substring(BASE_DIR.length + 1)
     if (filename.endsWith(".js") || filename.endsWith(".html")) {
       // no test when jsModel option is deactive.
       if (heapBuildConfig.jsModel || !(noTestCheckForWithoutJSModel(file))) {
