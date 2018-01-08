@@ -609,7 +609,11 @@ object BuiltinArrayHelper {
             // 7. Return n.
             (putObj, AbsValue(n), putExcSet ++ retExcSet)
           }
-          case _ => (arr.weakUpdate(AbsStr.Number, AbsDataProp.Top), AbsValue(AbsNum.Top), HashSet(TypeError))
+          case _ => (
+            arr.weakUpdate(AbsStr.Number, AbsDataProp(argObj.Get(AbsStr.Number, h), AT, AT, AT)),
+            AbsValue(AbsNum.Top),
+            HashSet(TypeError)
+          )
         }
         val retH = h.update(loc, retObj)
         (retH, value ⊔ retV, excSet ++ retExcSet)

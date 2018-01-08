@@ -596,7 +596,7 @@ object BuiltinObjectHelper {
     }
 
     // 1. If the Type(O) is not Object, throw a TypeError exception.
-    val excSet = objCheck(objV)
+    val objExcSet = objCheck(objV)
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val name = AbsValue(AbsPValue(strval = keyStr))
@@ -608,7 +608,7 @@ object BuiltinObjectHelper {
         // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
         val array = AbsObj.newArrayObject(AbsNum(n))
         // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
-        (0 until n).foldLeft((array, ExcSetEmpty)) {
+        (0 until n).foldLeft((array, objExcSet)) {
           case ((arr, e), index) => {
             // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
             //    the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
@@ -626,7 +626,7 @@ object BuiltinObjectHelper {
         //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
         //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
         val (newArr, _, excSet) = array.DefineOwnProperty(AbsStr.Number, desc, false, h)
-        (newArr, excSet)
+        (newArr, objExcSet ++ excSet)
       }
     }
     // 6. Return array.
