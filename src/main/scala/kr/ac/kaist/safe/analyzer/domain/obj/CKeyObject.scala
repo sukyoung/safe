@@ -569,10 +569,19 @@ object CKeyObject extends ObjDomain {
           AbsBool.False ⊑ (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
         else ExcSetEmpty
 
+      val excSet5 =
+        if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
+          AbsStr("length") ⊑ P &&
+          AbsBool.False ⊑ obj(AbsStr.Number).configurable) HashSet(TypeError)
+        else ExcSetEmpty
+
       // TODO: unsound. Should Reject if an array element could not be deleted, i.e., it's not configurable.
       // TODO: Implement DefineOwnProperty for Array objects (15.4.5.1).
 
-      (obj1 ⊔ obj2 ⊔ obj3 ⊔ obj5 ⊔ obj6 ⊔ obj7, b1 ⊔ b2 ⊔ b3 ⊔ b5 ⊔ b6 ⊔ b7, excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet7)
+      (
+        obj1 ⊔ obj2 ⊔ obj3 ⊔ obj5 ⊔ obj6 ⊔ obj7, b1 ⊔ b2 ⊔ b3 ⊔ b5 ⊔ b6 ⊔ b7,
+        excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet5 ++ excSet7
+      )
     }
 
     def toJson: JsValue = JsObject(
