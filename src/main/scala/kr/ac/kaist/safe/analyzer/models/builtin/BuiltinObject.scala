@@ -822,15 +822,22 @@ object BuiltinObjectHelper {
           case ConFin(set) => set.foldLeft((obj, e)) {
             case ((obj, e), astr) => {
               // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
-              val descObjLoc = props.Get(astr, h1).locset
-              if (!descObjLoc.isBottom) {
-                val descObj = h1.get(descObjLoc)
-                // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
-                val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
-                // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-                val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true, h1)
-                (retObj, e ++ excSet)
-              } else (obj, e)
+              val desc = props.Get(astr, h1)
+              val descObjLoc = desc.locset
+              val (obj1, excSet1) =
+                if (!descObjLoc.isBottom) {
+                  val descObj = h1.get(descObjLoc)
+                  // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
+                  val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
+                  // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
+                  val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true, h1)
+                  (retObj, e ++ excSet)
+                } else (obj, e)
+              val (obj2, excSet2) =
+                if (!desc.pvalue.isBottom) {
+                  (AbsObj.Bot, e + TypeError)
+                } else (obj, e)
+              (obj1 ⊔ obj2, excSet1 ++ excSet2)
             }
           }
         }
