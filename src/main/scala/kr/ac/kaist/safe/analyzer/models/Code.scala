@@ -109,7 +109,7 @@ class CallCode(
     cfg.addEdge(beforeBlock, callBlock)
     cfg.addEdge(callBlock.afterCall, afterBlock)
     cfg.addEdge(afterBlock, func.exit)
-    cfg.addEdge(callBlock.afterCatch, func.exitExc, CFGEdgeExc)
+    cfg.addEdge(callBlock.afterCatch, func.exitExc)
     func
   }
 
