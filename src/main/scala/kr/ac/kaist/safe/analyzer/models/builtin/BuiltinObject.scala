@@ -532,9 +532,9 @@ object BuiltinObjectHelper {
     //   a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
     //   b. If desc.[[Configurable]] is true, then return false.
     val obj = h.get(objV.locset)
-    val cCheck = forall(obj, desc => {
+    val cCheck = forall(obj, (desc, undef) => {
       val (c, ca) = desc.configurable
-      c.negate || AbsBool(ca.isTop)
+      c.negate ⊔ ca.fold(AbsBool.Bot)(_ => AT) ⊔ undef.fold(AbsBool.Bot)(_ => AT)
     })
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
@@ -555,10 +555,13 @@ object BuiltinObjectHelper {
     //   b. If desc.[[Writable]] is true, return false.
     //   c. If desc.[[Configurable]] is true, then return false.
     val obj = h.get(objV.locset)
-    val cCheck = forall(obj, desc => {
+    val cCheck = forall(obj, (desc, undef) => {
       val (w, wa) = desc.writable
       val (c, ca) = desc.configurable
-      (w.negate || AbsBool(wa.isTop)) && (c.negate || AbsBool(ca.isTop))
+      val undefB = undef.fold(AbsBool.Bot)(_ => AT)
+      val otherB =
+        (w.negate ⊔ wa.fold(AbsBool.Bot)(_ => AT)) && (c.negate ⊔ ca.fold(AbsBool.Bot)(_ => AT))
+      undefB ⊔ otherB
     })
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
@@ -780,7 +783,7 @@ object BuiltinObjectHelper {
     }
   }
 
-  private def forall(obj: AbsObj, f: AbsDesc => AbsBool): AbsBool = {
+  private def forall(obj: AbsObj, f: (AbsDesc, AbsUndef) => AbsBool): AbsBool = {
     if (obj.isBottom) AbsBool.Bot
     else {
       // For each named own property name P of O,
@@ -789,9 +792,9 @@ object BuiltinObjectHelper {
         case ConFin(set) => set.foldLeft(AbsBool.True) {
           case (b, key) => {
             // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
-            val (desc, _) = obj.GetOwnProperty(key)
+            val (desc, undef) = obj.GetOwnProperty(key)
             // Check by using f.
-            b && f(desc)
+            b && f(desc, undef)
           }
         }
       }
