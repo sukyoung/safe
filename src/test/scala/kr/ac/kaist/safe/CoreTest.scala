@@ -171,8 +171,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
                 case _ => assert(false); ""
               })
             }
-            assert(resultKeySet.size != 0)
-            assert(resultKeySet.size == expectKeySet.size)
             if (resultKeySet.foldLeft(true)((b, resultKey) => {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
