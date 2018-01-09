@@ -776,11 +776,13 @@ object BuiltinObjectHelper {
         case ((o, e), key) => {
           // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
           val (desc, _) = obj.GetOwnProperty(key)
-          // create new PropertyDescriptor by using f.
-          val newDesc = f(desc)
-          // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-          val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true, h)
-          (retObj, e ++ excSet)
+          if (!desc.isBottom) {
+            // create new PropertyDescriptor by using f.
+            val newDesc = f(desc)
+            // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
+            val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true, h)
+            (retObj, e ++ excSet)
+          } else (o, e)
         }
       }
     }
