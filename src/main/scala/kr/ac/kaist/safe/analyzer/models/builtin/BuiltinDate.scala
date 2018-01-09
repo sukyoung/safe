@@ -479,6 +479,7 @@ object BuiltinDateProto extends ObjModel(
           case ConInf => excSet += RangeError
           case _ =>
         }
+        if (!thisV.pvalue.isBottom) excSet += TypeError
         (st, st.raiseException(excSet), AbsValue(AbsStr.Top))
       })
     ), T, F, T),
