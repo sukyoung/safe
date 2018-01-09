@@ -30,6 +30,7 @@ import kr.ac.kaist.safe.json.JsonImplicits._
 import kr.ac.kaist.safe.json.JsonUtil
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.web.actors.{ CmdActor, NoFileSelectedException }
 import kr.ac.kaist.safe.web.domain.Protocol.FileUploadResp
 import kr.ac.kaist.safe.web.domain._
@@ -108,6 +109,13 @@ object WebServer extends {
               case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "parse failed")))
               case Success((pgm, _)) =>
 
+                val testSafeConfig: SafeConfig = SafeConfig(CmdBase, Nil)
+                val parser = new ArgParser(CmdBase, testSafeConfig)
+                val heapBuildConfig = HeapBuild.defaultConfig
+                val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+                parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
+                parser(List(s"-json=$testJSON"))
+
                 // AST
                 val (ast, _) = ASTRewrite.rewrite(pgm)
                 complete(ast.toString)
@@ -121,7 +129,7 @@ object WebServer extends {
                 val cfg = cbResult.cfg
 
                 // HeapBuild
-                HeapBuild(cfg, null, HeapBuild.defaultConfig) match {
+                HeapBuild(cfg, null, heapBuildConfig) match {
                   case Failure(e) => complete(StatusCodes.BadRequest, JsonUtil.toJson(FileUploadResp("error", "heap build failed")))
                   case Success(some) =>
                     val (cfg, sem, initTP, heapConfig, iter) = some
