@@ -32,7 +32,7 @@ trait DataPropDomain extends AbsDomain[DataProp] {
     val enumerable: AbsBool
     val configurable: AbsBool
 
-    def copyWith(
+    def copy(
       value: AbsValue = this.value,
       writable: AbsBool = this.writable,
       enumerable: AbsBool = this.enumerable,

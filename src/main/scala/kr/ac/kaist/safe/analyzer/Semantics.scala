@@ -99,7 +99,7 @@ case class Semantics(
             case (value, _) => AbsLexEnv.NewDeclarativeEnvironment(value.locset)
           }
           val (envRec, _) = data.env.record.decEnvRec.DeleteBinding("@scope")
-          val ctx2 = ctx1.subsPureLocal(data.env.copyWith(record = envRec))
+          val ctx2 = ctx1.subsPureLocal(data.env.copy(record = envRec))
           val ctx3 = data.env.outer.foldLeft[AbsContext](AbsContext.Bot)((hi, locEnv) => {
             hi ⊔ ctx2.update(locEnv, objEnv)
           })
@@ -143,7 +143,7 @@ case class Semantics(
           val (oldExcAllValue, _) = env1.GetBindingValue("@exception_all")
           val (env2, _) = env1.SetMutableBinding("@exception", excValue)
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue ⊔ oldExcAllValue)
-          val ctx2 = ctx1.subsPureLocal(envL.copyWith(record = env3))
+          val ctx2 = ctx1.subsPureLocal(envL.copy(record = env3))
           AbsState(st.heap, ctx2
             .setOldASiteSet(c2)
             .setThisBinding(data.thisBinding))
@@ -384,7 +384,7 @@ case class Semantics(
         val oEnvRec2 = oEnv.record.decEnvRec
           .CreateImmutableBinding(name.text)
           .InitializeImmutableBinding(name.text, fVal)
-        val newCtx = st3.context.update(loc3, oEnv.copyWith(record = oEnvRec2))
+        val newCtx = st3.context.update(loc3, oEnv.copy(record = oEnvRec2))
         val newSt = AbsState(h5, newCtx).varStore(lhs, fVal)
         (newSt, excSt)
       }
@@ -396,7 +396,7 @@ case class Semantics(
         val st1 = st.createMutableBinding(x, excV)
         val env = st1.context.pureLocal
         val (newEnv, _) = env.record.decEnvRec.SetMutableBinding("@exception", excSetV)
-        val newCtx = st1.context.subsPureLocal(env.copyWith(record = newEnv))
+        val newCtx = st1.context.subsPureLocal(env.copy(record = newEnv))
         val newSt = AbsState(st1.heap, newCtx)
         (newSt, AbsState.Bot)
       }
@@ -406,7 +406,7 @@ case class Semantics(
           if (!v.isBottom) {
             val localEnv = st.context.pureLocal
             val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", v)
-            st.context.subsPureLocal(localEnv.copyWith(record = localEnv2))
+            st.context.subsPureLocal(localEnv.copy(record = localEnv2))
           } else AbsContext.Bot
         val newExcSt = st.raiseException(excSet)
         (AbsState(st.heap, ctx1), excSt ⊔ newExcSt)
@@ -414,7 +414,7 @@ case class Semantics(
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
         val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", AbsUndef.Top)
-        val ctx1 = st.context.subsPureLocal(localEnv.copyWith(record = localEnv2))
+        val ctx1 = st.context.subsPureLocal(localEnv.copy(record = localEnv2))
         val newSt = AbsState(st.heap, ctx1)
         (newSt, excSt)
       }
@@ -427,7 +427,7 @@ case class Semantics(
         val (newEnv3, _) = newEnv2
           .CreateMutableBinding("@return").fold(newEnv2)((e: AbsDecEnvRec) => e)
           .SetMutableBinding("@return", AbsUndef.Top)
-        val ctx1 = st.context.subsPureLocal(localEnv.copyWith(record = newEnv3))
+        val ctx1 = st.context.subsPureLocal(localEnv.copy(record = newEnv3))
         val newExcSt = st.raiseException(excSet)
 
         (AbsState.Bot, excSt ⊔ AbsState(st.heap, ctx1) ⊔ newExcSt)
@@ -987,7 +987,7 @@ case class Semantics(
     }
     case (NodeUtil.INTERNAL_ITER_INIT, List(expr), Some(aNew)) => {
       val (v, excSet1) = V(expr, st)
-      val vObj = AbsValue(v.pvalue.copyWith(
+      val vObj = AbsValue(v.pvalue.copy(
         undefval = AbsUndef.Bot,
         nullval = AbsNull.Bot
       ), v.locset)
@@ -1263,7 +1263,7 @@ case class Semantics(
               val exitExcCP = ControlPoint(funCFG.exitExc, newTP)
               addIPEdge(cp, entryCP, EdgeData(
                 OldASiteSet.Empty,
-                newEnv.copyWith(record = newRec2),
+                newEnv.copy(record = newRec2),
                 thisVal
               ))
               addIPEdge(exitCP, cpAfterCall, EdgeData(

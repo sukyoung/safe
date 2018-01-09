@@ -33,7 +33,7 @@ trait DescDomain extends AbsDomain[Desc] {
     val enumerable: (AbsBool, AbsAbsent)
     val configurable: (AbsBool, AbsAbsent)
 
-    def copyWith(
+    def copy(
       value: (AbsValue, AbsAbsent) = this.value,
       writable: (AbsBool, AbsAbsent) = this.writable,
       enumerable: (AbsBool, AbsAbsent) = this.enumerable,

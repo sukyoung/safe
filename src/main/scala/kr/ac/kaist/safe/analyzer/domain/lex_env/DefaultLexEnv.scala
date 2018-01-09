@@ -90,7 +90,7 @@ object DefaultLexEnv extends LexEnvDomain {
       s.toString
     }
 
-    def copyWith(
+    def copy(
       record: AbsEnvRec = this.record,
       outer: AbsLoc = this.outer,
       nullOuter: AbsAbsent = this.nullOuter
@@ -205,7 +205,7 @@ object DefaultLexEnv extends LexEnvDomain {
       val t =
         if (AT ⊑ b) {
           val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
-          val newEnv = env.copyWith(record = er)
+          val newEnv = env.copy(record = er)
           ctxUpdatePairSet += ((loc, newEnv))
           newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
           excSet ++= e

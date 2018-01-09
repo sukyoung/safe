@@ -30,7 +30,7 @@ trait BindingDomain extends AbsDomain[Binding] {
     val uninit: AbsAbsent
     val mutable: AbsBool
 
-    def copyWith(
+    def copy(
       value: AbsValue = this.value,
       uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable

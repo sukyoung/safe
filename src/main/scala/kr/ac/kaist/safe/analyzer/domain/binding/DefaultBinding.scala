@@ -113,7 +113,7 @@ object DefaultBinding extends BindingDomain {
       )
     }
 
-    def copyWith(
+    def copy(
       value: AbsValue = this.value,
       uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable

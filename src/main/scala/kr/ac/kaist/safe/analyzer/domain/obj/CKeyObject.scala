@@ -96,14 +96,14 @@ object CKeyObject extends ObjDomain {
 
     // substitute locR by locO
     def subsLoc(locR: Recency, locO: Recency): Elem = Elem(
-      nmap = nmap.mapCValues { dp => dp.copyWith(dp.value.subsLoc(locR, locO)) },
-      imap = imap.mapCValues { iv => iv.copyWith(iv.value.subsLoc(locR, locO)) }
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.subsLoc(locR, locO)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.subsLoc(locR, locO)) }
     )
 
     // weakly substitute locR by locO
     def weakSubsLoc(locR: Recency, locO: Recency): Elem = Elem(
-      nmap = nmap.mapCValues { dp => dp.copyWith(dp.value.weakSubsLoc(locR, locO)) },
-      imap = imap.mapCValues { iv => iv.copyWith(iv.value.weakSubsLoc(locR, locO)) }
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.weakSubsLoc(locR, locO)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.weakSubsLoc(locR, locO)) }
     )
 
     // lookup
@@ -555,10 +555,10 @@ object CKeyObject extends ObjDomain {
       val (obj3, b3, excSet3) =
         if (AbsBool.True ⊑ cc || AbsBool.True ⊑ cw) {
           var newDP = obj(P)
-          if (!dv.isBottom) newDP = newDP.copyWith(value = dv)
-          if (!dw.isBottom) newDP = newDP.copyWith(writable = dw)
-          if (!de.isBottom) newDP = newDP.copyWith(enumerable = de)
-          if (!dc.isBottom) newDP = newDP.copyWith(configurable = dc)
+          if (!dv.isBottom) newDP = newDP.copy(value = dv)
+          if (!dw.isBottom) newDP = newDP.copy(writable = dw)
+          if (!de.isBottom) newDP = newDP.copy(enumerable = de)
+          if (!dc.isBottom) newDP = newDP.copy(configurable = dc)
           val changedObj = weakUpdate(P, newDP)
           (changedObj, AbsBool.True, ExcSetEmpty)
         } else BotTriple

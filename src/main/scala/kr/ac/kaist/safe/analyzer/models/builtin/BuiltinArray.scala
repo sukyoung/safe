@@ -280,7 +280,7 @@ object BuiltinArrayHelper {
           (trueV, falseV)
         } else (AbsObj.Bot, ExcSetEmpty)
 
-        val otherObj = if (!first.pvalue.copyWith(numval = AbsNum.Bot).isBottom || !first.locset.isBottom) {
+        val otherObj = if (!first.pvalue.copy(numval = AbsNum.Bot).isBottom || !first.locset.isBottom) {
           // If the argument len is not a Number, then the length property of the newly constructed object
           // is set to 1 and the 0 property of the newly constructed object is set to len with attributes
           // {[[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}.
@@ -470,7 +470,7 @@ object BuiltinArrayHelper {
       // 3. Let len be ToUint32(lenVal).
       val len = TypeConversionHelper.ToUInt32(lenVal)
       // 4. If separator is undefined, let separator be the single-character String ",".
-      val noUndef = AbsValue(separator.pvalue.copyWith(undefval = AbsUndef.Bot), separator.locset)
+      val noUndef = AbsValue(separator.pvalue.copy(undefval = AbsUndef.Bot), separator.locset)
       val undefV: AbsValue =
         if (separator.pvalue.undefval.isTop) AbsStr(",")
         else AbsValue.Bot
@@ -487,7 +487,7 @@ object BuiltinArrayHelper {
             val empty =
               if (value.pvalue.undefval.isBottom && value.pvalue.nullval.isBottom) AbsStr.Bot
               else AbsStr("")
-            val noUNPV = value.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot)
+            val noUNPV = value.pvalue.copy(undefval = AbsUndef.Bot, nullval = AbsNull.Bot)
             val other = TypeConversionHelper.ToString(AbsValue(noUNPV, value.locset))
             empty ⊔ other
           }
@@ -771,7 +771,7 @@ object BuiltinArrayHelper {
       if (end.pvalue.undefval.isBottom) AbsNum.Bot
       else len
     val numLen =
-      if (end.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && end.locset.isBottom) AbsNum.Bot
+      if (end.pvalue.copy(undefval = AbsUndef.Bot).isBottom && end.locset.isBottom) AbsNum.Bot
       else TypeConversionHelper.ToInteger(end)
     val relativeEnd = undefLen ⊔ numLen
     val (retObj: AbsObj, retExcSet: Set[Exception]) = (len.getSingle, relativeStart.getSingle, relativeEnd.getSingle) match {
@@ -998,7 +998,7 @@ object BuiltinArrayHelper {
             if (fromIndex.pvalue.undefval.isBottom) AbsNum.Bot
             else AbsNum(0)
           val otherN =
-            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNum.Bot
+            if (fromIndex.pvalue.copy(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNum.Bot
             else TypeConversionHelper.ToInteger(fromIndex)
           val n = undefN ⊔ otherN
           n.getSingle match {
@@ -1083,7 +1083,7 @@ object BuiltinArrayHelper {
             if (fromIndex.pvalue.undefval.isBottom) AbsNum.Bot
             else AbsNum(len - 1)
           val otherN =
-            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNum.Bot
+            if (fromIndex.pvalue.copy(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNum.Bot
             else TypeConversionHelper.ToInteger(fromIndex)
           val n = undefN ⊔ otherN
           n.getSingle match {

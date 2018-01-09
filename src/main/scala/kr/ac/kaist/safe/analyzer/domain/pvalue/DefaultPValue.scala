@@ -158,7 +158,7 @@ object DefaultPValue extends PValueDomain {
       set.filter(s => !set.exists(o => s != o && s ⊑ o))
     }
 
-    def copyWith(
+    def copy(
       undefval: AbsUndef = this.undefval,
       nullval: AbsNull = this.nullval,
       boolval: AbsBool = this.boolval,

@@ -35,7 +35,7 @@ trait PValueDomain extends AbsDomain[PValue] {
     def ===(that: Elem): AbsBool
     def typeCount: Int
     def toStringSet: Set[AbsStr]
-    def copyWith(
+    def copy(
       undefval: AbsUndef = this.undefval,
       nullval: AbsNull = this.nullval,
       boolval: AbsBool = this.boolval,

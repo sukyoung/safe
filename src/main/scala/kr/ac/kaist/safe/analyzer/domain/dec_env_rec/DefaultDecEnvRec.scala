@@ -211,7 +211,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
             if (AT ⊑ b) {
               // 3. If the binding for N in envRec is a mutable binding,
               //    change its bound value to V.
-              update(name, (bind.copyWith(value = v), AbsAbsent.Bot))
+              update(name, (bind.copy(value = v), AbsAbsent.Bot))
             } else Bot
           val f =
             if (AF ⊑ b) {
@@ -333,7 +333,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
           val newV = bind.value.subsLoc(locR, locO)
-          val newBind = bind.copyWith(value = newV)
+          val newBind = bind.copy(value = newV)
           m + (key -> (newBind, abs))
         }
       }
@@ -349,7 +349,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
           val newV = bind.value.weakSubsLoc(locR, locO)
-          val newBind = bind.copyWith(value = newV)
+          val newBind = bind.copy(value = newV)
           m + (key -> (newBind, abs))
         }
       }

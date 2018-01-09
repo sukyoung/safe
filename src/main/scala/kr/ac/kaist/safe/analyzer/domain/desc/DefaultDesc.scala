@@ -136,7 +136,7 @@ object DefaultDesc extends DescDomain {
       }
     }
 
-    def copyWith(
+    def copy(
       value: (AbsValue, AbsAbsent) = this.value,
       writable: (AbsBool, AbsAbsent) = this.writable,
       enumerable: (AbsBool, AbsAbsent) = this.enumerable,

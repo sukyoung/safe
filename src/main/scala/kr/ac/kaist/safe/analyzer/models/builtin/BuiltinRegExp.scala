@@ -102,10 +102,10 @@ private object BuiltinRegExpHelper {
     })
 
     // case for pattern is a value which is not an undefined or an object whose [[class] is not a RegExp.
-    val notUndefPattern = AbsValue(pattern.pvalue.copyWith(undefval = AbsUndef.Bot), locSetNotRE)
+    val notUndefPattern = AbsValue(pattern.pvalue.copy(undefval = AbsUndef.Bot), locSetNotRE)
     val pattern3 = TypeConversionHelper.ToString(notUndefPattern, heap)
     // case for flags is a value which is not an undefined or an object.
-    val notUndefFlags = AbsValue(flags.pvalue.copyWith(undefval = AbsUndef.Bot), flags.locset)
+    val notUndefFlags = AbsValue(flags.pvalue.copy(undefval = AbsUndef.Bot), flags.locset)
     val flags3 = TypeConversionHelper.ToString(notUndefFlags, heap)
 
     // If pattern is an object R whose [[Class] internal property is "RegExp" and
@@ -188,10 +188,10 @@ private object BuiltinRegExpHelper {
       else (AbsStr.Top, AbsStr.Top)
 
     // case for pattern is a value which is not an undefined or an object whose [[class] is not a RegExp.
-    val notUndefPattern = AbsValue(pattern.pvalue.copyWith(undefval = AbsUndef.Bot), locSetNotRE)
+    val notUndefPattern = AbsValue(pattern.pvalue.copy(undefval = AbsUndef.Bot), locSetNotRE)
     val pattern3 = TypeConversionHelper.ToString(notUndefPattern, heap)
     // case for flags is a value which is not an undefined or an object.
-    val notUndefFlags = AbsValue(flags.pvalue.copyWith(undefval = AbsUndef.Bot), flags.locset)
+    val notUndefFlags = AbsValue(flags.pvalue.copy(undefval = AbsUndef.Bot), flags.locset)
     val flags3 = TypeConversionHelper.ToString(notUndefFlags, heap)
 
     // If pattern is an object R whose [[Class] internal property is "RegExp" and

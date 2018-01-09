@@ -64,7 +64,7 @@ trait LexEnvDomain extends AbsDomain[LexEnv] {
     val outer: AbsLoc
     val nullOuter: AbsAbsent
 
-    def copyWith(
+    def copy(
       record: AbsEnvRec = this.record,
       outer: AbsLoc = this.outer,
       nullOuter: AbsAbsent = this.nullOuter

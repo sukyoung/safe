@@ -266,16 +266,16 @@ object Helper {
         AbsValue(resAbsNum)
       case (false, true) =>
         val resVal = AbsValue(primLPV.strval.concat(TypeConversionHelper.ToString(primRPV)))
-        resVal ⊔ bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV))
+        resVal ⊔ bopPlus(AbsValue(primLPV.copy(strval = AbsStr.Bot)), AbsValue(primRPV))
       case (true, false) =>
         val resVal = AbsValue(TypeConversionHelper.ToString(primLPV).concat(primRPV.strval))
-        resVal ⊔ bopPlus(AbsValue(primLPV), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
+        resVal ⊔ bopPlus(AbsValue(primLPV), AbsValue(primRPV.copy(strval = AbsStr.Bot)))
       case (false, false) =>
         val lStr = TypeConversionHelper.ToString(primLPV).concat(primRPV.strval)
         val rStr = primLPV.strval.concat(TypeConversionHelper.ToString(primRPV))
         val resVal = AbsValue(lStr ⊔ rStr)
 
-        resVal ⊔ bopPlus(AbsValue(primLPV.copyWith(strval = AbsStr.Bot)), AbsValue(primRPV.copyWith(strval = AbsStr.Bot)))
+        resVal ⊔ bopPlus(AbsValue(primLPV.copy(strval = AbsStr.Bot)), AbsValue(primRPV.copy(strval = AbsStr.Bot)))
     }
   }
 
@@ -417,7 +417,7 @@ object Helper {
         if (pvalue.undefval.isTop || pvalue.nullval.isTop) atrue
         else AbsBool.Bot
       val falseV =
-        if (!pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom || !locset.isBottom) afalse
+        if (!pvalue.copy(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom || !locset.isBottom) afalse
         else AbsBool.Bot
       trueV ⊔ falseV
     }
@@ -485,8 +485,8 @@ object Helper {
         val rightAbsNum = typeHelper.ToNumber(rightPV)
         AbsValue(cmpAbsNum(leftAbsNum, rightAbsNum))
       case _ =>
-        val leftPV2 = leftPV.copyWith(strval = AbsStr.Bot)
-        val rightPV2 = rightPV.copyWith(strval = AbsStr.Bot)
+        val leftPV2 = leftPV.copy(strval = AbsStr.Bot)
+        val rightPV2 = rightPV.copy(strval = AbsStr.Bot)
         val resAbsBool = cmpAbsStr(leftPV.strval, rightPV.strval)
         AbsValue(resAbsBool) ⊔
           bopCompareHelp(leftPV, rightPV2, cmpAbsNum, cmpAbsStr) ⊔

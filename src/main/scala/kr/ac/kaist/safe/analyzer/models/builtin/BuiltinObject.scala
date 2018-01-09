@@ -241,7 +241,7 @@ object BuiltinObjectHelper {
     //    XXX: We do not consider an implementation-dependent actions
     //         for a host objects)
     val (v1, st1) =
-      if (argV.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, AbsState.Bot)
+      if (argV.pvalue.copy(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, AbsState.Bot)
       else {
         val (loc, state, _) = TypeConversionHelper.ToObject(argV, st, asite)
         (AbsValue(loc), state)
@@ -370,7 +370,7 @@ object BuiltinObjectHelper {
 
     // 1. If Type(O) is not Object or Null throw a TypeError exception.
     val excSet =
-      if (objV.pvalue.copyWith(nullval = AbsNull.Bot).isBottom) ExcSetEmpty
+      if (objV.pvalue.copy(nullval = AbsNull.Bot).isBottom) ExcSetEmpty
       else HashSet(TypeError)
     // 2. Let obj be the result of creating a new object.
     val obj = AbsObj.newObject
@@ -452,7 +452,7 @@ object BuiltinObjectHelper {
         val (newObj, excSet) = changeProps(h, obj, desc => {
           val (c, ca) = desc.configurable
           val newConfig = c.fold(AbsBool.Bot)(_ => AbsBool.False)
-          desc.copyWith(configurable = (newConfig, ca))
+          desc.copy(configurable = (newConfig, ca))
         })
         // 3. Set the [[Extensible]] internal property of O to false.
         val retObj = newObj.update(IExtensible, AbsIValue(AbsBool.False))
@@ -486,7 +486,7 @@ object BuiltinObjectHelper {
           val (c, ca) = desc.configurable
           val newWriteable = w.fold(AbsBool.Bot)(_ => AbsBool.False)
           val newConfig = c.fold(AbsBool.Bot)(_ => AbsBool.False)
-          desc.copyWith(
+          desc.copy(
             writable = (newWriteable, wa),
             configurable = (newConfig, ca)
           )

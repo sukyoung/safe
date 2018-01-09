@@ -75,7 +75,7 @@ object DefaultState extends StateDomain {
         val localEnv = newSt.context.pureLocal
         val (envRec1, _) = localEnv.record.decEnvRec.SetMutableBinding("@exception", excValue)
         val (envRec2, _) = envRec1.SetMutableBinding("@exception_all", excValue ⊔ oldValue)
-        val newCtx = newSt.context.subsPureLocal(localEnv.copyWith(record = envRec2))
+        val newCtx = newSt.context.subsPureLocal(localEnv.copy(record = envRec2))
         Elem(newSt.heap, newCtx)
       }
     }
@@ -127,7 +127,7 @@ object DefaultState extends StateDomain {
           val (newEnvRec, _) = envRec
             .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
             .SetMutableBinding(x, value)
-          val newEnv = localEnv.copyWith(record = newEnvRec)
+          val newEnv = localEnv.copy(record = newEnvRec)
           Elem(heap, context.subsPureLocal(newEnv))
         case CapturedVar =>
           val (newSt, _) = AbsLexEnv.setId(localEnv.outer, x, value, false)(this)
@@ -157,7 +157,7 @@ object DefaultState extends StateDomain {
           val (newEnvRec, _) = envRec
             .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
             .SetMutableBinding(x, value)
-          Elem(heap, context.subsPureLocal(env.copyWith(record = newEnvRec)))
+          Elem(heap, context.subsPureLocal(env.copy(record = newEnvRec)))
         case CapturedVar =>
           val bind = AbsBinding(value)
           val newCtx = context.pureLocal.outer.foldLeft[AbsContext](AbsContext.Bot)((tmpCtx, loc) => {
@@ -166,7 +166,7 @@ object DefaultState extends StateDomain {
             val (newEnvRec, _) = envRec
               .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
               .SetMutableBinding(x, value)
-            tmpCtx ⊔ context.update(loc, env.copyWith(record = newEnvRec))
+            tmpCtx ⊔ context.update(loc, env.copy(record = newEnvRec))
           })
           Elem(heap, newCtx)
         case CapturedCatchVar =>
@@ -176,7 +176,7 @@ object DefaultState extends StateDomain {
           val (newEnvRec, _) = envRec
             .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
             .SetMutableBinding(x, value)
-          Elem(heap, context.update(collapsedLoc, env.copyWith(record = newEnvRec)))
+          Elem(heap, context.update(collapsedLoc, env.copy(record = newEnvRec)))
         case GlobalVar =>
           val globalLoc = BuiltinGlobal.loc
           val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)

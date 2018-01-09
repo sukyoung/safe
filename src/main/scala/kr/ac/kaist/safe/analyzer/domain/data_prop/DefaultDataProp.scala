@@ -115,7 +115,7 @@ object DefaultDataProp extends DataPropDomain {
       }
     }
 
-    def copyWith(
+    def copy(
       value: AbsValue,
       writable: AbsBool,
       enumerable: AbsBool,
