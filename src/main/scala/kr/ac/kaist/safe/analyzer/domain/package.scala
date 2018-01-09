@@ -122,23 +122,23 @@ package object domain {
 
   // primitive values
   private var absUndef: Option[UndefDomain] = _
-  lazy val AbsUndef: UndefDomain = get(absUndef)
+  lazy val AbsUndef: UndefDomain = get("UndefDomain", absUndef)
   type AbsUndef = AbsUndef.Elem
 
   private var absNull: Option[NullDomain] = _
-  lazy val AbsNull: NullDomain = get(absNull)
+  lazy val AbsNull: NullDomain = get("NullDomain", absNull)
   type AbsNull = AbsNull.Elem
 
   private var absBool: Option[BoolDomain] = _
-  lazy val AbsBool: BoolDomain = get(absBool)
+  lazy val AbsBool: BoolDomain = get("BoolDomain", absBool)
   type AbsBool = AbsBool.Elem
 
   private var absNum: Option[NumDomain] = _
-  lazy val AbsNum: NumDomain = get(absNum)
+  lazy val AbsNum: NumDomain = get("NumDomain", absNum)
   type AbsNum = AbsNum.Elem
 
   private var absStr: Option[StrDomain] = _
-  lazy val AbsStr: StrDomain = get(absStr)
+  lazy val AbsStr: StrDomain = get("StrDomain", absStr)
   type AbsStr = AbsStr.Elem
 
   val AbsPValue: DefaultPValue.type = DefaultPValue
@@ -146,11 +146,11 @@ package object domain {
 
   // abstract address type
   private var aaddrType: Option[AAddrType] = _
-  lazy val AAddrType: AAddrType = get(aaddrType)
+  lazy val AAddrType: AAddrType = get("AAddrType", aaddrType)
 
   // location
   private var absLoc: Option[LocDomain] = _
-  lazy val AbsLoc: LocDomain = get(absLoc)
+  lazy val AbsLoc: LocDomain = get("LocDomain", absLoc)
   type AbsLoc = AbsLoc.Elem
 
   // value
@@ -208,9 +208,9 @@ package object domain {
   val AbsState: DefaultState.type = DefaultState
   type AbsState = DefaultState.Elem
 
-  private def get[T](opt: Option[T]): T = opt match {
+  private def get[T](name: String, opt: Option[T]): T = opt match {
     case Some(choice) => choice
-    case None => throw new Error // TODO error handling
+    case None => throw NotYetDefined(name)
   }
 
   ////////////////////////////////////////////////////////////////
