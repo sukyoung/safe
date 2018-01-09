@@ -372,9 +372,10 @@ object BuiltinArrayHelper {
     val thisObj = h.get(thisLoc)
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val Bot = AbsObj.Bot
+    val topDP = thisObj(AbsStr.Number)
     val Top = AbsObj
       .newArrayObject(AbsNum.Top)
-      .weakUpdate(AbsStr.Number, AbsDataProp.Top)
+      .weakUpdate(AbsStr.Number, topDP)
     val retObj: AbsObj = length.getSingle match {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
@@ -843,13 +844,14 @@ object BuiltinArrayHelper {
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val thisLoc = st.context.thisBinding.locset
-    val Top = AbsObj
-      .newArrayObject(AbsNum.Top)
-      .weakUpdate(AbsStr.Number, AbsDataProp.Top)
     val (retH: AbsHeap, retArr: AbsObj, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObj.Bot, ExcSetEmpty)) {
       case ((h, arr, excSet), loc) => {
         val thisObj = h.get(loc)
         val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val topDP = thisObj(AbsStr.Number)
+        val Top = AbsObj
+          .newArrayObject(AbsNum.Top)
+          .weakUpdate(AbsStr.Number, topDP)
         val (retObj: AbsObj, retArr: AbsObj, retExcSet: Set[Exception]) = (
           thisLen.getSingle,
           argLen.getSingle,
@@ -928,13 +930,14 @@ object BuiltinArrayHelper {
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val thisLoc = st.context.thisBinding.locset
-    val Top = AbsObj
-      .newArrayObject(AbsNum.Top)
-      .weakUpdate(AbsStr.Number, AbsDataProp.Top)
     val (retH: AbsHeap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         val thisObj = h.get(loc)
         val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val topDP = thisObj(AbsStr.Number)
+        val Top = AbsObj
+          .newArrayObject(AbsNum.Top)
+          .weakUpdate(AbsStr.Number, topDP)
         val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = (thisLen.getSingle, argLen.getSingle) match {
           case (ConZero(), _) | (_, ConZero()) => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           case (ConOne(Num(tl)), ConOne(Num(al))) => {
