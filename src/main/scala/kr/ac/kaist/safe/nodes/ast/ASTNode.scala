@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.util.{ SourceLoc, Span }
  */
 
 // AST Node
-trait ASTNode extends Node with Product {
+trait ASTNode extends Node {
   val info: ASTNodeInfo
   def span: Span = info.span
   def comment: Option[Comment] = info.comment
@@ -31,12 +31,6 @@ trait ASTNode extends Node with Product {
   def end: SourceLoc = span.end
   def line: Int = begin.line
   def offset: Int = begin.offset
-  override def hashCode: Int = {
-    productIterator.foldLeft(productArity) {
-      case (code, elem) =>
-        code * 41 + (if (elem == null) 0 else elem.hashCode)
-    }
-  }
 }
 
 // AST Node Information

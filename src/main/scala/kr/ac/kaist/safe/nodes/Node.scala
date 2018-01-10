@@ -11,10 +11,10 @@
 
 package kr.ac.kaist.safe.nodes
 
-import kr.ac.kaist.safe.util.{ UIDObject, Span, SourceLoc, Useful }
+import kr.ac.kaist.safe.util.{ Span, SourceLoc, Useful }
 import kr.ac.kaist.safe.nodes.ast.Comment
 
-abstract class Node extends UIDObject {
+abstract class Node {
   def toString(indent: Int): String
 
   // helper for info

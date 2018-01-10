@@ -78,6 +78,9 @@ sealed abstract class CFGBlock {
 
   // span
   def span: Span
+
+  // hash code
+  override def hashCode: Int = (func.id << 16) + (id + 3)
 }
 object CFGBlock {
   implicit def node2nodelist(node: CFGBlock): List[CFGBlock] = List(node)
