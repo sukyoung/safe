@@ -15,19 +15,18 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
 
 // Common body for program and functions
-abstract class ScopeBody(
-  override val info: ASTNodeInfo,
-  fds: List[FunDecl],
-  vds: List[VarDecl]
-) extends ASTNode(info: ASTNodeInfo)
+trait ScopeBody extends ASTNode {
+  val fds: List[FunDecl]
+  val vds: List[VarDecl]
+}
 
 // Program top level
 case class TopLevel(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     fds: List[FunDecl],
     vds: List[VarDecl],
     stmts: List[SourceElements]
-) extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl]) {
+) extends ScopeBody {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     NU.prUseStrictDirective(s, indent, fds, vds, stmts)
@@ -41,14 +40,14 @@ case class TopLevel(
 
 // Common shape for functions
 case class Functional(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     fds: List[FunDecl],
     vds: List[VarDecl],
     stmts: SourceElements,
     name: Id,
     params: List[Id],
     body: String
-) extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl]) {
+) extends ScopeBody {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(name.toString(indent))

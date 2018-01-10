@@ -13,9 +13,9 @@ package kr.ac.kaist.safe.nodes.ast
 
 // label
 case class Label(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     id: Id
-) extends ASTNode(info: ASTNodeInfo) {
+) extends ASTNode {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))

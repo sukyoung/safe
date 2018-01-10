@@ -14,19 +14,17 @@ package kr.ac.kaist.safe.nodes.ast
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
 
-abstract class Member(
-    override val info: ASTNodeInfo,
-    prop: Property
-) extends ASTNode(info: ASTNodeInfo) {
+trait Member extends ASTNode {
+  val prop: Property
   override def toString: String = prop.toString
 }
 
 // Member ::= Property : Expr
 case class Field(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     prop: Property,
     expr: Expr
-) extends Member(info: ASTNodeInfo, prop: Property) {
+) extends Member {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -39,10 +37,10 @@ case class Field(
 
 // Member ::= get Property () { FunctionBody }
 case class GetProp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     prop: Property,
     ftn: Functional
-) extends Member(info: ASTNodeInfo, prop: Property) {
+) extends Member {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -64,10 +62,10 @@ case class GetProp(
 
 // Member ::= set Property ( Id ) { SourceElement* }
 case class SetProp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     prop: Property,
     ftn: Functional
-) extends Member(info: ASTNodeInfo, prop: Property) {
+) extends Member {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))

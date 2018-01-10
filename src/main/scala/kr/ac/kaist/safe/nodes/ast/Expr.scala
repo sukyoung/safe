@@ -16,9 +16,7 @@ import java.math.BigInteger
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
 
-abstract class Expr(
-    override val info: ASTNodeInfo
-) extends ASTNode(info: ASTNodeInfo) {
+trait Expr extends ASTNode {
   def isEval: Boolean = this match {
     case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
     case _ => false
@@ -32,9 +30,9 @@ abstract class Expr(
 
 // Expr ::= Expr, Expr
 case class ExprList(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     exprs: List[Expr]
-) extends Expr(info: ASTNodeInfo) {
+) extends Expr {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -45,11 +43,11 @@ case class ExprList(
 
 // Expr ::= Expr ? Expr : Expr
 case class Cond(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     cond: Expr,
     trueBranch: Expr,
     falseBranch: Expr
-) extends Expr(info: ASTNodeInfo) {
+) extends Expr {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -64,11 +62,11 @@ case class Cond(
 
 // Expr ::= Expr Op Expr
 case class InfixOpApp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     left: Expr,
     op: Op,
     right: Expr
-) extends Expr(info: ASTNodeInfo) {
+) extends Expr {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -83,10 +81,10 @@ case class InfixOpApp(
 
 // Expr ::= Op Expr
 case class PrefixOpApp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     op: Op,
     right: Expr
-) extends Expr(info: ASTNodeInfo) {
+) extends Expr {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -99,10 +97,10 @@ case class PrefixOpApp(
 
 // Expr ::= Lhs Op
 case class UnaryAssignOpApp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     lhs: LHS,
     op: Op
-) extends Expr(info: ASTNodeInfo) {
+) extends Expr {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -114,11 +112,11 @@ case class UnaryAssignOpApp(
 
 // Expr ::= Lhs Op Expr
 case class AssignOpApp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     lhs: LHS,
     op: Op,
     right: Expr
-) extends Expr(info: ASTNodeInfo) {
+) extends Expr {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -132,9 +130,7 @@ case class AssignOpApp(
 }
 
 // Expr ::= Lhs
-abstract class LHS(
-    override val info: ASTNodeInfo
-) extends Expr(info: ASTNodeInfo) {
+trait LHS extends Expr {
   def isName: Boolean = this match {
     case _: VarRef => true
     case _: Dot => true
@@ -143,14 +139,12 @@ abstract class LHS(
 }
 
 // Lhs ::= Literal
-abstract class Literal(
-  override val info: ASTNodeInfo
-) extends LHS(info: ASTNodeInfo)
+trait Literal extends LHS
 
 // Literal ::= this
 case class This(
-    override val info: ASTNodeInfo
-) extends Literal(info: ASTNodeInfo) {
+    info: ASTNodeInfo
+) extends Literal {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -161,8 +155,8 @@ case class This(
 
 // Literal ::= null
 case class Null(
-    override val info: ASTNodeInfo
-) extends Literal(info: ASTNodeInfo) {
+    info: ASTNodeInfo
+) extends Literal {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -173,8 +167,8 @@ case class Null(
 
 // Literal ::= true | false
 case class Bool(
-    override val info: ASTNodeInfo, bool: Boolean
-) extends Literal(info: ASTNodeInfo) {
+    info: ASTNodeInfo, bool: Boolean
+) extends Literal {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -184,16 +178,14 @@ case class Bool(
 }
 
 // number literal
-abstract class NumberLiteral(
-  override val info: ASTNodeInfo
-) extends Literal(info: ASTNodeInfo)
+trait NumberLiteral extends Literal
 
 // float literal
 case class DoubleLiteral(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     text: String,
     num: Double
-) extends NumberLiteral(info: ASTNodeInfo) {
+) extends NumberLiteral {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -204,10 +196,10 @@ case class DoubleLiteral(
 
 // int literal
 case class IntLiteral(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     intVal: BigInteger,
     radix: Integer
-) extends NumberLiteral(info: ASTNodeInfo) {
+) extends NumberLiteral {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -222,11 +214,11 @@ case class IntLiteral(
 
 // Literal ::= String
 case class StringLiteral(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     quote: String,
     escaped: String,
     isRE: Boolean
-) extends Literal(info: ASTNodeInfo) {
+) extends Literal {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -239,10 +231,10 @@ case class StringLiteral(
 
 // Literal ::= RegularExpression
 case class RegularExpression(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     body: String,
     flag: String
-) extends Literal(info: ASTNodeInfo) {
+) extends Literal {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -253,9 +245,9 @@ case class RegularExpression(
 
 // PrimaryExpr ::= Id
 case class VarRef(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     id: Id
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -266,9 +258,9 @@ case class VarRef(
 
 // PrimaryExpr ::= [ (Expr,)* ]
 case class ArrayExpr(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     elements: List[Option[Expr]]
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -283,9 +275,9 @@ case class ArrayExpr(
 
 // PrimaryExpr ::= [ (Number,)* ]
 case class ArrayNumberExpr(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     elements: List[Double]
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -300,9 +292,9 @@ case class ArrayNumberExpr(
 
 // PrimaryExpr ::= { (Member,)* }
 case class ObjectExpr(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     members: List[Member]
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -324,9 +316,9 @@ case class ObjectExpr(
 
 // PrimaryExpr ::= ( Expr )
 case class Parenthesized(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     expr: Expr
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -337,9 +329,9 @@ case class Parenthesized(
 
 // LHS ::= function Id? ( (Id,)* ) { SourceElement }
 case class FunExpr(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     ftn: Functional
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -368,10 +360,10 @@ case class FunExpr(
 
 // LHS ::= Lhs [ Expr ]
 case class Bracket(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     obj: LHS,
     index: Expr
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -385,10 +377,10 @@ case class Bracket(
 
 // LHS ::= Lhs . Id
 case class Dot(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     obj: LHS,
     member: Id
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -401,9 +393,9 @@ case class Dot(
 
 // LHS ::= new Lhs
 case class New(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     lhs: LHS
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -415,10 +407,10 @@ case class New(
 
 // LHS ::= Lhs ( (Expr,)* )
 case class FunApp(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     fun: LHS,
     args: List[Expr]
-) extends LHS(info: ASTNodeInfo) {
+) extends LHS {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))

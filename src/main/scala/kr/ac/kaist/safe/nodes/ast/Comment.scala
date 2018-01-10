@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.LINE_SEP
 case class Comment(
     override val info: ASTNodeInfo,
     txt: String
-) extends ASTNode(info: ASTNodeInfo) {
+) extends ASTNode {
   def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(NU.getIndent(indent))

@@ -11,17 +11,15 @@
 
 package kr.ac.kaist.safe.nodes.ast
 
-abstract class Property(
-    override val info: ASTNodeInfo
-) extends ASTNode(info: ASTNodeInfo) {
+trait Property extends ASTNode {
   def toId: Id
 }
 
 // Property ::= Id
 case class PropId(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     id: Id
-) extends Property(info: ASTNodeInfo) {
+) extends Property {
   override def toString: String = id.text
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -34,9 +32,9 @@ case class PropId(
 
 // Property ::= String
 case class PropStr(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     str: String
-) extends Property(info: ASTNodeInfo) {
+) extends Property {
   override def toString: String = str
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -49,9 +47,9 @@ case class PropStr(
 
 // Property ::= Number
 case class PropNum(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     num: NumberLiteral
-) extends Property(info: ASTNodeInfo) {
+) extends Property {
   override def toString: String = num.toString
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

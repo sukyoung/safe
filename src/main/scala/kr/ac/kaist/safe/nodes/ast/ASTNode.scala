@@ -22,9 +22,8 @@ import kr.ac.kaist.safe.util.{ SourceLoc, Span }
  */
 
 // AST Node
-abstract class ASTNode(
-    val info: ASTNodeInfo
-) extends Node {
+trait ASTNode extends Node {
+  val info: ASTNodeInfo
   def span: Span = info.span
   def comment: Option[Comment] = info.comment
   def fileName: String = span.fileName

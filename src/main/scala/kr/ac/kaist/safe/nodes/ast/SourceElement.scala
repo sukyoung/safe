@@ -11,15 +11,13 @@
 
 package kr.ac.kaist.safe.nodes.ast
 
-abstract class SourceElement(
-  override val info: ASTNodeInfo
-) extends ASTNode(info: ASTNodeInfo)
+trait SourceElement extends ASTNode
 
 // Program ::= SourceElement*
 case class SourceElements(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     body: List[SourceElement],
     strict: Boolean
-) extends ASTNode(info: ASTNodeInfo) {
+) extends ASTNode {
   override def toString(indent: Int): String = ""
 }

@@ -14,26 +14,21 @@ package kr.ac.kaist.safe.nodes.ast
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.SIGNIFICANT_BITS
 
-abstract class Name(
-  override val info: ASTNodeInfo
-) extends ASTNode(info: ASTNodeInfo)
+trait Name extends ASTNode
 
-abstract class IdOrOpOrAnonymousName(
-  override val info: ASTNodeInfo
-) extends Name(info: ASTNodeInfo)
+trait IdOrOpOrAnonymousName extends Name
 
-abstract class IdOrOp(
-  override val info: ASTNodeInfo,
-  text: String
-) extends IdOrOpOrAnonymousName(info: ASTNodeInfo)
+trait IdOrOp extends IdOrOpOrAnonymousName {
+  val text: String
+}
 
 // Named identifier
 case class Id(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     text: String,
     uniqueName: Option[String] = None,
     isWith: Boolean
-) extends IdOrOp(info: ASTNodeInfo, text: String) {
+) extends IdOrOp {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -49,9 +44,9 @@ case class Id(
 
 // Infix/prefix/postfix operator
 case class Op(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     text: String
-) extends IdOrOp(info: ASTNodeInfo, text: String) {
+) extends IdOrOp {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
@@ -62,8 +57,8 @@ case class Op(
 
 // Unnamed identifier
 case class AnonymousFnName(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     text: String
-) extends IdOrOpOrAnonymousName(info: ASTNodeInfo) {
+) extends IdOrOpOrAnonymousName {
   override def toString(indent: Int): String = ""
 }
