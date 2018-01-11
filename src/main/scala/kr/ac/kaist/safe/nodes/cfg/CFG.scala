@@ -20,10 +20,10 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
-class CFG(
-    override val ir: IRNode,
+case class CFG(
+    ir: IRNode,
     globalVars: List[CFGId]
-) extends CFGNode(ir) {
+) extends CFGNode {
   // cfg id
   val id: Int = CFG.getId
 

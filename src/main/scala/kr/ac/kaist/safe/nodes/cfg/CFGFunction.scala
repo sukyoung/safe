@@ -20,13 +20,13 @@ import kr.ac.kaist.safe.analyzer.models.SemanticFun
 import spray.json._
 
 case class CFGFunction(
-    override val ir: IRNode,
+    ir: IRNode,
     argumentsName: String,
     argVars: List[CFGId],
     localVars: List[CFGId],
     name: String,
     isUser: Boolean
-) extends CFGNode(ir) {
+) extends CFGNode {
   var id: FunctionId = 0 // XXX should be a value but for JS model for a while.
 
   val entry = Entry(this)

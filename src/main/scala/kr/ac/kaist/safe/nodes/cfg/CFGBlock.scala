@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.analyzer.models.SemanticFun
 import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
 
-sealed abstract class CFGBlock {
+sealed trait CFGBlock {
   val func: CFGFunction
   val id: BlockId
 
