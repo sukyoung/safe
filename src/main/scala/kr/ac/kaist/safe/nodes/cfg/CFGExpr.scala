@@ -14,7 +14,13 @@ package kr.ac.kaist.safe.nodes.cfg
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
-sealed trait CFGExpr extends CFGNode
+sealed trait CFGExpr extends CFGNode {
+  val uniqueId: Long = CFGExpr.getId
+}
+object CFGExpr {
+  private var idCount: Long = 0
+  private def getId: Long = { val id = idCount; idCount += 1; id }
+}
 
 // variable reference
 case class CFGVarRef(

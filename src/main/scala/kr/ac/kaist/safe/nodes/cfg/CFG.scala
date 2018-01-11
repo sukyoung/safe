@@ -163,5 +163,5 @@ case class CFG(
 
 object CFG {
   private var idCount: Int = 0
-  private def getId: Int = idCount
+  private def getId: Int = { val id = idCount; idCount += 1; id }
 }
