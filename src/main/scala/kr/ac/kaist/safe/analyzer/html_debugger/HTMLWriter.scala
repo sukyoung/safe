@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.web.domain._
-import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
+import kr.ac.kaist.safe.{ LINE_SEP, SEP }
 import org.apache.commons.io.FileUtils
 
 object HTMLWriter {
@@ -308,9 +308,7 @@ object HTMLWriter {
   ): Unit = {
     try {
       // copy libraries
-      val SEP = File.separator
-      val base = BASE_DIR + SEP
-      val src = new File(Array[String](base + "src", "main", "resources", "assets").mkString(SEP))
+      val src = new File(Useful.path("src", "main", "resources", "assets"))
       val dest = new File("debugger" + SEP + "assets")
       FileUtils.copyDirectory(src, dest)
       println("* copy debugger libraries.")

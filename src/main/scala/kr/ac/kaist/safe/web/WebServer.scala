@@ -48,9 +48,7 @@ object WebServer extends {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-    val SEP = File.separator
-    val base = BASE_DIR + SEP
-    val assetsPath = Array[String](base + "src", "main", "resources", "assets").mkString(SEP)
+    val assetsPath = Useful.path("src", "main", "resources", "assets")
     cmdActor = system.actorOf(Props(new CmdActor()))
 
     val handlerFlow = {
@@ -112,7 +110,7 @@ object WebServer extends {
                 val testSafeConfig: SafeConfig = SafeConfig(CmdBase, Nil)
                 val parser = new ArgParser(CmdBase, testSafeConfig)
                 val heapBuildConfig = HeapBuild.defaultConfig
-                val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+                val testJSON = Useful.path("tests", "test.json")
                 parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
                 parser(List(s"-json=$testJSON"))
 
