@@ -30,8 +30,10 @@ lazy val root = (project in file(".")).
     buildParsers in Compile := {
       // xtc
       val xtcFile = new File("./lib/xtc.jar")
-      if (!xtcFile.exists)
+      if (!xtcFile.exists) {
+        // TODO exception handling: not downloaded
         IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+      }
 
       // webix
       val webixJsFile = new File("./src/main/resources/assets/js/webix.js")
