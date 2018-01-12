@@ -173,7 +173,7 @@ private transient Tuple2<Op, Expr> EqualityR =
  *   Relational
  * | Equality w == w Relational
  * | Equality w != w Relational
- * | Equality w === w Relational
+ * | Equality w StrictEquals w Relational
  * | Equality w !== w Relational
  */
 private transient Expr Equality =

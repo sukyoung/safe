@@ -53,14 +53,14 @@ object DefaultBool extends BoolDomain {
       case Top => "Top(boolean)"
     }
 
-    def toAbsStr: AbsStr = this match {
+    def ToString: AbsStr = this match {
       case Bot => AbsStr.Bot
       case True => AbsStr("true")
       case False => AbsStr("false")
       case Top => AbsStr("true", "false")
     }
 
-    def toAbsNum: AbsNum = this match {
+    def ToNumber: AbsNum = this match {
       case Bot => AbsNum.Bot
       case True => AbsNum(1)
       case False => AbsNum(+0)
@@ -88,7 +88,7 @@ object DefaultBool extends BoolDomain {
       case _ => Bot
     }
 
-    def ===(that: Elem): Elem = {
+    def StrictEquals(that: Elem): Elem = {
       (this, that) match {
         case (Bot, _) => Bot
         case (_, Bot) => Bot

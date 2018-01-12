@@ -116,15 +116,15 @@ private object BuiltinErrorHelper {
 
       val emptyString = AbsStr("")
       val res8 =
-        if (AbsBool.True ⊑ (name4 === emptyString)) msg6
+        if (AbsBool.True ⊑ (name4 StrictEquals emptyString)) msg6
         else AbsStr.Bot
       val res9 =
-        if ((AbsBool.False ⊑ (name4 === emptyString))
-          && (AbsBool.True ⊑ (msg6 === emptyString))) name4
+        if ((AbsBool.False ⊑ (name4 StrictEquals emptyString))
+          && (AbsBool.True ⊑ (msg6 StrictEquals emptyString))) name4
         else AbsStr.Bot
       val res10 =
-        if ((AbsBool.False ⊑ (name4 === emptyString))
-          && (AbsBool.False ⊑ (msg6 === emptyString))) name4.concat(AbsStr(": ")).concat(msg6)
+        if ((AbsBool.False ⊑ (name4 StrictEquals emptyString))
+          && (AbsBool.False ⊑ (msg6 StrictEquals emptyString))) name4.concat(AbsStr(": ")).concat(msg6)
         else AbsStr.Bot
       res ⊔ (res8 ⊔ res9 ⊔ res10)
     })

@@ -21,7 +21,7 @@ object BuiltinHelper {
   def checkExn(h: AbsHeap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
     val exist = absValue.locset.foldLeft[AbsBool](AbsBool.Bot)((b, loc) => {
       val clsStr = h.get(loc)(IClass).value.pvalue.strval
-      b ⊔ (clsStr === AbsStr(clsName))
+      b ⊔ (clsStr StrictEquals AbsStr(clsName))
     })
     val pv = absValue.pvalue
     if (AbsBool.False ⊑ exist)

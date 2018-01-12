@@ -268,7 +268,7 @@ object BuiltinArrayHelper {
         val (lenObj: AbsObj, excSet: Set[Exception]) = if (!firstN.isBottom) {
           // If the argument len is a Number and ToUint32(len) is equal to len,
           // then the length property of the newly constructed object is set to ToUint32(len).
-          val equal = (firstN === firstN.toUInt32)
+          val equal = (firstN StrictEquals firstN.ToUint32)
           val trueV = if (AbsBool.True ⊑ equal) {
             AbsObj.newArrayObject(firstN)
           } else AbsObj.Bot
@@ -335,7 +335,7 @@ object BuiltinArrayHelper {
     val obj = h.get(arg.locset)
     // 2. If the value of the [[Class]] internal property of arg is "Array", then return true.
     // 3. Return false.
-    val arrB = obj(IClass).value.pvalue.strval === AbsStr("Array")
+    val arrB = obj(IClass).value.pvalue.strval StrictEquals AbsStr("Array")
     noObjB ⊔ arrB
   }
 
@@ -380,7 +380,7 @@ object BuiltinArrayHelper {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
         val argLen = n.toInt
-        val isArray = AbsStr("Array") === thisObj(IClass).value.pvalue.strval
+        val isArray = AbsStr("Array") StrictEquals thisObj(IClass).value.pvalue.strval
         val (arrList, arrIsBot): (Option[List[AbsValue]], Boolean) =
           if (AbsBool.True ⊑ isArray) {
             val thisLength = thisObj.Get("length", h).pvalue.numval
@@ -413,7 +413,7 @@ object BuiltinArrayHelper {
                 case ((normal, array), loc) => {
                   val obj = h.get(loc)
                   val clsName = obj(IClass).value.pvalue.strval
-                  val isArr = clsName === AbsStr("Array")
+                  val isArr = clsName StrictEquals AbsStr("Array")
                   if (AbsBool.True ⊑ isArr) (normal - loc, array + loc)
                   else (normal, array)
                 }
@@ -468,7 +468,7 @@ object BuiltinArrayHelper {
       // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
       val lenVal = obj.Get("length", h)
       // 3. Let len be ToUint32(lenVal).
-      val len = TypeConversionHelper.ToUInt32(lenVal)
+      val len = TypeConversionHelper.ToUint32(lenVal)
       // 4. If separator is undefined, let separator be the single-character String ",".
       val noUndef = AbsValue(separator.pvalue.copy(undefval = AbsUndef.Bot), separator.locset)
       val undefV: AbsValue =
@@ -530,7 +530,7 @@ object BuiltinArrayHelper {
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val lenVal = arr.Get("length", h)
         // 3. Let len be ToUint32(lenVal).
-        val len = TypeConversionHelper.ToUInt32(lenVal)
+        val len = TypeConversionHelper.ToUint32(lenVal)
         val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
           case ConZero() => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           // 4. If len is zero,
@@ -585,7 +585,7 @@ object BuiltinArrayHelper {
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val lenVal = arr.Get("length", h)
         // 3. Let n be ToUint32(lenVal).
-        val n = TypeConversionHelper.ToUInt32(lenVal)
+        val n = TypeConversionHelper.ToUint32(lenVal)
         // 4. Let items be an internal List whose elements are, in left to right order, the arguments that were passed to this
         //    function invocation.
         val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = (argLen.getSingle, n.getSingle) match {
@@ -636,7 +636,7 @@ object BuiltinArrayHelper {
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val lenVal = arr.Get("length", h)
         // 3. Let len be ToUint32(lenVal).
-        val len = TypeConversionHelper.ToUInt32(lenVal)
+        val len = TypeConversionHelper.ToUint32(lenVal)
         val (retObj: AbsObj, retExcSet: Set[Exception]) = len.getSingle match {
           case ConZero() => (AbsObj.Bot, ExcSetEmpty)
           case ConOne(Num(n)) => {
@@ -687,7 +687,7 @@ object BuiltinArrayHelper {
         val obj = h.get(loc)
         val lenVal = obj.Get("length", h)
         // 3. Let len be ToUint32(lenVal).
-        val len = TypeConversionHelper.ToUInt32(lenVal)
+        val len = TypeConversionHelper.ToUint32(lenVal)
         val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
           case ConZero() => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           // 4. If len is zero, then
@@ -763,7 +763,7 @@ object BuiltinArrayHelper {
     // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
     val lenVal = obj.Get("length", h)
     // 4. Let len be ToUint32(lenVal).
-    val len = TypeConversionHelper.ToUInt32(lenVal)
+    val len = TypeConversionHelper.ToUint32(lenVal)
     // 5. Let relativeStart be ToInteger(start).
     val relativeStart = TypeConversionHelper.ToInteger(start)
     // 6. If end is undefined, let relativeEnd be len; else let relativeEnd be ToInteger(end).
@@ -847,7 +847,7 @@ object BuiltinArrayHelper {
     val (retH: AbsHeap, retArr: AbsObj, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObj.Bot, ExcSetEmpty)) {
       case ((h, arr, excSet), loc) => {
         val thisObj = h.get(loc)
-        val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val thisLen = TypeConversionHelper.ToUint32(thisObj.Get("length", h))
         val topDP = thisObj(AbsStr.Number)
         val Top = AbsObj
           .newArrayObject(AbsNum.Top)
@@ -933,7 +933,7 @@ object BuiltinArrayHelper {
     val (retH: AbsHeap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         val thisObj = h.get(loc)
-        val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val thisLen = TypeConversionHelper.ToUint32(thisObj.Get("length", h))
         val topDP = thisObj(AbsStr.Number)
         val Top = AbsObj
           .newArrayObject(AbsNum.Top)
@@ -986,7 +986,7 @@ object BuiltinArrayHelper {
       // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
       val lenValue = thisObj.Get("length", h)
       // 3. Let len be ToUint32(lenValue).
-      val len = TypeConversionHelper.ToUInt32(lenValue)
+      val len = TypeConversionHelper.ToUint32(lenValue)
       val retN: AbsNum = len.getSingle match {
         case ConZero() => AbsNum.Bot
         // 4. If len is 0, return -1.
@@ -1031,7 +1031,7 @@ object BuiltinArrayHelper {
                     // ii. Let same be the result of applying the Strict Equality Comparison Algorithm to
                     //     searchElement and elementK.
                     // XXX: unsound!: only check between primtive values becuase we do not have any strict equality for (Loc/Obj)
-                    val same = elementK.pvalue === searchElement.pvalue
+                    val same = elementK.pvalue StrictEquals searchElement.pvalue
                     // iii. If same is true, return k.
                     val retN = if (AbsBool.False ⊑ b && AbsBool.True ⊑ kPresent && AbsBool.True ⊑ same) {
                       AbsNum(k)
@@ -1071,7 +1071,7 @@ object BuiltinArrayHelper {
       // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
       val lenValue = thisObj.Get("length", h)
       // 3. Let len be ToUint32(lenValue).
-      val len = TypeConversionHelper.ToUInt32(lenValue)
+      val len = TypeConversionHelper.ToUint32(lenValue)
       val retN: AbsNum = len.getSingle match {
         case ConZero() => AbsNum.Bot
         // 4. If len is 0, return -1.
@@ -1108,7 +1108,7 @@ object BuiltinArrayHelper {
                   // ii. Let same be the result of applying the Strict Equality Comparison Algorithm to
                   //     searchElement and elementK.
                   // XXX: unsound!: only check between primtive values becuase we do not have any strict equality for (Loc/Obj)
-                  val same = elementK.pvalue === searchElement.pvalue
+                  val same = elementK.pvalue StrictEquals searchElement.pvalue
                   // iii. If same is true, return k.
                   val retN = if (AbsBool.False ⊑ b && AbsBool.True ⊑ kPresent && AbsBool.True ⊑ same) {
                     AbsNum(k)

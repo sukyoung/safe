@@ -108,29 +108,20 @@ trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
     // 11.9.3 The Abstract Equality Comparison Algorithm
     def Equals(that: Elem): AbsBool = alpha(_ Equals _)(AbsBool)(this, that)
 
-    // 11.9.4 The Strict Equals Operator ( === )
+    // 11.9.4 The Strict Equals Operator ( StrictEquals )
     // 11.9.6 The Strict Equality Comparison Algorithm
     def StrictEquals(that: Elem): AbsBool = alpha(_ StrictEquals _)(AbsBool)(this, that)
 
-    def ===(that: Elem): AbsBool
+    // 11.10 BinaryBitwiseOperators
+    def &(that: Elem): Elem = alpha(_ & _)(domain)(this, that)
+    def ^(that: Elem): Elem = alpha(_ ^ _)(domain)(this, that)
+    def |(that: Elem): Elem = alpha(_ | _)(domain)(this, that)
 
-    // Abstraction of step 2 - 4 in section 9.5, ECMAScript 5.1
-    def toInteger: Elem
-    // Abstraction of step 2 - 5 in section 9.6, ECMAScript 5.1
-    def toInt32: Elem
-    // Abstraction of step 2 - 5 in section 9.7, ECMAScript 5.1
-    def toUInt32: Elem
-    // Abstraction of step 2 - 5 in section 9.8, ECMAScript 5.1
-    def toUInt16: Elem
+    // 11.11 BinaryLogicalOperators
+    def &&(that: Elem): Elem = alpha(_ && _)(domain)(this, that)
+    def ||(that: Elem): Elem = alpha(_ || _)(domain)(this, that)
 
-    def toAbsStr: AbsStr
-    def toAbsBoolean: AbsBool
-
-    // Abstraction of step 4.a - 4.e in section 9.12, ECMAScript 5.1
-    // This algorithm differs from the strict equal(===) in its treatment of signed zeros and NaN
-    def sameValue(that: Elem): AbsBool
-
-    def negate: Elem
+    // Builtin-in functions
     def abs: Elem
     def acos: Elem
     def asin: Elem
@@ -146,17 +137,5 @@ trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
     def sin: Elem
     def sqrt: Elem
     def tan: Elem
-    def bitNegate: Elem
-    def bitOr(that: Elem): Elem
-    def bitAnd(that: Elem): Elem
-    def bitXor(that: Elem): Elem
-    def bitLShift(shift: Elem): Elem
-    def bitRShift(shift: Elem): Elem
-    def bitURShift(shift: Elem): Elem
-    def add(that: Elem): Elem
-    def sub(that: Elem): Elem
-    def mul(that: Elem): Elem
-    def div(that: Elem): Elem
-    def mod(that: Elem): Elem
   }
 }

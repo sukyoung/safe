@@ -81,7 +81,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
     ("number", StrOption((c, s) => s match {
       case "default" => c.AbsNum = DefaultNumber
-      case "flat" => c.AbsNum = FlatNumber
+      // TODO case "flat" => c.AbsNum = FlatNumber
       case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
     }), "analysis with a selected number domain."),
     ("jsModel", BoolOption(c => c.jsModel = true),

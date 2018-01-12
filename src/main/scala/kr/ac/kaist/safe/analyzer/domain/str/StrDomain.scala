@@ -26,7 +26,7 @@ trait StrDomain extends AbsDomain[Str] {
 
   // abstract string element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
-    def ===(that: Elem): AbsBool
+    def StrictEquals(that: Elem): AbsBool
     def <(that: Elem): AbsBool
 
     def isNum: AbsBool
@@ -45,7 +45,7 @@ trait StrDomain extends AbsDomain[Str] {
     def isRelated(str: String): Boolean
     def isRelated(astr: Elem): Boolean
 
-    def toAbsNum: AbsNum
-    def toAbsBoolean: AbsBool
+    def ToNumber: AbsNum
+    def ToBoolean: AbsBool
   }
 }

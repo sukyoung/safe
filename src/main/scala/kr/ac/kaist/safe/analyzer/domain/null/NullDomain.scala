@@ -18,6 +18,6 @@ trait NullDomain extends AbsDomain[Null] {
 
   // abstract null element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
-    def ===(that: Elem): AbsBool
+    def StrictEquals(that: Elem): AbsBool
   }
 }

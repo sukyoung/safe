@@ -24,12 +24,12 @@ object ConfigProtocol extends DefaultJsonProtocol {
 
     def write(util: NumDomain): JsValue = util match {
       case DefaultNumber => JsTrue
-      case FlatNumber => JsFalse
+      // TODO case FlatNumber => JsFalse
     }
 
     def read(value: JsValue): NumDomain = value match {
       case JsTrue => DefaultNumber
-      case JsFalse => FlatNumber
+      // TODO case JsFalse => FlatNumber
       case _ => throw NumDomainParseError(value)
     }
   }

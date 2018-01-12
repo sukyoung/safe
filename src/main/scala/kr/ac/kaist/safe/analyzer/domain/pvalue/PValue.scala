@@ -232,7 +232,7 @@ abstract class PValue extends Value {
     case _ => F
   }
 
-  // 11.9.4 The Strict Equals Operator ( === )
+  // 11.9.4 The Strict Equals Operator ( StrictEquals )
   // 11.9.6 The Strict Equality Comparison Algorithm
   def StrictEquals(that: PValue): Bool = (this, that) match {
     case (Undef, Undef) | (Null, Null) => T
@@ -247,4 +247,15 @@ abstract class PValue extends Value {
     case (x: Bool, y: Bool) => x SameValue y
     case _ => F
   }
+
+  // 11.10 Binary Bitwise Operators
+  private def binBitOp(op: (Int, Int) => Int): (PValue, PValue) => Num =
+    (l, r) => Num(op(l.ToInt32.num.toInt, r.ToInt32.num.toInt))
+  def &(that: PValue): Num = binBitOp(_ & _)(this, that)
+  def ^(that: PValue): Num = binBitOp(_ ^ _)(this, that)
+  def |(that: PValue): Num = binBitOp(_ | _)(this, that)
+
+  // 11.11 BinaryLogicalOperators
+  def &&(that: PValue): PValue = if (ToBoolean == F) this else that
+  def ||(that: PValue): PValue = if (ToBoolean == T) this else that
 }

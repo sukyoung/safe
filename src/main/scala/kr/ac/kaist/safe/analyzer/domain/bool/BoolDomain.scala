@@ -24,13 +24,13 @@ trait BoolDomain extends AbsDomain[Bool] {
 
   // abstract boolean element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
-    def ===(that: Elem): Elem
+    def StrictEquals(that: Elem): Elem
     def negate: Elem
     def &&(that: Elem): Elem
     def ||(that: Elem): Elem
     def xor(that: Elem): Elem
 
-    def toAbsNum: AbsNum
-    def toAbsStr: AbsStr
+    def ToNumber: AbsNum
+    def ToString: AbsStr
   }
 }

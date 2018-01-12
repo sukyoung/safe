@@ -118,16 +118,16 @@ object DefaultPValue extends PValueDomain {
       }
     }
 
-    def ===(that: Elem): AbsBool = {
+    def StrictEquals(that: Elem): AbsBool = {
       val right = that
       val falseV =
         if ((this ⊔ right).typeCount > 1) AbsBool.False
         else AbsBool.Bot
-      (this.undefval === right.undefval) ⊔
-        (this.nullval === right.nullval) ⊔
-        (this.boolval === right.boolval) ⊔
-        (this.numval === right.numval) ⊔
-        (this.strval === right.strval) ⊔
+      (this.undefval StrictEquals right.undefval) ⊔
+        (this.nullval StrictEquals right.nullval) ⊔
+        (this.boolval StrictEquals right.boolval) ⊔
+        (this.numval StrictEquals right.numval) ⊔
+        (this.strval StrictEquals right.strval) ⊔
         falseV
     }
 
@@ -150,7 +150,7 @@ object DefaultPValue extends PValueDomain {
       if (AbsBool.True ⊑ this.boolval) set += AbsStr("true")
       if (AbsBool.False ⊑ this.boolval) set += AbsStr("false")
 
-      set += this.numval.toAbsStr
+      set += this.numval.ToString
 
       this.strval.foldUnit(set += this.strval)
 

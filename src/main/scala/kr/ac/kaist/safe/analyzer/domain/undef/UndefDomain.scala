@@ -18,6 +18,6 @@ trait UndefDomain extends AbsDomain[Undef] {
 
   // abstract undefined element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
-    def ===(that: Elem): AbsBool
+    def StrictEquals(that: Elem): AbsBool
   }
 }

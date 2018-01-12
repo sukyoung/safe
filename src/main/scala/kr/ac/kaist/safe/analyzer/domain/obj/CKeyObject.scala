@@ -431,7 +431,7 @@ object CKeyObject extends ObjDomain {
 
     def DefaultValue(h: AbsHeap): AbsPValue = {
       val className = this(IClass)
-      val isDateClass = className.value.pvalue.strval === AbsStr("Date")
+      val isDateClass = className.value.pvalue.strval StrictEquals AbsStr("Date")
       val b = isDateClass
       val t =
         if (AT ⊑ b) {
@@ -519,9 +519,9 @@ object CKeyObject extends ObjDomain {
       // same value as the corresponding field in current when compared using the SameValue algorithm (9.12).
       val (obj6, b6) =
         if ((dva.isTop || (!dv.isBottom && AbsBool.True ⊑ (TypeConversionHelper.SameValue(h, dv, cv)))) &&
-          (dwa.isTop || (!dw.isBottom && AbsBool.True ⊑ (dw === cw))) &&
-          (dea.isTop || (!de.isBottom && AbsBool.True ⊑ (de === ce))) &&
-          (dca.isTop || (!dc.isBottom && AbsBool.True ⊑ (dc === cc)))) (obj, AbsBool.True)
+          (dwa.isTop || (!dw.isBottom && AbsBool.True ⊑ (dw StrictEquals cw))) &&
+          (dea.isTop || (!de.isBottom && AbsBool.True ⊑ (de StrictEquals ce))) &&
+          (dca.isTop || (!dc.isBottom && AbsBool.True ⊑ (dc StrictEquals cc)))) (obj, AbsBool.True)
         else (Bot, AbsBool.Bot)
 
       // 7. If the [[Configurable]] field of current is false then
@@ -566,7 +566,7 @@ object CKeyObject extends ObjDomain {
       val excSet4 =
         if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
           AbsStr("length") ⊑ P &&
-          AbsBool.False ⊑ (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
+          AbsBool.False ⊑ (TypeConversionHelper.ToNumber(dv) StrictEquals TypeConversionHelper.ToUint32(dv))) HashSet(RangeError)
         else ExcSetEmpty
 
       val excSet5 =
@@ -577,7 +577,7 @@ object CKeyObject extends ObjDomain {
 
       val excSet6 =
         if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
-          AT ⊑ (P === AbsStr.Number) &&
+          AT ⊑ (P StrictEquals AbsStr.Number) &&
           AbsBool.False ⊑ obj("length").writable) HashSet(TypeError)
         else ExcSetEmpty
 

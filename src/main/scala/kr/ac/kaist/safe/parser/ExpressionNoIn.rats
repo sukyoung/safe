@@ -173,7 +173,7 @@ private transient Tuple2<Op, Expr> EqualityNoInR =
  *   RelationalNoIn
  * | EqualityNoIn w == w RelationalNoIn
  * | EqualityNoIn w != w RelationalNoIn
- * | EqualityNoIn w === w RelationalNoIn
+ * | EqualityNoIn w StrictEquals w RelationalNoIn
  * | EqualityNoIn w !== w RelationalNoIn
  */
 private transient Expr EqualityNoIn =

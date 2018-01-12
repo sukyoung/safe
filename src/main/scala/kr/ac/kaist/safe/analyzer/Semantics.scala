@@ -656,7 +656,7 @@ case class Semantics(
     case (NodeUtil.INTERNAL_TO_UINT, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val st1 =
-        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToUInt32(v, st.heap)))
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToUint32(v, st.heap)))
         else AbsState.Bot
 
       val newExcSt = st.raiseException(excSet)
@@ -1045,7 +1045,7 @@ case class Semantics(
         }
       }
       val st1 = st.varStore(lhs, strV)
-      val next = AbsValue(cur.add(AbsNum(1)), locset)
+      val next = AbsValue(cur + AbsNum(1), locset)
       val st2 = st1.varStore(id, next)
       val newExcSt = st.raiseException(excSet)
       (st2, excSt ⊔ newExcSt)

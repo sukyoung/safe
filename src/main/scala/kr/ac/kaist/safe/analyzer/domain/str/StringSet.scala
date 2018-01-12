@@ -76,7 +76,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case StrSet(set) => set.map("\"" + _ + "\"").mkString(", ")
     }
 
-    def toAbsBoolean: AbsBool = this match {
+    def ToBoolean: AbsBool = this match {
       case StrSet(set) => set contains "" match {
         case true if set.size == 1 => AbsBool.False
         case true => AbsBool.Top
@@ -87,7 +87,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case Top | Other => AbsBool.Top
     }
 
-    def toAbsNum: AbsNum = this match {
+    def ToNumber: AbsNum = this match {
       case Top => AbsNum.Top
       case Number => AbsNum.Top
       case Other => AbsNum.NaN
@@ -155,7 +155,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         }
     }
 
-    def ===(that: Elem): AbsBool =
+    def StrictEquals(that: Elem): AbsBool =
       (this.getSingle, that.getSingle) match {
         case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
         case (ConZero(), _) | (_, ConZero()) => AbsBool.Bot
@@ -218,8 +218,8 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     def charAt(pos: AbsNum): Elem = (gamma, pos.gamma) match {
       case (ConFin(vs), ConFin(ds)) => {
         ds.foldLeft[Elem](Bot) {
-          case (res, d) => vs.foldLeft(res) {
-            case (res, str) =>
+          case (res, Num(d)) => vs.foldLeft(res) {
+            case (res, Str(str)) =>
               if (d >= str.length || d < 0)
                 res ⊔ alpha("")
               else {

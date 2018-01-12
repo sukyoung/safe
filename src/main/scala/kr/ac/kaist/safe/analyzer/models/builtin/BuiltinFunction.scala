@@ -50,7 +50,7 @@ object BuiltinFunctionProto extends FuncModel(
         val functionClass = AbsStr("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {
           val thisClass = st.heap.get(loc)(IClass).value.pvalue.strval
-          AbsBool.True !⊑ (thisClass === functionClass)
+          AbsBool.True !⊑ (thisClass StrictEquals functionClass)
         })
         val excSet =
           if (notAllFunctionClass) ExcSetEmpty + TypeError
@@ -141,7 +141,7 @@ private object BuiltinFunctionProtoHelper {
     val argList2 = argArray.locset.foldLeft(AbsObj.Bot)((aobj, loc) => {
       val argObj = heap.get(loc)
       val len = argObj.Get("length", heap)
-      val n = TypeConversionHelper.ToUInt32(len)
+      val n = TypeConversionHelper.ToUint32(len)
       n.gamma match {
         case ConInf =>
           val indexName = AbsStr.Number
@@ -150,7 +150,7 @@ private object BuiltinFunctionProtoHelper {
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
             (0 until num.toInt).foldLeft(AbsObj.newArgObject(n))((tmpArg, i) => {
-              val indexName = AbsNum(i).toAbsStr
+              val indexName = AbsNum(i).ToString
               val nextArg = argObj.Get(indexName, heap)
               tmpArg.weakUpdate(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
             }) ⊔ aobj2
@@ -203,8 +203,8 @@ private object BuiltinFunctionProtoHelper {
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
             (0 until num.toInt).foldLeft(AbsObj.newArgObject(len))((tmpArg, i) => {
-              val nextArg = argObj.Get(AbsNum(i + 1).toAbsStr, heap)
-              tmpArg.weakUpdate(AbsNum(i).toAbsStr, AbsDataProp(nextArg, atrue, atrue, atrue))
+              val nextArg = argObj.Get(AbsNum(i + 1).ToString, heap)
+              tmpArg.weakUpdate(AbsNum(i).ToString, AbsDataProp(nextArg, atrue, atrue, atrue))
             }) ⊔ aobj2
           })
       }

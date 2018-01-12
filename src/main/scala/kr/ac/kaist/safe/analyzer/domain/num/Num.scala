@@ -104,6 +104,10 @@ case class Num(num: Double) extends PValue {
   // 11.6.1 The Addition operator ( + )
   def +(that: Num): Num = Num(this.num + that.num)
 
+  // 11.11 BinaryLogicalOperators
+  def &&(that: Num): Num = if (ToBoolean == F) this else that
+  def ||(that: Num): Num = if (ToBoolean == T) this else that
+
   // internal helper
   def sign: Num = Num(math.signum(num))
   def floor: Num = Num(math.floor(num))

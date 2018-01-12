@@ -74,22 +74,6 @@ object DefaultNumber extends NumDomain {
       case Top | UInt | NUInt | Inf => ConMany()
     }
 
-    override def toString: String = this match {
-      case Top => "Top(number)"
-      case Bot => "⊥(number)"
-      case Inf => "Inf"
-      case PosInf => "+Inf"
-      case NegInf => "-Inf"
-      case NaN => "NaN"
-      case UInt => "UInt"
-      case NUInt => "NUInt"
-      case UIntConst(v) => v.toString
-      case NUIntConst(0) => "-0"
-      case NUIntConst(v) =>
-        if (Math.floor(v) == v && !v.isInfinity) v.toLong.toString
-        else v.toString
-    }
-
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
       case (_, Top) => true
@@ -119,31 +103,56 @@ object DefaultNumber extends NumDomain {
       case _ => Bot
     }
 
+    // 9.2 ToBoolean
+    override def ToBoolean: AbsBool = this match {
+      case Bot => AbsBool.Bot
+      // The result is false if the argument is +0, -0, or NaN;
+      case UIntConst(0) | NUIntConst(0) | NaN => AF
+      // otherwise the result is true.
+      case UIntConst(_) | NUIntConst(_) | PosInf | NegInf | Inf => AT
+      // other cases
+      case _ => AbsBool.Top
+    }
+
+    // 9.4 ToInteger
+    override def ToInteger: Elem = this match {
+      case Bot => Bot
+      // 2. If number is NaN, return +0.
+      case NaN => UIntConst(0)
+      // 3. If number is +0, -0, +Infinity, or Infinity, return number.
+      case UIntConst(0) | NUIntConst(0) | PosInf | NegInf | Inf => this
+      // 4. Return the result of computing sign(number) * floor(abs(number)).
+      case UIntConst(_) | UInt => this
+      case NUIntConst(n) => alpha(Num(n).ToInteger)
+      // other cases
+      case _ => Top
+    }
+
     override def <(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
-      case (NaN, _) | (_, NaN) => AbsBool.False
-      case (PosInf, _) => AbsBool.False
-      case (_, PosInf) => AbsBool.True
-      case (_, NegInf) => AbsBool.False
-      case (NegInf, _) => AbsBool.True
+      case (NaN, _) | (_, NaN) => AF
+      case (PosInf, _) => AF
+      case (_, PosInf) => AT
+      case (_, NegInf) => AF
+      case (NegInf, _) => AT
       case (UIntConst(n1), UIntConst(n2)) => AbsBool(n1 < n2)
       case (UIntConst(n1), NUIntConst(n2)) => AbsBool(n1 < n2)
       case (NUIntConst(n1), UIntConst(n2)) => AbsBool(n1 < n2)
       case (NUIntConst(n1), NUIntConst(n2)) => AbsBool(n1 < n2)
-      case (UInt, UIntConst(0)) => AbsBool.False
-      case (UInt, NUIntConst(n2)) if n2 <= 0 => AbsBool.False
+      case (UInt, UIntConst(0)) => AF
+      case (UInt, NUIntConst(n2)) if n2 <= 0 => AF
       case _ => AbsBool.Top
     }
 
-    override def ===(that: Elem): AbsBool = (this, that) match {
+    override def StrictEquals(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
-      case (NaN, _) | (_, NaN) => AbsBool.False
+      case (NaN, _) | (_, NaN) => AF
       case (UIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)
       case (UIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
       case (NUIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)
       case (NUIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
-      case (NegInf, NegInf) | (PosInf, PosInf) => AbsBool.True
-      case (left, right) if !(left ⊑ right) && !(right ⊑ left) => AbsBool.False
+      case (NegInf, NegInf) | (PosInf, PosInf) => AT
+      case (left, right) if !(left ⊑ right) && !(right ⊑ left) => AF
       case _ => AbsBool.Top
     }
 
@@ -217,14 +226,14 @@ object DefaultNumber extends NumDomain {
     }
 
     // 9.8.1 ToString Applied to the Number Type
-    def toAbsStr: AbsStr = this match {
+    override def ToString: AbsStr = this match {
       case Bot => AbsStr.Bot
       // 1. If m is NaN, return the String "NaN".
       case NaN => AbsStr("NaN")
       // 2. If m is +0 or -0, return the String "0".
       case UIntConst(0) | NUIntConst(0) => AbsStr("0")
       // 3. If m is less than zero, return the String concatenation of the String "-" and ToString( m).
-      case NUIntConst(n) if n < 0 => AbsStr("-") concat alpha(-n).toAbsStr
+      case NUIntConst(n) if n < 0 => AbsStr("-") concat alpha(-n).ToString
       case NegInf => AbsStr("-Infinity")
       // 4. If m is infinity, return the String "Infinity".
       case PosInf => AbsStr("Infinity")
@@ -234,31 +243,6 @@ object DefaultNumber extends NumDomain {
       case _ => AbsStr.Number
     }
 
-    // 9.2 ToBoolean
-    def toAbsBoolean: AbsBool = this match {
-      case Bot => AbsBool.Bot
-      // The result is false if the argument is +0, -0, or NaN;
-      case UIntConst(0) | NUIntConst(0) | NaN => AbsBool.False
-      // otherwise the result is true.
-      case UIntConst(_) | NUIntConst(_) | PosInf | NegInf | Inf => AbsBool.True
-      // other cases
-      case _ => AbsBool.Top
-    }
-
-    // 9.4 ToInteger
-    def toInteger: Elem = this match {
-      case Bot => Bot
-      // 2. If number is NaN, return +0.
-      case NaN => UIntConst(0)
-      // 3. If number is +0, -0, +Infinity, or Infinity, return number.
-      case UIntConst(0) | NUIntConst(0) | PosInf | NegInf | Inf => this
-      // 4. Return the result of computing sign(number) * floor(abs(number)).
-      case UIntConst(_) | UInt => this
-      case NUIntConst(n) => alpha(math.signum(n) * math.floor(math.abs(n)))
-      // other cases
-      case _ => Top
-    }
-
     private def modulo(posInt: Long, bound: Long): Long = {
       val value = posInt % bound
       if (value < 0) value + bound
@@ -266,7 +250,7 @@ object DefaultNumber extends NumDomain {
     }
 
     // 9.5 ToInt32: (Signed 32 Bit Integer)
-    def toInt32: Elem = {
+    override def ToInt32: Elem = {
       def helper(number: Double): Long = {
         val bound = 0x100000000L // 2^32
         // 3. Let posInt be sign(number) * floor(abs(number)).
@@ -290,7 +274,7 @@ object DefaultNumber extends NumDomain {
     }
 
     // 9.6 ToUint32: (Unsigned 32 Bit Integer)
-    def toUInt32: Elem = {
+    override def ToUint32: Elem = {
       def helper(number: Double): Long = {
         val bound = 0x100000000L // 2^32
         // 3. Let posInt be sign(number) * floor(abs(number)).
@@ -313,7 +297,7 @@ object DefaultNumber extends NumDomain {
     }
 
     // 9.7 ToUint16: (Unsigned 16 Bit Integer)
-    def toUInt16: Elem = {
+    override def ToUint16: Elem = {
       def helper(number: Double): Long = {
         val bound = 0x10000L // 2^16
         // 3. Let posInt be sign(number) * floor(abs(number)).
@@ -336,26 +320,26 @@ object DefaultNumber extends NumDomain {
     }
 
     // 9.12 The SameValue Algorithm
-    def sameValue(that: Elem): AbsBool = (this, that) match {
+    override def SameValue(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       // a. If x is NaN and y is NaN, return true.
-      case (NaN, NaN) => AbsBool.True
+      case (NaN, NaN) => AT
       case (NaN, Top) | (Top, NaN) => AbsBool.Top
       // b. If x is +0 and y is -0, return false.
-      case (UIntConst(0), NUIntConst(0)) => AbsBool.False
+      case (UIntConst(0), NUIntConst(0)) => AF
       case (UIntConst(0), NUInt) | (UIntConst(0), Top) => AbsBool.Top
       case (UInt, NUIntConst(0)) | (Top, NUIntConst(0)) => AbsBool.Top
       // c. If x is -0 and y is +0, return false.
-      case (NUIntConst(0), UIntConst(0)) => AbsBool.False
+      case (NUIntConst(0), UIntConst(0)) => AF
       case (NUIntConst(0), UInt) | (NUIntConst(0), Top) => AbsBool.Top
       case (NUInt, UIntConst(0)) | (Top, UIntConst(0)) => AbsBool.Top
       // d. If x is the same Number value as y, return true.
       // e. Return false.
-      case (left, right) => left === right
+      case (left, right) => left StrictEquals right
     }
 
     // 11.4.7 Unary-Operator
-    def negate: Elem = this match {
+    override def unary_-(): Elem = this match {
       case Bot => Bot
       // 3. If oldValue is NaN, return NaN.
       case NaN => NaN
@@ -648,7 +632,7 @@ object DefaultNumber extends NumDomain {
     // 11.4.8 Bitwise NOT Operator ( ~ )
     // 1. Let expr be the result of evaluating UnaryExpression.
     // 2. Let oldValue be ToInt32(GetValue(expr)).
-    def bitNegate: Elem = toInt32 match {
+    override def unary_~(): Elem = ToInt32 match {
       case Bot => Bot
       // 3. Return the result of applying bitwise complement to oldValue.
       case UIntConst(n) => alpha(~(n.toInt))
@@ -657,7 +641,7 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
-    private def binaryBitwiseOp(left: Elem, right: Elem)(op: (Int, Int) => Int): Elem = (left.toInt32, right.toInt32) match {
+    private def binaryBitwiseOp(left: Elem, right: Elem)(op: (Int, Int) => Int): Elem = (left.ToInt32, right.ToInt32) match {
       case (UIntConst(l), UIntConst(r)) => alpha(op(l.toInt, r.toInt))
       case (UIntConst(l), NUIntConst(r)) => alpha(op(l.toInt, r.toInt))
       case (NUIntConst(l), UIntConst(r)) => alpha(op(l.toInt, r.toInt))
@@ -666,15 +650,15 @@ object DefaultNumber extends NumDomain {
     }
 
     // 11.10 BinaryBitwiseOperators
-    def bitOr(that: Elem): Elem = binaryBitwiseOp(this, that)(_ | _)
-    def bitAnd(that: Elem): Elem = binaryBitwiseOp(this, that)(_ & _)
-    def bitXor(that: Elem): Elem = binaryBitwiseOp(this, that)(_ ^ _)
+    override def |(that: Elem): Elem = binaryBitwiseOp(this, that)(_ | _)
+    override def &(that: Elem): Elem = binaryBitwiseOp(this, that)(_ & _)
+    override def ^(that: Elem): Elem = binaryBitwiseOp(this, that)(_ ^ _)
 
     private def binaryShiftOp(
       left: Elem,
       right: Elem,
       signed: Boolean = true
-    )(op: (Int, Int) => Long): Elem = (left.toUInt32, right.toUInt32) match {
+    )(op: (Int, Int) => Long): Elem = (left.ToUint32, right.ToUint32) match {
       case (UIntConst(l), UIntConst(r)) =>
         val bound = 0x100000000L
         val l32 = l.toInt
@@ -686,14 +670,14 @@ object DefaultNumber extends NumDomain {
     }
 
     // 11.7.1 The Left Shift Operator ( << )
-    def bitLShift(shift: Elem): Elem = binaryShiftOp(this, shift)(_ << _)
+    override def <<(shift: Elem): Elem = binaryShiftOp(this, shift)(_ << _)
     // 11.7.2 The Signed Right Shift Operator ( >> )
-    def bitRShift(shift: Elem): Elem = binaryShiftOp(this, shift)(_ >> _)
+    override def >>(shift: Elem): Elem = binaryShiftOp(this, shift)(_ >> _)
     // 11.7.3 The Unsigned Right Shift Operator ( >>> )
-    def bitURShift(shift: Elem): Elem = binaryShiftOp(this, shift, false)(_ >>> _)
+    override def >>>(shift: Elem): Elem = binaryShiftOp(this, shift, false)(_ >>> _)
 
     // 11.6.3 Applying the Additive Operators to Numbers
-    def add(that: Elem): Elem = (this, that) match {
+    override def +(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       // If either operand is NaN, the result is NaN.
       case (NaN, _) | (_, NaN) => NaN
@@ -720,9 +704,9 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
-    def sub(that: Elem): Elem = this add (that.negate)
+    override def -(that: Elem): Elem = this + (-that)
 
-    def mul(that: Elem): Elem = (this, that) match {
+    override def *(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       /* 11.5.1 first */
       case (NaN, _) | (_, NaN) => NaN
@@ -755,7 +739,7 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
-    def div(that: Elem): Elem = (this, that) match {
+    override def /(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       /* 11.5.2 first */
       case (NaN, _) | (_, NaN) => NaN
@@ -803,7 +787,7 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
-    def mod(that: Elem): Elem = (this, that) match {
+    override def %(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       /* 11.5.3 first */
       case (NaN, _) | (_, NaN) => NaN
@@ -822,6 +806,22 @@ object DefaultNumber extends NumDomain {
       case _ => Top
     }
 
+    override def toString: String = this match {
+      case Top => "Top(number)"
+      case Bot => "⊥(number)"
+      case Inf => "Inf"
+      case PosInf => "+Inf"
+      case NegInf => "-Inf"
+      case NaN => "NaN"
+      case UInt => "UInt"
+      case NUInt => "NUInt"
+      case UIntConst(v) => v.toString
+      case NUIntConst(0) => "-0"
+      case NUIntConst(v) =>
+        if (Math.floor(v) == v && !v.isInfinity) v.toLong.toString
+        else v.toString
+    }
+
     def toJson: JsValue = this match {
       case Top => JsString("⊤")
       case Bot => JsString("⊥")
@@ -835,7 +835,6 @@ object DefaultNumber extends NumDomain {
       case NUIntConst(n) if isNegZero(n) => JsString("-0")
       case NUIntConst(n) => JsArray(JsString("nuint"), JsNumber(n))
     }
-
   }
 
   private def isNegZero(v: Double): Boolean = 1 / v == Double.NegativeInfinity

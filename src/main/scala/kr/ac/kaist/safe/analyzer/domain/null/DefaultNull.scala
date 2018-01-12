@@ -58,7 +58,7 @@ object DefaultNull extends NullDomain {
       case _ => Bot
     }
 
-    def ===(that: Elem): AbsBool = (this, that) match {
+    def StrictEquals(that: Elem): AbsBool = (this, that) match {
       case (Top, Top) => AbsBool.True
       case _ => AbsBool.Bot
     }

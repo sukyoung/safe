@@ -65,9 +65,9 @@ object TypeConversionHelper {
 
   def ToBoolean(bool: AbsBool): AbsBool = bool
 
-  def ToBoolean(num: AbsNum): AbsBool = num.toAbsBoolean
+  def ToBoolean(num: AbsNum): AbsBool = num.ToBoolean
 
-  def ToBoolean(str: AbsStr): AbsBool = str.toAbsBoolean
+  def ToBoolean(str: AbsStr): AbsBool = str.ToBoolean
 
   ////////////////////////////////////////////////////////////////
   // 9.3. ToNumber
@@ -97,11 +97,11 @@ object TypeConversionHelper {
   def ToNumber(x: AbsNull): AbsNum =
     x.fold(AbsNum.Bot)(_ => AbsNum(+0))
 
-  def ToNumber(bool: AbsBool): AbsNum = bool.toAbsNum
+  def ToNumber(bool: AbsBool): AbsNum = bool.ToNumber
 
   def ToNumber(num: AbsNum): AbsNum = num
 
-  def ToNumber(str: AbsStr): AbsNum = str.toAbsNum
+  def ToNumber(str: AbsStr): AbsNum = str.ToNumber
 
   ////////////////////////////////////////////////////////////////
   // 9.4 ToInteger
@@ -109,10 +109,10 @@ object TypeConversionHelper {
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
   def ToInteger(value: AbsValue): AbsNum =
-    ToNumber(value).toInteger
+    ToNumber(value).ToInteger
 
   def ToInteger(value: AbsValue, h: AbsHeap): AbsNum =
-    ToNumber(value, h).toInteger
+    ToNumber(value, h).ToInteger
 
   ////////////////////////////////////////////////////////////////
   // 9.5 ToInt32
@@ -120,32 +120,32 @@ object TypeConversionHelper {
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
   def ToInt32(value: AbsValue): AbsNum =
-    ToNumber(value).toInt32
+    ToNumber(value).ToInt32
 
   def ToInt32(value: AbsValue, h: AbsHeap): AbsNum =
-    ToNumber(value, h).toInt32
+    ToNumber(value, h).ToInt32
 
   ////////////////////////////////////////////////////////////////
-  // 9.6 ToUInt32
-  // Detailed abstract meaning of ToUInt32 relies on
+  // 9.6 ToUint32
+  // Detailed abstract meaning of ToUint32 relies on
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
-  def ToUInt32(value: AbsValue): AbsNum =
-    ToNumber(value).toUInt32
+  def ToUint32(value: AbsValue): AbsNum =
+    ToNumber(value).ToUint32
 
-  def ToUInt32(value: AbsValue, h: AbsHeap): AbsNum =
-    ToNumber(value, h).toUInt32
+  def ToUint32(value: AbsValue, h: AbsHeap): AbsNum =
+    ToNumber(value, h).ToUint32
 
   ////////////////////////////////////////////////////////////////
-  // 9.7 ToUInt16
-  // Detailed abstract meaning of ToUInt16 relies on
+  // 9.7 ToUint16
+  // Detailed abstract meaning of ToUint16 relies on
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
-  def ToUInt16(value: AbsValue): AbsNum =
-    ToNumber(value).toUInt16
+  def ToUint16(value: AbsValue): AbsNum =
+    ToNumber(value).ToUint16
 
-  def ToUInt16(value: AbsValue, h: AbsHeap): AbsNum =
-    ToNumber(value, h).toUInt16
+  def ToUint16(value: AbsValue, h: AbsHeap): AbsNum =
+    ToNumber(value, h).ToUint16
 
   ////////////////////////////////////////////////////////////////
   // 9.8 ToString
@@ -175,9 +175,9 @@ object TypeConversionHelper {
   def ToString(x: AbsNull): AbsStr =
     x.fold(AbsStr.Bot)(_ => AbsStr("null"))
 
-  def ToString(bool: AbsBool): AbsStr = bool.toAbsStr
+  def ToString(bool: AbsBool): AbsStr = bool.ToString
 
-  def ToString(num: AbsNum): AbsStr = num.toAbsStr
+  def ToString(num: AbsNum): AbsStr = num.ToString
 
   def ToString(str: AbsStr): AbsStr = str
 
@@ -261,7 +261,7 @@ object TypeConversionHelper {
 
   ////////////////////////////////////////////////////////////////
   // 9.12 The SameValue Algorithm
-  // This algorithm differs from the strict equal(===) in its
+  // This algorithm differs from the strict equal(StrictEquals) in its
   // treatment of signed zeros and NaN
   ////////////////////////////////////////////////////////////////
   def SameValue(h: AbsHeap, left: AbsValue, right: AbsValue): AbsBool = {
@@ -269,11 +269,11 @@ object TypeConversionHelper {
       if ((left ⊔ right).typeCount > 1) AbsBool.False
       else AbsBool.Bot
 
-    val isSame1 = (left.pvalue.undefval === right.pvalue.undefval)
-    val isSame2 = (left.pvalue.nullval === right.pvalue.nullval)
-    val isSame3 = (left.pvalue.boolval === right.pvalue.boolval)
-    val isSame4 = (left.pvalue.numval sameValue right.pvalue.numval)
-    val isSame5 = (left.pvalue.strval === right.pvalue.strval)
+    val isSame1 = (left.pvalue.undefval StrictEquals right.pvalue.undefval)
+    val isSame2 = (left.pvalue.nullval StrictEquals right.pvalue.nullval)
+    val isSame3 = (left.pvalue.boolval StrictEquals right.pvalue.boolval)
+    val isSame4 = (left.pvalue.numval SameValue right.pvalue.numval)
+    val isSame5 = (left.pvalue.strval StrictEquals right.pvalue.strval)
     val isSame6 =
       if (!left.locset.isBottom && !right.locset.isBottom) {
         val intersect = left.locset ⊓ right.locset

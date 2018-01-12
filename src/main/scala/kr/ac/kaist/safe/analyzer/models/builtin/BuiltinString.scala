@@ -131,7 +131,7 @@ object BuiltinString extends FuncModel(
           case ConOne(Num(n)) =>
             (0 until n.toInt).foldLeft(AbsStr(""))((str, i) => {
               val argV = Helper.propLoad(args, Set(AbsStr(i.toString)), h)
-              str.concat(AbsStr.fromCharCode(TypeConversionHelper.ToUInt16(argV)))
+              str.concat(AbsStr.fromCharCode(TypeConversionHelper.ToUint16(argV)))
             })
           // XXX: give up the precision! (Room for the analysis precision improvement!)
           case _ => AbsStr.Top
@@ -440,7 +440,7 @@ object BuiltinStringProto extends ObjModel(
           val b = intStart < AbsNum(0)
           val t =
             if (AT ⊑ b) {
-              BuiltinHelper.max(len.add(intStart), AbsNum(0))
+              BuiltinHelper.max(len + intStart, AbsNum(0))
             } else AbsNum.Bot
           val f =
             if (AF ⊑ b) {
@@ -453,7 +453,7 @@ object BuiltinStringProto extends ObjModel(
           val b = intEnd < AbsNum(0)
           val t =
             if (AT ⊑ b) {
-              BuiltinHelper.max(len.add(intEnd), AbsNum(0))
+              BuiltinHelper.max(len + intEnd, AbsNum(0))
             } else AbsNum.Bot
           val f =
             if (AF ⊑ b) {

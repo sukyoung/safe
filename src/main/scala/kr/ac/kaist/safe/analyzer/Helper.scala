@@ -26,13 +26,13 @@ object Helper {
   def arrayLenghtStore(heap: AbsHeap, idxAbsStr: AbsStr, storeV: AbsValue, l: Loc): (AbsHeap, Set[Exception]) = {
     if (AbsStr("length") ⊑ idxAbsStr) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
-      val nNewLen = typeHelper.ToUInt32(storeV)
+      val nNewLen = typeHelper.ToUint32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
       val bCanPut = heap.get(l).CanPut("length", heap)
 
       val arrLengthHeap2 =
         if ((atrue ⊑ (nOldLen < nNewLen)
-          || atrue ⊑ (nOldLen === nNewLen))
+          || atrue ⊑ (nOldLen StrictEquals nNewLen))
           && (atrue ⊑ bCanPut))
           heap.propStore(l, AbsStr("length"), storeV)
         else
@@ -61,13 +61,13 @@ object Helper {
         }
 
       val arrLengthHeap1 =
-        if (atrue ⊑ (nValue === nNewLen))
+        if (atrue ⊑ (nValue StrictEquals nNewLen))
           arrLengthHeap2 ⊔ arrLengthHeap3 ⊔ arrLengthHeap4
         else
           AbsHeap.Bot
 
       val lenExcSet1 =
-        if (afalse ⊑ (nValue === nNewLen)) HashSet[Exception](RangeError)
+        if (afalse ⊑ (nValue StrictEquals nNewLen)) HashSet[Exception](RangeError)
         else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {
@@ -79,9 +79,9 @@ object Helper {
     if (atrue ⊑ idxAbsStr.isArrayIndex) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val num = typeHelper.ToNumber(idxAbsStr)
-      val nIndex = typeHelper.ToUInt32(num)
+      val nIndex = typeHelper.ToUint32(num)
       val bGtEq = atrue ⊑ (nOldLen < nIndex) ||
-        atrue ⊑ (nOldLen === nIndex)
+        atrue ⊑ (nOldLen StrictEquals nIndex)
       val bCanPutLen = heap.get(l).CanPut("length", heap)
       // 4.b
       val arrIndexHeap1 =
@@ -182,15 +182,15 @@ object Helper {
 
   /* - */
   def uopMinus(value: AbsValue): AbsValue =
-    AbsValue(typeHelper.ToNumber(value).negate)
+    AbsValue(-typeHelper.ToNumber(value))
 
   /* - */
   def uopMinusBetter(h: AbsHeap, value: AbsValue): AbsValue =
-    AbsValue(typeHelper.ToNumber(value, h).negate)
+    AbsValue(-typeHelper.ToNumber(value, h))
 
   /* ~ */
   def uopBitNeg(value: AbsValue): AbsValue =
-    AbsValue(typeHelper.ToInt32(value).bitNegate)
+    AbsValue(~typeHelper.ToInt32(value))
 
   /* ! */
   def uopNeg(value: AbsValue): AbsValue =
@@ -201,7 +201,7 @@ object Helper {
   def bopBitOr(left: AbsValue, right: AbsValue): AbsValue = {
     val lAbsNum = typeHelper.ToInt32(left)
     val rAbsNum = typeHelper.ToInt32(right)
-    val resAbsNum = lAbsNum.bitOr(rAbsNum)
+    val resAbsNum = lAbsNum | rAbsNum
     AbsValue(resAbsNum)
   }
 
@@ -209,7 +209,7 @@ object Helper {
   def bopBitAnd(left: AbsValue, right: AbsValue): AbsValue = {
     val lAbsNum = typeHelper.ToInt32(left)
     val rAbsNum = typeHelper.ToInt32(right)
-    val resAbsNum = lAbsNum.bitAnd(rAbsNum)
+    val resAbsNum = lAbsNum & rAbsNum
     AbsValue(resAbsNum)
   }
 
@@ -217,31 +217,31 @@ object Helper {
   def bopBitXor(left: AbsValue, right: AbsValue): AbsValue = {
     val lAbsNum = typeHelper.ToInt32(left)
     val rAbsNum = typeHelper.ToInt32(right)
-    val resAbsNum = lAbsNum.bitXor(rAbsNum)
+    val resAbsNum = lAbsNum ^ rAbsNum
     AbsValue(resAbsNum)
   }
 
   /* << */
   def bopLShift(left: AbsValue, right: AbsValue): AbsValue = {
     val lAbsNum = typeHelper.ToInt32(left)
-    val rAbsNum = typeHelper.ToUInt32(right)
-    val resAbsNum = lAbsNum.bitLShift(rAbsNum)
+    val rAbsNum = typeHelper.ToUint32(right)
+    val resAbsNum = lAbsNum << rAbsNum
     AbsValue(resAbsNum)
   }
 
   /* >> */
   def bopRShift(left: AbsValue, right: AbsValue): AbsValue = {
     val lAbsNum = typeHelper.ToInt32(left)
-    val rAbsNum = typeHelper.ToUInt32(right)
-    val resAbsNum = lAbsNum.bitRShift(rAbsNum)
+    val rAbsNum = typeHelper.ToUint32(right)
+    val resAbsNum = lAbsNum >> rAbsNum
     AbsValue(resAbsNum)
   }
 
   /* >>> */
   def bopURShift(left: AbsValue, right: AbsValue): AbsValue = {
     val lAbsNum = typeHelper.ToInt32(left)
-    val rAbsNum = typeHelper.ToUInt32(right)
-    val resAbsNum = lAbsNum.bitURShift(rAbsNum)
+    val rAbsNum = typeHelper.ToUint32(right)
+    val resAbsNum = lAbsNum >>> rAbsNum
     AbsValue(resAbsNum)
   }
 
@@ -262,7 +262,7 @@ object Helper {
     (primLPV.strval.isBottom, primRPV.strval.isBottom) match {
       case (true, true) =>
         val (lAbsNum, rAbsNum) = (typeHelper.ToNumber(primLPV), typeHelper.ToNumber(primRPV))
-        val resAbsNum = lAbsNum add rAbsNum
+        val resAbsNum = lAbsNum + rAbsNum
         AbsValue(resAbsNum)
       case (false, true) =>
         val resVal = AbsValue(primLPV.strval.concat(TypeConversionHelper.ToString(primRPV)))
@@ -281,25 +281,25 @@ object Helper {
 
   /* - */
   def bopMinus(left: AbsValue, right: AbsValue): AbsValue = {
-    val resAbsNum = typeHelper.ToNumber(left) sub typeHelper.ToNumber(right)
+    val resAbsNum = typeHelper.ToNumber(left) - typeHelper.ToNumber(right)
     AbsValue(resAbsNum)
   }
 
   /* * */
   def bopMul(left: AbsValue, right: AbsValue): AbsValue = {
-    val resAbsNum = typeHelper.ToNumber(left) mul typeHelper.ToNumber(right)
+    val resAbsNum = typeHelper.ToNumber(left) * typeHelper.ToNumber(right)
     AbsValue(resAbsNum)
   }
 
   /* / */
   def bopDiv(left: AbsValue, right: AbsValue): AbsValue = {
-    val resAbsNum = typeHelper.ToNumber(left) div typeHelper.ToNumber(right)
+    val resAbsNum = typeHelper.ToNumber(left) / typeHelper.ToNumber(right)
     AbsValue(resAbsNum)
   }
 
   /* % */
   def bopMod(left: AbsValue, right: AbsValue): AbsValue = {
-    val resAbsNum = typeHelper.ToNumber(left) mod typeHelper.ToNumber(right)
+    val resAbsNum = typeHelper.ToNumber(left) % typeHelper.ToNumber(right)
     AbsValue(resAbsNum)
   }
 
@@ -316,11 +316,11 @@ object Helper {
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot
-    val b1 = (leftPV.undefval === rightPV.undefval) ⊔
-      (leftPV.nullval === rightPV.nullval) ⊔
-      (leftPV.numval === rightPV.numval) ⊔
-      (leftPV.strval === rightPV.strval) ⊔
-      (leftPV.boolval === rightPV.boolval) ⊔
+    val b1 = (leftPV.undefval StrictEquals rightPV.undefval) ⊔
+      (leftPV.nullval StrictEquals rightPV.nullval) ⊔
+      (leftPV.numval StrictEquals rightPV.numval) ⊔
+      (leftPV.strval StrictEquals rightPV.strval) ⊔
+      (leftPV.boolval StrictEquals rightPV.boolval) ⊔
       locsetTest
     val b2 = (leftPV.nullval.isBottom, rightPV.undefval.isBottom) match {
       case (false, false) => atrue
@@ -333,30 +333,30 @@ object Helper {
     val b4 = (leftPV.numval.isBottom, rightPV.strval.isBottom) match {
       case (true, _) | (_, true) => AbsBool.Bot
       case _ =>
-        val rightNumVal = rightPV.strval.toAbsNum
-        (leftPV.numval === rightNumVal)
+        val rightNumVal = rightPV.strval.ToNumber
+        (leftPV.numval StrictEquals rightNumVal)
     }
     val b5 = (leftPV.strval.isBottom, rightPV.numval.isBottom) match {
       case (true, _) | (_, true) => AbsBool.Bot
       case _ =>
-        val leftNumVal = leftPV.strval.toAbsNum
-        (leftNumVal === rightPV.numval)
+        val leftNumVal = leftPV.strval.ToNumber
+        (leftNumVal StrictEquals rightPV.numval)
     }
     val b6 = leftPV.boolval.isBottom match {
       case true => AbsBool.Bot
       case false =>
-        val leftNumVal = leftPV.boolval.toAbsNum
+        val leftNumVal = leftPV.boolval.ToNumber
         val b61 = rightPV.numval.fold(AbsBool.Bot)(rightNumVal => {
-          (leftNumVal === rightNumVal)
+          (leftNumVal StrictEquals rightNumVal)
         })
         val b62 = rightPV.strval.fold(AbsBool.Bot)(rightStrVal => {
-          val rightNumVal = rightStrVal.toAbsNum
-          (leftNumVal === rightNumVal)
+          val rightNumVal = rightStrVal.ToNumber
+          (leftNumVal StrictEquals rightNumVal)
         })
         val b63 = right.locset.fold(AbsBool.Bot) {
           case _ =>
             val rightNumVal = objToPrimitive(right, "Number").numval
-            (leftNumVal === rightNumVal)
+            (leftNumVal StrictEquals rightNumVal)
         }
         val b64 = rightPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         val b65 = rightPV.nullval.fold(AbsBool.Bot)(_ => afalse)
@@ -366,18 +366,18 @@ object Helper {
     val b7 = rightPV.boolval.isBottom match {
       case true => AbsBool.Bot
       case false =>
-        val rightNumVal = rightPV.boolval.toAbsNum
+        val rightNumVal = rightPV.boolval.ToNumber
         val b71 = leftPV.numval.fold(AbsBool.Bot)(leftNumVal => {
-          (leftNumVal === rightNumVal)
+          (leftNumVal StrictEquals rightNumVal)
         })
         val b72 = leftPV.strval.fold(AbsBool.Bot)(leftStrVal => {
-          val leftNumVal = leftStrVal.toAbsNum
-          (leftNumVal === rightNumVal)
+          val leftNumVal = leftStrVal.ToNumber
+          (leftNumVal StrictEquals rightNumVal)
         })
         val b73 = left.locset.fold(AbsBool.Bot) {
           case _ =>
             val leftNumVal = objToPrimitive(left, "Number").numval
-            (leftNumVal === rightNumVal)
+            (leftNumVal StrictEquals rightNumVal)
         }
         val b74 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         val b75 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
@@ -388,11 +388,11 @@ object Helper {
       case _ =>
         val b81 = leftPV.numval.fold(AbsBool.Bot)(leftNumVal => {
           val rightNumVal = objToPrimitive(right, "Number").numval
-          (leftNumVal === rightNumVal)
+          (leftNumVal StrictEquals rightNumVal)
         })
         val b82 = leftPV.strval.fold(AbsBool.Bot)(leftStrVal => {
           val rightStrVal = objToPrimitive(right, "String").strval
-          (leftStrVal === rightStrVal)
+          (leftStrVal StrictEquals rightStrVal)
         })
         b81 ⊔ b82
     }
@@ -401,11 +401,11 @@ object Helper {
       case _ =>
         val b91 = rightPV.numval.fold(AbsBool.Bot)(rightNumVal => {
           val leftNumVal = objToPrimitive(left, "Number").numval
-          (leftNumVal === rightNumVal)
+          (leftNumVal StrictEquals rightNumVal)
         })
         val b92 = rightPV.strval.fold(AbsBool.Bot)(rightStrVal => {
           val leftStrVal = objToPrimitive(left, "String").strval
-          (leftStrVal === rightStrVal)
+          (leftStrVal StrictEquals rightStrVal)
         })
         b91 ⊔ b92
     }
@@ -443,7 +443,7 @@ object Helper {
     AbsValue(resAbsBool)
   }
 
-  /* === */
+  /* StrictEquals */
   def bopSEq(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
     val isMultiType =
       if ((left ⊔ right).typeCount > 1) afalse
@@ -458,11 +458,11 @@ object Helper {
         }
       } else AbsBool.Bot
     val isSame =
-      (left.pvalue.undefval === right.pvalue.undefval) ⊔
-        (left.pvalue.nullval === right.pvalue.nullval) ⊔
-        (left.pvalue.numval === right.pvalue.numval) ⊔
-        (left.pvalue.strval === right.pvalue.strval) ⊔
-        (left.pvalue.boolval === right.pvalue.boolval) ⊔
+      (left.pvalue.undefval StrictEquals right.pvalue.undefval) ⊔
+        (left.pvalue.nullval StrictEquals right.pvalue.nullval) ⊔
+        (left.pvalue.numval StrictEquals right.pvalue.numval) ⊔
+        (left.pvalue.strval StrictEquals right.pvalue.strval) ⊔
+        (left.pvalue.boolval StrictEquals right.pvalue.boolval) ⊔
         isLocsetSame
     AbsValue(isMultiType ⊔ isSame)
   }

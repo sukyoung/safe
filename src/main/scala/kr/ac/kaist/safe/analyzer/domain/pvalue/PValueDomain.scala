@@ -32,7 +32,7 @@ trait PValueDomain extends AbsDomain[PValue] {
     val numval: AbsNum
     val strval: AbsStr
 
-    def ===(that: Elem): AbsBool
+    def StrictEquals(that: Elem): AbsBool
     def typeCount: Int
     def toStringSet: Set[AbsStr]
     def copy(
