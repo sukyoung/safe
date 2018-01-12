@@ -20,12 +20,12 @@ object FlatNumber extends NumDomain {
   case object Top extends Elem
   case object Bot extends Elem
   case class Const(value: Double) extends Elem
-  lazy val Inf = Top
-  lazy val PosInf = Const(PositiveInfinity)
-  lazy val NegInf = Const(NegativeInfinity)
-  lazy val NaN = Const(Double.NaN)
-  lazy val UInt = Top
-  lazy val NUInt = Top
+  override val Inf = Top
+  override val PosInf = Const(PositiveInfinity)
+  override val NegInf = Const(NegativeInfinity)
+  override val NaN = Const(Double.NaN)
+  val UInt = Top
+  val NUInt = Top
 
   def alpha(num: Num): Elem = Const(num.num)
 
@@ -90,13 +90,13 @@ object FlatNumber extends NumDomain {
       case _ => Bot
     }
 
-    def <(that: Elem): AbsBool = (this, that) match {
+    override def <(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (Const(n1), Const(n2)) => AbsBool(n1 < n2)
       case _ => AbsBool.Top
     }
 
-    def ===(that: Elem): AbsBool = (this, that) match {
+    override def ===(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (Const(n1), Const(n2)) => AbsBool(n1 == n2)
       case _ => AbsBool.Top

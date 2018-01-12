@@ -17,6 +17,7 @@ case class Num(num: Double) extends PValue {
 
   // constructor for Long
   def this(long: Long) = this(long.toDouble)
+  def this(int: Int) = this(int.toDouble)
 
   // 9.8 ToString
   // 9.8.1 ToString Applied to the Number Type
@@ -100,16 +101,16 @@ case class Num(num: Double) extends PValue {
     }
   }
 
+  // 11.6.1 The Addition operator ( + )
+  def +(that: Num): Num = Num(this.num + that.num)
+
   // internal helper
   def sign: Num = Num(math.signum(num))
   def floor: Num = Num(math.floor(num))
   def abs: Num = Num(math.abs(num))
 
-  // binary operator
-  def *(that: Num): Num = Num(this.num * that.num)
-
   // modulo
-  def %(bound: Long): Long = {
+  def modulo(bound: Long): Long = {
     val value = num.toLong % bound
     if (value < 0) value + bound
     else value

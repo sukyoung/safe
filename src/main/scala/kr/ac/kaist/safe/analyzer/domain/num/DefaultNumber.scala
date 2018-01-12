@@ -18,10 +18,10 @@ import spray.json._
 object DefaultNumber extends NumDomain {
   case object Top extends Elem
   case object Bot extends Elem
-  case object Inf extends Elem
-  case object PosInf extends Elem
-  case object NegInf extends Elem
-  case object NaN extends Elem
+  override case object Inf extends Elem
+  override case object PosInf extends Elem
+  override case object NegInf extends Elem
+  override case object NaN extends Elem
   case object UInt extends Elem
   case object NUInt extends Elem
   case class UIntConst(value: Long) extends Elem
@@ -119,7 +119,7 @@ object DefaultNumber extends NumDomain {
       case _ => Bot
     }
 
-    def <(that: Elem): AbsBool = (this, that) match {
+    override def <(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (NaN, _) | (_, NaN) => AbsBool.False
       case (PosInf, _) => AbsBool.False
@@ -135,7 +135,7 @@ object DefaultNumber extends NumDomain {
       case _ => AbsBool.Top
     }
 
-    def ===(that: Elem): AbsBool = (this, that) match {
+    override def ===(that: Elem): AbsBool = (this, that) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (NaN, _) | (_, NaN) => AbsBool.False
       case (UIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)

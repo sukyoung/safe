@@ -62,7 +62,7 @@ package object domain {
   // implicit conversion for concrete types of primitive values
   ////////////////////////////////////////////////////////////////
   // Boolean <-> Bool
-  implicit def bool2boolean(b: Bool): Boolean = b.b
+  implicit def bool2boolean(b: Bool): Boolean = b.bool
   implicit def boolean2bool(b: Boolean): Bool = Bool(b)
   implicit def booleanSet2bool(set: Set[Boolean]): Set[Bool] = set.map(boolean2bool)
 

@@ -12,6 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // concrete boolean type
-case class Bool(b: Boolean) extends PValue {
-  override def toString: String = b.toString
+case class Bool(bool: Boolean) extends PValue {
+  override def toString: String = bool.toString
 }
