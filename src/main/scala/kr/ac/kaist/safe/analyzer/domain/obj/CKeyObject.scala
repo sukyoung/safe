@@ -109,7 +109,8 @@ object CKeyObject extends ObjDomain {
     // lookup
     private def lookup(astr: AbsStr): AbsOpt[AbsDataProp] = astr.gamma match {
       case ConInf => nmap.map.foldLeft(nmap.default) {
-        case (res, (_, value)) => res.⊔(_ ⊔ _)(value)
+        case (res, (str, value)) if astr.isRelated(str) => res.⊔(_ ⊔ _)(value)
+        case (res, _) => res
       }
       case ConFin(set) => set.foldLeft(AbsOpt.Bot(AbsDataProp.Bot)) {
         case (res, key) => res.⊔(_ ⊔ _)(nmap(key))
@@ -129,7 +130,7 @@ object CKeyObject extends ObjDomain {
     def weakUpdate(astr: AbsStr, dp: AbsDataProp): Elem = {
       if (dp.isBottom) Bot
       else astr.gamma match {
-        case ConInf => copy(nmap = nmap.mapCValues(_ ⊔ dp))
+        case ConInf => copy(nmap = nmap.mapCValues(_ ⊔ dp, (str, _) => astr.isRelated(str)))
         case ConFin(set) if set.size == 1 => update(set.head, dp) // TODO it is unsound in some cases
         case ConFin(set) => copy(nmap = set.foldLeft(nmap) {
           case (map, str) => map.update(str, map(str).⊔(_ ⊔ _)(AbsOpt(dp, AbsAbsent.Bot)))
@@ -148,7 +149,7 @@ object CKeyObject extends ObjDomain {
 
     // weak delete
     def weakDelete(astr: AbsStr): Elem = astr.gamma match {
-      case ConInf => copy(nmap = nmap.mapValues(_.⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top))))
+      case ConInf => copy(nmap = nmap.mapValues(_.⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)), (str, _) => astr.isRelated(str)))
       case ConFin(set) if set.size == 1 => delete(set.head)
       case ConFin(set) => copy(nmap = set.foldLeft(nmap) {
         case (map, str) => map.update(str, map(str).⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)))
@@ -159,7 +160,9 @@ object CKeyObject extends ObjDomain {
     def contains(str: String): AbsBool = nmap.contains(_.isBottom)(str)
     def contains(astr: AbsStr): AbsBool = astr.gamma match {
       case ConInf => nmap.map.foldLeft(nmap.default.exists(_.isBottom)) {
-        case (res, (_, opt)) => res ⊔ opt.exists(_.isBottom)
+        case (res, (str, opt)) =>
+          if (astr.isRelated(str)) res ⊔ opt.exists(_.isBottom)
+          else res
       }
       case ConFin(set) => set.foldLeft(AbsBool.Bot) {
         case (res, str) => res ⊔ contains(str)

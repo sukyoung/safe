@@ -306,29 +306,14 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       }
     }
 
-    // gamma(this) intersect gamma(that) != empty set
-    def isRelated(that: Elem): Boolean =
-      (this, that) match {
-        case (Top, _) | (_, Top) => true
-        case (Bot, _) | (_, Bot) => false
-        case (left, right) if left == right => true
-        case (Number, StrSet(v)) if v.exists(str => isNumber(str)) => true
-        case (StrSet(v), Number) if v.exists(str => isNumber(str)) => true
-        case (Other, StrSet(v)) if v.exists(str => !isNumber(str)) => true
-        case (StrSet(v), Other) if v.exists(str => !isNumber(str)) => true
-        case (StrSet(v1), StrSet(v2)) => (v1 intersect v2).nonEmpty
-        case _ => false
-      }
-
     // gamma(this) contains str
-    def isRelated(str: String): Boolean =
-      this match {
-        case Top => true
-        case Bot => false
-        case Number => isNumber(str)
-        case Other => !isNumber(str)
-        case StrSet(v) => v contains str
-      }
+    def isRelated(str: String): Boolean = this match {
+      case Top => true
+      case Bot => false
+      case Number => isNumber(str)
+      case Other => !isNumber(str)
+      case StrSet(v) => v contains str
+    }
 
     def toJson: JsValue = this match {
       case Top => JsString("⊤")

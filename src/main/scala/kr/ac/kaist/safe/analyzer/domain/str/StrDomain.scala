@@ -43,7 +43,6 @@ trait StrDomain extends AbsDomain[Str] {
     def isArrayIndex: AbsBool
 
     def isRelated(str: String): Boolean
-    def isRelated(astr: Elem): Boolean
 
     def ToNumber: AbsNum
     def ToBoolean: AbsBool

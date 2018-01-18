@@ -60,19 +60,27 @@ case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
   def apply(k: K): AbsOpt[V] = map.getOrElse(k, default)
 
   // map for values
-  def mapValues(f: AbsOpt[V] => AbsOpt[V]): AbsMap[K, V] = {
+  def mapValues(
+    f: AbsOpt[V] => AbsOpt[V],
+    filter: (K, AbsOpt[V]) => Boolean = (_, _) => true
+  ): AbsMap[K, V] = {
     val default = f(this.default)
     val map = this.map.foldLeft[Map[K, AbsOpt[V]]](HashMap()) {
       case (map, (key, value)) =>
-        val res = f(value)
+        val res =
+          if (filter(key, value)) f(value)
+          else value
         if (res == default) map
         else map + (key -> res)
     }
     AbsMap(map, default)
   }
-  def mapCValues(f: V => V): AbsMap[K, V] = mapValues {
+  def mapCValues(
+    f: V => V,
+    filter: (K, AbsOpt[V]) => Boolean = (_, _) => true
+  ): AbsMap[K, V] = mapValues({
     case AbsOpt(v, a) => AbsOpt(f(v), a)
-  }
+  }, filter)
 
   // update
   def update(k: K, v: AbsOpt[V]): AbsMap[K, V] = copy(
