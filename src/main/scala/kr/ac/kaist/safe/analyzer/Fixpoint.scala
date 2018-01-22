@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Interactive
-import kr.ac.kaist.safe.nodes.cfg.{ CFGEdgeExc, CFGEdgeNormal }
+import kr.ac.kaist.safe.nodes.cfg._
 
 class Fixpoint(
     semantics: Semantics,
@@ -92,6 +92,13 @@ class Fixpoint(
               val newSt = oldSt ⊔ nextSt2
               semantics.setState(succCP, newSt)
               worklist.add(succCP)
+              succCP.block match {
+                case Entry(f) =>
+                  val tp = succCP.tracePartition
+                  worklist.add(ControlPoint(f.exit, tp))
+                  worklist.add(ControlPoint(f.exitExc, tp))
+                case _ =>
+              }
             }
           }
         }
