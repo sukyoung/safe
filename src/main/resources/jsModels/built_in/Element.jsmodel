@@ -10,7 +10,8 @@ Heap: {
     "location": <#location, F, T, T>,
     "setInterval": <#Document.prototype.setInterval, T, T, T>,
     "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
-    "navigator": <#Global.clientInformation, F, T, T>
+    "navigator": <#Global.clientInformation, F, T, T>,
+    "HTMLElement": <#HTMLElement, T, F, T>
   },
   #Element: {
     [[Call]]: fun(1),
@@ -26,7 +27,8 @@ Heap: {
     [[Class]]: "Element",
     [[Extensible]]: true,
     [[Prototype]]: #Node.prototype,
-    "constructor": <#Element, T, F, T>
+    "constructor": <#Element, T, F, T>,
+    "getElementsByTagName": <#Element.prototype.getElementsByTagName, T, T, T>
   },
   #Node: {
     [[Call]]: fun(3),
@@ -179,6 +181,36 @@ Heap: {
     [[Prototype]]: #Object.prototype,
     "userAgent": <string, T, T, T>
   },
+  #HTMLElement: {
+    [[Call]]: fun(18),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Element,
+    [[Scope]]: null,
+    "prototype": <#HTMLElement.prototype, F, F, F>
+  },
+  #HTMLElement.prototype: {
+    [[Class]]: "HTMLElement",
+    [[Extensible]]: true,
+    [[Prototype]]: #Element.prototype,
+    "constructor": <#HTMLElement, T, F, T>,
+    "style": <#HTMLElement.prototype.style, T, T, T>,
+  },
+  #HTMLElement.prototype.style: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype
+  },
+  #Element.prototype.getElementsByTagName: {
+    [[Call]]: fun(19),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"getElementsByTagName", F, F, T>
+  }
 }
 
 Function: {
@@ -234,7 +266,7 @@ Function: {
   12: [\\
   function createElement() {
     var o = {};
-    @Prototype(o, Element.prototype);
+    @Prototype(o, HTMLElement.prototype);
     return o;
   }
   \\],
@@ -256,6 +288,15 @@ Function: {
   \\],
   17: [\\
   function setInterval(code, delay) {
+  }
+  \\],
+  18: [\\
+  function HTMLElement() {
+  }
+  \\],
+  19: [\\
+  function getElementsByName() {
+    return [];
   }
   \\]
 }
