@@ -76,21 +76,28 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             case key :: Nil => printResult(grep(key, res))
             case _ => printResult(help)
           }
-        case "block" => rest match {
-          case Nil => printResult(c.getCurCP.block.toString(0))
+        case "block" => (rest match {
+          case Nil => Some(c.getCurCP.block)
           case subcmd :: Nil => c.cfg.findBlock(subcmd) match {
-            case Success(block) => printResult(block.toString(0))
+            case Success(block) => Some(block)
             case Failure(e) => e match {
               case IllFormedBlockStr => {
                 printResult("usage: print block {fid}:{bid}")
                 printResult("       print block {fid}:entry")
                 printResult("       print block {fid}:exit")
                 printResult("       print block {fid}:exitExc")
+                None
               }
-              case _ => printResult(s"* ${e.getMessage}")
+              case _ => printResult(s"* ${e.getMessage}"); None
             }
           }
-          case _ => printResult(help)
+          case _ => printResult(help); None
+        }) match {
+          case Some(block) =>
+            val span = block.span
+            printResult(s"span: $span")
+            printResult(block.toString(0))
+          case None =>
         }
         case "loc" => rest match {
           case locStr :: rest if rest.length <= 1 =>
