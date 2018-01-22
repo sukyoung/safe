@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.HashMap
 
 case class Worklist(cfg: CFG) {
@@ -80,7 +81,7 @@ case class Worklist(cfg: CFG) {
   def getOrderMap: Map[CFGBlock, Int] = orderMap
 
   override def toString: String = {
-    worklist.map(work => work.toString).mkString(", ")
+    worklist.map(work => work.toString).mkString(LINE_SEP)
   }
 
   def has(block: CFGBlock): Boolean = worklist.exists {
