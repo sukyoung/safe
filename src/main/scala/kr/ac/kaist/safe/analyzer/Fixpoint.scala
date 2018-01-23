@@ -88,17 +88,17 @@ class Fixpoint(
           case (succCP, data) => {
             val oldSt = semantics.getState(succCP)
             val nextSt2 = semantics.E(cp, succCP, data, nextSt)
+            succCP.block match {
+              case Entry(f) =>
+                val tp = succCP.tracePartition
+                worklist.add(ControlPoint(f.exit, tp))
+                worklist.add(ControlPoint(f.exitExc, tp))
+              case _ =>
+            }
             if (!(nextSt2 ⊑ oldSt)) {
               val newSt = oldSt ⊔ nextSt2
               semantics.setState(succCP, newSt)
               worklist.add(succCP)
-              succCP.block match {
-                case Entry(f) =>
-                  val tp = succCP.tracePartition
-                  worklist.add(ControlPoint(f.exit, tp))
-                  worklist.add(ControlPoint(f.exitExc, tp))
-                case _ =>
-              }
             }
           }
         }
