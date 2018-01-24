@@ -4929,7 +4929,7 @@ Function: {
   }
   \\],
   97: [\\
-  function () {
+  function exec () {
   }
   \\],
   98: [\\
@@ -4939,7 +4939,7 @@ Function: {
   }
   \\],
   99: [\\
-  function () {
+  function toString () {
   }
   \\],
   100: [\\

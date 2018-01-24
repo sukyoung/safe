@@ -455,8 +455,8 @@ Function: {
   14: [\\
   function split (separator) {
     // TODO it is not following the formal semantics
-    var S = @ToString(this);
-    var sep = @ToString(separator);
+    var S = this;
+    var sep = separator;
     var len = S.length;
     var idx = 0;
     var cur = 0;
