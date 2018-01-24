@@ -18,8 +18,12 @@ case class ControlPoint(
     block: CFGBlock,
     tracePartition: TracePartition
 ) {
-  def next(to: CFGBlock, edgeType: CFGEdgeType): ControlPoint = {
-    ControlPoint(to, tracePartition.next(block, to, edgeType))
+  def next(
+    to: CFGBlock,
+    edgeType: CFGEdgeType,
+    sem: Semantics
+  ): List[ControlPoint] = {
+    tracePartition.next(block, to, edgeType, sem).map(ControlPoint(to, _))
   }
   override def toString: String = {
     val fid = block.func.id

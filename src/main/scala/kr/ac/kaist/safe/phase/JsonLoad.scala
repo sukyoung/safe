@@ -89,9 +89,7 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Semantics, Tra
                   DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
                 })
 
-                val sens =
-                  CallSiteSensitivity(heapConfig.callsiteSensitivity) *
-                    LoopSensitivity(heapConfig.loopSensitivity)
+                val sens = heapConfig.callsiteSensitivity * heapConfig.loopSensitivity
                 Success((cfg, sem, sens.initTP, heapConfig, iter.toInt))
               }
               case _ => {

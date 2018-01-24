@@ -47,9 +47,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
     config.snapshot.map(str =>
       initSt = Initialize.addSnapshot(initSt, str))
 
-    val sens =
-      CallSiteSensitivity(config.callsiteSensitivity) *
-        LoopSensitivity(config.loopSensitivity)
+    val sens = config.callsiteSensitivity * config.loopSensitivity
     val initTP = sens.initTP
     val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
@@ -73,9 +71,11 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       case "recency" => c.aaddrType = RecencyAAddr
       case str => throw NoChoiceError(s"there is no address abstraction type with name '$str'.")
     }), "address abstraction type."),
-    ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),
+    ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = CallSiteSensitivity(n)),
       "{number}-depth callsite-sensitive analysis will be executed."),
-    ("loopSensitivity", NumOption((c, n) => if (n >= 0) c.loopSensitivity = n),
+    ("loopIter", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxIter = n)),
+      "{number}-iteration loop-sensitive analysis will be executed."),
+    ("loopDepth", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxDepth = n)),
       "{number}-depth loop-sensitive analysis will be executed."),
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
       "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
@@ -100,8 +100,8 @@ case class HeapBuildConfig(
   var AbsBool: BoolDomain = DefaultBool,
   var AbsNum: NumDomain = DefaultNumber,
   var AbsStr: StrDomain = StringSet(0),
-  var callsiteSensitivity: Int = 0,
-  var loopSensitivity: Int = 0,
+  var callsiteSensitivity: CallSiteSensitivity = CallSiteSensitivity(0),
+  var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
   var jsModel: Boolean = false,
   var aaddrType: AAddrType = RecencyAAddr

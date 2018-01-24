@@ -64,37 +64,12 @@ object ConfigProtocol extends DefaultJsonProtocol {
   implicit object HeapBuildConfigFormat extends RootJsonFormat[HeapBuildConfig] {
 
     def write(config: HeapBuildConfig): JsValue = config match {
-      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, js, addr) => JsArray(
-        JsBoolean(silent),
-        num.toJson,
-        str.toJson,
-        JsNumber(call),
-        JsNumber(loop),
-        snapshot match {
-          case Some(snap) => JsString(snap)
-          case None => JsNull
-        },
-        JsBoolean(js),
-        addr.toJson
-      )
+      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, js, addr) => JsArray()
     }
 
     def read(value: JsValue): HeapBuildConfig = value match {
       case JsArray(Vector(JsBoolean(silent), num, str, JsNumber(call), JsNumber(loop), snap, JsBoolean(js), addr)) =>
-        HeapBuildConfig(
-          silent,
-          AbsNum = num.convertTo[NumDomain],
-          AbsStr = str.convertTo[StrDomain],
-          callsiteSensitivity = call.toInt,
-          loopSensitivity = loop.toInt,
-          snapshot = snap match {
-            case JsString(s) => Some(s)
-            case JsNull => None
-            case _ => throw HeapBuildConfigParseError(value)
-          },
-          jsModel = js,
-          aaddrType = addr.convertTo[AAddrType]
-        )
+        HeapBuildConfig()
       case _ => throw HeapBuildConfigParseError(value)
     }
   }

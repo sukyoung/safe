@@ -23,6 +23,9 @@ sealed trait CFGBlock {
   val func: CFGFunction
   val id: BlockId
 
+  // outer loop
+  var outerLoop: Option[LoopHead] = None
+
   protected var iidCount: InstId = 0
   def getIId: InstId = iidCount
 
@@ -203,6 +206,9 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
 case class LoopHead(func: CFGFunction) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
+
+  // out blocks
+  var breakBlocks: List[NormalBlock] = Nil
 
   // inst list
   override def getInsts: List[CFGNormalInst] = Nil

@@ -50,6 +50,9 @@ case class CFGFunction(
   var blockData: Vector[JsValue] = _
   var capturedData: Vector[JsValue] = _
 
+  // loop information
+  var breakBlocks: List[NormalBlock] = Nil
+
   // append block
   private def addBlock(block: CFGBlock): CFGBlock = {
     bidCount += 1
@@ -59,10 +62,13 @@ case class CFGFunction(
   }
 
   // create call
-  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
+  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId, outer: Option[LoopHead]): Call = {
     val call = Call(this, callInstCons, retVar)
     val afterCall = call.afterCall
     val afterCatch = call.afterCatch
+    call.outerLoop = outer
+    afterCall.outerLoop = outer
+    afterCatch.outerLoop = outer
     addBlock(call)
     addBlock(afterCall)
     addBlock(afterCatch)
@@ -70,14 +76,16 @@ case class CFGFunction(
   }
 
   // create block
-  def createBlock: NormalBlock = createBlock(NoLabel)
-  def createBlock(label: LabelKind): NormalBlock = {
+  def createBlock(outer: Option[LoopHead]): NormalBlock = createBlock(NoLabel, outer)
+  def createBlock(label: LabelKind, outer: Option[LoopHead]): NormalBlock = {
     val block = NormalBlock(this, label)
+    block.outerLoop = outer
     addBlock(block)
     block
   }
-  def createLoopHead: LoopHead = {
+  def createLoopHead(outer: Option[LoopHead]): LoopHead = {
     val loopHead = LoopHead(this)
+    loopHead.outerLoop = outer
     addBlock(loopHead)
     loopHead
   }

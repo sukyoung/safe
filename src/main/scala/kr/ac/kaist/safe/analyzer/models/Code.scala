@@ -99,7 +99,8 @@ class CallCode(
 
     val callBlock: Call = func.createCall(
       CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), callEnvASite),
-      retId
+      retId,
+      None
     )
 
     val afterSem: SemanticFun = createAfterFunc(argsName)

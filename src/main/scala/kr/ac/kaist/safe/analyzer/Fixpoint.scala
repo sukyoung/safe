@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Interactive
 import kr.ac.kaist.safe.nodes.cfg._
+import scala.collection.immutable.HashSet
 
 class Fixpoint(
     semantics: Semantics,
@@ -31,6 +32,8 @@ class Fixpoint(
     iters
   }
 
+  var cpSet: Set[CFGBlock] = HashSet()
+
   def computeOneStep(): Unit = {
     consoleOpt.foreach(_.runFixpoint)
     val cp = worklist.pop
@@ -46,13 +49,14 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeNormal) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        val succCP = cp.next(block, CFGEdgeNormal)
-        val oldSt = semantics.getState(succCP)
-        if (!(nextSt ⊑ oldSt)) {
-          val newSt = oldSt ⊔ nextSt
-          semantics.setState(succCP, newSt)
-          worklist.add(succCP)
-        }
+        cp.next(block, CFGEdgeNormal, semantics).foreach(succCP => {
+          val oldSt = semantics.getState(succCP)
+          if (!(nextSt ⊑ oldSt)) {
+            val newSt = oldSt ⊔ nextSt
+            semantics.setState(succCP, newSt)
+            worklist.add(succCP)
+          }
+        })
       })
     }
   }
@@ -66,13 +70,14 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeExc) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        val excSuccCP = cp.next(block, CFGEdgeExc)
-        val oldExcSt = semantics.getState(excSuccCP)
-        if (!(nextExcSt ⊑ oldExcSt)) {
-          val newExcSet = oldExcSt ⊔ nextExcSt
-          semantics.setState(excSuccCP, newExcSet)
-          worklist.add(excSuccCP)
-        }
+        cp.next(block, CFGEdgeExc, semantics).foreach(excSuccCP => {
+          val oldExcSt = semantics.getState(excSuccCP)
+          if (!(nextExcSt ⊑ oldExcSt)) {
+            val newExcSet = oldExcSt ⊔ nextExcSt
+            semantics.setState(excSuccCP, newExcSet)
+            worklist.add(excSuccCP)
+          }
+        })
       })
     }
   }
@@ -91,8 +96,10 @@ class Fixpoint(
             succCP.block match {
               case Entry(f) =>
                 val tp = succCP.tracePartition
-                worklist.add(ControlPoint(f.exit, tp))
-                worklist.add(ControlPoint(f.exitExc, tp))
+                val exitCP = ControlPoint(f.exit, tp)
+                val exitExcCP = ControlPoint(f.exitExc, tp)
+                if (!semantics.getState(exitCP).isBottom) worklist.add(exitCP)
+                if (!semantics.getState(exitExcCP).isBottom) worklist.add(exitExcCP)
               case _ =>
             }
             if (!(nextSt2 ⊑ oldSt)) {

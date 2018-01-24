@@ -37,8 +37,6 @@ case class Semantics(
 
   lazy val excLog: ExcLog = new ExcLog
 
-  private val AF = AbsBool.False
-  private val AT = AbsBool.True
   private val AB = AbsBool.Bot
 
   // control point maps to state
@@ -67,6 +65,13 @@ case class Semantics(
     if (state.isBottom) map -= tp
     else map(tp) = state
   }
+
+  type BreakCtxtMap = Map[CFGBlock, Set[LoopContext]]
+  var breakCtxtMap: BreakCtxtMap = HashMap()
+  def addBreakCtxt(block: CFGBlock, ctxt: LoopContext): Unit =
+    breakCtxtMap += block -> (getBreakCtxtSet(block) + ctxt)
+  def getBreakCtxtSet(block: CFGBlock): Set[LoopContext] =
+    breakCtxtMap.getOrElse(block, HashSet())
 
   type IPSucc = Map[ControlPoint, EdgeData]
   type IPSuccMap = Map[ControlPoint, IPSucc]
@@ -1257,25 +1262,26 @@ case class Semantics(
               val (newRec2, _) = newRec
                 .CreateMutableBinding("@scope")
                 .SetMutableBinding("@scope", scopeValue)
-              val entryCP = cp.next(funCFG.entry, CFGEdgeCall)
-              val newTP = entryCP.tracePartition
-              val exitCP = ControlPoint(funCFG.exit, newTP)
-              val exitExcCP = ControlPoint(funCFG.exitExc, newTP)
-              addIPEdge(cp, entryCP, EdgeData(
-                OldASiteSet.Empty,
-                newEnv.copy(record = newRec2),
-                thisVal
-              ))
-              addIPEdge(exitCP, cpAfterCall, EdgeData(
-                st1.context.old,
-                oldLocalEnv,
-                st1.context.thisBinding
-              ))
-              addIPEdge(exitExcCP, cpAfterCatch, EdgeData(
-                st1.context.old,
-                oldLocalEnv,
-                st1.context.thisBinding
-              ))
+              cp.next(funCFG.entry, CFGEdgeCall, this).foreach(entryCP => {
+                val newTP = entryCP.tracePartition
+                val exitCP = ControlPoint(funCFG.exit, newTP)
+                val exitExcCP = ControlPoint(funCFG.exitExc, newTP)
+                addIPEdge(cp, entryCP, EdgeData(
+                  OldASiteSet.Empty,
+                  newEnv.copy(record = newRec2),
+                  thisVal
+                ))
+                addIPEdge(exitCP, cpAfterCall, EdgeData(
+                  st1.context.old,
+                  oldLocalEnv,
+                  st1.context.thisBinding
+                ))
+                addIPEdge(exitExcCP, cpAfterCatch, EdgeData(
+                  st1.context.old,
+                  oldLocalEnv,
+                  st1.context.thisBinding
+                ))
+              })
             }
             case None => excLog.signal(UndefinedFunctionCallError(i.ir))
           }

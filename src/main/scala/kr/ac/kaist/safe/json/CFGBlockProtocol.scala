@@ -88,17 +88,18 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
             CFGInstProtocol.block = c
             callInst.convertTo[CFGCallInst]
           },
-          retVar.convertTo[CFGId]
+          retVar.convertTo[CFGId],
+          None
         )
       }
       case JsArray(Vector(JsString("Normal"), label, JsArray(insts))) => {
-        val b: NormalBlock = func.createBlock(label.convertTo[LabelKind])
+        val b: NormalBlock = func.createBlock(label.convertTo[LabelKind], None)
         CFGInstProtocol.block = b
         for (inst <- insts)
           b.createInst(n => inst.convertTo[CFGNormalInst])
         b
       }
-      case JsArray(Vector()) => func.createLoopHead
+      case JsArray(Vector()) => func.createLoopHead(None)
       case _ => throw CFGBlockParseError(block)
     }
   }
