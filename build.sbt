@@ -32,7 +32,7 @@ lazy val root = (project in file(".")).
       val xtcFile = new File("./lib/xtc.jar")
       if (!xtcFile.exists) {
         // TODO exception handling: not downloaded
-        IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+        IO.download(new URL("https://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
       }
 
       // webix
