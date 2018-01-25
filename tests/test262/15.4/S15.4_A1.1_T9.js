@@ -1,4 +1,5 @@
   x = [];
+  var __expect7 = false;
   var object = {
     valueOf : (function () 
     {
@@ -118,7 +119,6 @@
   catch (e)
 {    {
       var __result7 = e !== "error";
-      var __expect7 = false;
     }}
 
   try
