@@ -278,7 +278,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var totalIteration = 0
 
   val analysisDetail = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
-  val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+  val testJSON = BASE_DIR + SEP + "config.json"
 
   val parser = new ArgParser(CmdBase, testSafeConfig)
   val heapBuildConfig = HeapBuild.defaultConfig
