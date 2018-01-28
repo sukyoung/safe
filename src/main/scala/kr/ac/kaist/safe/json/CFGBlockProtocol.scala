@@ -74,7 +74,7 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
         label.toJson,
         JsArray(block.getInsts.reverse.map(_.asInstanceOf[CFGNormalInst].toJson).to[Vector])
       )
-      case head @ LoopHead(_) => JsArray()
+      case head @ LoopHead(_, _) => JsArray()
       // case ModelBlock(_, _) => throw ModelBlockToJsonError
       case _ => JsNull
     }
@@ -99,7 +99,7 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
           b.createInst(n => inst.convertTo[CFGNormalInst])
         b
       }
-      case JsArray(Vector()) => func.createLoopHead(None)
+      case JsArray(Vector()) => func.createLoopHead(None, Span())
       case _ => throw CFGBlockParseError(block)
     }
   }

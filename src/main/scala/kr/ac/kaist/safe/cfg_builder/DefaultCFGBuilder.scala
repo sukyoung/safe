@@ -559,7 +559,8 @@ class DefaultCFGBuilder(
         /* tail block */
         val tailBlock: NormalBlock = getTail(blocks, func)
         /* while loop head */
-        val headBlock: LoopHead = func.createLoopHead(currentLoop)
+        val headBlockSpan: Span = stmt.span.copy(end = stmt.span.begin)
+        val headBlock: LoopHead = func.createLoopHead(currentLoop, headBlockSpan)
         val prevLoop = currentLoop
         currentLoop = Some(headBlock)
 

@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes.cfg
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.{ LINE_SEP, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.nodes.ir.IRNode
-import kr.ac.kaist.safe.util.NodeUtil
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
 import spray.json._
@@ -83,8 +83,8 @@ case class CFGFunction(
     addBlock(block)
     block
   }
-  def createLoopHead(outer: Option[LoopHead]): LoopHead = {
-    val loopHead = LoopHead(this)
+  def createLoopHead(outer: Option[LoopHead], span: Span): LoopHead = {
+    val loopHead = LoopHead(this, span)
     loopHead.outerLoop = outer
     addBlock(loopHead)
     loopHead

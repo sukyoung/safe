@@ -209,7 +209,7 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
 }
 
 // loop head
-case class LoopHead(func: CFGFunction) extends CFGBlock {
+case class LoopHead(func: CFGFunction, span: Span) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
@@ -227,13 +227,6 @@ case class LoopHead(func: CFGFunction) extends CFGBlock {
     s.append(pre).append(toString)
     s.append(getSuccsStr).append(LINE_SEP)
     s.toString
-  }
-
-  // span
-  def span: Span = {
-    val fileName = func.span.fileName
-    val (begin, end) = (SourceLoc(), SourceLoc()) // TODO return correct span
-    Span(fileName, begin, end)
   }
 }
 
