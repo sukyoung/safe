@@ -12,7 +12,8 @@
     "maxStrSetSize": 10,
     "aaddrType": "recency",
     "callsiteSensitivity": 10,
-    "loopSensitivity": 0,
+    "loopIter": 10,
+    "loopDepth": 10,
     "snapshot": "",
     "jsModel": false
   }
