@@ -125,8 +125,8 @@ case class LoopContext(
   ): List[LoopContext] = (from, to, edgeType) match {
     // function start
     case (entry: Entry, _, CFGEdgeNormal) =>
-      entry.func.breakBlocks.foreach(sem.addBreakCtxt(_, this))
-      sem.addBreakCtxt(entry.func.exit, this)
+      entry.func.outBlocks.foreach(sem.addOutCtxt(_, this))
+      sem.addOutCtxt(entry.func.exit, this)
       List(this)
     // continue
     case (_, head: LoopHead, CFGEdgeNormal) if from.outerLoop == Some(head) =>
@@ -134,27 +134,22 @@ case class LoopContext(
         case Nil => List(this)
         case LoopIter(head, iter) :: rest =>
           val newCtxt = copy(iterList = LoopIter(head, math.min(iter + 1, maxIter)) :: rest)
-          head.breakBlocks.foreach(sem.addBreakCtxt(_, newCtxt))
+          head.outBlocks.foreach(sem.addOutCtxt(_, newCtxt))
           List(newCtxt)
       }
     // loop entry
     case (_, head: LoopHead, CFGEdgeNormal) =>
       val newCtxt = copy(iterList = (LoopIter(head, 0) :: iterList).take(maxDepth))
-      head.breakBlocks.foreach(sem.addBreakCtxt(_, newCtxt))
+      head.outBlocks.foreach(sem.addOutCtxt(_, newCtxt))
       List(newCtxt)
-    // break
-    case (_, break @ NormalBlock(_, LoopBreakLabel | UserLabel(_)), CFGEdgeNormal) =>
+    case _ if to.isOutBlock =>
       val fromLoop = from.outerLoop
-      val breakLoop = break.outerLoop
-      val dist: Int = getDist(breakLoop, fromLoop)
-      if (dist == 0) List(this)
-      else findPrev(sem, break, dist)
-    // return
-    case (_, exit @ Exit(_), CFGEdgeNormal) =>
-      val fromLoop = from.outerLoop
-      val dist: Int = getDist(None, fromLoop)
-      if (dist == 0) List(this)
-      else findPrev(sem, exit, dist)
+      val toLoop = to.outerLoop
+      val dist: Int = getDist(toLoop, fromLoop)
+      val result =
+        if (dist == 0) List(this)
+        else findPrev(sem, to, dist)
+      result
     case _ => List(this)
   }
   private def getDist(target: Option[LoopHead], cur: Option[LoopHead], diff: Int = 0): Int = {
@@ -166,9 +161,9 @@ case class LoopContext(
   }
   private def findPrev(sem: Semantics, block: CFGBlock, dist: Int): List[LoopContext] = {
     val reduced = iterList.drop(dist)
-    sem.getBreakCtxtSet(block).filter {
+    sem.getOutCtxtSet(block).filter {
       case LoopContext(iters, _, _) =>
-        if (iterList.length < maxIter) iters == reduced
+        if (iterList.length < maxDepth) iters == reduced
         else iters.startsWith(reduced)
     }.toList
   }

@@ -14,6 +14,14 @@ package kr.ac.kaist.safe.nodes.cfg
 // label kind
 sealed abstract class LabelKind(str: String) {
   override def toString: String = str
+  def isOutLabel: Boolean = this match {
+    case (
+      LoopBreakLabel | UserLabel(_) // break
+      | LoopContLabel // continue
+      | CatchLabel // catch
+      ) => true
+    case _ => false
+  }
 }
 case object NoLabel extends LabelKind("Block")
 case object LoopBreakLabel extends LabelKind("LBreak")

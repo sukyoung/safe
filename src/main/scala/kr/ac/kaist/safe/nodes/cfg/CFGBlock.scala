@@ -26,6 +26,12 @@ sealed trait CFGBlock {
   // outer loop
   var outerLoop: Option[LoopHead] = None
 
+  def isOutBlock: Boolean = this match {
+    case NormalBlock(_, label) if label.isOutLabel => true
+    case Exit(_) | ExitExc(_) => true
+    case _ => false
+  }
+
   protected var iidCount: InstId = 0
   def getIId: InstId = iidCount
 
@@ -208,7 +214,7 @@ case class LoopHead(func: CFGFunction) extends CFGBlock {
   val id: BlockId = func.getBId
 
   // out blocks
-  var breakBlocks: List[NormalBlock] = Nil
+  var outBlocks: List[CFGBlock] = Nil
 
   // inst list
   override def getInsts: List[CFGNormalInst] = Nil

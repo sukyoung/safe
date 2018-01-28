@@ -66,12 +66,12 @@ case class Semantics(
     else map(tp) = state
   }
 
-  type BreakCtxtMap = Map[CFGBlock, Set[LoopContext]]
-  var breakCtxtMap: BreakCtxtMap = HashMap()
-  def addBreakCtxt(block: CFGBlock, ctxt: LoopContext): Unit =
-    breakCtxtMap += block -> (getBreakCtxtSet(block) + ctxt)
-  def getBreakCtxtSet(block: CFGBlock): Set[LoopContext] =
-    breakCtxtMap.getOrElse(block, HashSet())
+  type OutCtxtMap = Map[CFGBlock, Set[LoopContext]]
+  private var outCtxtMap: OutCtxtMap = HashMap()
+  def addOutCtxt(block: CFGBlock, ctxt: LoopContext): Unit =
+    outCtxtMap += block -> (getOutCtxtSet(block) + ctxt)
+  def getOutCtxtSet(block: CFGBlock): Set[LoopContext] =
+    outCtxtMap.getOrElse(block, HashSet())
 
   type IPSucc = Map[ControlPoint, EdgeData]
   type IPSuccMap = Map[ControlPoint, IPSucc]

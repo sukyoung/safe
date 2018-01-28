@@ -50,8 +50,8 @@ case class CFGFunction(
   var blockData: Vector[JsValue] = _
   var capturedData: Vector[JsValue] = _
 
-  // loop information
-  var breakBlocks: List[NormalBlock] = Nil
+  // out blocks
+  var outBlocks: List[CFGBlock] = List(exit, exitExc)
 
   // append block
   private def addBlock(block: CFGBlock): CFGBlock = {

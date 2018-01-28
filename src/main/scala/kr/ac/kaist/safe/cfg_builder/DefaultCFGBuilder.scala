@@ -252,6 +252,7 @@ class DefaultCFGBuilder(
             /* catch block */
             val catchBlock: NormalBlock = func.createBlock(CatchLabel, currentLoop)
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
+            addOutBlocks(catchBlock)
 
             /* try body */
             val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
@@ -319,6 +320,7 @@ class DefaultCFGBuilder(
             /* catch block */
             val catchBlock: NormalBlock = func.createBlock(CatchLabel, currentLoop)
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
+            addOutBlocks(catchBlock)
 
             /* finally block */
             val finBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock), currentLoop)
@@ -524,14 +526,7 @@ class DefaultCFGBuilder(
         }
         val block: NormalBlock = func.createBlock(labelKind, currentLoop)
 
-        labelKind match {
-          case LoopBreakLabel | UserLabel(_) =>
-            currentLoop match {
-              case None => currentFunc.breakBlocks ::= block
-              case Some(head) => head.breakBlocks ::= block
-            }
-          case _ =>
-        }
+        if (labelKind.isOutLabel) addOutBlocks(block)
 
         cfg.addEdge(bs, block)
         cfg.addEdge(label of lm toList, block)
@@ -709,6 +704,12 @@ class DefaultCFGBuilder(
       cfgIdMap += (text -> cfgId)
       cfgId
     })
+  }
+
+  // add to loop out blocks
+  private def addOutBlocks(block: CFGBlock): Unit = currentLoop match {
+    case None => currentFunc.outBlocks ::= block
+    case Some(head) => head.outBlocks ::= block
   }
 
   // get new user defined allocation site
