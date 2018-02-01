@@ -48,7 +48,8 @@ class CmdActor() extends Actor {
       }
     case ReceivedCmd(uid: String, msg: String) => // Someone send command
       val fixpoint = states(uid).fixpoint
-      if (fixpoint == null) {
+      if (msg == "") {
+      } else if (fixpoint == null) {
         dispatch(uid, InitialState())
       } else {
         val base = JsonUtil.fromJson[Base](msg)

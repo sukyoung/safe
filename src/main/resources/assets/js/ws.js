@@ -285,3 +285,10 @@ $(function () {
     }
   })
 })
+
+function alive () {
+  if (conn.isConnected()) conn.socket.send("")
+  setTimeout(alive, 10000);
+}
+
+alive()
