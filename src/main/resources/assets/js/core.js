@@ -142,6 +142,7 @@ webix.ready(function(){
     $$('insts').clearAll();
     $$('state').clearAll();
     $$('side-bar').collapse();
+    unsetRestartBtn();
 
     $.ajax({
       url: `/upload?uid=${uid}`,
