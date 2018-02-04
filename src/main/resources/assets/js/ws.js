@@ -286,9 +286,10 @@ $(function () {
   })
 })
 
-function alive () {
-  if (conn.isConnected()) conn.socket.send("")
-  setTimeout(alive, 10000);
-}
 
-alive()
+// Heartbeat
+setInterval(function () {
+  if (conn.isConnected()) {
+    conn.socket.send("heartbeat")
+  }
+}, 60 * 60 * 1000); // 1 hour

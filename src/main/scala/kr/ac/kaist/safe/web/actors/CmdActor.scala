@@ -48,7 +48,12 @@ class CmdActor() extends Actor {
       }
     case ReceivedCmd(uid: String, msg: String) => // Someone send command
       val fixpoint = states(uid).fixpoint
-      if (msg == "") {
+      if (msg == "heartbeat") {
+        // Because of idle-timeout, if client doesn't send anything for more than 2 hours,
+        // connection will be closed and fixpoint state will be cleared from server.
+        // Client will send heartbeat for every 1 hour if web page has not been closed. (See ws.js)
+        //
+        // If you want to change idle-timeout, you can find it at application.conf file.
       } else if (fixpoint == null) {
         dispatch(uid, InitialState())
       } else {
