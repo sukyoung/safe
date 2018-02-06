@@ -117,10 +117,11 @@ class Console(
 
   override def getPrompt: String = {
     val block = cur.block
-    val func = block.func.simpleName
+    val fname = block.func.simpleName
+    val fid = block.func.id
     val span = block.span
     val tp = cur.tracePartition
-    s"<$func: $block, $tp> @${span.toString} $LINE_SEP Iter[$iter] > "
+    s"<$fname[$fid]: $block, $tp> @${span.toString} $LINE_SEP Iter[$iter] > "
   }
 
   ////////////////////////////////////////////////////////////////
