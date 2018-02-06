@@ -29,8 +29,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
        $name func ({fid})
        $name function ({fid})
        $name worklist
-       $name ipsucc
-       $name trace"""
+       $name ipsucc"""
 
   def run(c: Interactive, args: List[String]): Option[Target] = {
     val idPattern = "(-?\\d+):(\\d+)".r
@@ -148,49 +147,50 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             printResult(s"- src: $curCP")
             succs match {
               case Some(m) => {
+                printResult("- dst:")
                 m.foreach {
                   case (cp, data) =>
-                    printResult(s"- dst: $cp, ${data.old}")
+                    printResult(s"  $cp, ${data.old}")
                 }
               }
               case None => printResult("- Nothing")
             }
           case _ => printResult(help)
         }
-        case "trace" =>
-          rest match {
-            case Nil =>
-              // function info.
-              def f(level: Int, cp: ControlPoint): Unit = {
-                val block = cp.block
-                val func = block.func
-                val tp = cp.tracePartition
-                printResult(s"$block of $func with $tp")
+        // TODO case "trace" =>
+        //   rest match {
+        //     case Nil =>
+        //       // function info.
+        //       def f(level: Int, cp: ControlPoint): Unit = {
+        //         val block = cp.block
+        //         val func = block.func
+        //         val tp = cp.tracePartition
+        //         printResult(s"$block of $func with $tp")
 
-                // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
-                val exitCP = ControlPoint(func.exit, tp)
-                c.sem.getInterProcSucc(exitCP) match {
-                  case Some(cpMap) => cpMap.keySet.foreach(predCP => predCP.block match {
-                    case call @ Call(_) => i(level + 1, call, predCP)
-                    case _ =>
-                  })
-                  case None =>
-                }
-              }
+        //         // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
+        //         val exitCP = ControlPoint(func.exit, tp)
+        //         c.sem.getInterProcSucc(exitCP) match {
+        //           case Some(cpMap) => cpMap.keySet.foreach(predCP => predCP.block match {
+        //             case call @ Call(_) => i(level + 1, call, predCP)
+        //             case _ =>
+        //           })
+        //           case None =>
+        //         }
+        //       }
 
-              // instruction info.
-              def i(level: Int, call: Call, cp: ControlPoint): Unit = {
-                val cInst = call.callInst
-                val id = cInst.id
-                val span = cInst.span
-                print(s"  $level>" + "  " * level + s"[$id] $cInst $span @")
-                f(level, cp)
-              }
+        //       // instruction info.
+        //       def i(level: Int, call: Call, cp: ControlPoint): Unit = {
+        //         val cInst = call.callInst
+        //         val id = cInst.id
+        //         val span = cInst.span
+        //         print(s"  $level>" + "  " * level + s"[$id] $cInst $span @")
+        //         f(level, cp)
+        //       }
 
-              printResult("* Call-Context Trace")
-              f(0, c.getCurCP)
-            case _ => printResult(help)
-          }
+        //       printResult("* Call-Context Trace")
+        //       f(0, c.getCurCP)
+        //     case _ => printResult(help)
+        //   }
         case "function" => rest match {
           case Nil =>
             val fid = c.getCurCP.block.func.id

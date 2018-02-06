@@ -75,7 +75,7 @@ case class OldASiteSet(mayOld: Set[Loc], mustOld: Set[Loc]) {
   override def toString: String = {
     if (this.isBottom) "⊥OldASiteSet"
     else
-      "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
+      "mayOld: (" + mayOld.mkString(", ") + "), " +
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
