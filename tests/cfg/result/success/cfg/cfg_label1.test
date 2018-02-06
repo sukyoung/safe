@@ -8,7 +8,7 @@ function[0] top-level {
   Block[1] -> [2], ExitExc
     [0] x := 2
 
-  l:[2] -> Exit, ExitExc
+  Label(l)[2] -> Exit, ExitExc
     [0] x := 3
     [1] noop(EndOfFile)
 

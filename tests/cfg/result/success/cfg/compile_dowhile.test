@@ -5,7 +5,7 @@ function[0] top-level {
     [0] f := function (1) @ #2, #3
     [1] noop(StartOfFile)
 
-  done:[1] -> [2]
+  Label(done)[1] -> [2]
 
   LCont[2] -> [3]
 
@@ -17,7 +17,7 @@ function[0] top-level {
   Block[5] -> [8], ExitExc
     [0] assert(! true)
 
-  done:[6] -> [7]
+  Label(done)[6] -> [7]
 
   LCont[7] -> [3]
 

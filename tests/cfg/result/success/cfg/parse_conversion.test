@@ -2945,7 +2945,7 @@ function[12] C {
   Block[62] -> [63], ExitExc
     [0] <>g<>518 := ""
 
-  n:[63] -> [64], ExitExc
+  Label(n)[63] -> [64], ExitExc
     [0] <>old<>591 := <>e<>517
     [1] <>obj<>592 := @ToObject(<>s<>2) @ #383
     [2] <>temp<>593 := "cv"
