@@ -61,7 +61,7 @@ object Command {
     CmdBreakList,
     CmdBreakRemove,
     CmdFindBot,
-    CmdDump,
+    // TODO CmdDump,
     CmdRestart
   )
   val cmdMap: Map[String, Command] = commands.foldLeft(
