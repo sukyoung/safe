@@ -1,4 +1,3 @@
-import scalariform.formatter.preferences._
 import java.io.File
 
 lazy val checkCopyrights = taskKey[Unit]("Checks copyrights of source files")
@@ -14,13 +13,14 @@ lazy val analyzeTest = taskKey[Unit]("Launch analyze tests")
 lazy val htmlTest = taskKey[Unit]("Launch html tests")
 lazy val test262Test = taskKey[Unit]("Launch test262 tests")
 lazy val benchTest = taskKey[Unit]("Launch benchmarks tests")
+// TODO lazy val dumpTest = taskKey[Unit]("Launch dump tests")
 
 lazy val root = (project in file(".")).
   settings(
     name := "SAFE",
     version := "2.0",
     organization := "kr.ac.kaist.safe",
-    scalaVersion := "2.12.0-M5",
+    scalaVersion := "2.12.3",
     checkCopyrights in Compile := {
       val violated: String = (baseDirectory.value + "/bin/checkCopyrights.sh" !!)
       if (violated != "") {
@@ -30,12 +30,14 @@ lazy val root = (project in file(".")).
     buildParsers in Compile := {
       // xtc
       val xtcFile = new File("./lib/xtc.jar")
-      if (!xtcFile.exists)
-        IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+      if (!xtcFile.exists) {
+        // TODO exception handling: not downloaded
+        IO.download(new URL("https://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+      }
 
       // webix
-      val webixJsFile = new File("./lib/debugger/webix.js")
-      val webixCssFile = new File("./lib/debugger/css/webix.css")
+      val webixJsFile = new File("./src/main/resources/assets/js/webix.js")
+      val webixCssFile = new File("./src/main/resources/assets/css/webix.css")
       if (!webixJsFile.exists)
         IO.download(new URL("http://cdn.webix.com/edge/webix.js"), webixJsFile)
       if (!webixCssFile.exists)
@@ -71,17 +73,27 @@ lazy val root = (project in file(".")).
     htmlTest <<= (testOnly in Test).toTask(s" -- -n HtmlTest") dependsOn compile,
     test262Test <<= (testOnly in Test).toTask(s" -- -n Test262Test") dependsOn compile,
     benchTest <<= (testOnly in Test).toTask(s" -- -n BenchTest") dependsOn compile
+    // TODO dumpTest <<= (testOnly in Test).toTask(s" -- -n DumpTest") dependsOn compile
   )
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
                                    "-language:postfixOps",
                                    "-language:implicitConversions")
 
-unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/spray-json_2.11-1.3.2.jar"), file("lib/jericho-html-3.3.jar"))
+unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/jericho-html-3.3.jar"))
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.12.0-M5" % "3.0.0" % "test" withSources
+  "org.scala-lang" % "scala-library" % scalaVersion.value,
+  "org.scala-lang" % "scala-compiler" % scalaVersion.value % "scala-tool",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test" withSources,
+  "com.typesafe.akka" %% "akka-http" % "10.0.10",
+  "io.spray" %% "spray-json" % "1.3.2",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.2",
+  "com.fasterxml.jackson.module" % "jackson-module-scala_2.12" % "2.9.1"
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")
+
+retrieveManaged := true

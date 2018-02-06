@@ -13,15 +13,24 @@ package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.TracePartition
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
 
-sealed abstract class CFGBlock {
+sealed trait CFGBlock {
   val func: CFGFunction
   val id: BlockId
+
+  // outer loop
+  var outerLoop: Option[LoopHead] = None
+
+  def isOutBlock: Boolean = this match {
+    case NormalBlock(_, label) if label.isOutLabel => true
+    case Exit(_) | ExitExc(_) => true
+    case _ => false
+  }
 
   protected var iidCount: InstId = 0
   def getIId: InstId = iidCount
@@ -78,6 +87,9 @@ sealed abstract class CFGBlock {
 
   // span
   def span: Span
+
+  // hash code
+  override def hashCode: Int = (func.id << 16) + (id + 3)
 }
 object CFGBlock {
   implicit def node2nodelist(node: CFGBlock): List[CFGBlock] = List(node)
@@ -197,9 +209,12 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
 }
 
 // loop head
-case class LoopHead(func: CFGFunction) extends CFGBlock {
+case class LoopHead(func: CFGFunction, span: Span) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
+
+  // out blocks
+  var outBlocks: List[CFGBlock] = Nil
 
   // inst list
   override def getInsts: List[CFGNormalInst] = Nil
@@ -212,13 +227,6 @@ case class LoopHead(func: CFGFunction) extends CFGBlock {
     s.append(pre).append(toString)
     s.append(getSuccsStr).append(LINE_SEP)
     s.toString
-  }
-
-  // span
-  def span: Span = {
-    val fileName = func.span.fileName
-    val (begin, end) = (SourceLoc(), SourceLoc()) // TODO return correct span
-    Span(fileName, begin, end)
   }
 }
 

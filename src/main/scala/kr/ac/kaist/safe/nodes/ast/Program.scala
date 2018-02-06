@@ -15,9 +15,9 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 // Program ::= SourceElement*
 case class Program(
-    override val info: ASTNodeInfo,
+    info: ASTNodeInfo,
     body: TopLevel
-) extends ASTNode(info: ASTNodeInfo) {
+) extends ASTNode {
   override def toString(indent: Int): String = {
     NU.initNodesPrint
     val s: StringBuilder = new StringBuilder

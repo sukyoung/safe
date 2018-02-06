@@ -62,6 +62,10 @@ case class UserAllocSiteError(u: UserAllocSite) extends AnalyzeError({
   s"[UserAllocSiteError]: $u."
 })
 
+case object FIdTopGammaError extends AnalyzeError(
+  "AbsFId.Top.gamma is impossible"
+)
+
 case class NoBlockIdError(fid: Int, bid: Int) extends AnalyzeError({
   s"unknown bid in function[$fid]: $bid"
 })
@@ -71,3 +75,7 @@ case class NoFuncIdError(fid: Int) extends AnalyzeError({
 })
 
 case object IllFormedBlockStr extends AnalyzeError("")
+
+case class NotYetDefined(name: String) extends AnalyzeError(
+  "[NotYetDefined] $name"
+)

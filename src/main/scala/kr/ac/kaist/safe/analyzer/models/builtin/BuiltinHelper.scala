@@ -12,22 +12,19 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.domain.IClass
-import kr.ac.kaist.safe.analyzer.domain.IPrimitiveValue
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.PredAllocSite
 
 object BuiltinHelper {
   def checkExn(h: AbsHeap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
-    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
+    val exist = absValue.locset.foldLeft[AbsBool](AbsBool.Bot)((b, loc) => {
       val clsStr = h.get(loc)(IClass).value.pvalue.strval
-      b + (clsStr === AbsString(clsName))
+      b ⊔ (clsStr StrictEquals AbsStr(clsName))
     })
     val pv = absValue.pvalue
-    if (AbsBool.False <= exist)
+    if (AbsBool.False ⊑ exist)
       HashSet[Exception](TypeError)
     else HashSet[Exception]()
   }
@@ -44,15 +41,33 @@ object BuiltinHelper {
     }
   }
 
-  def max(left: AbsNumber, right: AbsNumber): AbsNumber =
-    AbsBool(AbsNumber.NaN <= left || AbsNumber.NaN <= right).map[AbsNumber](
-      thenV = AbsNumber.NaN,
-      elseV = (left < right).map[AbsNumber](thenV = right, elseV = left)(AbsNumber)
-    )(AbsNumber)
+  def max(left: AbsNum, right: AbsNum): AbsNum =
+    if (AbsNum.NaN ⊑ left || AbsNum.NaN ⊑ right) AbsNum.NaN
+    else {
+      val b = left < right
+      val t =
+        if (AT ⊑ b) {
+          right
+        } else AbsNum.Bot
+      val f =
+        if (AF ⊑ b) {
+          left
+        } else AbsNum.Bot
+      t ⊔ f
+    }
 
-  def min(left: AbsNumber, right: AbsNumber): AbsNumber =
-    AbsBool(AbsNumber.NaN <= left || AbsNumber.NaN <= right).map[AbsNumber](
-      thenV = AbsNumber.NaN,
-      elseV = (left < right).map[AbsNumber](thenV = left, elseV = right)(AbsNumber)
-    )(AbsNumber)
+  def min(left: AbsNum, right: AbsNum): AbsNum =
+    if (AbsNum.NaN ⊑ left || AbsNum.NaN ⊑ right) AbsNum.NaN
+    else {
+      val b = left < right
+      val t =
+        if (AT ⊑ b) {
+          left
+        } else AbsNum.Bot
+      val f =
+        if (AF ⊑ b) {
+          right
+        } else AbsNum.Bot
+      t ⊔ f
+    }
 }

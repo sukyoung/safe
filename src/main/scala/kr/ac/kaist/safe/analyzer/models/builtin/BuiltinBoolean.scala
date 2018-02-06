@@ -12,10 +12,7 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.domain.IClass
-import kr.ac.kaist.safe.analyzer.domain.IPrimitiveValue
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util._
@@ -25,18 +22,18 @@ object BuiltinBooleanHelper {
 
   def typeConvert(args: AbsValue, st: AbsState): AbsBool = {
     val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
+    val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
     val emptyB =
-      if (AbsNumber(0) <= argL) AbsBool(false)
+      if (AbsNum(0) ⊑ argL) AbsBool(false)
       else AbsBool.Bot
-    TypeConversionHelper.ToBoolean(argV) + emptyB
+    TypeConversionHelper.ToBoolean(argV) ⊔ emptyB
   }
 
   def getValue(thisV: AbsValue, h: AbsHeap): AbsBool = {
-    thisV.pvalue.boolval + thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
-      if ((AbsString("Boolean") <= h.get(loc)(IClass).value.pvalue.strval))
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.boolval
+    thisV.pvalue.boolval ⊔ thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
+      if ((AbsStr("Boolean") ⊑ h.get(loc)(IClass).value.pvalue.strval))
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.boolval
       else res
     })
   }
@@ -48,7 +45,7 @@ object BuiltinBooleanHelper {
       val bool = typeConvert(args, st)
       val loc = Loc(instanceASite)
       val state = st.oldify(loc)
-      val heap = state.heap.update(loc, AbsObject.newBooleanObj(bool))
+      val heap = state.heap.update(loc, AbsObj.newBooleanObj(bool))
 
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }

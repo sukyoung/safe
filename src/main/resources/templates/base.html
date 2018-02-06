@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SAFE 2.0</title>
+  <script src="/assets/js/jquery-2.0.3.min.js"></script>
+  <script src="/assets/js/cytoscape.min.js"></script>
+  <script src="/assets/js/dagre.min.js"></script>
+  <script src="/assets/js/cytoscape-dagre.js"></script>
+  <script src="/assets/js/webix.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="/assets/css/webix.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/core.css" type="text/css">
+  <link rel="stylesheet" href="/assets/css/console.css" type="text/css">
+  <!-- For old IEs -->
+  <link rel="shortcut icon" href="/assets/icon/favicon.ico" />
+  <!-- For new browsers multisize ico  -->
+  <link rel="icon" type="image/x-icon" sizes="16x16 32x32" href="/assets/icon/favicon.ico">
+  <!-- Chrome for Android -->
+  <link rel="icon" sizes="192x192" href="/assets/icon/favicon-192.png">
+  <!-- For iPhone 6+ downscaled for other devices -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icon/favicon-180-precomposed.png">
+  <!-- For IE10 Metro -->
+  <meta name="msapplication-TileColor" content="#FFFFFF">
+  <meta name="msapplication-TileImage" content="/assets/icon/favicon-144.png">
+  <script type="text/javascript">
+      let safe_DB = {
+          nodes: [],
+          edges: [],
+          insts: {},
+          state: {}
+      }
+
+      let uid = Math.floor(Math.random() * 10000000)
+      console.log(`Generated UID: ${uid}`)
+  </script>
+  <script src="/assets/js/core.js" type="text/javascript"></script>
+  <script src="/assets/js/ws.js" type="text/javascript"></script>
+</head>
+<body>
+  <div id="cy">
+    <h2 class="no-file-placeholder">
+      Welcome to SAFE 2.0<br/><a href="#" onclick="$('#file-upload').click()">Open File</a> to start analysis
+    </h2>
+  </div>
+  <div class="console" id="console">
+    <div class="console-status status-connecting">
+      <i class="fa fa-circle"></i>
+      <span class="console-status-text">Initializing</span>
+    </div>
+    <div class="console-output"></div>
+    <div class="console-input-group">
+      <div class="console-prompt"></div>
+      <div class="console-input-line">
+        <span class="console-iter">&gt;</span>
+        <input class="console-input" type="text"/>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="file-upload" name="file" style="visibility: hidden"/>
+</body>
+</html>

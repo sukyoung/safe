@@ -37,7 +37,7 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
       }
     }
     // 2. rearrange function id in other.heap
-    val mdfHeapMap = other.heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
+    val mdfHeapMap = other.heap.map.foldLeft(HashMap(): Map[Loc, Obj]) {
       case (heapMap, (loc, obj)) => {
         val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
           case (inimap, (name, value)) => {
@@ -50,7 +50,7 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
             }
           }
         }
-        val mdfobj = Object(obj.amap, mdfimap)
+        val mdfobj = Obj(obj.nmap, mdfimap)
         heapMap + (loc -> mdfobj)
       }
     }
@@ -74,9 +74,9 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
         (obj.imap.map {
           case (iname, iv) => s"$S$S$iname: $iv"
         }.mkString(s",$L")) + ({
-          if (!obj.imap.isEmpty && !obj.amap.isEmpty) s",$L"
+          if (!obj.imap.isEmpty && !obj.nmap.isEmpty) s",$L"
           else ""
-        }) + (obj.amap.map {
+        }) + (obj.nmap.map {
           case (name, v) => s"""$S$S"$name": $v"""
         }).mkString(s",$L") + s"$L$S}"
     }.mkString(s",$L"))
@@ -121,8 +121,9 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   def mergeJsModels(dir: String): JSModel = {
     val fileNames: List[String] = new File(dir).list.toList
     val mergeModel = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
-      case (model, fileName) =>
+      case (model, fileName) if fileName.endsWith(".jsmodel") =>
         model + ModelParser.parseFile(dir + fileName).get
+      case (model, _) => model
     }
     mergeModel
   }
@@ -223,8 +224,8 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       { case (iname, iv) ~ ((pmap, imap)) => (pmap, imap + (iname -> iv)) } |
       empty
   }
-  private lazy val jsObject: Parser[Object] = "{" ~> jsObjMapTuple <~ "}" ^^ {
-    case (pmap, imap) => Object(pmap, imap)
+  private lazy val jsObject: Parser[Obj] = "{" ~> jsObjMapTuple <~ "}" ^^ {
+    case (pmap, imap) => Obj(pmap, imap)
   }
 
   // JavaScript Heap
@@ -232,7 +233,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     repsepE((jsLoc <~ ":") ~! jsObject, ",")
   ) <~ "}" ^^ {
       case lst => {
-        val map = lst.foldLeft(HashMap[Loc, Object]()) {
+        val map = lst.foldLeft(HashMap[Loc, Obj]()) {
           case (map, loc ~ obj) => {
             map + (loc -> obj)
           }
@@ -316,7 +317,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
               (body, cfgFunc) :: funList
             }
           }
-          val newHeapMap = heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
+          val newHeapMap = heap.map.foldLeft(HashMap(): Map[Loc, Obj]) {
             case (heapMap, (loc, obj)) => {
               val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
                 case (inimap, (name, value)) => {
@@ -329,7 +330,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
                   }
                 }
               }
-              val mdfobj = Object(obj.amap, mdfimap)
+              val mdfobj = Obj(obj.nmap, mdfimap)
               heapMap + (loc -> mdfobj)
             }
           }

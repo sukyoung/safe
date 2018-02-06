@@ -13,41 +13,36 @@ package kr.ac.kaist.safe.json
 
 import kr.ac.kaist.safe.phase.HeapBuildConfig
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.errors.error.{
-  AbsNumberUtilParseError,
-  AbsStringUtilParseError,
-  AAddrTypeParseError,
-  HeapBuildConfigParseError
-}
+import kr.ac.kaist.safe.errors.error._
 
 import spray.json._
 import DefaultJsonProtocol._
 
 object ConfigProtocol extends DefaultJsonProtocol {
 
-  implicit object AbsNumberUtilFormat extends RootJsonFormat[AbsNumberUtil] {
+  implicit object NumDomainFormat extends RootJsonFormat[NumDomain] {
 
-    def write(util: AbsNumberUtil): JsValue = util match {
+    def write(util: NumDomain): JsValue = util match {
       case DefaultNumber => JsTrue
-      case FlatNumber => JsFalse
+      // TODO case FlatNumber => JsFalse
     }
 
-    def read(value: JsValue): AbsNumberUtil = value match {
+    def read(value: JsValue): NumDomain = value match {
       case JsTrue => DefaultNumber
-      case JsFalse => FlatNumber
-      case _ => throw AbsNumberUtilParseError(value)
+      // TODO case JsFalse => FlatNumber
+      case _ => throw NumDomainParseError(value)
     }
   }
 
-  implicit object AbsStringUtilFormat extends RootJsonFormat[AbsStringUtil] {
+  implicit object StrDomainFormat extends RootJsonFormat[StrDomain] {
 
-    def write(util: AbsStringUtil): JsValue = util match {
+    def write(util: StrDomain): JsValue = util match {
       case StringSet(n) => JsNumber(n)
     }
 
-    def read(value: JsValue): AbsStringUtil = value match {
+    def read(value: JsValue): StrDomain = value match {
       case JsNumber(n) => StringSet(n.toInt)
-      case _ => throw AbsStringUtilParseError(value)
+      case _ => throw StrDomainParseError(value)
     }
   }
 
@@ -69,37 +64,12 @@ object ConfigProtocol extends DefaultJsonProtocol {
   implicit object HeapBuildConfigFormat extends RootJsonFormat[HeapBuildConfig] {
 
     def write(config: HeapBuildConfig): JsValue = config match {
-      case HeapBuildConfig(silent, _, _, _, num, str, heap, call, loop, snapshot, js, addr) => JsArray(
-        JsBoolean(silent),
-        num.toJson,
-        str.toJson,
-        JsNumber(call),
-        JsNumber(loop),
-        snapshot match {
-          case Some(snap) => JsString(snap)
-          case None => JsNull
-        },
-        JsBoolean(js),
-        addr.toJson
-      )
+      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, js, addr) => JsArray()
     }
 
     def read(value: JsValue): HeapBuildConfig = value match {
-      case JsArray(Vector(JsBoolean(silent), num, str, heap, JsNumber(call), JsNumber(loop), snap, JsBoolean(js), addr)) =>
-        HeapBuildConfig(
-          silent,
-          AbsNumber = num.convertTo[AbsNumberUtil],
-          AbsString = str.convertTo[AbsStringUtil],
-          callsiteSensitivity = call.toInt,
-          loopSensitivity = loop.toInt,
-          snapshot = snap match {
-            case JsString(s) => Some(s)
-            case JsNull => None
-            case _ => throw HeapBuildConfigParseError(value)
-          },
-          jsModel = js,
-          aaddrType = addr.convertTo[AAddrType]
-        )
+      case JsArray(Vector(JsBoolean(silent), num, str, JsNumber(call), JsNumber(loop), snap, JsBoolean(js), addr)) =>
+        HeapBuildConfig()
       case _ => throw HeapBuildConfigParseError(value)
     }
   }

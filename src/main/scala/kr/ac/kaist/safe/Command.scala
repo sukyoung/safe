@@ -11,16 +11,16 @@
 
 package kr.ac.kaist.safe
 
-import scala.util.Try
-import scala.collection.immutable.HashMap
-import kr.ac.kaist.safe.phase._
-import kr.ac.kaist.safe.errors.error.NoMode
-import kr.ac.kaist.safe.util.ArgParser
-import kr.ac.kaist.safe.nodes.ast.Program
-import kr.ac.kaist.safe.nodes.ir.IRRoot
-import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.errors.error.NoMode
+import kr.ac.kaist.safe.nodes.ast.Program
+import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.nodes.ir.IRRoot
+import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.util.ArgParser
+
+import scala.collection.immutable.HashMap
+import scala.util.Try
 
 sealed trait Command {
   val name: String
@@ -88,24 +88,14 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
 
 // heapBuild
 case object CmdHeapBuild extends CommandObj("heapBuild", CmdCFGBuild >> HeapBuild) {
-  override def display(result: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)): Unit = {
-    val (cfg, _, _, _, _, _) = result
-    println(cfg.toString(0))
-  }
-}
-
-// jsonLoad
-case object CmdJsonLoad extends CommandObj("jsonLoad", CmdBase >> JsonLoad) {
-  override def display(result: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)): Unit = {
-    val (cfg, _, _, _, _, _) = result
+  override def display(result: (CFG, Semantics, TracePartition, HeapBuildConfig, Int)): Unit = {
+    val (cfg, _, _, _, _) = result
     println(cfg.toString(0))
   }
 }
 
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap(
-  "fromJson" -> (CmdJsonLoad >> Analyze)
-)) {
+case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result
 
@@ -149,3 +139,6 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
 
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)
+
+// web
+case object CmdWeb extends CommandObj("web", CmdBase >> Web)

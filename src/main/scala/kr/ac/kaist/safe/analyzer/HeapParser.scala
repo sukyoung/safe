@@ -22,11 +22,11 @@ object HeapParser extends DefaultJsonProtocol {
     def read(value: JsValue): Heap = {
       value match {
         case JsObject(objs) => {
-          val map = objs.foldLeft[Map[Loc, Object]](HashMap()) {
+          val map = objs.foldLeft[Map[Loc, Obj]](HashMap()) {
             case (map, (loc, JsObject(props))) => {
-              type AMap = Map[String, DataProp]
+              type NMap = Map[String, DataProp]
               type IMap = Map[IName, Value]
-              val (amap, imap) = props.foldLeft[(AMap, IMap)]((HashMap(), HashMap())) {
+              val (nmap, imap) = props.foldLeft[(NMap, IMap)]((HashMap(), HashMap())) {
                 case ((am, im), (key, value)) => key match {
                   case "[[Prototype]]" => (am, im + (IPrototype -> readValue(value)))
                   case "[[Class]]" => (am, im + (IClass -> readValue(value)))
@@ -39,7 +39,7 @@ object HeapParser extends DefaultJsonProtocol {
                   case _ => (am + (key -> readProp(value)), im)
                 }
               }
-              map + (readLoc(loc) -> Object(amap, imap))
+              map + (readLoc(loc) -> Obj(nmap, imap))
             }
             case _ => throw HeapParseError("an object should be represented as an object in JSON.")
           }

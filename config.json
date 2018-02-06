@@ -1,0 +1,19 @@
+{
+  "testMode": true,
+  "silent": true,
+  "analyzer": {
+    "console": false,
+    "exitDump": false,
+    "out": false,
+    "html": ""
+  },
+  "heapBuilder": {
+    "maxStrSetSize": 10,
+    "aaddrType": "recency",
+    "callsiteSensitivity": 10,
+    "loopIter": 10,
+    "loopDepth": 10,
+    "snapshot": "",
+    "jsModel": false
+  }
+}

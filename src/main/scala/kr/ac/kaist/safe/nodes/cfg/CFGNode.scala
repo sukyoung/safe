@@ -24,8 +24,8 @@ import kr.ac.kaist.safe.util.{ Span, SourceLoc }
  * *************************
  */
 
-abstract class CFGNode(val ir: IRNode)
-    extends Node {
+trait CFGNode extends Node {
+  val ir: IRNode
   def span: Span = ir.span
   def comment: Option[Comment] = ir.comment
   def fileName: String = ir.fileName

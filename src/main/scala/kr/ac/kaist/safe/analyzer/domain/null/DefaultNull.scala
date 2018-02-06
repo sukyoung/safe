@@ -11,23 +11,27 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.errors.error.AbsNullParseError
+import spray.json._
 
 // default null abstract domain
-object DefaultNull extends AbsNullUtil {
-  case object Top extends Dom
-  case object Bot extends Dom
+object DefaultNull extends NullDomain {
+  case object Top extends Elem
+  case object Bot extends Elem
 
-  def alpha(x: Null): AbsNull = Top
+  def alpha(x: Null): Elem = Top
 
-  sealed abstract class Dom extends AbsNull {
+  def fromJson(v: JsValue): Elem = v match {
+    case JsString("⊤") => Top
+    case JsString("⊥") => Bot
+    case _ => throw AbsNullParseError(v)
+  }
+
+  sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Null] = this match {
       case Bot => ConFin()
       case Top => ConFin(Null)
     }
-
-    def isBottom: Boolean = this == Bot
-    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Null] = this match {
       case Bot => ConZero()
@@ -39,24 +43,29 @@ object DefaultNull extends AbsNullUtil {
       case Top => "Top(null)"
     }
 
-    def <=(that: AbsNull): Boolean = (this, check(that)) match {
+    def ⊑(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false
       case _ => true
     }
 
-    def +(that: AbsNull): AbsNull = (this, check(that)) match {
+    def ⊔(that: Elem): Elem = (this, that) match {
       case (Bot, Bot) => Bot
       case _ => Top
     }
 
-    def <>(that: AbsNull): AbsNull = (this, check(that)) match {
+    def ⊓(that: Elem): Elem = (this, that) match {
       case (Top, Top) => Top
       case _ => Bot
     }
 
-    def ===(that: AbsNull): AbsBool = (this, check(that)) match {
+    def StrictEquals(that: Elem): AbsBool = (this, that) match {
       case (Top, Top) => AbsBool.True
       case _ => AbsBool.Bot
+    }
+
+    def toJson: JsValue = this match {
+      case Top => JsString("⊤")
+      case Bot => JsString("⊥")
     }
   }
 }

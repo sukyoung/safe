@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
 import kr.ac.kaist.safe.nodes.ast.{ ASTNodeInfo, ModelFunc }
@@ -100,7 +99,8 @@ class CallCode(
 
     val callBlock: Call = func.createCall(
       CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), callEnvASite),
-      retId
+      retId,
+      None
     )
 
     val afterSem: SemanticFun = createAfterFunc(argsName)
@@ -110,7 +110,7 @@ class CallCode(
     cfg.addEdge(beforeBlock, callBlock)
     cfg.addEdge(callBlock.afterCall, afterBlock)
     cfg.addEdge(afterBlock, func.exit)
-    cfg.addEdge(callBlock.afterCatch, func.exitExc, CFGEdgeExc)
+    cfg.addEdge(callBlock.afterCatch, func.exitExc)
     func
   }
 

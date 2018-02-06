@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer._
 
@@ -33,7 +32,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.abs",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).abs
         AbsValue(num)
       })
@@ -43,7 +42,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.acos",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).acos
         AbsValue(num)
       })
@@ -53,7 +52,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.asin",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).asin
         AbsValue(num)
       })
@@ -63,7 +62,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.atan",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).atan
         AbsValue(num)
       })
@@ -73,8 +72,8 @@ object BuiltinMath extends ObjModel(
       name = "Math.atan2",
       code = PureCode(argLen = 2, (args, st) => {
         val h = st.heap
-        val resVy = Helper.propLoad(args, Set(AbsString("0")), h)
-        val resVx = Helper.propLoad(args, Set(AbsString("1")), h)
+        val resVy = Helper.propLoad(args, Set(AbsStr("0")), h)
+        val resVx = Helper.propLoad(args, Set(AbsStr("1")), h)
         val num = TypeConversionHelper.ToNumber(resVy).atan2(TypeConversionHelper.ToNumber(resVx))
         AbsValue(num)
       })
@@ -84,7 +83,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.ceil",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).ceil
         AbsValue(num)
       })
@@ -94,7 +93,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.cos",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).cos
         AbsValue(num)
       })
@@ -104,7 +103,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.exp",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).exp
         AbsValue(num)
       })
@@ -114,7 +113,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.floor",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).floor
         AbsValue(num)
       })
@@ -124,7 +123,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.log",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).log
         AbsValue(num)
       })
@@ -134,36 +133,42 @@ object BuiltinMath extends ObjModel(
       name = "Math.max",
       code = PureCode(argLen = 2, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("length")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("length")), h)
         def uintCheck(num: Double): Boolean = {
           val uint = num.toLong
           (num == uint) && (uint > 0 || (num compare 0.0) == 0)
         }
-        def nArg(i: Int): AbsNumber = {
+        def nArg(i: Int): AbsNum = {
           TypeConversionHelper.ToNumber(
-            Helper.propLoad(args, Set(AbsString(i.toString)), h)
+            Helper.propLoad(args, Set(AbsStr(i.toString)), h)
           )
         }
         resV.pvalue.numval.getSingle match {
-          case ConZero() => AbsNumber.Bot
-          case ConOne(Num(0)) => AbsNumber.NegInf
+          case ConZero() => AbsNum.Bot
+          case ConOne(Num(0)) => AbsNum.NegInf
           case ConOne(Num(num)) if uintCheck(num) => {
             val len = num.toInt
             val nanN =
-              if ((0 until len).exists(AbsNumber.NaN <= nArg(_))) AbsNumber.NaN
-              else AbsNumber.Bot
+              if ((0 until len).exists(AbsNum.NaN ⊑ nArg(_))) AbsNum.NaN
+              else AbsNum.Bot
             val maxN = (1 until len).foldLeft(nArg(0)) {
               case (absN, i) => {
                 val curN = nArg(i)
-                (absN < curN).map[AbsNumber](
-                  thenV = curN,
-                  elseV = absN
-                )(AbsNumber)
+                val b = absN < curN
+                val t =
+                  if (AT ⊑ b) {
+                    curN
+                  } else AbsNum.Bot
+                val f =
+                  if (AF ⊑ b) {
+                    absN
+                  } else AbsNum.Bot
+                t ⊔ f
               }
             }
-            nanN + maxN
+            nanN ⊔ maxN
           }
-          case ConMany() => AbsNumber.Top
+          case ConMany() => AbsNum.Top
         }
       })
     ), T, F, T),
@@ -172,36 +177,42 @@ object BuiltinMath extends ObjModel(
       name = "Math.min",
       code = PureCode(argLen = 2, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("length")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("length")), h)
         def uintCheck(num: Double): Boolean = {
           val uint = num.toLong
           (num == uint) && (uint > 0 || (num compare 0.0) == 0)
         }
-        def nArg(i: Int): AbsNumber = {
+        def nArg(i: Int): AbsNum = {
           TypeConversionHelper.ToNumber(
-            Helper.propLoad(args, Set(AbsString(i.toString)), h)
+            Helper.propLoad(args, Set(AbsStr(i.toString)), h)
           )
         }
         resV.pvalue.numval.getSingle match {
-          case ConZero() => AbsNumber.Bot
-          case ConOne(Num(0)) => AbsNumber.PosInf
+          case ConZero() => AbsNum.Bot
+          case ConOne(Num(0)) => AbsNum.PosInf
           case ConOne(Num(num)) if uintCheck(num) => {
             val len = num.toInt
             val nanN =
-              if ((0 until len).exists(AbsNumber.NaN <= nArg(_))) AbsNumber.NaN
-              else AbsNumber.Bot
+              if ((0 until len).exists(AbsNum.NaN ⊑ nArg(_))) AbsNum.NaN
+              else AbsNum.Bot
             val minN = (1 until len).foldLeft(nArg(0)) {
               case (absN, i) => {
                 val curN = nArg(i)
-                (absN < curN).map[AbsNumber](
-                  thenV = absN,
-                  elseV = curN
-                )(AbsNumber)
+                val b = absN < curN
+                val t =
+                  if (AT ⊑ b) {
+                    absN
+                  } else AbsNum.Bot
+                val f =
+                  if (AF ⊑ b) {
+                    curN
+                  } else AbsNum.Bot
+                t ⊔ f
               }
             }
-            nanN + minN
+            nanN ⊔ minN
           }
-          case ConMany() => AbsNumber.Top
+          case ConMany() => AbsNum.Top
         }
       })
     ), T, F, T),
@@ -210,8 +221,8 @@ object BuiltinMath extends ObjModel(
       name = "Math.pow",
       code = PureCode(argLen = 2, (args, st) => {
         val h = st.heap
-        val resVx = Helper.propLoad(args, Set(AbsString("0")), h)
-        val resVy = Helper.propLoad(args, Set(AbsString("1")), h)
+        val resVx = Helper.propLoad(args, Set(AbsStr("0")), h)
+        val resVy = Helper.propLoad(args, Set(AbsStr("1")), h)
         val num = TypeConversionHelper.ToNumber(resVx).pow(TypeConversionHelper.ToNumber(resVy))
         AbsValue(num)
       })
@@ -221,7 +232,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.random",
       code = PureCode(argLen = 0, (args, st) => {
         val h = st.heap
-        AbsValue(AbsNumber.Top)
+        AbsValue(AbsNum.Top)
       })
     ), T, F, T),
 
@@ -229,7 +240,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.round",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).round
         AbsValue(num)
       })
@@ -239,7 +250,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.sin",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).sin
         AbsValue(num)
       })
@@ -249,7 +260,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.sqrt",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).sqrt
         AbsValue(num)
       })
@@ -259,7 +270,7 @@ object BuiltinMath extends ObjModel(
       name = "Math.tan",
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
-        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val resV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).tan
         AbsValue(num)
       })

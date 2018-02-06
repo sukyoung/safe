@@ -42,6 +42,20 @@ sealed abstract class JsonFormatError(
   s"${value.prettyPrint}: Format of json for $name is wrong."
 })
 
+case class AbsOptParseError(value: JsValue) extends JsonFormatError("AbsOpt", value)
+
+case class AbsMapParseError(value: JsValue) extends JsonFormatError("AbsMap", value)
+
+case class StringParseError(value: JsValue) extends JsonFormatError("String", value)
+
+case class IntParseError(value: JsValue) extends JsonFormatError("Int", value)
+
+case class MapParseError(value: JsValue) extends JsonFormatError("Map", value)
+
+case class SetParseError(value: JsValue) extends JsonFormatError("Set", value)
+
+case class PairParseError(value: JsValue) extends JsonFormatError("Pair", value)
+
 case class AllocSiteParseError(value: JsValue) extends JsonFormatError("AllocSite", value)
 
 case class CFGParseError(value: JsValue) extends JsonFormatError("CFG", value)
@@ -88,9 +102,11 @@ case class AbsNullParseError(value: JsValue) extends JsonFormatError("AbsNull", 
 
 case class AbsBoolParseError(value: JsValue) extends JsonFormatError("AbsBool", value)
 
-case class AbsNumberParseError(value: JsValue) extends JsonFormatError("AbsNumber", value)
+case class AbsNumParseError(value: JsValue) extends JsonFormatError("AbsNum", value)
 
-case class AbsStringParseError(value: JsValue) extends JsonFormatError("AbsString", value)
+case class AbsStrParseError(value: JsValue) extends JsonFormatError("AbsStr", value)
+
+case class RecencyParseError(value: JsValue) extends JsonFormatError("Recency", value)
 
 case class RecencyTagParseError(value: JsValue) extends JsonFormatError("RecencyTag", value)
 
@@ -104,15 +120,15 @@ case class DefSetParseError(value: JsValue) extends JsonFormatError("DefSet", va
 
 case class AbsDataPropParseError(value: JsValue) extends JsonFormatError("AbsDataProp", value)
 
-case class AbsMapParseError(value: JsValue) extends JsonFormatError("AbsMap", value)
+case class APropMapParseError(value: JsValue) extends JsonFormatError("APropMap", value)
 
 case class INameParseError(value: JsValue) extends JsonFormatError("IName", value)
 
+case class AbsFIdParseError(value: JsValue) extends JsonFormatError("AbsFId", value)
+
 case class AbsIValueParseError(value: JsValue) extends JsonFormatError("AbsIValue", value)
 
-case class ObjInternalMapParseError(value: JsValue) extends JsonFormatError("ObjInternalMap", value)
-
-case class AbsObjectParseError(value: JsValue) extends JsonFormatError("AbsObject", value)
+case class AbsObjParseError(value: JsValue) extends JsonFormatError("AbsObj", value)
 
 case class AbsAbsentParseError(value: JsValue) extends JsonFormatError("AbsAbsent", value)
 
@@ -128,6 +144,8 @@ case class AbsEnvRecParseError(value: JsValue) extends JsonFormatError("AbsEnvRe
 
 case class AbsLexEnvParseError(value: JsValue) extends JsonFormatError("AbsLexEnv", value)
 
+case class AbsDescParseError(value: JsValue) extends JsonFormatError("AbsDesc", value)
+
 case class OldASiteSetParseError(value: JsValue) extends JsonFormatError("OldASiteSet", value)
 
 case class AbsContextParseError(value: JsValue) extends JsonFormatError("AbsContext", value)
@@ -140,9 +158,9 @@ case class EdgeDataParseError(value: JsValue) extends JsonFormatError("EdgeData"
 
 case class SemanticsParseError(value: JsValue) extends JsonFormatError("Semantics", value)
 
-case class AbsNumberUtilParseError(value: JsValue) extends JsonFormatError("AbsNumberUtil", value)
+case class NumDomainParseError(value: JsValue) extends JsonFormatError("NumDomain", value)
 
-case class AbsStringUtilParseError(value: JsValue) extends JsonFormatError("AbsStringUtil", value)
+case class StrDomainParseError(value: JsValue) extends JsonFormatError("StrDomain", value)
 
 case class AAddrTypeParseError(value: JsValue) extends JsonFormatError("AAddrType", value)
 

@@ -17,24 +17,22 @@ import kr.ac.kaist.safe.errors.error.IllFormedBlockStr
 
 // move
 case object CmdMove extends Command("move", "Change a current position.") {
-  def help: Unit = {
-    println("usage: " + name + " {fid}:{bid}")
-    println("       " + name + " {fid}:entry")
-    println("       " + name + " {fid}:exit")
-    println("       " + name + " {fid}:exitExc")
-  }
+  override val help: String = s"""usage: $name {fid}:{bid}
+           $name {fid}:entry
+           $name {fid}:exit
+           $name {fid}:exitExc"""
 
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     val cfg = c.cfg
     args match {
       case subcmd :: Nil => cfg.findBlock(subcmd) match {
         case Success(block) => c.moveCurCP(block)
         case Failure(e) => e match {
-          case IllFormedBlockStr => help
-          case _ => println(s"* ${e.getMessage}")
+          case IllFormedBlockStr => printResult(help)
+          case _ => printResult(s"* ${e.getMessage}")
         }
       }
-      case _ => help
+      case _ => printResult(help)
     }
     None
   }

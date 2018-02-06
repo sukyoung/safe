@@ -2,6 +2,7 @@ Heap: {
   #Global: {
     "Element": <#Element, T, F, T>,
     "Node": <#Node, T, F, T>,
+    "NodeList": <#NodeList, T, F, T>,
     "EventTarget": <#EventTarget, T, F, T>,
     "Document": <#Document, T, F, T>,
     "HTMLDocument": <#HTMLDocument, T, F, T>,
@@ -10,7 +11,10 @@ Heap: {
     "location": <#location, F, T, T>,
     "setInterval": <#Document.prototype.setInterval, T, T, T>,
     "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
-    "navigator": <#Global.clientInformation, F, T, T>
+    "navigator": <#Global.clientInformation, F, T, T>,
+    "HTMLElement": <#HTMLElement, T, F, T>,
+    "HTMLHtmlElement": <#HTMLHtmlElement, T, F, T>,
+    "XMLHttpRequest": <#XMLHttpRequest, T, F, T>
   },
   #Element: {
     [[Call]]: fun(1),
@@ -26,7 +30,27 @@ Heap: {
     [[Class]]: "Element",
     [[Extensible]]: true,
     [[Prototype]]: #Node.prototype,
-    "constructor": <#Element, T, F, T>
+    "constructor": <#Element, T, F, T>,
+    "getElementsByTagName": <#Element.prototype.getElementsByTagName, T, T, T>,
+    "getElementById": <#Element.prototype.getElementById, T, T, T>
+  },
+  #Element.prototype.getElementsByTagName: {
+    [[Call]]: fun(19),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"getElementsByTagName", F, F, T>
+  },
+  #Element.prototype.getElementById: {
+    [[Call]]: fun(24),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"getElementById", F, F, T>
   },
   #Node: {
     [[Call]]: fun(3),
@@ -43,6 +67,60 @@ Heap: {
     [[Extensible]]: true,
     [[Prototype]]: #EventTarget.prototype,
     "constructor": <#Node, T, F, T>,
+    "childNodes": <#Node.prototype.childNodes, T, T, T>,
+    "insertBefore": <#Node.prototype.insertBefore, T, T, T>,
+    "appendChild": <#Node.prototype.appendChild, T, T, T>,
+    "removeChild": <#Node.prototype.removeChild, T, T, T>
+  },
+  #Node.prototype.childNodes: {
+    [[Class]]: "NodeList",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #NodeList.prototype,
+    [[Scope]]: null
+  },
+  #Node.prototype.insertBefore: {
+    [[Call]]: fun(23),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <2, F, F, T>,
+    "name": <"insertBefore", F, F, T>
+  },
+  #Node.prototype.appendChild: {
+    [[Call]]: fun(29),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"appendChild", F, F, T>
+  },
+  #Node.prototype.removeChild: {
+    [[Call]]: fun(27),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"removeChild", F, F, T>
+  },
+  #NodeList: {
+    [[Call]]: fun(21),
+    [[Class]]: "Function",
+    [[Construct]]: fun(22),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "prototype": <#NodeList.prototype, F, F, F>
+  },
+  #NodeList.prototype: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#NodeList, T, F, T>
   },
   #EventTarget: {
     [[Call]]: fun(5),
@@ -72,7 +150,7 @@ Heap: {
   #document: {
     [[Class]]: "HTMLDocument",
     [[Extensible]]: true,
-    [[Prototype]]: #HTMLDocument.prototype
+    [[Prototype]]: #HTMLDocument.prototype,
   },
   #HTMLDocument: {
     [[Call]]: fun(8),
@@ -105,7 +183,11 @@ Heap: {
     [[Extensible]]: true,
     [[Prototype]]: #Node.prototype,
     "constructor": <#Document, T, F, T>,
+    "createComment": <#Document.prototype.createComment, T, T, T>,
     "createElement": <#Document.prototype.createElement, T, T, T>,
+    "documentElement": <#Document.prototype.documentElement, T, T, T>,
+    "getElementsByTagName": <#Document.prototype.getElementsByTagName, T, T, T>,
+    "getElementById": <#Document.prototype.getElementById, T, T, T>,
     "location": <#location, F, T, T>,
     "setInterval": <#Document.prototype.setInterval, T, T, T>,
     "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
@@ -113,12 +195,47 @@ Heap: {
     "writeln": <#Document.prototype.writeln, F, T, T>,
     "URL": <string, F, T, T>
   },
+  #Document.prototype.getElementsByTagName: {
+    [[Call]]: fun(25),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"getElementsByTagName", F, F, T>
+  },
+  #Document.prototype.getElementById: {
+    [[Call]]: fun(26),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"getElementById", F, F, T>
+  },
+  #Document.prototype.createComment: {
+    [[Call]]: fun(28),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, T>
+  },
   #Document.prototype.createElement: {
     [[Call]]: fun(12),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, T>
+  },
+  #Document.prototype.documentElement: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #HTMLHtmlElement.prototype,
     [[Scope]]: null
   },
   #Document.prototype.setInterval: {
@@ -179,6 +296,48 @@ Heap: {
     [[Prototype]]: #Object.prototype,
     "userAgent": <string, T, T, T>
   },
+  #HTMLElement: {
+    [[Call]]: fun(18),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Element,
+    [[Scope]]: null,
+    "prototype": <#HTMLElement.prototype, F, F, F>
+  },
+  #HTMLElement.prototype: {
+    [[Class]]: "HTMLElement",
+    [[Extensible]]: true,
+    [[Prototype]]: #Element.prototype,
+    "constructor": <#HTMLElement, T, F, T>,
+    "style": <#HTMLElement.prototype.style, T, T, T>,
+  },
+  #HTMLElement.prototype.style: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype
+  },
+  #HTMLHtmlElement: {
+    [[Call]]: fun(20),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #HTMLElement,
+    [[Scope]]: null,
+    "prototype": <#HTMLHtmlElement.prototype, F, F, F>
+  },
+  #HTMLHtmlElement.prototype: {
+    [[Class]]: "HTMLHtmlElement",
+    [[Extensible]]: true,
+    [[Prototype]]: #HTMLElement.prototype,
+    "constructor": <#HTMLHtmlElement, T, F, T>,
+  },
+  #XMLHttpRequest: {
+    [[Construct]]: fun(30),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype
+  }
 }
 
 Function: {
@@ -234,7 +393,7 @@ Function: {
   12: [\\
   function createElement() {
     var o = {};
-    @Prototype(o, Element.prototype);
+    @Prototype(o, HTMLElement.prototype);
     return o;
   }
   \\],
@@ -256,6 +415,59 @@ Function: {
   \\],
   17: [\\
   function setInterval(code, delay) {
+  }
+  \\],
+  18: [\\
+  function HTMLElement() {
+  }
+  \\],
+  19: [\\
+  function getElementsByTagName() {
+    return [];
+  }
+  \\],
+  20: [\\
+  function HTMLHtmlElement() {
+  }
+  \\],
+  21: [\\
+  function NodeList() {
+  }
+  \\],
+  22: [\\
+  function NodeList() {
+  }
+  \\],
+  23: [\\
+  function insertBefore() {
+  }
+  \\],
+  24: [\\
+  function getElementById() {
+  }
+  \\],
+  25: [\\
+  function getElementsByTagName() {
+  }
+  \\],
+  26: [\\
+  function getElementById() {
+  }
+  \\],
+  27: [\\
+  function removeChild() {
+  }
+  \\],
+  28: [\\
+  function createComment() {
+  }
+  \\],
+  29: [\\
+  function appendChild() {
+  }
+  \\],
+  30: [\\
+  function XMLHttpRequest() {
   }
   \\]
 }

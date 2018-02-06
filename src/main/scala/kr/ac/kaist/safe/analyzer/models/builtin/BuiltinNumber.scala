@@ -12,10 +12,7 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.domain.IClass
-import kr.ac.kaist.safe.analyzer.domain.IPrimitiveValue
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util._
@@ -23,20 +20,20 @@ import kr.ac.kaist.safe.util._
 object BuiltinNumberHelper {
   val instanceASite = PredAllocSite("Number<instance>")
 
-  def typeConvert(args: AbsValue, st: AbsState): AbsNumber = {
+  def typeConvert(args: AbsValue, st: AbsState): AbsNum = {
     val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
+    val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
     val emptyN =
-      if (AbsNumber(0) <= argL) AbsNumber(0)
-      else AbsNumber.Bot
-    TypeConversionHelper.ToNumber(argV) + emptyN
+      if (AbsNum(0) ⊑ argL) AbsNum(0)
+      else AbsNum.Bot
+    TypeConversionHelper.ToNumber(argV) ⊔ emptyN
   }
 
-  def getValue(thisV: AbsValue, h: AbsHeap): AbsNumber = {
-    thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
-      if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.numval
+  def getValue(thisV: AbsValue, h: AbsHeap): AbsNum = {
+    thisV.pvalue.numval ⊔ thisV.locset.foldLeft(AbsNum.Bot)((res, loc) => {
+      if ((AbsStr("Number") ⊑ h.get(loc)(IClass).value.pvalue.strval))
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.numval
       else res
     })
   }
@@ -48,7 +45,7 @@ object BuiltinNumberHelper {
       val num = typeConvert(args, st)
       val loc = Loc(instanceASite)
       val state = st.oldify(loc)
-      val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
+      val heap = state.heap.update(loc, AbsObj.newNumberObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
   )
@@ -117,18 +114,18 @@ object BuiltinNumberProto extends ObjModel(
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
 
         // The optional radix should be an integer value in the inclusive range 2 to 36.
-        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-        val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+        val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
+        val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
         // If radix not present or is undefined the Number 10 is used as the value of radix.
         val emptyN =
-          if (AbsNumber(0) <= argL || AbsUndef.Top <= argV) AbsNumber(10)
-          else AbsNumber.Bot
-        val radix = TypeConversionHelper.ToInteger(argV) + emptyN
+          if (AbsNum(0) ⊑ argL || AbsUndef.Top ⊑ argV) AbsNum(10)
+          else AbsNum.Bot
+        val radix = TypeConversionHelper.ToInteger(argV) ⊔ emptyN
 
         // If ToInteger(radix) is not an integer between 2 and 36 inclusive
         // throw a RangeError exception.
-        if (AbsBool.True <= Helper.bopGreater(radix, AbsNumber(36)) ||
-          AbsBool.True <= Helper.bopLess(radix, AbsNumber(2))) {
+        if (AbsBool.True ⊑ Helper.bopGreater(radix, AbsNum(36)) ||
+          AbsBool.True ⊑ Helper.bopLess(radix, AbsNum(2))) {
           excSet += RangeError
         }
 
@@ -136,15 +133,20 @@ object BuiltinNumberProto extends ObjModel(
         // then this Number value is given as an argument to the ToString abstract operation;
         // the resulting String value is returned.
         val n = BuiltinNumberHelper.getValue(thisV, h)
-        val s =
-          TypeConversionHelper.SameValue(h, AbsNumber(10), radix).map({
-            TypeConversionHelper.ToString(n)
-          }, {
-            // If ToInteger(radix) is an integer from 2 to 36, but not 10,
-            // XXX: give up the precision! (Room for the analysis precision improvement!)
-            AbsString.Top
-          })(AbsString)
-
+        val s = {
+          val b = TypeConversionHelper.SameValue(h, AbsNum(10), radix)
+          val t =
+            if (AT ⊑ b) {
+              TypeConversionHelper.ToString(n)
+            } else AbsStr.Bot
+          val f =
+            if (AF ⊑ b) {
+              // If ToInteger(radix) is an integer from 2 to 36, but not 10,
+              // XXX: give up the precision! (Room for the analysis precision improvement!)
+              AbsStr.Top
+            } else AbsStr.Bot
+          t ⊔ f
+        }
         (st, st.raiseException(excSet), AbsValue(s))
       })
     ), T, F, T),
@@ -194,16 +196,16 @@ object BuiltinNumberProto extends ObjModel(
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
         // 1. Let f be ToInteger(fractionDigits).
         // (If fractionDigits is undefined, this step produces the value 0).
-        val frac = Helper.propLoad(args, Set(AbsString("0")), h)
-        val undefV = (if (AbsUndef.Top <= frac) AbsNumber(0) else AbsNumber.Bot)
-        val f = TypeConversionHelper.ToInteger(frac) + undefV
+        val frac = Helper.propLoad(args, Set(AbsStr("0")), h)
+        val undefV = (if (AbsUndef.Top ⊑ frac) AbsNum(0) else AbsNum.Bot)
+        val f = TypeConversionHelper.ToInteger(frac) ⊔ undefV
         // 2. If f < 0 or f > 20, throw a RangeError exception.
-        if (AbsBool.True <= Helper.bopGreater(f, AbsNumber(20)) ||
-          AbsBool.True <= Helper.bopLess(f, AbsNumber(0))) {
+        if (AbsBool.True ⊑ Helper.bopGreater(f, AbsNum(20)) ||
+          AbsBool.True ⊑ Helper.bopLess(f, AbsNum(0))) {
           excSet += RangeError
         }
         // XXX: give up the precision! (Room for the analysis precision improvement!)
-        (st, st.raiseException(excSet), AbsValue(AbsString.Top))
+        (st, st.raiseException(excSet), AbsValue(AbsStr.Top))
       })
     ), T, F, T),
 
@@ -219,18 +221,18 @@ object BuiltinNumberProto extends ObjModel(
         // 1. Let x be this Number value.
         val x = BuiltinNumberHelper.getValue(thisV, h)
         // 2. Let f be ToInteger(fractionDigits).
-        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val f = TypeConversionHelper.ToInteger(argV)
         // 7. If fractionDigits is not undefined and (f < 0 or f > 20), throw a RangeError exception.
-        if ((!argV.locset.isBottom || !argV.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom) &&
-          (AbsBool.True <= (
-            Helper.bopLess(f, AbsNumber(0)).pvalue.boolval ||
-            Helper.bopGreater(f, AbsNumber(20)).pvalue.boolval
+        if ((!argV.locset.isBottom || !argV.pvalue.copy(undefval = AbsUndef.Bot).isBottom) &&
+          (AbsBool.True ⊑ (
+            Helper.bopLess(f, AbsNum(0)).pvalue.boolval ||
+            Helper.bopGreater(f, AbsNum(20)).pvalue.boolval
           )))
           excSet += RangeError
 
         // XXX: give up the precision! (Room for the analysis precision improvement!)
-        (st, st.raiseException(excSet), AbsValue(AbsString.Top))
+        (st, st.raiseException(excSet), AbsValue(AbsStr.Top))
       })
     ), T, F, T),
 
@@ -243,16 +245,16 @@ object BuiltinNumberProto extends ObjModel(
         val h = st.heap
         val thisV = st.context.thisBinding
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
-        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
         // 3. Let p be ToInteger(precision).
         val p = TypeConversionHelper.ToInteger(argV)
         // 8. If p < 1 or p > 21, throw a RangeError exception.
-        if (AbsBool.True <= Helper.bopGreater(p, AbsNumber(21)) ||
-          AbsBool.True <= Helper.bopLess(p, AbsNumber(1))) {
+        if (AbsBool.True ⊑ Helper.bopGreater(p, AbsNum(21)) ||
+          AbsBool.True ⊑ Helper.bopLess(p, AbsNum(1))) {
           excSet += RangeError
         }
         // XXX: give up the precision! (Room for the analysis precision improvement!)
-        (st, st.raiseException(excSet), AbsValue(AbsString.Top))
+        (st, st.raiseException(excSet), AbsValue(AbsStr.Top))
       })
     ), T, F, T)
   )

@@ -75,9 +75,8 @@ object Safe {
     CmdCompile,
     CmdCFGBuild,
     CmdHeapBuild,
-    CmdJsonLoad,
     CmdAnalyze,
-    CmdBugDetect,
+    CmdWeb,
     CmdHelp
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
@@ -91,9 +90,9 @@ object Safe {
     Compile,
     CFGBuild,
     HeapBuild,
-    JsonLoad,
     Analyze,
     BugDetect,
+    Web,
     Help
   )
 
@@ -107,7 +106,7 @@ object Safe {
       "switch on the test mode.")
   )
 
-  // indentation 
+  // indentation
   private val INDENT = 15
 
   // print usage message.

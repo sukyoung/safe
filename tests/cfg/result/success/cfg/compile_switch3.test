@@ -51,7 +51,7 @@ function[0] top-level {
 
   Switch[18] -> [19]
 
-  lab:[19] -> Exit
+  Label(lab)[19] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

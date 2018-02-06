@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -26,7 +25,7 @@ object Initialize {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
-      BuiltinGlobal.loc -> AbsObject.Bot
+      BuiltinGlobal.loc -> AbsObj.Bot
     // TODO If delete, not working because not allowed update to bottom heap
     ))
 
@@ -55,7 +54,7 @@ object Initialize {
   def addSnapshot(st: AbsState, snapshot: String): AbsState = {
     val concreteHeap = Heap.parse(snapshot)
     val abstractHeap = AbsHeap.alpha(concreteHeap)
-    AbsState(st.heap + abstractHeap, st.context)
+    AbsState(st.heap ⊔ abstractHeap, st.context)
   }
 }
 

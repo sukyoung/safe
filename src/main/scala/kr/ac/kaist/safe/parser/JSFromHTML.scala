@@ -20,7 +20,7 @@ import java.io.File
 import java.net.URL
 import java.nio.charset.CodingErrorAction
 import java.util.{ List => JList }
-import scala.collection.JavaConverters
+import scala.collection.JavaConverters._
 import scala.io.Codec
 import scala.util.Try
 import kr.ac.kaist.safe.errors.ExcLog
@@ -28,8 +28,7 @@ import kr.ac.kaist.safe.nodes.ast.SourceElements
 import kr.ac.kaist.safe.util.NodeUtil._
 
 object JSFromHTML {
-  private def toList[T](jList: JList[T]): List[T] =
-    JavaConverters.asScalaBuffer(jList).toList
+  private def toList[T](jList: JList[T]): List[T] = jList.asScala.toList
   // extract a JavaScript file name from a string such as "main.js?135895164373817"
   val fileNameRegexp = (".*/[^/\\:*?\"<>|]+").r // \ : * ? " < > | // file:///c:/~/~/main.js?121424324
   val bogus = (1, 1)

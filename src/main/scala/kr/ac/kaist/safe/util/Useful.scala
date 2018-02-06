@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.util
 
 import scala.util.Try
 import java.io.{ BufferedWriter, File, FileWriter, IOException }
-import kr.ac.kaist.safe.{ LINE_SEP, CUR_DIR }
+import kr.ac.kaist.safe.{ LINE_SEP, CUR_DIR, BASE_DIR, SEP }
 
 object Useful {
   def toRelativePath(fileName: String): String = {
@@ -51,4 +51,6 @@ object Useful {
       case _ =>
     }
   }
+
+  def path(dirs: String*): String = BASE_DIR + SEP + dirs.mkString(SEP)
 }

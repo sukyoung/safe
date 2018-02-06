@@ -12,10 +12,7 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.domain.IClass
-import kr.ac.kaist.safe.analyzer.domain.IPrimitiveValue
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util._
@@ -24,20 +21,20 @@ object BuiltinStringHelper {
   val instanceASite = PredAllocSite("String<instance>")
   val matchObjASite = PredAllocSite("String.prototype.match<object>")
 
-  def typeConvert(args: AbsValue, st: AbsState): AbsString = {
+  def typeConvert(args: AbsValue, st: AbsState): AbsStr = {
     val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
+    val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
     val emptyS =
-      if (AbsNumber(0) <= argL) AbsString("")
-      else AbsString.Bot
-    TypeConversionHelper.ToString(argV) + emptyS
+      if (AbsNum(0) ⊑ argL) AbsStr("")
+      else AbsStr.Bot
+    TypeConversionHelper.ToString(argV) ⊔ emptyS
   }
 
-  def getValueNonGeneric(thisV: AbsValue, h: AbsHeap): AbsString = {
-    thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
-      if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.strval
+  def getValueNonGeneric(thisV: AbsValue, h: AbsHeap): AbsStr = {
+    thisV.pvalue.strval ⊔ thisV.locset.foldLeft(AbsStr.Bot)((res, loc) => {
+      if ((AbsStr("String") ⊑ h.get(loc)(IClass).value.pvalue.strval))
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.strval
       else res
     })
   }
@@ -49,7 +46,7 @@ object BuiltinStringHelper {
       val num = typeConvert(args, st)
       val loc = Loc(instanceASite)
       val state = st.oldify(loc)
-      val heap = state.heap.update(loc, AbsObject.newStringObj(num))
+      val heap = state.heap.update(loc, AbsObj.newStringObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
   )
@@ -60,7 +57,7 @@ object BuiltinStringHelper {
     code = (args: AbsValue, st: AbsState) => {
       val loc = Loc(matchObjASite)
       val state = st.oldify(loc)
-      val heap = state.heap.update(loc, AbsObject.Top)
+      val heap = state.heap.update(loc, AbsObj.Top)
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(Null, loc))
     }
   )
@@ -125,19 +122,19 @@ object BuiltinString extends FuncModel(
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
-        val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+        val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
         // If no arguments are supplied, the result is the empty String.
-        val emptyS = if (AbsNumber(0) <= argL) AbsString("") else AbsString.Bot
+        val emptyS = if (AbsNum(0) ⊑ argL) AbsStr("") else AbsStr.Bot
         // An argument is converted to a character by applying the operation ToUint16 (9.7)
         // and regarding the resulting 16-bit integer as the code unit value of a character.
-        val s = emptyS + (argL.getSingle match {
+        val s = emptyS ⊔ (argL.getSingle match {
           case ConOne(Num(n)) =>
-            (0 until n.toInt).foldLeft(AbsString(""))((str, i) => {
-              val argV = Helper.propLoad(args, Set(AbsString(i.toString)), h)
-              str.concat(AbsString.fromCharCode(TypeConversionHelper.ToUInt16(argV)))
+            (0 until n.toInt).foldLeft(AbsStr(""))((str, i) => {
+              val argV = Helper.propLoad(args, Set(AbsStr(i.toString)), h)
+              str.concat(AbsStr.fromCharCode(TypeConversionHelper.ToUint16(argV)))
             })
           // XXX: give up the precision! (Room for the analysis precision improvement!)
-          case _ => AbsString.Top
+          case _ => AbsStr.Top
         })
         (st, AbsState.Bot, AbsValue(s))
       })
@@ -185,20 +182,20 @@ object BuiltinStringProto extends ObjModel(
         val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let position be ToInteger(pos).
-        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val pos = TypeConversionHelper.ToInteger(argV)
         // 4. Let size be the number of characters in S.
         val size = s.length
         // 5. If position < 0 or position >= size, return the empty String.
         val emptyS =
-          if (AbsBool.True <= Helper.bopGreaterEq(pos, size) ||
-            AbsBool.True <= Helper.bopLess(pos, AbsNumber(0)))
-            AbsString("")
-          else AbsString.Bot
+          if (AbsBool.True ⊑ Helper.bopGreaterEq(pos, size) ||
+            AbsBool.True ⊑ Helper.bopLess(pos, AbsNum(0)))
+            AbsStr("")
+          else AbsStr.Bot
         // 6. Return a String of length 1, containing one character from S,
         // namely the character at position position, where the first (leftmost) character
         // in S is considered to be at position 0, the next one at position 1, and so on.
-        val res = emptyS + s.charAt(pos)
+        val res = emptyS ⊔ s.charAt(pos)
         (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
@@ -216,20 +213,20 @@ object BuiltinStringProto extends ObjModel(
         val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let position be ToInteger(pos).
-        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val argV = Helper.propLoad(args, Set(AbsStr("0")), h)
         val pos = TypeConversionHelper.ToInteger(argV)
         // 4. Let size be the number of characters in S.
         val size = s.length
         // 5. If position < 0 or position >= size, return NaN.
         val emptyN =
-          if (AbsBool.True <= Helper.bopGreaterEq(pos, size) ||
-            AbsBool.True <= Helper.bopLess(pos, AbsNumber(0)))
-            AbsNumber.NaN
-          else AbsNumber.Bot
+          if (AbsBool.True ⊑ Helper.bopGreaterEq(pos, size) ||
+            AbsBool.True ⊑ Helper.bopLess(pos, AbsNum(0)))
+            AbsNum.NaN
+          else AbsNum.Bot
         // 6. Return a value of Number type, whose value is the code unit value of
         // the character at position position in the String S, where the first (leftmost)
         // character in S is considered to be at position 0, the next one at position 1, and so on.
-        val res = emptyN + s.charCodeAt(pos)
+        val res = emptyN ⊔ s.charCodeAt(pos)
         (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
@@ -252,16 +249,16 @@ object BuiltinStringProto extends ObjModel(
         //   b. Let R be the String value consisting of the characters
         //      in the previous value of R followed by the characters of ToString(next).
         // 6. Return R.
-        val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+        val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
         val res = argL.getSingle match {
           case ConOne(Num(n)) if n == 0 => s
           case ConOne(Num(n)) if n > 0 =>
             (0 until n.toInt).foldLeft(s)((str, i) => {
-              val argV = Helper.propLoad(args, Set(AbsString(i.toString)), h)
+              val argV = Helper.propLoad(args, Set(AbsStr(i.toString)), h)
               str.concat(TypeConversionHelper.ToString(argV))
             })
           // XXX: give up the precision! (Room for the analysis precision improvement!)
-          case _ => AbsString.Top
+          case _ => AbsStr.Top
         }
         (st, AbsState.Bot, AbsValue(res))
       })
@@ -279,11 +276,11 @@ object BuiltinStringProto extends ObjModel(
         val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let searchStr be ToString(searchString).
-        val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
+        val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsStr("0")), h))
         // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
-        val position = Helper.propLoad(args, Set(AbsString("1")), h)
-        val emptyN = if (AbsUndef.Top <= position) AbsNumber(0) else AbsNumber.Bot
-        val pos = emptyN + TypeConversionHelper.ToInteger(position)
+        val position = Helper.propLoad(args, Set(AbsStr("1")), h)
+        val emptyN = if (AbsUndef.Top ⊑ position) AbsNum(0) else AbsNum.Bot
+        val pos = emptyN ⊔ TypeConversionHelper.ToInteger(position)
         // 5. Let len be the number of characters in S.
         val len = s.length
         // 6. Let start be min(max(pos, 0), len).
@@ -297,17 +294,17 @@ object BuiltinStringProto extends ObjModel(
         // XXX: give up the precision! (Room for the analysis precision improvement!)
         val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
           case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
-            thisSet.foldLeft(AbsNumber.Bot) {
+            thisSet.foldLeft(AbsNum.Bot) {
               case (num, Str(thisS)) => searchSet.foldLeft(num) {
                 case (num, Str(searchS)) =>
-                  num + AbsNumber(thisS.indexOf(searchS, posN.toInt).toDouble)
+                  num ⊔ AbsNum(thisS.indexOf(searchS, posN.toInt).toDouble)
               }
             }
           case _ =>
-            if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
-              AbsNumber.Bot
+            if (s ⊑ AbsStr.Bot || searchStr ⊑ AbsStr.Bot || pos ⊑ AbsNum.Bot)
+              AbsNum.Bot
             else
-              AbsNumber.Top
+              AbsNum.Top
         }
         (st, AbsState.Bot, AbsValue(n))
       })
@@ -325,16 +322,22 @@ object BuiltinStringProto extends ObjModel(
         val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let searchStr be ToString(searchString).
-        val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
+        val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsStr("0")), h))
         // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
-        val position = Helper.propLoad(args, Set(AbsString("1")), h)
-        val emptyN = if (AbsUndef.Top <= position) AbsNumber.NaN else AbsNumber.Bot
-        val numPos = emptyN + TypeConversionHelper.ToNumber(position)
+        val position = Helper.propLoad(args, Set(AbsStr("1")), h)
+        val emptyN = if (AbsUndef.Top ⊑ position) AbsNum.NaN else AbsNum.Bot
+        val numPos = emptyN ⊔ TypeConversionHelper.ToNumber(position)
         // 5. If numPos is NaN, let pos be +Infinity; otherwise, let pos be ToInteger(numPos).
-        val pos = (BuiltinHelper.isNaN(numPos)).map[AbsNumber](
-          thenV = AbsNumber.PosInf,
-          elseV = TypeConversionHelper.ToInteger(numPos)
-        )(AbsNumber)
+        val b = BuiltinHelper.isNaN(numPos)
+        val t =
+          if (AT ⊑ b) {
+            AbsNum.PosInf
+          } else AbsNum.Bot
+        val f =
+          if (AF ⊑ b) {
+            TypeConversionHelper.ToInteger(numPos)
+          } else AbsNum.Bot
+        val pos = t ⊔ f
         // 6. Let len be the number of characters in S.
         val len = s.length
         // 7. Let start min(max(pos, 0), len).
@@ -347,17 +350,17 @@ object BuiltinStringProto extends ObjModel(
         // XXX: give up the precision! (Room for the analysis precision improvement!)
         val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
           case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
-            thisSet.foldLeft(AbsNumber.Bot) {
+            thisSet.foldLeft(AbsNum.Bot) {
               case (num, Str(thisS)) => searchSet.foldLeft(num) {
                 case (num, Str(searchS)) =>
-                  num + AbsNumber(thisS.lastIndexOf(searchS, posN.toInt).toDouble)
+                  num ⊔ AbsNum(thisS.lastIndexOf(searchS, posN.toInt).toDouble)
               }
             }
           case _ =>
-            if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
-              AbsNumber.Bot
+            if (s ⊑ AbsStr.Bot || searchStr ⊑ AbsStr.Bot || pos ⊑ AbsNum.Bot)
+              AbsNum.Bot
             else
-              AbsNumber.Top
+              AbsNum.Top
         }
         (st, AbsState.Bot, AbsValue(n))
       })
@@ -375,20 +378,20 @@ object BuiltinStringProto extends ObjModel(
         val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let That be ToString(that).
-        val that = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
+        val that = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsStr("0")), h))
         val n = (s.gamma, that.gamma) match {
           case (ConFin(thisSet), ConFin(thatSet)) =>
-            thisSet.foldLeft(AbsNumber.Bot) {
+            thisSet.foldLeft(AbsNum.Bot) {
               case (num, Str(thisS)) => thatSet.foldLeft(num) {
                 case (num, Str(thatS)) =>
-                  num + AbsNumber(thisS.compare(thatS).toDouble)
+                  num ⊔ AbsNum(thisS.compare(thatS).toDouble)
               }
             }
           case _ =>
-            if (s <= AbsString.Bot || that <= AbsString.Bot)
-              AbsNumber.Bot
+            if (s ⊑ AbsStr.Bot || that ⊑ AbsStr.Bot)
+              AbsNum.Bot
             else
-              AbsNumber.Top
+              AbsNum.Top
         }
         (st, AbsState.Bot, AbsValue(n))
       })
@@ -426,35 +429,58 @@ object BuiltinStringProto extends ObjModel(
         // 3. Let len be the number of characters in S.
         val len = s.length
         // 4. Let intStart be ToInteger(start).
-        val intStart = TypeConversionHelper.ToInteger(Helper.propLoad(args, Set(AbsString("0")), h))
+        val intStart = TypeConversionHelper.ToInteger(Helper.propLoad(args, Set(AbsStr("0")), h))
         // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
-        val end = Helper.propLoad(args, Set(AbsString("1")), h)
-        val intEnd = AbsBool(AbsUndef.Top <= end).map[AbsNumber](
-          thenV = len,
-          elseV = TypeConversionHelper.ToInteger(end)
-        )(AbsNumber)
+        val end = Helper.propLoad(args, Set(AbsStr("1")), h)
+        val intEnd =
+          if (AbsUndef.Top ⊑ end) len
+          else TypeConversionHelper.ToInteger(end)
         // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
-        val from = (intStart < AbsNumber(0)).map[AbsNumber](
-          thenV = BuiltinHelper.max(len.add(intStart), AbsNumber(0)),
-          elseV = BuiltinHelper.min(intStart, len)
-        )(AbsNumber)
+        val from = {
+          val b = intStart < AbsNum(0)
+          val t =
+            if (AT ⊑ b) {
+              BuiltinHelper.max(len + intStart, AbsNum(0))
+            } else AbsNum.Bot
+          val f =
+            if (AF ⊑ b) {
+              BuiltinHelper.min(intStart, len)
+            } else AbsNum.Bot
+          t ⊔ f
+        }
         // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
-        val to = (intEnd < AbsNumber(0)).map[AbsNumber](
-          thenV = BuiltinHelper.max(len.add(intEnd), AbsNumber(0)),
-          elseV = BuiltinHelper.min(intEnd, len)
-        )(AbsNumber)
+        val to = {
+          val b = intEnd < AbsNum(0)
+          val t =
+            if (AT ⊑ b) {
+              BuiltinHelper.max(len + intEnd, AbsNum(0))
+            } else AbsNum.Bot
+          val f =
+            if (AF ⊑ b) {
+              BuiltinHelper.min(intEnd, len)
+            } else AbsNum.Bot
+          t ⊔ f
+        }
         // 8. Let span be max(to - from, 0).
         // 9. Return a String containing span consecutive characters from S beginning with the character at position from.
-        val res = (from < to).map[AbsString](
-          thenV = (s.gamma, from.getSingle, to.getSingle) match {
-            case (ConFin(set), ConOne(Num(f)), ConOne(Num(t))) =>
-              set.foldLeft(AbsString.Bot) {
-                case (r, Str(str)) => r + AbsString(str.slice(f.toInt, t.toInt))
+        val res = {
+          val b = from < to
+          val t =
+            if (AT ⊑ b) {
+              (s.gamma, from.getSingle, to.getSingle) match {
+                case (ConFin(set), ConOne(Num(f)), ConOne(Num(t))) =>
+                  set.foldLeft(AbsStr.Bot) {
+                    case (r, Str(str)) => r ⊔ AbsStr(str.slice(f.toInt, t.toInt))
+                  }
+                case _ => AbsStr.Top
               }
-            case _ => AbsString.Top
-          },
-          elseV = AbsString.Top
-        )(AbsString)
+            } else AbsStr.Bot
+          val f =
+            if (AF ⊑ b) {
+              AbsStr.Top
+            } else AbsStr.Bot
+          t ⊔ f
+        }
         (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
@@ -479,17 +505,16 @@ object BuiltinStringProto extends ObjModel(
         // 3. Let len be the number of characters in S.
         val len = s.length
         // 4. Let intStart be ToInteger(start).
-        val intStart = TypeConversionHelper.ToInteger(Helper.propLoad(args, Set(AbsString("0")), h))
+        val intStart = TypeConversionHelper.ToInteger(Helper.propLoad(args, Set(AbsStr("0")), h))
         // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
-        val end = Helper.propLoad(args, Set(AbsString("1")), h)
-        val intEnd = AbsBool(AbsUndef.Top <= end).map[AbsNumber](
-          thenV = len,
-          elseV = TypeConversionHelper.ToInteger(end)
-        )(AbsNumber)
+        val end = Helper.propLoad(args, Set(AbsStr("1")), h)
+        val intEnd =
+          if (AbsUndef.Top ⊑ end) len
+          else TypeConversionHelper.ToInteger(end)
         // 6. Let finalStart be min(max(intStart, 0), len).
-        val finalStart = BuiltinHelper.min(BuiltinHelper.max(intStart, AbsNumber(0)), len)
+        val finalStart = BuiltinHelper.min(BuiltinHelper.max(intStart, AbsNum(0)), len)
         // 7. Let finalEnd be min(max(intEnd, 0), len).
-        val finalEnd = BuiltinHelper.min(BuiltinHelper.max(intEnd, AbsNumber(0)), len)
+        val finalEnd = BuiltinHelper.min(BuiltinHelper.max(intEnd, AbsNum(0)), len)
         // 8. Let from be min(finalStart, finalEnd).
         val from = BuiltinHelper.min(finalStart, finalEnd)
         // 9. Let to be max(finalStart, finalEnd).
@@ -498,10 +523,10 @@ object BuiltinStringProto extends ObjModel(
         //   namely the characters with indices from through to - 1, in ascending order.
         val res = (s.gamma, from.getSingle, to.getSingle) match {
           case (ConFin(set), ConOne(Num(f)), ConOne(Num(t))) =>
-            set.foldLeft(AbsString.Bot) {
-              case (r, Str(str)) => r + AbsString(str.substring(f.toInt, t.toInt))
+            set.foldLeft(AbsStr.Bot) {
+              case (r, Str(str)) => r ⊔ AbsStr(str.substring(f.toInt, t.toInt))
             }
-          case _ => AbsString.Top
+          case _ => AbsStr.Top
         }
         (st, AbsState.Bot, AbsValue(res))
       })
@@ -541,11 +566,13 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
+        val excSet = TypeConversionHelper.CheckObjectCoercible(thisV)
         // 3. Let T be a String value that is a copy of S with both leading and trailing white space
         //   removed. The definition of white space is the union of WhiteSpace and LineTerminator.
         // 4. Return T.
         val s = TypeConversionHelper.ToString(thisV, h).trim
-        (st, AbsState.Bot, AbsValue(s))
+        val excSt = st.raiseException(excSet)
+        (st, excSt, AbsValue(s))
       })
     ), T, F, T)
   )

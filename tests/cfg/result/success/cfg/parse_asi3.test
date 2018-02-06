@@ -83,7 +83,7 @@ function[0] top-level {
 
   LBreak[21] -> [22]
 
-  charloop:[22] -> Exit
+  Label(charloop)[22] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

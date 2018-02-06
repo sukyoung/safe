@@ -15,7 +15,6 @@ import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
@@ -28,7 +27,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   // Generators of bug detector messages
   def always(expr: CFGExpr, cond: Boolean): String =
     expr.ir.span.toString + ":\n    [Warning] The conditional expression \"" + expr.ir.ast.toString(0) + "\" is always " + cond + "."
-  def absentProp(expr: CFGExpr, name: AbsString, obj: CFGExpr): String =
+  def absentProp(expr: CFGExpr, name: AbsStr, obj: CFGExpr): String =
     expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 
   // Move to CFGBlock?  Copied from HTMLWriter.
@@ -67,7 +66,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
           val propStr = propV.pvalue.strval
           val heap = state.heap
           val propExist = heap.get(objLoc).HasProperty(propStr, heap)
-          if (!propExist.isBottom && propExist <= AbsBool.False)
+          if (!propExist.isBottom && propExist ⊑ AbsBool.False)
             absentProp(expr, propStr, obj) :: bugs
           else bugs
         } else bugs
@@ -89,9 +88,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
               val (v, _) = semantics.V(cond, state)
               val bv = TypeConversionHelper.ToBoolean(v)
               val (res, _) = semantics.I(i, state, AbsState.Bot)
-              if (!bv.isBottom && ((bv === AbsBool.True) <= AbsBool.True))
+              if (!bv.isBottom && ((bv StrictEquals AbsBool.True) ⊑ AbsBool.True))
                 (always(cond, true) :: exprBugs ++ bs, res)
-              else if (!bv.isBottom && ((bv === AbsBool.False) <= AbsBool.True))
+              else if (!bv.isBottom && ((bv StrictEquals AbsBool.False) ⊑ AbsBool.True))
                 (always(cond, false) :: exprBugs ++ bs, res)
               else (exprBugs ++ bs, res)
 

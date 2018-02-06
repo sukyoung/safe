@@ -15,14 +15,14 @@ import kr.ac.kaist.safe.analyzer.console._
 
 // add break
 case object CmdBreak extends Command("break", "Add a break point.") {
-  def help: Unit = {
-    println("usage: " + name + " {fid}:{bid}")
-    println("       " + name + " {fid}:entry")
-    println("       " + name + " {fid}:exit")
-    println("       " + name + " {fid}:exitExc")
+  override val help: String = {
+    s"""usage: $name {fid}:{bid}
+           $name {fid}:entry
+           $name {fid}:exit
+           $name {fid}:exitExc"""
   }
 
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     val cfg = c.cfg
     val idPattern = "(-?\\d+):(\\d+)".r
     val spPattern = "(-?\\d+):(entry|exit|exit-exc)".r
@@ -34,9 +34,9 @@ case object CmdBreak extends Command("break", "Add a break point.") {
           cfg.getFunc(fid) match {
             case Some(func) => func.getBlock(bid) match {
               case Some(block) => c.addBreak(block)
-              case None => println(s"* unknown bid in function[$fid]: $bid")
+              case None => printResult(s"* unknown bid in function[$fid]: $bid")
             }
-            case None => println(s"* unknown fid: $fid")
+            case None => printResult(s"* unknown fid: $fid")
           }
         }
         case spPattern(fidStr, sp) => {
@@ -50,12 +50,12 @@ case object CmdBreak extends Command("break", "Add a break point.") {
               }
               c.addBreak(block)
             }
-            case None => println(s"* unknown fid: $fid")
+            case None => printResult(s"* unknown fid: $fid")
           }
         }
-        case _ => help
+        case _ => printResult(help)
       }
-      case _ => help
+      case _ => printResult(help)
     }
     None
   }

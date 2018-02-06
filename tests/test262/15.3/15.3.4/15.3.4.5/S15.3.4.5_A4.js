@@ -1,5 +1,5 @@
   var __result1 = true;
-  function foo()
+  function foo() 
   {
     
   }
@@ -10,4 +10,4 @@
   });
   b(55, 66);
 
-  var __expect1 = true;
+var __expect1 = true;

@@ -16,12 +16,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
-import kr.ac.kaist.safe.json.AbsValueProtocol._
-import kr.ac.kaist.safe.errors.error.{
-  AllocSiteParseError,
-  CFGInstParseError,
-  FunctionNotFoundError
-}
+import kr.ac.kaist.safe.errors.error._
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -170,7 +165,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
             case JsNull => None
             case _ => Some(proto.convertTo[CFGExpr])
           },
-          asite.convertTo[AllocSite]
+          AllocSite.fromJson(asite)
         )
       case JsArray(Vector(JsString("CFGAllocArray"), ir, lhs, JsNumber(len), asite)) =>
         CFGAllocArray(
@@ -178,7 +173,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
           nBlock,
           lhs.convertTo[CFGId],
           len.toInt,
-          asite.convertTo[AllocSite]
+          AllocSite.fromJson(asite)
         )
       case JsArray(Vector(JsString("CFGAllocArg"), ir, lhs, JsNumber(len), asite)) =>
         CFGAllocArg(
@@ -186,7 +181,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
           nBlock,
           lhs.convertTo[CFGId],
           len.toInt,
-          asite.convertTo[AllocSite]
+          AllocSite.fromJson(asite)
         )
       case JsArray(Vector(JsString("CFGEnterCode"), ir, lhs, expr)) =>
         CFGEnterCode(
@@ -246,11 +241,11 @@ object CFGInstProtocol extends DefaultJsonProtocol {
             case Some(f) => f
             case None => throw FunctionNotFoundError("CFGInst", fid.toInt)
           },
-          a1.convertTo[AllocSite],
-          a2.convertTo[AllocSite],
+          AllocSite.fromJson(a1),
+          AllocSite.fromJson(a2),
           a3 match {
             case JsNull => None
-            case _ => Some(a3.convertTo[AllocSite])
+            case _ => Some(AllocSite.fromJson(a3))
           }
         )
       case JsArray(Vector(JsString("CFGAssert"), ir, expr, JsBoolean(flag))) =>
@@ -297,7 +292,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
           args.map(_.convertTo[CFGExpr]).to[List],
           asite match {
             case JsNull => None
-            case _ => Some(asite.convertTo[AllocSite])
+            case _ => Some(AllocSite.fromJson(asite))
           }
         )
       case _ => throw CFGInstParseError(value)
@@ -338,7 +333,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
           fun.convertTo[CFGExpr],
           arg.convertTo[CFGExpr],
           args.convertTo[CFGExpr],
-          asite.convertTo[AllocSite]
+          AllocSite.fromJson(asite)
         )
       case JsArray(Vector(JsString("CFGConstruct"), ir, fun, arg, args, asite)) =>
         CFGConstruct(
@@ -347,7 +342,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
           fun.convertTo[CFGExpr],
           arg.convertTo[CFGExpr],
           args.convertTo[CFGExpr],
-          asite.convertTo[AllocSite]
+          AllocSite.fromJson(asite)
         )
       case _ => throw CFGInstParseError(value)
     }

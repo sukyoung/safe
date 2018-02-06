@@ -11,25 +11,44 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-// abstract domain
-trait AbsDomain[C, Self <: AbsDomain[C, _]] extends Domain[Self] {
-  // concretization
-  def gamma: ConSet[C]
+import scala.collection.immutable.HashSet
 
-  // get concrete value if |gamma(this)| = 1
-  def getSingle: ConSingle[C]
-}
+// abstract domain for value V
+trait AbsDomain[V] extends Domain {
+  // concrete value type
+  type ConV = V
 
-// utility class for given abstract domain
-trait AbsDomainUtil[C, ABS <: AbsDomain[C, ABS]] extends DomainUtil[ABS] {
-  /** gamma(Bot) is always empty set in our analyzer **/
-
-  // abstraction
-  def alpha(value: C): ABS
-  def alpha(set: Set[C]): ABS = set.foldLeft(Bot) {
-    case (abs, value) => abs + alpha(value)
+  // abstraction functions for values
+  def alpha(v: V): Elem
+  def alpha(set: Set[V]): Elem = set.foldLeft(Bot) {
+    case (elem, v) => elem ⊔ alpha(v)
   }
-  def alpha(seq: C*): ABS = alpha(seq.toSet)
-  def apply(set: Set[C]): ABS = alpha(set)
-  def apply(seq: C*): ABS = alpha(seq.toSet)
+  def alpha(seq: V*): Elem = alpha(seq.toSet)
+  def apply(set: Set[V]): Elem = alpha(set)
+  def apply(seq: V*): Elem = alpha(seq.toSet)
+
+  // abstraction functions for operators
+  def alpha[U, D <: AbsDomain[U]](
+    f: V => U
+  )(domain: D): Elem => domain.Elem = elem => elem.gamma match {
+    case ConInf => domain.Top
+    case ConFin(vset) => domain.alpha(vset.map(f(_)))
+  }
+  def alpha[U, D <: AbsDomain[U]](
+    f: (V, V) => U
+  )(domain: D): (Elem, Elem) => domain.Elem = (l, r) => (l.gamma, r.gamma) match {
+    case (ConFin(lset), ConFin(rset)) => domain.alpha(lset.foldLeft(HashSet[U]()) {
+      case (set, l) => set ++ rset.map(f(l, _))
+    })
+    case _ => domain.Top
+  }
+
+  // abstract element
+  type Elem <: ElemTrait
+
+  // abstract element traits
+  trait ElemTrait extends super.ElemTrait { this: Elem =>
+    def gamma: ConSet[V]
+    def getSingle: ConSingle[V]
+  }
 }

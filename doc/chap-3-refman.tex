@@ -7,81 +7,139 @@
 We describe \safe commands and their basic usage.
 
 \section{\safe commands}
-One can run a \safe command as follows:
+Each command consists of phases and one can run a \safe command as follows:
 \begin{verbatim}
 safe {command} [-{option}]*
      [-{phase}:{option}[={input}]]* {filename}+
 \end{verbatim}
-For example, the following command analyzes JavaScript code stored in a file name
-``{sample.js}'' located in the current directory without showing detailed information
-from the \verb!astRewriter! phase but printing the result of the \verb!cfgBuilder!
+For example, The command \verb!compile! consists of six phases; 
+\verb!parser!, \verb!astRewriter!, and \verb!compiler!.
+The following command compiles JavaScript code stored in a file name
+``{sample.js}'' located in the current directory without showing detailed
+information but printing the result of the \verb!cfgBuilder!
 phase into a file name ``{out}'':
 \begin{verbatim}
 safe analyze -silent
              -cfgBuilder:out=out sample.js
 \end{verbatim}
 
-Each command has its own available options.  The most common options are as follows:
+Each phase has its own available options.
+The most common options are as follows:
 \begin{itemize}
 \item \verb!-{phase}:silent!
 
 \safe does not show messages during the phase.
 
-\item \verb!-{phase}:out={out}!
+\item \verb!-{phase}:out={string}!
 
-\safe writes the result of the phase to a file \verb!out!.
-% \item[\doption{-{phase}:out={out}}]: \\
-%   \safe writes the result of the phase to a file name \verb!out!.
+\safe writes the result of the phase to a file \verb!{string}!.
 \end{itemize}
 and the global options are \verb!-silent! and \verb!-testMode!.
 
-The currently supported commands and their options are as follows:
+The currently supported commands and their phases are as follows:
+\begin{verbatim}
+parse          parser
+astRewrite     parse >> astRewriter
+compile        astRewrite >> compiler
+cfgBuild       compile >> cfgBuilder
+heapBuild      cfgBuild >> heapBuilder
+analyze        heapBuild >> analyzer
+bugDetect      analyze >> bugDetector
+web            web
+help           helper
+\end{verbatim}
+
+and phases and their options are as follows:
 \begin{itemize}
-\item \verb!parse -parser:out={out}!
+\item \verb!parser -out={string}!
 
-parses the JavaScript code in a given file.
-\item \verb!astRewrite -astRewriter:silent!\\
-\hspace*{5.8em}\verb!-astRewriter:out={out}!
+parses the JavaScript code and generates an Abstract Syntax Tree (AST)
+in given files. If multiple files are given, they are concatenated
+in the given order before being parsed.
 
-generates a simplified Abstract Syntax Tree (AST)
-of the  JavaScript code in a given file.
-\item \verb!compile -compiler:silent!\\
-\hspace*{4.2em}\verb!-compiler:out={out}!
+\item \verb!astRewriter -silent!\\
+\hspace*{6.3em}\verb!-out={string}!
 
-generates an Intermediate Representation (IR)
-of the  JavaScript code in a given file.
-\item \verb!cfgBuild -cfgBuilder:silent!\\
-\hspace*{4.8em}\verb!-cfgBuilder:out={out}!\\
-\hspace*{4.8em}\verb!-cfgBuilder:dot={name}!
+rewrites a given AST into a simplified AST.
 
-generates a Control Flow Graph (CFG) of the  JavaScript code in a given file.
+\item \verb!compiler -silent!\\
+\hspace*{4.7em}\verb!-out={string}!
 
-If \verb!-cfgBuilder:dot=name! is given,
-\safe writes the resulting CFG in a graph visualization format
-to file names \verb!name.gv! and \verb!name.pdf!.
+generates an Intermediate Representation (IR) from a given AST.
 
-\item \verb!analyze -analyzer:silent!\\
-\hspace*{4.4em}\verb!-analyzer:out={out}!\\
-\hspace*{4.4em}\verb!-analyzer:console!\\
-\hspace*{4.4em}\verb!-analyzer:html={name}!
+\item \verb!cfgBuilder -silent!\\
+\hspace*{5.8em}\verb!-out={string}!
 
-analyzes the  JavaScript code in a given file.
+generates a Control Flow Graph (CFG) from a given IR.
 
-If \verb!-analyzer:console! is given,
-\safe enables a user to debug analysis results by investigating the intermediate
+\item \verb!heapBuilder -silent!\\
+\hspace*{6.3em}\verb!-maxStrSetSize={number}!\\
+\hspace*{6.3em}\verb!-aaddrType={string}!\\
+\hspace*{6.3em}\verb!-callsiteSensitivity={number}!\\
+\hspace*{6.3em}\verb!-loopIter={number}!\\
+\hspace*{6.3em}\verb!-loopDepth={number}!\\
+\hspace*{6.3em}\verb!-snapshot={string}!\\
+\hspace*{6.3em}\verb!-number={string}!\\
+\hspace*{6.3em}\verb!-jsModel!
+
+builds initial abstract heap used in the \verb!analyzer! phase
+and attaches it into a given CFG.
+
+If \verb!-maxStrSetSize={number}! is given,
+the analyzer will use the string set domain with given size limit n.
+
+If \verb!-aaddrType={string}! is given,
+the analyzer will use a given address abstraction type;
+\verb!"normal"!: allocation-site abstraction and
+\verb!"recency"!: recency abstraction with allocation-site abstraction.
+
+If \verb!-callsiteSensitivity={number}! is given,
+{number}-depth callsite-sensitive analysis will be executed.
+
+If \verb!-loopIter={number}! is given,
+{number}-iteration loop-sensitive analysis will be executed.
+
+If \verb!-loopDepth={number}! is given,
+{number}-depth loop-sensitive analysis will be executed.
+
+If \verb!-snapshot={string}! is given,
+analysis with an initial heap generated from a dynamic snapshot(*.json)
+will be executed.
+
+If \verb!-jsModel! is given,
+analysis with JavaScript models will be executed.
+
+\item \verb!analyzer -silent!\\
+\hspace*{4.7em}\verb!-console!\\
+\hspace*{4.7em}\verb!-exitDump!\\
+\hspace*{4.7em}\verb!-out={string}!
+
+analyzes the given CFG with the given initial abstract heap.
+
+If \verb!-console! is given,
+a user can debug analysis results by investigating the intermediate
 status of the analysis.
 
-If \verb!-analyzer:html=name! is given,
-\safe writes the resulting CFG with states that can be investigated to
-file name \verb!name.html!.
+If \verb!-exitDump! is given,
+it shows the abstract state of the top-level exit node.
 
-We describe these facilities in the next section.
+\item \verb!bugDetector -silent!
 
-\item \verb!help! shows the usage of \safe commands to the standard output.
+detects possible bugs in a given analysis result.
+
+\item \verb!web -port={number}!
+
+allows a user to investigate the analysis status from a browser
+based on network connection. It starts web server with the given
+port number (default: 8080). We describe this in Section~\ref{s:3:2:2:refman}
+
+\item \verb!help!
+
+shows the usage of \safe commands to the standard output.
 \end{itemize}
 
 \medskip
-The \verb!parse! command parses the JavaScript code in a given file and
+The \verb!parser! phase parses the JavaScript code in a given file and
 rewrites obvious dynamic code generation into other statements without using
 dynamic code generation but with the same semantics.  For example, the following
 JavaScript code
@@ -96,9 +154,8 @@ f();
 \end{verbatim}
 
 \medskip
-The \verb!astRewrite! command parses the JavaScript code in a given file and
-rewrites its AST representation into a simpler AST.
-The \verb!astRewriter! phase performs three kinds of AST transformations:
+The \verb!astRewriter! phase rewrites its AST representation into a simpler AST
+using three kinds of AST transformations:
 \begin{itemize}
 \item \verb!Hoister! lifts the declarations of functions and variables inside
 programs and functions up to the beginning of them.
@@ -109,20 +166,20 @@ any dynamic code generation such as \verb!eval! into other statements without us
 the \verb!with! statement but with the same semantics~\cite{dls13,withtr}.
 \end{itemize}
 
-Note that building a graph visualization format of CFGs requires the \verb!dot! program
-from Graphviz~\cite{graphviz} be in your path.
-For example, the following command:
-\begin{verbatim}
-safe cfgBuild -cfgBuilder:dot=dot sample.js
-\end{verbatim}
-runs the following command:
-\begin{verbatim}
-dot -Tpdf dot.gv -o dot.pdf
-\end{verbatim}
-to produce something like the following:
-\begin{figure}[H]
-\includegraphics[width=8.75cm]{cfg.png}
-\end{figure}
+% Note that building a graph visualization format of CFGs requires the \verb!dot! program
+% from Graphviz~\cite{graphviz} be in your path.
+% For example, the following command:
+% \begin{verbatim}
+% safe cfgBuild -cfgBuilder:dot=dot sample.js
+% \end{verbatim}
+% runs the following command:
+% \begin{verbatim}
+% dot -Tpdf dot.gv -o dot.pdf
+% \end{verbatim}
+% to produce something like the following:
+% \begin{figure}[H]
+% \includegraphics[width=8.75cm]{cfg.png}
+% \end{figure}
 
 \section{\safe analyzer debugging}
 When the \verb!-analyzer:console! option is given to the \texttt{analyze} command,
@@ -136,53 +193,71 @@ the starting point of the analysis:
 {\small
 \begin{verbatim}
 Command list:
-- help           
-- next       jump to the next iteration. (same as "")
-- jump       Continue to analyze until the given
-             iteration.
-- print      Print out various information.
-- result     Print out various information.
-- run_insts  Run instruction by instruction.
-- move       Change a current position.
-- home       Reset the current position.
-- run        Run until meet some break point.
-- break      Add a break point.
-- break-list Show the list of break points.
-- break-rm   Remove a break point.
+- help
+- next           jump to the next iteration. (same as "")
+- jump           Continue to analyze until the given
+                 iteration.
+- print          Print out various information.
+- result         Print out various information.
+- run_insts      Run instruction by instruction.
+- move           Change a current position.
+- home           Reset the current position.
+- run            Run until meet some break point.
+- break          Add a break point.
+- break-list     Show the list of break points.
+- break-rm       Remove a break point.
+- find-bot       Find the instruction whose result is
+                 bottom.
+- restart        Restart the analysis.
 For more information, see 'help <command>'.
 
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] > 
+<top-level[0]: Entry[-1], NoLoop> @sample.js:1:1
+ Iter[0] >
 \end{verbatim}
 }
 
 The current status is denoted as follows:
 {\small
 \begin{verbatim}
-<function [{fid}] {fun-name}: {block-kind}[{bid}],
- {call-context}> @{filename}:{span}
+<{fun-name}[{fid}]: {block-kind}[{bid}],
+ {sensitivity}> @{filename}:{span}
 Iter[{#iteration}] >
 \end{verbatim}
 }
 \noindent
-where \verb!fid! and \verb!fun-name! are the id and the name of the current function,
+where \verb!fun-name! and \verb!fid! are the name and the id of the current function,
 respectively, \verb!block-kind! and \verb!bid!
 are the kind and the id of the current block, respectively,
-\verb!call-context! is the call context of the current analysis,
+\verb!sensitivity! is the sensitivity of the current analysis,
 \verb!filename! is the name of the file being analyzed,
 \verb!span! is the location of the current analysis, and
 \verb!#iteration! is the iteration number of the current analysis.
+We support call-context sensitivity based on call-sites
+and loop sensitivity based on loop iterations and inner-loop depths
+as analysis sensitivities.
 
 A block is one of the following kinds:
 \begin{itemize}
 \itemsep-.1em
 \item Entry: the entry block of a function
-\item Block: a normal block with instructions
 \item Exit: the exit block of a function
 \item ExitExc: a block denoting uncaught exceptions in a function
 \item Call: a block denoting a function call
 \item AfterCall: a block receiving a return value of a function call
 \item AfterCatch: a block receiving uncaught exceptions after a function call
+\item Block: a normal block with instructions
+\item LoopHead: a block denoting a loop head
+\item LBreak: a block right after the \verb!break! statement
+\item LCont: a block right after the \verb!continue! statement
+\item Branch: a block denoting a branch
+\item Switch: a block denoting a head of \verb!switch! statement
+\item Case: a block denoting a \verb!case! clause in a \verb!switch! statement
+\item Default: a block denoting the \verb!default! clause
+  in a \verb!switch! statement
+\item Try: a block denoting a head of \verb!try! block
+\item Finally: a block denoting a \verb!finally! block
+\item Catch: a block denoting a \verb!catch! block
+\item Label({string}): a block denoting a user label \verb!{string}!
 \item ModelBlock: a block denoting a modeled function
 \end{itemize}
 
@@ -194,13 +269,15 @@ For example:
 <function[0] top-level: Entry[-1], ()> @test.js:1:1
 Iter[0] > help print
 usage: print state(-all) ({keyword})
+       print heap(-all) ({keyword})
+       print context ({keyword})
        print block ({fid}:{bid})
        print loc {LocName} ({keyword})
-       print func {functionID}
+       print func ({fid})
+       print function ({fid})
        print worklist
        print ipsucc
        print trace
-       print cfg
 \end{verbatim}
 }
 \noindent
@@ -211,11 +288,10 @@ The \verb!next! command proceeds the analysis of the current block,
 which is the default command.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] >
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] >
 
-<function[0] top-level: Block[0], ()> @test.js:1:1-7:18
-Iter[1] >
+<top-level[0]: Block[0], NoLoop> @test.js:2:1-8:20
 \end{verbatim}
 }
 
@@ -224,11 +300,11 @@ The \verb!jump {#iteration}! command proceeds the analysis until the given
 number of iterations.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] > jump 10
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > jump 10
 
-<function[0] top-level: Block[4], ()> @test.js:7:5-21:1
-Iter[10] >
+<f[1]: Block[4], NoLoop> @test.js:5:8-19
+ Iter[10] >
 \end{verbatim}
 }
 
@@ -264,30 +340,24 @@ of commands:
 For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Block[4], ()> @test.js:8:5-26:1
-Iter[10] > run_insts 
-Block[4] -> Exit, ExitExc
-  [0] shift := <>Global<>ignore6
-  [1] __result1 := shift !== "x"
-  [2] __expect1 := false
-  [3] <>obj<>10 := <>Global<>toObject(obj) @ #13
-  [4] __result2 := <>obj<>10["length"] !== 1
-  [5] __expect2 := false
-  [6] <>obj<>11 := <>Global<>toObject(obj) @ #14
-  [7] __result3 := <>obj<>11[0] !== "y"
-  [8] __expect3 := false
-  [9] <>obj<>12 := <>Global<>toObject(obj) @ #15
-  [10] __result4 := <>obj<>12[1] !== undefined
-  [11] __expect4 := false
-  [12] noop(EndOfFile)
+<top-level[0]: Block[0], NoLoop> @test.js:2:1-8:20
+ Iter[1] > run_insts
+Block[0] -> [1], ExitExc
+  [0] f := function (1) @ #6, #7
+  [1] noop(StartOfFile)
+  [2] x := 1
+  [3] <>obj<>9 := @ToObject(f) @ #8
+  [4] <>arguments<>10 := allocArg(0) @ #9
+  [5] <>fun<>11 := @GetBase(f)
+  [6] <>this<> := enterCode(<>fun<>11)
 
-inst: [0] shift := <>Global<>ignore6
+inst: [0] f := function (1) @ #6, #7
 ('s': state / 'q': stop / 'n','': next)
 >
 
-inst: [1] __result1 := shift !== "x"
+inst: [1] noop(StartOfFile)
 ('s': state / 'q': stop / 'n','': next)
-> 
+>
 \end{verbatim}
 }
 
@@ -297,12 +367,12 @@ moves the current block to the given block denoted by the id of a function,
 the id of a block, and the kind of the block.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: ExitExc[-3], ()> @test.js:26:1
-Iter[12] > move 0:exit
+<top-level[0]: Block[0], NoLoop> @test.js:2:1-8:20
+ Iter[1] > move 0:entry
 * current control point changed.
 
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[12] >
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[1] >
 \end{verbatim}
 }
 
@@ -311,12 +381,12 @@ The \verb!home! command moves the current block back to the original
 block to be analyzed.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[12] > home
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[1] > home
 * reset the current control point.
 
-<function[0] top-level: ExitExc[-3], ()> @test.js:26:1
-Iter[12] >
+<top-level[0]: Block[0], NoLoop> @test.js:2:1-8:20
+ Iter[1] >
 \end{verbatim}
 }
 
@@ -325,14 +395,14 @@ The \verb!run! command proceeds the analysis until encountering a break
 point.  A short-key for this command is Ctrl-d.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] > break 0:exit
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > break 0:exit
 
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] > run
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > run
 
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[11] >
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] >
 \end{verbatim}
 }
 
@@ -341,14 +411,14 @@ The \verb!break! command sets up a break point at the given block.
 For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] > break 0:exit
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > break 0:exit
 
-<function[0] top-level: Entry[-1], ()> @test.js:1:1
-Iter[0] > run
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > run
 
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[11] >
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] >
 \end{verbatim}
 }
 
@@ -357,11 +427,13 @@ The \verb!break-list! command shows a list of blocks with
 break points.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[11] > break-list
-* 2 break point(s).
+top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] > break-list
+* 1 break point(s).
   [0] function[0] Exit[-2]
-  [1] function[0] Entry[-1]
+
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] >
 \end{verbatim}
 }
 
@@ -372,21 +444,49 @@ denoted by the order in the result of \verb!break-list!.
 For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[11] > break-list
-* 2 break point(s).
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] > break-list
+* 1 break point(s).
   [0] function[0] Exit[-2]
-  [1] function[0] Entry[-1]
 
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[11] > break-rm 0
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] > break-rm 0
 * break-point[0] removed.
 [0] function[0] Exit[-2]
 
-<function[0] top-level: Exit[-2], ()> @test.js:26:1
-Iter[11] > break-list
-* 1 break point(s).
-  [0] function[0] Entry[-1]
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] > break-list
+* no break point.
+
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] >
+\end{verbatim}
+}
+
+\medskip
+The \verb!find-bot! command finds the instruction
+that generates the bottom abstract state.  For example:
+{\small
+\begin{verbatim}
+<top-level[0]: Block[2], NoLoop> @branch.js:2:5-12
+ Iter[3] > find-bot
+The result of the following instruction is bottom:
+  [0] assert(x !== 0)
+
+<top-level[0]: Block[2], NoLoop> @branch.js:2:5-12
+ Iter[3] >
+\end{verbatim}
+}
+
+\medskip
+The \verb!restart! command restarts the analysis.  For example:
+{\small
+\begin{verbatim}
+<top-level[0]: Exit[-2], NoLoop> @test.js:10:1
+ Iter[14] > restart
+
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] >
 \end{verbatim}
 }
 
@@ -404,80 +504,60 @@ When a keyword is given, it displays only the parts that include the keyword.
 For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Exit[-2], ()> @test.js:21:1
-Iter[12] > print state result
-           "__result1" -> [ttf] false
-           "__result2" -> [ttf] false
-           "__result3" -> [ttf] false
-           Set(NaN, __result3, Function,
-__EvalErrLoc, URIError, pop, JSON, Error, Number,
-decodeURIComponent, __SyntaxErrProtoLoc, RangeError,
-__RangeErrLoc, __ArrayConstLoc, __EvalErrProtoLoc,
-Boolean, ReferenceError, __RefErrLoc, obj, __BOT,
-encodeURIComponent, __TypeErrProtoLoc, Array,
-EvalError, __expect1, encodeURI, eval, __expect3,
-isFinite, __ErrProtoLoc, Object, __TOP, Math,
-__TypeErrLoc, __URIErrProtoLoc, __result1,
-parseFloat, __RangeErrProtoLoc, TypeError,
-<>Global<>global, __ObjConstLoc, isNaN, __URIErrLoc,
-Date, __NumTop, __expect2, decodeURI, RegExp,
-__BoolTop, __UInt, parseInt, __result2, __StrTop,
-Infinity, SyntaxError, __RefErrProtoLoc, __Global,
-<>Global<>true, __SyntaxErrLoc, undefined, String)
+<top-level[0]: Exit[-2], NoLoop> @test.js:31:1
+ Iter[15] > print state result
+            __result1 -!> [ttf] UInt
+            __result2 -!> [ttf] UInt
+            __result3 -!> [ttf] UInt
 \end{verbatim}
 }
 
 \medskip\noindent
-\fbox{\texttt{print block ({}{})}}\\[.2em]
+\fbox{\texttt{print heap(-all) (\{keyword\})}}\\[.2em]
+The \verb!print heap! command displays the heap of the current state
+in the same way as \verb!print state!.
+
+\medskip\noindent
+\fbox{\texttt{print context(-all) (\{keyword\})}}\\[.2em]
+The \verb!print heap! command displays the context of the current state
+in the same way as \verb!print state!.
+
+\medskip\noindent
 \fbox{\texttt{print block (\{fid\}\{bid\})}}\\[.2em]
 The \verb!print block! command displays the information of
 the current block. For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: Block[0], ()> @test.js:1:1-7:18
-Iter[1] > print block
+<top-level[0]: Block[0], NoLoop> @test.js:2:1-10:20
+ Iter[1] > print block
+span: test.js:2:1-10:20
 Block[0] -> [1], ExitExc
-  [0] noop(StartOfFile)
-  [1] <>Global<>ignore1 := alloc() @ #1
-  [2] obj := <>Global<>ignore1
-  [3] <>obj<>1 := <>Global<>toObject(obj) @ #2
-  [4] <>obj<>2 := <>Global<>toObject(Array) @ #3
-  [5] <>obj<>3 :=
-      <>Global<>toObject(<>obj<>2["prototype"]) @ #4
-  [6] <>obj<>1["pop"] := <>obj<>3["pop"]
-  [7] <>obj<>4 := <>Global<>toObject(obj) @ #5
-  [8] <>obj<>4[4294967294] := "x"
-  [9] <>obj<>5 := <>Global<>toObject(obj) @ #6
-  [10] <>obj<>5["length"] := - 1
-  [11] <>obj<>6 := <>Global<>toObject(obj) @ #7
-  [12] <>arguments<>7 := allocArg(0) @ #8
-  [13] <>fun<>8 :=
-       <>Global<>toObject(<>obj<>6["pop"]) @ #9
+  [0] f := function (1) @ #6, #7
+  [1] noop(StartOfFile)
+  [2] x := 1
+  [3] <>obj<>9 := @ToObject(f) @ #8
+  [4] <>arguments<>10 := allocArg(0) @ #9
+  [5] <>fun<>11 := @GetBase(f)
+  [6] <>this<> := enterCode(<>fun<>11)
 \end{verbatim}
 }
 
 Moreover, it displays the information of the given block denoted
-by the id of a function, the id of a block, and the kind of the block.
+by the id of a function, and the id or the kind of the block.
 For example:
 
 {\small
 \begin{verbatim}
-<function[0] top-level: Block[0], ()> @test.js:1:1-7:18
-Iter[1] > print block 0:4
-Block[4] -> Exit, ExitExc
-  [0] shift := <>Global<>ignore6
-  [1] __result1 := shift !== "x"
-  [2] __expect1 := false
-  [3] <>obj<>10 := <>Global<>toObject(obj) @ #13
-  [4] __result2 := <>obj<>10["length"] !== 1
-  [5] __expect2 := false
-  [6] <>obj<>11 := <>Global<>toObject(obj) @ #14
-  [7] __result3 := <>obj<>11[0] !== "y"
-  [8] __expect3 := false
-  [9] <>obj<>12 := <>Global<>toObject(obj) @ #15
-  [10] __result4 := <>obj<>12[1] !== undefined
-  [11] __expect4 := false
-  [12] noop(EndOfFile)
+<top-level[0]: Block[0], NoLoop> @test.js:2:1-10:20
+ Iter[1] > print block 1:0
+span: test.js:4:8-5:19
+Block[0] -> [1], ExitExc
+  [0] <>ff<>1 := function (2) @ #1, #2
+  [1] <>x<>2 := 2
+  [2] <>obj<>5 := @ToObject(<>ff<>1) @ #3
+  [3] <>arguments<>6 := allocArg(0) @ #4
+  [4] <>fun<>7 := @GetBase(<>ff<>1)
+  [5] <>this<> := enterCode(<>fun<>7)
 \end{verbatim}
 }
 
@@ -489,29 +569,52 @@ When a keyword is given, it displays only the parts that include the keyword
 in the object.  For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: ExitExc[-3], ()> @test.js:21:1
-Iter[12] > print loc #1
-#1 -> [[Class]] : "Object"
-      [[Extensible]] : true
-      [[Prototype]] : #Object.prototype
-      "4294967294" -> [ttt] "x"
-      "length" -> [ttt] -1
-      "pop" -> [ttt] #Array.prototype.pop
-      Set(pop, length, 4294967294)
+<top-level[0]: Exit[-2], NoLoop> @test.js:2:1
+ Iter[2] > print loc R#1
+R#1 -> Internal Properties:
+       [[Class]] -!> "Object"
+       [[Extensible]] -!> true
+       [[Prototype]] -!> R#Object.prototype
+       DEFAULT: (⊥Elem, Top(absent))
+       Normal Properties:
+       DEFAULT: (⊥DataProp, Top(absent))
 \end{verbatim}
 }
 
 \medskip\noindent
-\fbox{\texttt{print func (\{functionID\})}}\\[.2em]
+\fbox{\texttt{print func (\{fid\})}}\\[.2em]
 It displays the list of functions.
 If a function id is given, it displays the name and the span of it.
 For example:
 {\small
 \begin{verbatim}
-<function[0] top-level: ExitExc[-3], ()> @test.js:21:1
-Iter[12] > print func 0
-* function name: top-level
-* span info.   : test.js:1:1-21:1
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > print func 1
+* function name: f
+* span info.   : test.js:1:1-15
+\end{verbatim}
+}
+
+\medskip\noindent
+\fbox{\texttt{print function (\{fid\})}}\\[.2em]
+It displays the detailed control flows in the current function.
+If a function id is given, it displays that of the corresponding function.
+For example:
+{\small
+\begin{verbatim}
+<top-level[0]: Entry[-1], NoLoop> @test.js:1:1
+ Iter[0] > print function 1
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] x := 1
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 \end{verbatim}
 }
 
@@ -520,12 +623,11 @@ Iter[12] > print func 0
 It shows the work in the current worklist.  For example:
 {\small
 \begin{verbatim}
-<function[42] []Array.prototype.pop: ExitExc[-3],
- (10)> @[]Array.prototype.pop:0:0
-Iter[6] > print worklist
+<top-level[0]: Block[1], NoCall x NoLoop> @test.js:0:0
+ Iter[2] > print worklist
 * Worklist set
-(42:ExitExc[-3], (10)), (42:Exit[-2], (10)),
-(0:AfterCall[2], ()), (0:ExitExc[-3], ())
+(0:Block[1], NoCall x NoLoop)
+(0:Block[2], NoCall x NoLoop)
 \end{verbatim}
 }
 
@@ -535,45 +637,22 @@ It displays the information of the current inter-procedural successor.
 For example:
 {\small
 \begin{verbatim}
-<function[42] []Array.prototype.pop: ExitExc[-3],
- (10)> @[]Array.prototype.pop:0:0
-Iter[6] > print ipsucc
+<f[1]: Exit[-2], NoLoop> @test.js:1:15
+ Iter[17] > print ipsucc
 * successor map
-- src: FlowSensitiveCP(ExitExc[-3],(10))
-- dst: FlowSensitiveCP(AfterCatch[3],()),
- mayOld: (10, 1, 8)
-mustOld: (10, 1, 8)
+- src: (1:Exit[-2], NoLoop)
+- dst:
+  (0:AfterCall[2], NoLoop), mayOld: (#4, #1, #5, #2),
+    mustOld: (#4, #1, #5, #2)
+  (0:AfterCall[6], NoLoop), mayOld: (#4, #7, #1, #5,
+    #8, #2), mustOld: (#4, #7, #1, #5, #8, #2)
 \end{verbatim}
 }
-
-\medskip\noindent
-\fbox{\texttt{print trace}}\\[.2em]
-It shows the current call trace.  For example:
-{\small
-\begin{verbatim}
-<function[42] []Array.prototype.pop: Entry[-1],
- (10)> @[]Array.prototype.pop:0:0
-Iter[3] > print trace
-* Call-Context Trace
-Entry[-1] of function[42] []Array.prototype.pop with (10)
- 1>  [0] call(<>fun<>8, <>obj<>6, <>arguments<>7) @ #10
-test.js:7:11-20 @Call[1] of function[0] top-level with ()
-\end{verbatim}
-}
-
-\medskip\noindent
-\fbox{\texttt{print cfg \{name\}}}\\[.2em]
-It prints the current CFG to files \verb!name.gv! and \verb!name.pdf!.
-
-\medskip\noindent
-\fbox{\texttt{print html \{name\}}}\\[.2em]
-It prints the current CFG and its state to the \verb!name.html! file.
-We describe this facility in the next section.
 
 \subsection{Analyzer debugging with browsing}
 \label{s:3:2:2:refman}
-The \verb!print html! command writes the current status into an HTML file
-so that a user can investigate the analysis status from a browser.
+The \verb!safe web! command starts a web server to allows
+users to investigate the analysis status from a browser.
 Consider the following snapshot:
 \begin{figure}[H]
 \includegraphics[width=8.75cm]{htmldebugger.png}
@@ -586,3 +665,5 @@ colored nodes denote the blocks that are currently in the worklist of the analyz
 One can toggle whether to show the nodes in the worklist by the menu button on the top right.
 When a user selects a block from the CFG, the list of the instructions in the block
 and the state just before analyzing the block are displayed on the left.
+Moreover, users can use all functionalities of the console debugger
+through the console screen in the right side.

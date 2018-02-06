@@ -11,11 +11,15 @@
 
 package kr.ac.kaist
 
+import java.io.File
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 package object safe {
   // Line seperator
   val LINE_SEP = System.getProperty("line.separator")
+
+  // Path seperator
+  val SEP = File.separator
 
   // Number of significant bits
   val SIGNIFICANT_BITS = 13

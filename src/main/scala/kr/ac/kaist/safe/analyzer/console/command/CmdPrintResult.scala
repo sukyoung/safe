@@ -17,15 +17,15 @@ import kr.ac.kaist.safe.analyzer.domain.Loc
 
 // result
 case object CmdPrintResult extends Command("result", "Print out various information.") {
-  def help(): Unit = {
-    println("usage: " + name + " (exc-)state(-all) ({keyword})")
-    println("       " + name + " (exc-)loc {LocName}")
-    // TODO println("       " + name + " id [idNum] loc {LocName}")
-    // TODO println("       " + name + " id [idNum] excloc {LocName}")
-    // TODO println("       " + name + " ip")
+  override val help: String = {
+    s"""usage: $name (exc-)state(-all) ({keyword})
+       $name (exc-)loc {LocName}"""
+    // TODO "       " + name + " id [idNum] loc {LocName}"
+    // TODO "       " + name + " id [idNum] excloc {LocName}"
+    // TODO "       " + name + " ip"
   }
 
-  def run(c: Console, args: List[String]): Option[Target] = {
+  def run(c: Interactive, args: List[String]): Option[Target] = {
     val sem = c.sem
     val cp = c.getCurCP
     val st = sem.getState(cp)
@@ -33,7 +33,7 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     val stPattern = "(exc-|)state(-all|)".r
     val locPattern = "(exc-|)loc".r
     args match {
-      case Nil => help
+      case Nil => printResult(help)
       case subcmd :: rest => subcmd match {
         case stPattern(exc, all) =>
           val state = exc match {
@@ -44,9 +44,9 @@ case object CmdPrintResult extends Command("result", "Print out various informat
             if (all == "-all") state.toStringAll
             else state.toString
           rest match {
-            case Nil => println(res)
-            case key :: Nil => println(grep(key, res))
-            case _ => help
+            case Nil => printResult(res)
+            case key :: Nil => printResult(grep(key, res))
+            case _ => printResult(help)
           }
         case locPattern(exc) => rest match {
           case locStr :: rest if rest.length <= 1 =>
@@ -57,14 +57,14 @@ case object CmdPrintResult extends Command("result", "Print out various informat
                   case _ => resSt
                 }).heap
                 heap.toStringLoc(loc) match {
-                  case Some(res) => println(res)
-                  case None => println(s"* not in heap : $locStr")
+                  case Some(res) => printResult(res)
+                  case None => printResult(s"* not in heap : $locStr")
                 }
-              case Failure(_) => println(s"* cannot find: $locStr")
+              case Failure(_) => printResult(s"* cannot find: $locStr")
             }
-          case _ => help
+          case _ => printResult(help)
         }
-        case _ => help
+        case _ => printResult(help)
       }
     }
     // case "id" if args.length <= 3 => {

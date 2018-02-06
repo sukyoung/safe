@@ -14,19 +14,19 @@ package kr.ac.kaist.safe.nodes.cfg
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.{ LINE_SEP, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.nodes.ir.IRNode
-import kr.ac.kaist.safe.util.NodeUtil
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
 import spray.json._
 
 case class CFGFunction(
-    override val ir: IRNode,
+    ir: IRNode,
     argumentsName: String,
     argVars: List[CFGId],
     localVars: List[CFGId],
     name: String,
     isUser: Boolean
-) extends CFGNode(ir) {
+) extends CFGNode {
   var id: FunctionId = 0 // XXX should be a value but for JS model for a while.
 
   val entry = Entry(this)
@@ -50,6 +50,9 @@ case class CFGFunction(
   var blockData: Vector[JsValue] = _
   var capturedData: Vector[JsValue] = _
 
+  // out blocks
+  var outBlocks: List[CFGBlock] = List(exit, exitExc)
+
   // append block
   private def addBlock(block: CFGBlock): CFGBlock = {
     bidCount += 1
@@ -59,10 +62,13 @@ case class CFGFunction(
   }
 
   // create call
-  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
+  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId, outer: Option[LoopHead]): Call = {
     val call = Call(this, callInstCons, retVar)
     val afterCall = call.afterCall
     val afterCatch = call.afterCatch
+    call.outerLoop = outer
+    afterCall.outerLoop = outer
+    afterCatch.outerLoop = outer
     addBlock(call)
     addBlock(afterCall)
     addBlock(afterCatch)
@@ -70,14 +76,16 @@ case class CFGFunction(
   }
 
   // create block
-  def createBlock: NormalBlock = createBlock(NoLabel)
-  def createBlock(label: LabelKind): NormalBlock = {
+  def createBlock(outer: Option[LoopHead]): NormalBlock = createBlock(NoLabel, outer)
+  def createBlock(label: LabelKind, outer: Option[LoopHead]): NormalBlock = {
     val block = NormalBlock(this, label)
+    block.outerLoop = outer
     addBlock(block)
     block
   }
-  def createLoopHead: LoopHead = {
-    val loopHead = LoopHead(this)
+  def createLoopHead(outer: Option[LoopHead], span: Span): LoopHead = {
+    val loopHead = LoopHead(this, span)
+    loopHead.outerLoop = outer
     addBlock(loopHead)
     loopHead
   }

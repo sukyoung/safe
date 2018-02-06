@@ -14,14 +14,10 @@ package kr.ac.kaist.safe.json
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.json.AbsStateProtocol._
-import kr.ac.kaist.safe.json.AbsLexEnvProtocol._
-import kr.ac.kaist.safe.json.AbsValueProtocol._
 import kr.ac.kaist.safe.errors.error.{
   WorklistParseError,
   ControlPointParseError,
   TracePartitionParseError,
-  LoopInfoParseError,
   BlockNotFoundError,
   EdgeDataParseError,
   SemanticsParseError
@@ -52,22 +48,6 @@ object WorklistProtocol extends DefaultJsonProtocol {
         )).to[Vector]),
         JsNumber(depth)
       )
-      case LoopContext(infoOpt, outerOpt, depth) => JsArray(
-        JsString("l"),
-        infoOpt match {
-          case Some(info) => loopInfoToJson(info)
-          case None => JsNull
-        },
-        outerOpt match {
-          case Some((context, block)) => JsArray(
-            context.asInstanceOf[TracePartition].toJson,
-            JsNumber(block.func.id),
-            JsNumber(block.id)
-          )
-          case None => JsNull
-        },
-        JsNumber(depth)
-      )
     }
 
     def read(value: JsValue): TracePartition = value match {
@@ -83,48 +63,8 @@ object WorklistProtocol extends DefaultJsonProtocol {
             }
           case _ => throw TracePartitionParseError(value)
         }), depth.toInt)
-      case JsArray(Vector(JsString("l"), info, outer, JsNumber(depth))) => LoopContext(
-        info match {
-          case JsNull => None
-          case _ => Some(jsonToLoopInfo(info))
-        },
-        outer match {
-          case JsNull => None
-          case JsArray(Vector(context, JsNumber(fid), JsNumber(bid))) => Some((
-            context.convertTo[TracePartition].asInstanceOf[LoopContext],
-            cfg.getBlock(fid.toInt, bid.toInt) match {
-              case Some(block) => block.asInstanceOf[NormalBlock]
-              case None => throw BlockNotFoundError("TracePartition", fid.toInt, bid.toInt)
-            }
-          ))
-          case _ => throw TracePartitionParseError(value)
-        },
-        depth.toInt
-      )
       case _ => throw TracePartitionParseError(value)
     }
-  }
-
-  private def loopInfoToJson(info: LoopInfo): JsValue = info match {
-    case LoopInfo(head, k, outer) => JsArray(
-      JsNumber(head.func.id),
-      JsNumber(head.id),
-      JsNumber(k),
-      outer.asInstanceOf[TracePartition].toJson
-    )
-  }
-
-  private def jsonToLoopInfo(value: JsValue): LoopInfo = value match {
-    case JsArray(Vector(JsNumber(fid), JsNumber(bid), JsNumber(k), outer)) =>
-      LoopInfo(
-        cfg.getBlock(fid.toInt, bid.toInt) match {
-          case Some(block) => block.asInstanceOf[LoopHead]
-          case None => throw BlockNotFoundError("LoopInfo", fid.toInt, bid.toInt)
-        },
-        k.toInt,
-        outer.convertTo[TracePartition].asInstanceOf[LoopContext]
-      )
-    case _ => throw LoopInfoParseError(value)
   }
 
   implicit object ControlPointJsonFormat extends RootJsonFormat[ControlPoint] {
@@ -177,9 +117,9 @@ object WorklistProtocol extends DefaultJsonProtocol {
 
     def read(value: JsValue): EdgeData = value match {
       case JsArray(Vector(old, env, binding)) => EdgeData(
-        old.convertTo[OldASiteSet],
-        env.convertTo[AbsLexEnv],
-        binding.convertTo[AbsValue]
+        OldASiteSet.fromJson(old),
+        AbsLexEnv.fromJson(env),
+        AbsValue.fromJson(binding)
       )
       case _ => throw EdgeDataParseError(value)
     }
@@ -211,11 +151,11 @@ object WorklistProtocol extends DefaultJsonProtocol {
 
     def read(value: JsValue): Semantics = value match {
       case JsArray(Vector(JsArray(state), JsArray(succ))) => {
-        val sem = new Semantics(cfg, worklist)
+        val sem = Semantics(cfg, worklist)
         for (cpAndSt <- state)
           cpAndSt match {
             case JsArray(Vector(cp, st)) => sem.setState(
-              cp.convertTo[ControlPoint], st.convertTo[AbsState]
+              cp.convertTo[ControlPoint], AbsState.fromJson(st)
             )
             case _ => throw SemanticsParseError(value)
           }

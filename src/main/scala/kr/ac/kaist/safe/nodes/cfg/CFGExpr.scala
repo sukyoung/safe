@@ -14,63 +14,68 @@ package kr.ac.kaist.safe.nodes.cfg
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
-sealed abstract class CFGExpr(
-  override val ir: IRNode
-) extends CFGNode(ir)
+sealed trait CFGExpr extends CFGNode {
+  val uniqueId: Long = CFGExpr.getId
+}
+object CFGExpr {
+  private var idCount: Long = 0
+  private def getId: Long = { val id = idCount; idCount += 1; id }
+}
 
 // variable reference
 case class CFGVarRef(
-    override val ir: IRNode,
+    ir: IRNode,
     id: CFGId
-) extends CFGExpr(ir) {
+) extends CFGExpr {
   override def toString: String = s"$id"
 }
 
 // load
 case class CFGLoad(
-    override val ir: IRNode,
+    ir: IRNode,
     obj: CFGExpr,
     index: CFGExpr
-) extends CFGExpr(ir) {
+) extends CFGExpr {
   override def toString: String = s"$obj[$index]"
 }
 
 // this
 case class CFGThis(
-    override val ir: IRNode
-) extends CFGExpr(ir) {
+    ir: IRNode
+) extends CFGExpr {
   override def toString: String = "this"
 }
 
 // binary operation
 case class CFGBin(
-    override val ir: IRNode,
+    ir: IRNode,
     first: CFGExpr,
     op: EJSOp,
     second: CFGExpr
-) extends CFGExpr(ir) {
+) extends CFGExpr {
   override def toString: String = s"$first $op $second"
 }
 
 // unary operation
 case class CFGUn(
-    override val ir: IRNode,
+    ir: IRNode,
     op: EJSOp,
     expr: CFGExpr
-) extends CFGExpr(ir) {
+) extends CFGExpr {
   override def toString: String = s"$op $expr"
 }
 
 case class CFGInternalValue(
-    override val ir: IRNode,
+    ir: IRNode,
     name: String
-) extends CFGExpr(ir) {
+) extends CFGExpr {
   override def toString: String = s"<>$name<>"
 }
 
 case class CFGVal(
     value: EJSVal
-) extends CFGExpr(NodeUtil.TEMP_IR) {
+) extends CFGExpr {
+  val ir: IRNode = NodeUtil.TEMP_IR
   override def toString: String = value.toString
 }
 object CFGVal {

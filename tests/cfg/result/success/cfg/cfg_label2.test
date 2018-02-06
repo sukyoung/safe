@@ -4,7 +4,7 @@ function[0] top-level {
   Block[0] -> [1]
     [0] noop(StartOfFile)
 
-  lab:[1] -> Exit
+  Label(lab)[1] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

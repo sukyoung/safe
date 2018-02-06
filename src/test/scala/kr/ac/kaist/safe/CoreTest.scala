@@ -38,7 +38,6 @@ object AnalyzeTest extends Tag("AnalyzeTest")
 object HtmlTest extends Tag("HtmlTest")
 object Test262Test extends Tag("Test262Test")
 object BenchTest extends Tag("BenchTest")
-object DumpTest extends Tag("DumpTest")
 
 class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val SEP = File.separator
@@ -46,10 +45,12 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val jsDir = testDir + "cfg" + SEP + "js" + SEP + "success" + SEP
   val resDir = testDir + "cfg" + SEP + "result" + SEP + "success" + SEP
   val noTestForWithoutJSModel: List[String] = List(
+    "/tests/semantics/result/15.3.4.5_BASE.json",
     "/tests/semantics/builtin/15.3/15.3.4/15.3.4.5/15.3.4.5_BASE.js",
     "/tests/test262/15.3/15.3.4/15.3.4.5/",
     "/tests/test262/15.3/15.3.4/15.3.4.5.1/",
-    "/tests/test262/15.3/15.3.4/15.3.4.5.2/"
+    "/tests/test262/15.3/15.3.4/15.3.4.5.2/",
+    ".html"
   )
   def noTestCheckForWithoutJSModel(file: File): Boolean = {
     val filename = file.getName
@@ -76,9 +77,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   }
 
   def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
-
-  def getDumped(filename: String): Try[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)] =
-    CmdJsonLoad(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -146,7 +144,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
             assert(false)
             Fail
           case globalObj => {
-            def prefixCheck(prefix: String): (AbsString, AbsDataProp) => Boolean = {
+            def prefixCheck(prefix: String): (AbsStr, AbsDataProp) => Boolean = {
               (str, dp) =>
                 str.getSingle match {
                   case ConOne(Str(str)) => str.startsWith(prefix)
@@ -154,7 +152,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
                 }
             }
             val resultKeySet: Set[String] = globalObj.abstractKeySet(prefixCheck(resultPrefix)) match {
-              case ConInf() =>
+              case ConInf =>
                 assert(false); HashSet()
               case ConFin(set) => set.map(_.getSingle match {
                 case ConOne(Str(str)) => str
@@ -162,21 +160,19 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
               })
             }
             val expectKeySet: Set[String] = globalObj.abstractKeySet(prefixCheck(expectPrefix)) match {
-              case ConInf() =>
+              case ConInf =>
                 assert(false); HashSet()
               case ConFin(set) => set.map(_.getSingle match {
                 case ConOne(Str(str)) => str
                 case _ => assert(false); ""
               })
             }
-            assert(resultKeySet.size != 0)
-            assert(resultKeySet.size == expectKeySet.size)
             if (resultKeySet.foldLeft(true)((b, resultKey) => {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
               assert(expectKeySet contains expectKey)
-              assert(globalObj(expectKey) <= globalObj(resultKey))
-              b && (globalObj(resultKey) <= globalObj(expectKey))
+              assert(globalObj(expectKey) ⊑ globalObj(resultKey))
+              b && (globalObj(resultKey) ⊑ globalObj(expectKey))
             })) Precise
             else Imprecise
           }
@@ -188,14 +184,13 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   def analyzeHelper(prefix: String, tag: Tag, file: File): Unit = {
     val filename = file.getName
     val name = file.toString
-    val relPath = name.substring(BASE_DIR.length)
+    val relPath = name.substring(BASE_DIR.length + 1)
     if (filename.endsWith(".js") || filename.endsWith(".html")) {
       // no test when jsModel option is deactive.
       if (heapBuildConfig.jsModel || !(noTestCheckForWithoutJSModel(file))) {
         registerTest(prefix + filename, tag) {
           val safeConfig = testSafeConfig.copy(fileNames = List(name))
           val cfg = getCFG(name)
-          if (filename.endsWith(".html")) heapBuildConfig.jsModel = true
           val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
           val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
           testList ::= relPath
@@ -220,21 +215,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         CmdParse(List("-silent", name), testMode = true) match {
           case Failure(ParserError(_, _)) => preciseList ::= relPath
           case e => assert(false)
-        }
-      }
-    } else if (filename.endsWith(".json")) {
-      registerTest(prefix + filename, tag) {
-        val safeConfig = testSafeConfig.copy(fileNames = List(name))
-        val dumped = getDumped(name)
-        val analysis = dumped.flatMap(Analyze(_, safeConfig, analyzeConfig))
-        testList ::= relPath
-        val (ar, iter) = analyzeTest(analysis, tag)
-        totalIteration += iter
-        ar match {
-          case Precise => preciseList ::= relPath
-          case Imprecise => impreciseList ::= relPath
-          case Benchmark => // Not yet decided what to do
-          case Fail => // unreachable
         }
       }
     }
@@ -279,7 +259,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var totalIteration = 0
 
   val analysisDetail = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
-  val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+  val testJSON = BASE_DIR + SEP + "config.json"
 
   val parser = new ArgParser(CmdBase, testSafeConfig)
   val heapBuildConfig = HeapBuild.defaultConfig
@@ -289,7 +269,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   parser(List(s"-json=$testJSON"))
 
   HeapBuild.jscache = {
-    Utils.AAddrType = heapBuildConfig.aaddrType
+    register(aaddrType = heapBuildConfig.aaddrType)
     Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))
   }
 
@@ -312,9 +292,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   for (file <- shuffle(walkTree(new File(benchTestDir))))
     analyzeHelper("[Benchmarks]", BenchTest, file)
 
-  val dumpTestDir = testDir + "semantics" + SEP + "result"
-  for (file <- shuffle(walkTree(new File(dumpTestDir))))
-    analyzeHelper("[Dump]", DumpTest, file)
+  // TODO val dumpTestDir = testDir + "semantics" + SEP + "result"
+  // for (file <- shuffle(walkTree(new File(dumpTestDir))))
+  //   analyzeHelper("[Dump]", DumpTest, file)
 
   override def afterAll(): Unit = {
     val file = new File(analysisDetail)

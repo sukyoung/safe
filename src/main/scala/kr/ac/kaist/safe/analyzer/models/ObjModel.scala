@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
@@ -29,7 +28,7 @@ class ObjModel(
   def initHeap(h: AbsHeap, cfg: CFG): AbsHeap = {
     if (h.get(loc).isBottom) {
       cfg.registerPredASite(asite)
-      initObj(h, cfg, loc, AbsObject.newObject, props)
+      initObj(h, cfg, loc, AbsObj.newObject, props)
     } else h
   }
 
@@ -37,7 +36,7 @@ class ObjModel(
     h: AbsHeap,
     cfg: CFG,
     loc: Loc,
-    obj: AbsObject,
+    obj: AbsObj,
     ps: List[PropDesc]
   ): AbsHeap = {
     ps.foldLeft((h, obj)) {
@@ -64,7 +63,7 @@ class ObjModel(
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
-            AbsIValueUtil(value)
+            AbsIValue(value)
           ))
         }
       }

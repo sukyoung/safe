@@ -13,14 +13,10 @@ package kr.ac.kaist.safe.phase
 
 import scala.util.{ Try, Success }
 import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
-import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter }
+import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.ir.IRRoot
-import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.json.CFGProtocol._
-
-import spray.json._
-import DefaultJsonProtocol._
 
 // CFGBuild phase
 case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
@@ -52,11 +48,6 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
       println("Dumped CFG to " + out)
     })
 
-    // print dot file: {dotName}.gv, {dotName}.pdf
-    config.dotName.map(name => {
-      DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
-    })
-
     Success(cfg)
   }
 
@@ -65,15 +56,12 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
     ("silent", BoolOption(c => c.silent = true),
       "messages during CFG building are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the resulting CFG will be written to the outfile."),
-    ("dot", StrOption((c, s) => c.dotName = Some(s)),
-      "the resulting CFG will be drawn to the {name}.gv and {name}.pdf")
+      "the resulting CFG will be written to the outfile.")
   )
 }
 
 // CFGBuild phase config
 case class CFGBuildConfig(
   var silent: Boolean = false,
-  var outFile: Option[String] = None,
-  var dotName: Option[String] = None
+  var outFile: Option[String] = None
 ) extends Config

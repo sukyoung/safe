@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.nodes.ast
 
 // Dummy for modeling
 case class ModelFunc(
-    override val info: ASTNodeInfo
-) extends ASTNode(info: ASTNodeInfo) {
+    info: ASTNodeInfo
+) extends ASTNode {
   override def toString(indent: Int): String = ""
 }

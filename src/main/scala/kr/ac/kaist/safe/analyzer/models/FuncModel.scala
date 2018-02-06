@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // Function Model
@@ -35,7 +34,7 @@ class FuncModel(
         case Some((objModel, writable, enumerable, configurable)) => {
           val heap = if (h.get(objModel.loc).isBottom) {
             val heap = objModel.initHeap(h, cfg)
-            heap.get(objModel.loc).fold(AbsHeap.Bot)(obj => {
+            heap.get(objModel.loc).fold[AbsHeap](AbsHeap.Bot)(obj => {
               heap.update(objModel.loc, obj.update(
                 "constructor",
                 AbsDataProp(AbsValue(loc), AT, AF, AT)
@@ -55,8 +54,8 @@ class FuncModel(
       val fidOpt = Some(func.id)
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name).id)
       val scope = AbsValue(Null) // TODO get scope as args
-      val n = AbsNumber(code.argLen)
-      val funcObj = AbsObject.newFunctionObject(
+      val n = AbsNum(code.argLen)
+      val funcObj = AbsObj.newFunctionObject(
         fidOpt,
         constructIdOpt,
         scope,

@@ -11,37 +11,41 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 
 // analysis sensitivity
-sealed abstract class Sensitivity {
+sealed trait Sensitivity {
   val initTP: TracePartition
-  def *(other: Sensitivity): Sensitivity = (this, other) match {
-    case (NoSensitivity, _) => other
-    case (_, NoSensitivity) => this
-    case _ => ProductSensitivity(this, other)
-  }
+
+  def *(that: Sensitivity): Sensitivity =
+    if (this.isInsensitive) that
+    else if (that.isInsensitive) this
+    else ProductSensitivity(this, that)
+
+  def isInsensitive: Boolean
 }
 
 // trace partition
-sealed abstract class TracePartition {
-  def next(from: CFGBlock, to: CFGBlock, edgeType: CFGEdgeType): TracePartition
+trait TracePartition {
+  def next(
+    from: CFGBlock,
+    to: CFGBlock,
+    edgeType: CFGEdgeType,
+    sem: Semantics
+  ): List[TracePartition]
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// no analsis sensitivity
+// no analysis sensitivity
 ////////////////////////////////////////////////////////////////////////////////
-object NoSensitivity extends Sensitivity {
-  val initTP = EmptyTP
-}
 case object EmptyTP extends TracePartition {
   def next(
     from: CFGBlock,
     to: CFGBlock,
-    edgeType: CFGEdgeType
-  ): EmptyTP.type = EmptyTP
+    edgeType: CFGEdgeType,
+    sem: Semantics
+  ): List[EmptyTP.type] = List(EmptyTP)
   override def toString: String = s"Empty"
 }
 
@@ -52,8 +56,16 @@ case class ProductTP(
     ltp: TracePartition,
     rtp: TracePartition
 ) extends TracePartition {
-  def next(from: CFGBlock, to: CFGBlock, edgeType: CFGEdgeType): ProductTP =
-    ProductTP(ltp.next(from, to, edgeType), rtp.next(from, to, edgeType))
+  def next(
+    from: CFGBlock,
+    to: CFGBlock,
+    edgeType: CFGEdgeType,
+    sem: Semantics
+  ): List[ProductTP] =
+    ltp.next(from, to, edgeType, sem).foldLeft(List[ProductTP]()) {
+      case (list, l) =>
+        rtp.next(from, to, edgeType, sem).map(ProductTP(l, _)) ++ list
+    }
   override def toString: String = s"$ltp x $rtp"
 }
 
@@ -62,6 +74,7 @@ case class ProductSensitivity(
     rsens: Sensitivity
 ) extends Sensitivity {
   val initTP = ProductTP(lsens.initTP, rsens.initTP)
+  def isInsensitive: Boolean = lsens.isInsensitive && rsens.isInsensitive
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,102 +84,99 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
   def next(
     from: CFGBlock,
     to: CFGBlock,
-    edgeType: CFGEdgeType
-  ): CallSiteContext = (from, to, edgeType) match {
+    edgeType: CFGEdgeType,
+    sem: Semantics
+  ): List[CallSiteContext] = List((from, to, edgeType) match {
     case (call: Call, _: Entry, CFGEdgeCall) =>
       CallSiteContext((call :: callsiteList).take(depth), depth)
     case _ => this
+  })
+  override def toString: String = callsiteList match {
+    case Nil => "NoCall"
+    case _ => callsiteList
+      .map(call => s"${call.func.id}:${call.id}")
+      .mkString("Call[", ", ", "]")
   }
-  override def toString: String = callsiteList
-    .map(call => s"${call.func.id}:${call.id}")
-    .mkString("Call[", ", ", "]")
 }
 
-class CallSiteSensitivity(depth: Int) extends Sensitivity {
+case class CallSiteSensitivity(depth: Int) extends Sensitivity {
   val initTP = CallSiteContext(Nil, depth)
-}
-object CallSiteSensitivity {
-  def apply(depth: Int): Sensitivity = depth match {
-    case 0 => NoSensitivity
-    case n => new CallSiteSensitivity(depth)
-  }
+  def isInsensitive: Boolean = depth == 0
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // loop sensitivity (unrolling)
 ////////////////////////////////////////////////////////////////////////////////
-case class LoopInfo(loopHead: LoopHead, k: Int, outer: LoopContext) {
-  def nextIter(depth: Int): LoopInfo = copy(k = Math.min(k + 1, depth))
-}
+case class LoopIter(
+  head: LoopHead,
+  iter: Int
+)
 
 case class LoopContext(
-    infoOpt: Option[LoopInfo],
-    excOuter: Option[(LoopContext, NormalBlock)],
-    depth: Int
+    iterList: List[LoopIter],
+    maxIter: Int,
+    maxDepth: Int
 ) extends TracePartition {
   def next(
     from: CFGBlock,
     to: CFGBlock,
-    edgeType: CFGEdgeType
-  ): LoopContext = (from, to, edgeType) match {
-    // function call
-    case (_, _: Entry, CFGEdgeCall) =>
-      LoopContext(None, None, depth)
-    // try start
-    case (_, tryB @ NormalBlock(_, TryLabel), CFGEdgeNormal) =>
-      copy(excOuter = Some(this, tryB))
-    // catch
-    case (_, NormalBlock(_, CatchLabel), _) => excOuter match {
-      case Some((e, _)) => e
-      case None => this
-    }
-    // catch
-    case (_, NormalBlock(_, FinallyLabel(tryBlock)), _) =>
-      excOuter match {
-        case Some((e, tb)) if tb == tryBlock => e
-        case _ => this
+    edgeType: CFGEdgeType,
+    sem: Semantics
+  ): List[LoopContext] = (from, to, edgeType) match {
+    // function start
+    case (entry: Entry, _, CFGEdgeNormal) =>
+      entry.func.outBlocks.foreach(sem.addOutCtxt(_, this))
+      sem.addOutCtxt(entry.func.exit, this)
+      List(this)
+    // continue
+    case (_, head: LoopHead, CFGEdgeNormal) if from.outerLoop == Some(head) =>
+      iterList match {
+        case Nil => List(this)
+        case LoopIter(head, iter) :: rest =>
+          val newCtxt = copy(iterList = LoopIter(head, math.min(iter + 1, maxIter)) :: rest)
+          head.outBlocks.foreach(sem.addOutCtxt(_, newCtxt))
+          List(newCtxt)
       }
-    // loop
-    case (_, loopHead: LoopHead, CFGEdgeNormal) => infoOpt match {
-      // loop iteration
-      case Some(info @ LoopInfo(l, k, outer)) if l == loopHead =>
-        LoopContext(Some(info.nextIter(depth)), excOuter, depth)
-      // loop start
-      case _ =>
-        LoopContext(Some(LoopInfo(loopHead, 0, this)), excOuter, depth)
-    }
-    // loop break
-    case (_, NormalBlock(_, LoopBreakLabel), _) => infoOpt match {
-      case Some(LoopInfo(_, _, outer)) => outer
-      case None => this
-    }
-    // exception / return
-    case (_, ExitExc(_) | Exit(_), _) => LoopContext(None, None, depth)
-    case _ => this
+    // loop entry
+    case (_, head: LoopHead, CFGEdgeNormal) =>
+      val newCtxt = copy(iterList = (LoopIter(head, 0) :: iterList).take(maxDepth))
+      head.outBlocks.foreach(sem.addOutCtxt(_, newCtxt))
+      List(newCtxt)
+    case _ if to.isOutBlock =>
+      val fromLoop = from.outerLoop
+      val toLoop = to.outerLoop
+      val dist: Int = getDist(toLoop, fromLoop)
+      val result =
+        if (dist == 0) List(this)
+        else findPrev(sem, to, dist)
+      result
+    case _ => List(this)
   }
-  override def toString: String = infoOpt match {
-    case Some(LoopInfo(loopHead, k, outer)) =>
-      s"Loop($loopHead, $k/$depth)"
-    case None => s"NoLoop"
+  private def getDist(target: Option[LoopHead], cur: Option[LoopHead], diff: Int = 0): Int = {
+    if (target == cur) diff
+    else cur match {
+      case Some(head) => getDist(target, head.outerLoop, diff + 1)
+      case None => diff
+    }
   }
-  override def equals(other: Any): Boolean = other match {
-    case LoopContext(oInfoOpt, _, oDepth) if depth == oDepth =>
-      (infoOpt, oInfoOpt) match {
-        case (None, None) => true
-        case (Some(LoopInfo(llh, lk, louter)), Some(LoopInfo(rlh, rk, router))) =>
-          llh == rlh && lk == rk && louter == router
-        case _ => false
-      }
-    case _ => false
+  private def findPrev(sem: Semantics, block: CFGBlock, dist: Int): List[LoopContext] = {
+    val reduced = iterList.drop(dist)
+    sem.getOutCtxtSet(block).filter {
+      case LoopContext(iters, _, _) =>
+        if (iterList.length < maxDepth) iters == reduced
+        else iters.startsWith(reduced)
+    }.toList
+  }
+
+  override def toString: String = iterList match {
+    case Nil => "NoLoop"
+    case _ => iterList
+      .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter/$maxIter)" }
+      .mkString("Loop[", ", ", "]")
   }
 }
 
-class LoopSensitivity(depth: Int) extends Sensitivity {
-  val initTP = LoopContext(None, None, depth)
-}
-object LoopSensitivity {
-  def apply(depth: Int): Sensitivity = depth match {
-    case 0 => NoSensitivity
-    case n => new LoopSensitivity(depth)
-  }
+case class LoopSensitivity(maxIter: Int, maxDepth: Int) extends Sensitivity {
+  val initTP = LoopContext(Nil, maxIter, maxDepth)
+  def isInsensitive: Boolean = maxDepth == 0
 }

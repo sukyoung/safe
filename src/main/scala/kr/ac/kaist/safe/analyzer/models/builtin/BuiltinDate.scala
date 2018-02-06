@@ -12,9 +12,7 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.domain.{ IClass, IPrimitiveValue, IPrototype }
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util._
@@ -22,10 +20,10 @@ import kr.ac.kaist.safe.util._
 object BuiltinDateHelper {
   val instanceASite = PredAllocSite("Date<instance>")
 
-  def getValue(thisV: AbsValue, h: AbsHeap): AbsNumber = {
-    thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
-      if ((AbsString("Date") <= h.get(loc)(IClass).value.pvalue.strval)) {
-        res + h.get(loc)(IPrimitiveValue).value.pvalue.numval
+  def getValue(thisV: AbsValue, h: AbsHeap): AbsNum = {
+    thisV.pvalue.numval ⊔ thisV.locset.foldLeft[AbsNum](AbsNum.Bot)((res, loc) => {
+      if ((AbsStr("Date") ⊑ h.get(loc)(IClass).value.pvalue.strval)) {
+        res ⊔ h.get(loc)(IPrimitiveValue).value.pvalue.numval
       } else res
     })
   }
@@ -40,15 +38,15 @@ object BuiltinDateHelper {
     (st, st.raiseException(excSet), AbsValue(s))
   })
 
-  def timeClip(num: AbsNumber): AbsNumber = num.getSingle match {
-    case ConZero() => AbsNumber.Bot
+  def timeClip(num: AbsNum): AbsNum = num.getSingle match {
+    case ConZero() => AbsNum.Bot
     case ConOne(Num(n)) => n match {
-      case n if n.isInfinity || n.isNaN => AbsNumber.NaN
-      case n if math.abs(n) > (8.64 * math.pow(10, 15)) => AbsNumber.NaN
-      // case -0.0 => AbsNumber(0) XXX: implementation-dependent
+      case n if n.isInfinity || n.isNaN => AbsNum.NaN
+      case n if math.abs(n) > (8.64 * math.pow(10, 15)) => AbsNum.NaN
+      // case -0.0 => AbsNum(0) XXX: implementation-dependent
       case _ => TypeConversionHelper.ToInteger(num)
     }
-    case ConMany() => AbsNumber.Top
+    case ConMany() => AbsNum.Top
   }
 
   val constructor = BasicCode(
@@ -58,32 +56,38 @@ object BuiltinDateHelper {
       val h = st.heap
       val loc = Loc(instanceASite)
       val state = st.oldify(loc)
-      val newObj = AbsObject.newObject(BuiltinDateProto.loc)
-      val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+      val newObj = AbsObj.newObject(BuiltinDateProto.loc)
+      val argL = Helper.propLoad(args, Set(AbsStr("length")), h).pvalue.numval
       val absNum = argL.getSingle match {
         // 15.9.3.2 new Date(value)
         case ConOne(Num(n)) if n == 1 =>
           // 1. Let v be ToPrimitive(value).
-          val v = TypeConversionHelper.ToPrimitive(Helper.propLoad(args, Set(AbsString("0")), h))
+          val v = TypeConversionHelper.ToPrimitive(Helper.propLoad(args, Set(AbsStr("0")), h))
           // 2. If Type(v) is String, then
-          AbsBool(AbsString("string") <= TypeConversionHelper.typeTag(v, h)).map[AbsNumber](
-            //   a. Parse v as a date, in exactly the same manner as for the parse method (15.9.4.2);
-            //      let V be the time value for this date.
-            // XXX: give up the precision! (Room for the analysis precision improvement!)
-            thenV = AbsNumber.Top,
-            // 3. Else, let V be ToNumber(v).
-            elseV = timeClip(TypeConversionHelper.ToNumber(v))
+          val b = AbsBool(AbsStr("string") ⊑ TypeConversionHelper.typeTag(v, h))
+          val t =
+            if (AT ⊑ b) {
+              //   a. Parse v as a date, in exactly the same manner as for the parse method (15.9.4.2);
+              //      let V be the time value for this date.
+              // XXX: give up the precision! (Room for the analysis precision improvement!)
+              AbsNum.Top
+            } else AbsNum.Bot
+          val f =
+            if (AF ⊑ b) {
+              // 3. Else, let V be ToNumber(v).
+              timeClip(TypeConversionHelper.ToNumber(v))
+            } else AbsNum.Bot
           // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
           // to TimeClip(V) and return.
-          )(AbsNumber)
+          t ⊔ f
         // 15.9.3.1 new Date( year, month [, date [, hours [, minutes [, seconds [, ms ]]]]] )
         // 15.9.3.3 new Date()
         // XXX: give up the precision! (Room for the analysis precision improvement!)
-        case _ => AbsNumber.Top
+        case _ => AbsNum.Top
       }
       val newObj2 = newObj
-        .update(IClass, AbsIValueUtil(AbsString("Date")))
-        .update(IPrimitiveValue, AbsIValueUtil(absNum))
+        .update(IClass, AbsIValue(AbsStr("Date")))
+        .update(IPrimitiveValue, AbsIValue(absNum))
       val heap = state.heap.update(loc, newObj2)
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
@@ -96,14 +100,20 @@ object BuiltinDateHelper {
     val thisV = st.context.thisBinding
     var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
     // 1. Let t be this time value.
-    val t = getValue(thisV, h)
+    val time = getValue(thisV, h)
     // 2. If t is NaN, return NaN.
     // 3. Return ...
     // XXX: give up the precision! (Room for the analysis precision improvement!)
-    val res = (BuiltinHelper.isNaN(t)).map[AbsNumber](
-      thenV = AbsNumber.NaN,
-      elseV = AbsNumber.Top
-    )(AbsNumber)
+    val b = BuiltinHelper.isNaN(time)
+    val t =
+      if (AT ⊑ b) {
+        AbsNum.NaN
+      } else AbsNum.Bot
+    val f =
+      if (AF ⊑ b) {
+        AbsNum.Top
+      } else AbsNum.Bot
+    val res = t ⊔ f
     (st, st.raiseException(excSet), AbsValue(res))
   })
 
@@ -118,8 +128,8 @@ object BuiltinDateHelper {
       var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
       // XXX: give up the precision! (Room for the analysis precision improvement!)
       // Set the [[PrimitiveValue]] internal property of this Date object to v.
-      val v = AbsNumber.Top
-      val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, AbsIValueUtil(v)))
+      val v = AbsNum.Top
+      val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, AbsIValue(v)))
       (AbsState(retH, state.context), state.raiseException(excSet), AbsValue(v))
     }
   )
@@ -131,7 +141,7 @@ object BuiltinDate extends FuncModel(
 
   // 15.9.2 The Date Constructor Called as a Function
   // 15.9.2.1 Date ([year [, month [, date [, hours [, minutes [, seconds [, ms]]]]]]])
-  code = PureCode(argLen = 7, code = (args: AbsValue, st: AbsState) => AbsString.Top),
+  code = PureCode(argLen = 7, code = (args: AbsValue, st: AbsState) => AbsStr.Top),
 
   // 15.9.2 The Date Constructor
   construct = Some(BuiltinDateHelper.constructor),
@@ -146,7 +156,7 @@ object BuiltinDate extends FuncModel(
       name = "Date.parse",
       code = PureCode(
         argLen = 1,
-        code = (args: AbsValue, st: AbsState) => AbsNumber.Top
+        code = (args: AbsValue, st: AbsState) => AbsNum.Top
       )
     ), T, F, T),
 
@@ -156,7 +166,7 @@ object BuiltinDate extends FuncModel(
       name = "Date.UTC",
       code = PureCode(
         argLen = 7,
-        code = (args: AbsValue, st: AbsState) => AbsNumber.Top
+        code = (args: AbsValue, st: AbsState) => AbsNum.Top
       )
     ), T, F, T),
 
@@ -166,7 +176,7 @@ object BuiltinDate extends FuncModel(
       name = "Date.now",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsNumber.Top
+        code = (args: AbsValue, st: AbsState) => AbsNum.Top
       )
     ), T, F, T)
   )
@@ -192,7 +202,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -201,7 +211,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toDateString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -210,7 +220,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toTimeString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -219,7 +229,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toLocaleString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -228,7 +238,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toLocaleDateString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -237,7 +247,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toLocaleTimeString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -450,7 +460,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toUTCString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: AbsState) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsStr.Top
       )
     ), T, F, T),
 
@@ -466,10 +476,11 @@ object BuiltinDateProto extends ObjModel(
         val v = BuiltinDateHelper.getValue(thisV, h)
         // If the time value of this object is not a finite Number a RangeError exception is thrown.
         v.gamma match {
-          case ConInf() => excSet += RangeError
+          case ConInf => excSet += RangeError
           case _ =>
         }
-        (st, st.raiseException(excSet), AbsValue(AbsString.Top))
+        if (!thisV.pvalue.isBottom) excSet += TypeError
+        (st, st.raiseException(excSet), AbsValue(AbsStr.Top))
       })
     ), T, F, T),
 

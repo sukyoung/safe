@@ -16,9 +16,9 @@ function[0] top-level {
 
   LBreak[5] -> [6]
 
-  lab2:[6] -> [7]
+  Label(lab2)[6] -> [7]
 
-  lab1:[7] -> Exit
+  Label(lab1)[7] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

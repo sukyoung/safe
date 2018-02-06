@@ -11,30 +11,37 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.console.Console
-import kr.ac.kaist.safe.nodes.cfg.{ CFGEdgeExc, CFGEdgeNormal }
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.console.Interactive
+import kr.ac.kaist.safe.nodes.cfg._
+import scala.collection.immutable.HashSet
 
 class Fixpoint(
     semantics: Semantics,
-    worklist: Worklist,
-    consoleOpt: Option[Console]
+    val consoleOpt: Option[Interactive]
 ) {
+  def worklist: Worklist = semantics.worklist
+
   def compute(initIters: Int = 0): Int = {
     var iters = initIters
     while (!worklist.isEmpty) {
       iters += 1
-      consoleOpt.fold() { _.runFixpoint }
-      val cp = worklist.pop
-      val st = semantics.getState(cp)
-      val (nextSt, nextExcSt) = semantics.C(cp, st)
-      propagateNormal(cp, nextSt)
-      propagateException(cp, nextExcSt)
-      propagateInterProc(cp, nextSt)
+      computeOneStep()
     }
-    consoleOpt.fold() { _.runFinished }
+    consoleOpt.foreach(_.runFinished)
     iters
+  }
+
+  var cpSet: Set[CFGBlock] = HashSet()
+
+  def computeOneStep(): Unit = {
+    consoleOpt.foreach(_.runFixpoint)
+    val cp = worklist.pop
+    val st = semantics.getState(cp)
+    val (nextSt, nextExcSt) = semantics.C(cp, st)
+    propagateNormal(cp, nextSt)
+    propagateException(cp, nextExcSt)
+    propagateInterProc(cp, nextSt)
   }
 
   def propagateNormal(cp: ControlPoint, nextSt: AbsState): Unit = {
@@ -42,13 +49,14 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeNormal) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        val succCP = cp.next(block, CFGEdgeNormal)
-        val oldSt = semantics.getState(succCP)
-        if (!(nextSt <= oldSt)) {
-          val newSt = oldSt + nextSt
-          semantics.setState(succCP, newSt)
-          worklist.add(succCP)
-        }
+        cp.next(block, CFGEdgeNormal, semantics).foreach(succCP => {
+          val oldSt = semantics.getState(succCP)
+          if (!(nextSt ⊑ oldSt)) {
+            val newSt = oldSt ⊔ nextSt
+            semantics.setState(succCP, newSt)
+            worklist.add(succCP)
+          }
+        })
       })
     }
   }
@@ -62,13 +70,14 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeExc) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        val excSuccCP = cp.next(block, CFGEdgeExc)
-        val oldExcSt = semantics.getState(excSuccCP)
-        if (!(nextExcSt <= oldExcSt)) {
-          val newExcSet = oldExcSt + nextExcSt
-          semantics.setState(excSuccCP, newExcSet)
-          worklist.add(excSuccCP)
-        }
+        cp.next(block, CFGEdgeExc, semantics).foreach(excSuccCP => {
+          val oldExcSt = semantics.getState(excSuccCP)
+          if (!(nextExcSt ⊑ oldExcSt)) {
+            val newExcSet = oldExcSt ⊔ nextExcSt
+            semantics.setState(excSuccCP, newExcSet)
+            worklist.add(excSuccCP)
+          }
+        })
       })
     }
   }
@@ -84,8 +93,17 @@ class Fixpoint(
           case (succCP, data) => {
             val oldSt = semantics.getState(succCP)
             val nextSt2 = semantics.E(cp, succCP, data, nextSt)
-            if (!(nextSt2 <= oldSt)) {
-              val newSt = oldSt + nextSt2
+            succCP.block match {
+              case Entry(f) =>
+                val tp = succCP.tracePartition
+                val exitCP = ControlPoint(f.exit, tp)
+                val exitExcCP = ControlPoint(f.exitExc, tp)
+                if (!semantics.getState(exitCP).isBottom) worklist.add(exitCP)
+                if (!semantics.getState(exitExcCP).isBottom) worklist.add(exitExcCP)
+              case _ =>
+            }
+            if (!(nextSt2 ⊑ oldSt)) {
+              val newSt = oldSt ⊔ nextSt2
               semantics.setState(succCP, newSt)
               worklist.add(succCP)
             }
