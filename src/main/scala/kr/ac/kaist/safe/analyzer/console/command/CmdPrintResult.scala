@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.analyzer.domain.Loc
 case object CmdPrintResult extends Command("result", "Print out various information.") {
   override val help: String = {
     s"""usage: $name (exc-)state(-all) ({keyword})
-           $name (exc-)loc {LocName}"""
+       $name (exc-)loc {LocName}"""
     // TODO "       " + name + " id [idNum] loc {LocName}"
     // TODO "       " + name + " id [idNum] excloc {LocName}"
     // TODO "       " + name + " ip"
