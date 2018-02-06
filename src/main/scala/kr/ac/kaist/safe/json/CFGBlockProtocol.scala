@@ -43,18 +43,11 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
     val imap: Map[Int, LabelKind] = map.map(_.swap)
 
     def write(kind: LabelKind): JsValue = kind match {
-      case FinallyLabel(block) => JsArray(JsNumber(block.id))
       case UserLabel(name) => JsString(name)
       case _ => JsNumber(map(kind))
     }
 
     def read(value: JsValue): LabelKind = value match {
-      case JsArray(Vector(JsNumber(id))) => FinallyLabel(
-        func.getBlock(id.toInt) match {
-          case Some(block) => block.asInstanceOf[NormalBlock]
-          case None => throw LabelKindParseError(value)
-        }
-      )
       case JsString(name) => UserLabel(name)
       case JsNumber(n) => imap(n.toInt)
       case _ => throw LabelKindParseError(value)
