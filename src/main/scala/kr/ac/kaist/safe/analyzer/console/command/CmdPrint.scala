@@ -26,12 +26,11 @@ case object CmdPrint extends Command("print", "Print out various information.") 
        $name context ({keyword})
        $name block ({fid}:{bid})
        $name loc {LocName} ({keyword})
-       $name func ({functionID})
+       $name func ({fid})
+       $name function ({fid})
        $name worklist
        $name ipsucc
-       $name trace
-       $name function ({fid})
-       $name html {name}"""
+       $name trace"""
 
   def run(c: Interactive, args: List[String]): Option[Target] = {
     val idPattern = "(-?\\d+):(\\d+)".r
@@ -208,10 +207,10 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             }
           case _ => help
         }
-        case "html" => rest match {
-          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, c.sem, Some(c.worklist), s"$name.html")
-          case _ => printResult(help)
-        }
+        // TODO case "html" => rest match {
+        //   case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, c.sem, Some(c.worklist), s"$name.html")
+        //   case _ => printResult(help)
+        // }
         case _ => printResult(help)
       }
     }
