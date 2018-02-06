@@ -28,10 +28,12 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
         val block = cp.block
         val insts = block.getInsts.reverse
         val reader = new ConsoleReader()
-        insts match {
-          case Nil => printResult("* no instructions")
-          case _ => printResult(c.getCurCP.block.toString(0))
-        }
+        printResult(insts match {
+          case Nil => "* no instructions"
+          case _ => c.getCurCP.block.toString(0)
+        })
+        flushTo(System.out)
+
         val (resSt, resExcSt, _) = insts.foldLeft((st, AbsState.Bot, true)) {
           case ((oldSt, oldExcSt, true), inst) =>
             printResult("\n")
@@ -43,16 +45,13 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
             var line = ""
             while ({
               line = reader.readLine
-              line match {
+              val keep = line match {
                 case "s" => {
                   printResult("*** state ***")
                   printResult(oldSt.toString)
                   printResult()
                   printResult("*** exception state ***")
                   printResult(oldExcSt.toString)
-
-                  // TODO: This doesn't support WebConsole
-                  flushTo(System.out)
                   true
                 }
                 case "d" => true // TODO diff
@@ -60,6 +59,8 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
                 case "q" => false
                 case _ => true
               }
+              flushTo(System.out)
+              keep
             }) {}
             line match {
               case "q" => (oldSt, oldExcSt, false)
