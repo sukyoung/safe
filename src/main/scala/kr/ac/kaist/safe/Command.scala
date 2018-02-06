@@ -103,8 +103,7 @@ case object CmdJsonLoad extends CommandObj("jsonLoad", CmdBase >> JsonLoad) {
 }
 
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap(
-  "fromJson" -> (CmdJsonLoad >> Analyze)
+case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap( // TODO "fromJson" -> (CmdJsonLoad >> Analyze)
 )) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result

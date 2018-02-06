@@ -38,7 +38,7 @@ object AnalyzeTest extends Tag("AnalyzeTest")
 object HtmlTest extends Tag("HtmlTest")
 object Test262Test extends Tag("Test262Test")
 object BenchTest extends Tag("BenchTest")
-object DumpTest extends Tag("DumpTest")
+// TODO object DumpTest extends Tag("DumpTest")
 
 class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val SEP = File.separator
@@ -311,9 +311,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   for (file <- shuffle(walkTree(new File(benchTestDir))))
     analyzeHelper("[Benchmarks]", BenchTest, file)
 
-  val dumpTestDir = testDir + "semantics" + SEP + "result"
-  for (file <- shuffle(walkTree(new File(dumpTestDir))))
-    analyzeHelper("[Dump]", DumpTest, file)
+  // TODO val dumpTestDir = testDir + "semantics" + SEP + "result"
+  // for (file <- shuffle(walkTree(new File(dumpTestDir))))
+  //   analyzeHelper("[Dump]", DumpTest, file)
 
   override def afterAll(): Unit = {
     val file = new File(analysisDetail)

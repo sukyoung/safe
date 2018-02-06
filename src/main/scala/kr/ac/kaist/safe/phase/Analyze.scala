@@ -85,9 +85,9 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     ("exitDump", BoolOption(c => c.exitDump = true),
       "dump the state of the exit state of a given CFG"),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the analysis results will be written to the outfile."),
-    ("html", StrOption((c, s) => c.htmlName = Some(s)),
-      "the resulting CFG with states will be drawn to the {string}.html")
+      "the analysis results will be written to the outfile.")
+  // TODO ("html", StrOption((c, s) => c.htmlName = Some(s)),
+  // TODO   "the resulting CFG with states will be drawn to the {string}.html")
   )
 }
 
