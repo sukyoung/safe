@@ -18,7 +18,6 @@ import kr.ac.kaist.safe.analyzer.html_debugger._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.IllFormedBlockStr
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.cfg_builder.DotWriter
 
 // print
 case object CmdPrint extends Command("print", "Print out various information.") {
@@ -32,7 +31,6 @@ case object CmdPrint extends Command("print", "Print out various information.") 
        $name ipsucc
        $name trace
        $name function ({fid})
-       $name cfg {name}
        $name html {name}"""
 
   def run(c: Interactive, args: List[String]): Option[Target] = {
@@ -209,32 +207,6 @@ case object CmdPrint extends Command("print", "Print out various information.") 
               case None => println(s"unknown fid: $fid")
             }
           case _ => help
-        }
-        case "cfg" => rest match {
-          case name :: Nil => {
-            // computes reachable fid_set
-            val cfg = c.cfg
-            val sem = c.sem
-            val reachableFunSet = sem.getAllIPSucc.foldLeft(Set[CFGFunction]()) {
-              case (set, (caller, calleeMap)) => {
-                set ++ (calleeMap.toSeq.map {
-                  case (callee, _) => callee.block.func
-                }).toSet
-              }
-            } + cfg.globalFunc
-            val cur = c.getCurCP.block
-
-            // dump each function block
-            val reachableUserFunSet = reachableFunSet.filter(func => func.isUser)
-            val wo = c.worklist
-            val o = wo.getOrderMap
-            val blocks = reachableUserFunSet.foldRight(List[CFGBlock]()) {
-              case (func, lst) => func.getAllBlocks ++ lst
-            }.reverse
-            printResult(cfg.toString(0))
-            DotWriter.spawnDot(cfg, Some(o), Some(cur), Some(blocks), s"$name.gv", s"$name.pdf")
-          }
-          case _ => printResult(help)
         }
         case "html" => rest match {
           case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, c.sem, Some(c.worklist), s"$name.html")

@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.phase
 
 import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
-import kr.ac.kaist.safe.cfg_builder.DotWriter
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer._

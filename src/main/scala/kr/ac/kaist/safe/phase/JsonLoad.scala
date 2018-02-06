@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.phase
 import scala.io.Source
 import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
-import kr.ac.kaist.safe.cfg_builder.DotWriter
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer._
@@ -84,11 +83,6 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Semantics, Tra
                   println("Dumped CFG to " + out)
                 })
 
-                // print dot file: {dotName}.gv, {dotName}.pdf
-                config.dotName.map(name => {
-                  DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
-                })
-
                 val sens = heapConfig.callsiteSensitivity * heapConfig.loopSensitivity
                 Success((cfg, sem, sens.initTP, heapConfig, iter.toInt))
               }
@@ -110,15 +104,12 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Semantics, Tra
     ("silent", BoolOption(c => c.silent = true),
       "messages during JSON loading are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the loaded CFG will be written to the outfile."),
-    ("dot", StrOption((c, s) => c.dotName = Some(s)),
-      "the loaded CFG will be drawn to the {name}.gv and {name}.pdf")
+      "the loaded CFG will be written to the outfile.")
   )
 }
 
 // JsonLoad phase config
 case class JsonLoadConfig(
   var silent: Boolean = false,
-  var outFile: Option[String] = None,
-  var dotName: Option[String] = None
+  var outFile: Option[String] = None
 ) extends Config
