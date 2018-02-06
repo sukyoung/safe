@@ -8,7 +8,6 @@
     "html": ""
   },
   "heapBuilder": {
-    "number": "default",
     "maxStrSetSize": 10,
     "aaddrType": "recency",
     "callsiteSensitivity": 10,
