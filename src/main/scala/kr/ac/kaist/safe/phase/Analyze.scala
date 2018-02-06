@@ -96,7 +96,7 @@ case class AnalyzeConfig(
   var silent: Boolean = false,
   var console: Boolean = false,
   var time: Boolean = false,
-  var exitDump: Boolean = true,
+  var exitDump: Boolean = false,
   var outFile: Option[String] = None,
   var htmlName: Option[String] = None
 ) extends Config
