@@ -16,17 +16,20 @@ import kr.ac.kaist.safe.analyzer.console.Interactive
 import kr.ac.kaist.safe.nodes.cfg._
 import scala.collection.immutable.HashSet
 
+import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.LINE_SEP
 class Fixpoint(
     semantics: Semantics,
     val consoleOpt: Option[Interactive]
 ) {
   def worklist: Worklist = semantics.worklist
 
-  def compute(initIters: Int = 0): Int = {
+  def compute(initIters: Int = 0, displayBot: Boolean = false): Int = {
     var iters = initIters
     while (!worklist.isEmpty) {
       iters += 1
-      computeOneStep()
+      computeOneStep(displayBot, iters)
+
     }
     consoleOpt.foreach(_.runFinished)
     iters
@@ -34,7 +37,7 @@ class Fixpoint(
 
   var cpSet: Set[CFGBlock] = HashSet()
 
-  def computeOneStep(): Unit = {
+  def computeOneStep(displayBot: Boolean = false, iters: Int = 0): Unit = {
     consoleOpt.foreach(_.runFixpoint)
     val cp = worklist.pop
     val st = semantics.getState(cp)
@@ -42,6 +45,11 @@ class Fixpoint(
     propagateNormal(cp, nextSt)
     propagateException(cp, nextExcSt)
     propagateInterProc(cp, nextSt)
+
+    //print if bottom exits
+    if (displayBot) {
+      checkBottom(cp, st, semantics, iters - 1)
+    }
   }
 
   def propagateNormal(cp: ControlPoint, nextSt: AbsState): Unit = {
@@ -54,7 +62,9 @@ class Fixpoint(
           if (!(nextSt ⊑ oldSt)) {
             val newSt = oldSt ⊔ nextSt
             semantics.setState(succCP, newSt)
-            worklist.add(succCP)
+            if (isReachable(succCP)) {
+              worklist.add(succCP)
+            }
           }
         })
       })
@@ -75,7 +85,9 @@ class Fixpoint(
           if (!(nextExcSt ⊑ oldExcSt)) {
             val newExcSet = oldExcSt ⊔ nextExcSt
             semantics.setState(excSuccCP, newExcSet)
-            worklist.add(excSuccCP)
+            if (isReachable(excSuccCP)) {
+              worklist.add(excSuccCP)
+            }
           }
         })
       })
@@ -109,6 +121,57 @@ class Fixpoint(
             }
           }
         }
+      }
+    }
+  }
+
+  def checkBottom(cp: ControlPoint, st: AbsState, sem: Semantics, iters: Int): Boolean = {
+    val block = cp.block
+    val insts = block.getInsts.reverse
+    if (st.isBottom) true
+    else {
+      val (_, _, result) = insts.foldLeft((st, AbsState.Bot, false)) {
+        case ((oldSt, oldExcSt, false), inst) => {
+          val (st, excSt) = inst match {
+            case (i: CFGNormalInst) => sem.I(i, oldSt, oldExcSt)
+            case (i: CFGCallInst) => sem.CI(cp, i, oldSt, oldExcSt)
+
+          }
+          if (st.isBottom) {
+            inst match {
+              case (i: CFGAssert) => (st, excSt, false)
+              case _ => {
+                println(s"The result of the following instruction is bottom at iteration: $iters")
+                println(s"  [${inst.id}] $inst")
+                println(s"<$block> @${block.span.toString}" + LINE_SEP)
+
+                (st, excSt, true)
+              }
+            }
+          } else (st, excSt, false)
+        }
+
+        case (other, _) => other
+      }
+      result
+    }
+  }
+
+  def isReachable(cp: ControlPoint): Boolean = {
+
+    val oldSt = semantics.getState(cp)
+    val block = cp.block
+    block.getInsts.lastOption match {
+      case None => true
+      case Some(inst) => {
+        val st = inst match {
+          case inst: CFGAssert => {
+            val (st, _) = semantics.I(inst, oldSt, AbsState.Bot)
+            st
+          }
+          case _ => oldSt
+        }
+        !st.isBottom
       }
     }
   }

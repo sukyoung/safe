@@ -35,14 +35,13 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     // set the start time.
     val startTime = System.currentTimeMillis
     var iters: Int = 0
-
     var interOpt: Option[Interactive] =
       if (config.console) Some(new Console(cfg, sem, heapConfig, iter))
       else None
 
     // calculate fixpoint
     val fixpoint = new Fixpoint(sem, interOpt)
-    iters = fixpoint.compute(iter + 1)
+    iters = fixpoint.compute(iter + 1, config.displayBot)
 
     // display duration time
     if (config.time) {
@@ -82,6 +81,8 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
       "display duration time."),
     ("exitDump", BoolOption(c => c.exitDump = true),
       "dump the state of the exit state of a given CFG"),
+    ("displayBot", BoolOption(c => c.displayBot = true),
+      "display bottom instructions during the fixpoint iteration"),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile.")
   // TODO ("html", StrOption((c, s) => c.htmlName = Some(s)),
@@ -96,5 +97,6 @@ case class AnalyzeConfig(
   var time: Boolean = false,
   var exitDump: Boolean = false,
   var outFile: Option[String] = None,
+  var displayBot: Boolean = false,
   var htmlName: Option[String] = None
 ) extends Config
