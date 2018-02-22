@@ -290,7 +290,7 @@ object HTMLWriter {
         <script>
           var safe_DB = ${renderGraphStates(cfg, sem, wlOpt)};
         </script>
-        <script src="assets/js/core.js" type="text/javascript"></script>
+        <script src="assets/js/html_core.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="cy"></div>
