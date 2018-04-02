@@ -124,23 +124,23 @@ package object domain {
   }
 
   // primitive values
-  private var absUndef: Option[UndefDomain] = _
+  private var absUndef: Option[UndefDomain] = None
   lazy val AbsUndef: UndefDomain = get("UndefDomain", absUndef)
   type AbsUndef = AbsUndef.Elem
 
-  private var absNull: Option[NullDomain] = _
+  private var absNull: Option[NullDomain] = None
   lazy val AbsNull: NullDomain = get("NullDomain", absNull)
   type AbsNull = AbsNull.Elem
 
-  private var absBool: Option[BoolDomain] = _
+  private var absBool: Option[BoolDomain] = None
   lazy val AbsBool: BoolDomain = get("BoolDomain", absBool)
   type AbsBool = AbsBool.Elem
 
-  private var absNum: Option[NumDomain] = _
+  private var absNum: Option[NumDomain] = None
   lazy val AbsNum: NumDomain = get("NumDomain", absNum)
   type AbsNum = AbsNum.Elem
 
-  private var absStr: Option[StrDomain] = _
+  private var absStr: Option[StrDomain] = None
   lazy val AbsStr: StrDomain = get("StrDomain", absStr)
   type AbsStr = AbsStr.Elem
 
@@ -148,11 +148,11 @@ package object domain {
   type AbsPValue = DefaultPValue.Elem
 
   // abstract address type
-  private var aaddrType: Option[AAddrType] = _
+  private var aaddrType: Option[AAddrType] = None
   lazy val AAddrType: AAddrType = get("AAddrType", aaddrType)
 
   // location
-  private var absLoc: Option[LocDomain] = _
+  private var absLoc: Option[LocDomain] = None
   lazy val AbsLoc: LocDomain = get("LocDomain", absLoc)
   type AbsLoc = AbsLoc.Elem
 
