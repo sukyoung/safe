@@ -367,19 +367,17 @@ Function: {
     var searchLen = searchStr.length;
     // 9. Return the largest possible nonnegative integer k not larger than start such that k+ searchLen  is not greater than len, and for all nonnegative integers j less than searchLen, the character at         position k+j of S is the same as the character at position j of searchStr; but if there is no such        integer k, then return the value -1.
     var k = start;
-    while (k>=0){
-      if ((k+searchLen) <= len){
-        var p = 0;
-        for (var j=0;j<searchLen;j++) {
-          if (S[k+j] !== searchStr[j]) {
-            break;
-          }
-          p += 1;
-        }
-        if (p === searchLen){
-          return k;
+    while (k >= 0 && (k+searchLen) <= len){
+      var b = true;
+      for (var j=0;j < searchLen && b;j++) {
+        if (S[k+j] !== searchStr[j]) {
+          b = false;
         }
       }
+      if (b) {
+        return k;
+      }
+      k -= 1;
     }
     return -1;
   }
