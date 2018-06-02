@@ -765,7 +765,7 @@ object DefaultNumber extends NumDomain {
       case (NUIntConst(n), NegInf) if n > 0 => alpha(-0.0)
       case (NUIntConst(_), NegInf) => alpha(0)
       /* 11.5.2  seventh */
-      case (UIntConst(0) | NUIntConst(0), UIntConst(0) | NUIntConst(0.0)) => NaN
+      case (UIntConst(0) | NUIntConst(0), UIntConst(0) | NUIntConst(0)) => NaN
       case (UIntConst(0), UIntConst(_)) => alpha(0)
       case (UIntConst(0), NUIntConst(n)) if n > 0 => alpha(0)
       case (UIntConst(0), NUIntConst(_)) => alpha(-0.0)
