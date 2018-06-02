@@ -65,9 +65,8 @@ trait ObjDomain extends AbsDomain[Obj] {
     def isEmpty: Boolean
 
     // absent value is set to AbsentBot because it is strong update.
-    def update(str: String, dp: AbsDataProp): Elem
-    def weakUpdate(astr: AbsStr, dp: AbsDataProp): Elem
     def update(in: IName, iv: AbsIValue): Elem
+    def update(astr: AbsStr, dp: AbsDataProp): Elem
 
     def contains(str: String): AbsBool
     def contains(astr: AbsStr): AbsBool

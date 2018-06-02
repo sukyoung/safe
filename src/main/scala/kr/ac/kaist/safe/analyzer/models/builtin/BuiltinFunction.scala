@@ -146,13 +146,13 @@ private object BuiltinFunctionProtoHelper {
         case ConInf =>
           val indexName = AbsStr.Number
           val nextArg = argObj.Get(indexName, heap)
-          aobj ⊔ AbsObj.newArgObject(n).weakUpdate(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+          aobj ⊔ AbsObj.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
             (0 until num.toInt).foldLeft(AbsObj.newArgObject(n))((tmpArg, i) => {
               val indexName = AbsNum(i).ToString
               val nextArg = argObj.Get(indexName, heap)
-              tmpArg.weakUpdate(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+              tmpArg.update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
             }) ⊔ aobj2
           })
       }
@@ -199,12 +199,12 @@ private object BuiltinFunctionProtoHelper {
         case ConInf =>
           val indexName = AbsStr.Number
           val nextArg = argObj.Get(indexName, heap)
-          AbsObj.newArgObject(len).weakUpdate(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+          AbsObj.newArgObject(len).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
             (0 until num.toInt).foldLeft(AbsObj.newArgObject(len))((tmpArg, i) => {
               val nextArg = argObj.Get(AbsNum(i + 1).ToString, heap)
-              tmpArg.weakUpdate(AbsNum(i).ToString, AbsDataProp(nextArg, atrue, atrue, atrue))
+              tmpArg.update(AbsNum(i).ToString, AbsDataProp(nextArg, atrue, atrue, atrue))
             }) ⊔ aobj2
           })
       }

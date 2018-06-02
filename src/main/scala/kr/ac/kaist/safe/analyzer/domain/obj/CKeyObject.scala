@@ -120,18 +120,16 @@ object CKeyObject extends ObjDomain {
     def apply(astr: AbsStr): AbsDataProp = lookup(astr).content
     def apply(iname: IName): AbsIValue = imap(iname).content
 
-    // strong update for normal properties
+    // update for normal properties
     def update(str: String, dp: AbsDataProp): Elem = {
       if (dp.isBottom) Bot
       else copy(nmap = nmap.update(str, AbsOpt(dp, AbsAbsent.Bot)))
     }
-
-    // weak update for normal properties
-    def weakUpdate(astr: AbsStr, dp: AbsDataProp): Elem = {
+    def update(astr: AbsStr, dp: AbsDataProp): Elem = {
       if (dp.isBottom) Bot
       else astr.gamma match {
         case ConInf => copy(nmap = nmap.mapCValues(_ ⊔ dp, (str, _) => astr.isRelated(str)))
-        case ConFin(set) if set.size == 1 => update(set.head, dp) // TODO it is unsound in some cases
+        case ConFin(set) if set.size == 1 => update(set.head, dp) // strong update
         case ConFin(set) => copy(nmap = set.foldLeft(nmap) {
           case (map, str) => map.update(str, map(str).⊔(_ ⊔ _)(AbsOpt(dp, AbsAbsent.Bot)))
         })
@@ -144,13 +142,11 @@ object CKeyObject extends ObjDomain {
       else copy(imap = imap.update(iname, AbsOpt(iv, AbsAbsent.Bot)))
     }
 
-    // strong delete
+    // delete
     def delete(str: String): Elem = copy(nmap = nmap.update(str, AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)))
-
-    // weak delete
-    def weakDelete(astr: AbsStr): Elem = astr.gamma match {
+    def delete(astr: AbsStr): Elem = astr.gamma match {
       case ConInf => copy(nmap = nmap.mapValues(_.⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)), (str, _) => astr.isRelated(str)))
-      case ConFin(set) if set.size == 1 => delete(set.head)
+      case ConFin(set) if set.size == 1 => delete(set.head) // strong update
       case ConFin(set) => copy(nmap = set.foldLeft(nmap) {
         case (map, str) => map.update(str, map(str).⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)))
       })
@@ -413,7 +409,7 @@ object CKeyObject extends ObjDomain {
         else {
           val (configurable, _) = desc.configurable
           val (confO, conB, confE) =
-            if (AT ⊑ configurable) (weakDelete(astr), AT, ExcSetEmpty)
+            if (AT ⊑ configurable) (delete(astr), AT, ExcSetEmpty)
             else BOT
           val (otherO, otherB, otherE: Set[Exception]) =
             if (AF ⊑ configurable) if (Throw) (Bot, AbsBool.Bot, HashSet(TypeError)) else (this, AF, ExcSetEmpty)
@@ -495,7 +491,7 @@ object CKeyObject extends ObjDomain {
           if (AbsBool.True ⊑ extensible) {
             // i. Create an own data property named P of object O whose [[Value]], [[Writable]],
             // [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
-            val changedObj = weakUpdate(P, AbsDataProp(Desc))
+            val changedObj = update(P, AbsDataProp(Desc))
             (changedObj, AbsBool.True, ExcSetEmpty)
           } else BotTriple
         val (obj2: Elem, b2, excSet2: Set[Exception]) =
@@ -562,7 +558,7 @@ object CKeyObject extends ObjDomain {
           if (!dw.isBottom) newDP = newDP.copy(writable = dw)
           if (!de.isBottom) newDP = newDP.copy(enumerable = de)
           if (!dc.isBottom) newDP = newDP.copy(configurable = dc)
-          val changedObj = weakUpdate(P, newDP)
+          val changedObj = update(P, newDP)
           (changedObj, AbsBool.True, ExcSetEmpty)
         } else BotTriple
 
@@ -701,7 +697,7 @@ object CKeyObject extends ObjDomain {
         })
       case _ =>
         newObj2
-          .weakUpdate(AbsStr.Number, AbsDataProp(AbsValue(AbsStr.Top), AF, AT, AF))
+          .update(AbsStr.Number, AbsDataProp(AbsValue(AbsStr.Top), AF, AT, AF))
           .update("length", AbsDataProp(absStr.length, AF, AF, AF))
     }
   }

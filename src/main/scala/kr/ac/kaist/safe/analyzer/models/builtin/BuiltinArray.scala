@@ -312,7 +312,7 @@ object BuiltinArrayHelper {
           case ConFin(set) => set.foldLeft(arr)((arr, aKey) => {
             val value = argObj(aKey).value
             val dp = AbsDataProp(value, AT, AT, AT)
-            arr.weakUpdate(aKey, dp)
+            arr.update(aKey, dp)
           })
         }
         (arrObj, HashSet(RangeError))
@@ -375,7 +375,7 @@ object BuiltinArrayHelper {
     val topDP = thisObj(AbsStr.Number)
     val Top = AbsObj
       .newArrayObject(AbsNum.Top)
-      .weakUpdate(AbsStr.Number, topDP)
+      .update(AbsStr.Number, topDP)
     val retObj: AbsObj = length.getSingle match {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
@@ -557,8 +557,8 @@ object BuiltinArrayHelper {
           // XXX: very imprecise ConMany case
           case ConMany() => (
             arr
-            .weakUpdate(AbsStr.Number, AbsDataProp.Top)
-            .weakUpdate(AbsStr("length"), AbsDataProp.Top),
+            .update(AbsStr.Number, AbsDataProp.Top)
+            .update(AbsStr("length"), AbsDataProp.Top),
             AbsValue.Top,
             HashSet(TypeError)
           )
@@ -611,7 +611,7 @@ object BuiltinArrayHelper {
             (putObj, AbsValue(n), putExcSet ++ retExcSet)
           }
           case _ => (
-            arr.weakUpdate(AbsStr.Number, AbsDataProp(argObj.Get(AbsStr.Number, h), AT, AT, AT)),
+            arr.update(AbsStr.Number, AbsDataProp(argObj.Get(AbsStr.Number, h), AT, AT, AT)),
             AbsValue(AbsNum.Top),
             HashSet(TypeError)
           )
@@ -665,7 +665,7 @@ object BuiltinArrayHelper {
               }
             }
           }
-          case ConMany() => (arr.weakUpdate(AbsStr.Number, AbsDataProp.Top), HashSet(TypeError))
+          case ConMany() => (arr.update(AbsStr.Number, AbsDataProp.Top), HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, excSet ++ retExcSet)
@@ -738,7 +738,7 @@ object BuiltinArrayHelper {
             (putObj, first, retExcSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (obj.weakUpdate(AbsStr.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (obj.update(AbsStr.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value ⊔ retV, excSet ++ retExcSet)
@@ -820,7 +820,7 @@ object BuiltinArrayHelper {
           }
         }
       }
-      case _ => (arr.weakUpdate(AbsStr.Top, AbsDataProp.Top), HashSet(TypeError))
+      case _ => (arr.update(AbsStr.Top, AbsDataProp.Top), HashSet(TypeError))
     }
     // 11. Return A.
     val arrLoc = Loc(sliceArrASite)
@@ -851,7 +851,7 @@ object BuiltinArrayHelper {
         val topDP = thisObj(AbsStr.Number)
         val Top = AbsObj
           .newArrayObject(AbsNum.Top)
-          .weakUpdate(AbsStr.Number, topDP)
+          .update(AbsStr.Number, topDP)
         val (retObj: AbsObj, retArr: AbsObj, retExcSet: Set[Exception]) = (
           thisLen.getSingle,
           argLen.getSingle,
@@ -937,7 +937,7 @@ object BuiltinArrayHelper {
         val topDP = thisObj(AbsStr.Number)
         val Top = AbsObj
           .newArrayObject(AbsNum.Top)
-          .weakUpdate(AbsStr.Number, topDP)
+          .update(AbsStr.Number, topDP)
         val (retObj: AbsObj, retV: AbsValue, retExcSet: Set[Exception]) = (thisLen.getSingle, argLen.getSingle) match {
           case (ConZero(), _) | (_, ConZero()) => (AbsObj.Bot, AbsValue.Bot, ExcSetEmpty)
           case (ConOne(Num(tl)), ConOne(Num(al))) => {
