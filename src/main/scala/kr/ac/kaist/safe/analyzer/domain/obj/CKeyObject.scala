@@ -401,15 +401,16 @@ object CKeyObject extends ObjDomain {
     def Delete(astr: AbsStr, Throw: Boolean): (Elem, AbsBool, Set[Exception]) = {
       val BOT = (Bot, AbsBool.Bot, ExcSetEmpty)
       val (desc, undef) = GetOwnProperty(astr)
+      val deleted = delete(astr)
       val (undefO, undefB, undefE) =
         if (undef.isBottom) BOT
-        else (this, AT, ExcSetEmpty)
+        else (deleted, AT, ExcSetEmpty)
       val (descO, descB, descE) =
         if (desc.isBottom) BOT
         else {
           val (configurable, _) = desc.configurable
           val (confO, conB, confE) =
-            if (AT ⊑ configurable) (delete(astr), AT, ExcSetEmpty)
+            if (AT ⊑ configurable) (deleted, AT, ExcSetEmpty)
             else BOT
           val (otherO, otherB, otherE: Set[Exception]) =
             if (AF ⊑ configurable) if (Throw) (Bot, AbsBool.Bot, HashSet(TypeError)) else (this, AF, ExcSetEmpty)
