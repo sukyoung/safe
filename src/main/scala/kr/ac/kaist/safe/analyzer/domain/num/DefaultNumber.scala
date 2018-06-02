@@ -582,7 +582,7 @@ object DefaultNumber extends NumDomain {
           | NegInf
           | UInt
           | UIntConst(_) => this
-        case NUIntConst(0) => NUIntConst(0)
+        case NUIntConst(0) => alpha(-0.0)
         case NUIntConst(n) => alpha(scala.math.round(n))
         case _ => Top
       }
@@ -689,7 +689,7 @@ object DefaultNumber extends NumDomain {
       case (NegInf, _) | (_, NegInf) => NegInf
       case (PosInf, _) | (_, PosInf) => PosInf
       // The sum of two negative zeroes is -0.
-      case (NUIntConst(0), NUIntConst(0)) => NUIntConst(0)
+      case (NUIntConst(0), NUIntConst(0)) => alpha(-0.0)
       // The sum of two positive zeroes, or of two zeroes of opposite sign, is +0.
       case (NUIntConst(0) | UIntConst(0), NUIntConst(0) | UIntConst(0)) => UIntConst(0)
       // The sum of a zero and a nonzero finite value is equal to the nonzero operand.
