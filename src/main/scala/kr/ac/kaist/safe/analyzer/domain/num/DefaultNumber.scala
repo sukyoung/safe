@@ -711,8 +711,8 @@ object DefaultNumber extends NumDomain {
       /* 11.5.1 first */
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.1 third */
-      case (PosInf | NegInf, UIntConst(0) | NUIntConst(0)) => NaN
-      case (UIntConst(0) | NUIntConst(0), PosInf | NegInf) => NaN
+      case (PosInf | NegInf | Inf, UIntConst(0) | NUIntConst(0)) => NaN
+      case (UIntConst(0) | NUIntConst(0), PosInf | NegInf | Inf) => NaN
       /* 11.5.1 fourth */
       case (PosInf, PosInf) => PosInf
       case (PosInf, NegInf) => NegInf
