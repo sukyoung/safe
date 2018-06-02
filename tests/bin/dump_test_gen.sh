@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-#    Copyright (c) 2017, KAIST.
+#    Copyright (c) 2017-2018, KAIST.
 #    All rights reserved.
 #
 #    Use is subject to license terms.
