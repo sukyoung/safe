@@ -46,25 +46,10 @@ object ConfigProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit object AAddrTypeFormat extends RootJsonFormat[AAddrType] {
-
-    val map: Map[AAddrType, Int] = Map(
-      NormalAAddr -> 0,
-      RecencyAAddr -> 1
-    )
-    val imap: Map[Int, AAddrType] = map.map(_.swap)
-
-    def write(addr: AAddrType): JsValue = JsNumber(map(addr))
-    def read(value: JsValue): AAddrType = value match {
-      case JsNumber(n) => imap(n.toInt)
-      case _ => throw AAddrTypeParseError(value)
-    }
-  }
-
   implicit object HeapBuildConfigFormat extends RootJsonFormat[HeapBuildConfig] {
 
     def write(config: HeapBuildConfig): JsValue = config match {
-      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, js, addr) => JsArray()
+      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, js, _) => JsArray()
     }
 
     def read(value: JsValue): HeapBuildConfig = value match {

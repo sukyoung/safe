@@ -135,7 +135,3 @@ case object DefaultLoc extends LocDomain {
     }
   }
 }
-
-sealed abstract class AAddrType
-case object NormalAAddr extends AAddrType
-case object RecencyAAddr extends AAddrType

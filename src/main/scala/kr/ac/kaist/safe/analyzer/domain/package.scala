@@ -112,7 +112,7 @@ package object domain {
     absNum: NumDomain = DefaultNumber,
     absStr: StrDomain = StringSet(0),
     absLoc: LocDomain = DefaultLoc,
-    aaddrType: AAddrType = RecencyAAddr
+    recencyMode: Boolean = true
   ): Unit = {
     this.absUndef = Some(absUndef)
     this.absNull = Some(absNull)
@@ -120,7 +120,7 @@ package object domain {
     this.absNum = Some(absNum)
     this.absStr = Some(absStr)
     this.absLoc = Some(absLoc)
-    this.aaddrType = Some(aaddrType)
+    this.recencyMode = Some(recencyMode)
   }
 
   // primitive values
@@ -147,9 +147,9 @@ package object domain {
   val AbsPValue: DefaultPValue.type = DefaultPValue
   type AbsPValue = DefaultPValue.Elem
 
-  // abstract address type
-  private var aaddrType: Option[AAddrType] = None
-  lazy val AAddrType: AAddrType = get("AAddrType", aaddrType)
+  // recency mode
+  private var recencyMode: Option[Boolean] = None
+  lazy val RecencyMode: Boolean = get("RecencyMode", recencyMode)
 
   // location
   private var absLoc: Option[LocDomain] = None

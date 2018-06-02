@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.PipeOps._
 import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
 import spray.json._
@@ -58,9 +59,13 @@ object Loc {
   }
 
   def apply(str: String): Loc = apply(PredAllocSite(str))
-  def apply(asite: AllocSite): Loc = AAddrType match {
-    case NormalAAddr => asite
-    case RecencyAAddr => Recency(asite, Recent)
+  def apply(asite: AllocSite): Loc = {
+    asite |>
+      condApply(RecencyMode, Recency(_, Recent))
+  }
+  private def condApply(cond: Boolean, f: Loc => Loc)(input: Loc): Loc = {
+    if (cond) f(input)
+    else input
   }
 
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({

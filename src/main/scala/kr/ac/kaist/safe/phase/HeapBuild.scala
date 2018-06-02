@@ -38,7 +38,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       config.AbsNum,
       config.AbsStr,
       DefaultLoc,
-      config.aaddrType
+      config.recencyMode
     )
     var initSt = Initialize(cfg, config.jsModel)
 
@@ -65,11 +65,8 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       "messages during heap building are muted."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsStr = StringSet(n)),
       "the analyzer will use the AbsStr Set domain with given size limit n."),
-    ("aaddrType", StrOption((c, s) => s match {
-      case "normal" => c.aaddrType = NormalAAddr
-      case "recency" => c.aaddrType = RecencyAAddr
-      case str => throw NoChoiceError(s"there is no address abstraction type with name '$str'.")
-    }), "address abstraction type."),
+    ("recency", BoolOption(c => c.recencyMode = true),
+      "analysis with recency abstraction"),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = CallSiteSensitivity(n)),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("loopIter", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxIter = n)),
@@ -103,5 +100,5 @@ case class HeapBuildConfig(
   var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
   var jsModel: Boolean = false,
-  var aaddrType: AAddrType = RecencyAAddr
+  var recencyMode: Boolean = false
 ) extends Config

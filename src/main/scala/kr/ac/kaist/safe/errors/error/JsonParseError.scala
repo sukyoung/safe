@@ -162,6 +162,4 @@ case class NumDomainParseError(value: JsValue) extends JsonFormatError("NumDomai
 
 case class StrDomainParseError(value: JsValue) extends JsonFormatError("StrDomain", value)
 
-case class AAddrTypeParseError(value: JsValue) extends JsonFormatError("AAddrType", value)
-
 case class HeapBuildConfigParseError(value: JsValue) extends JsonFormatError("HeapBuildConfig", value)

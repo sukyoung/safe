@@ -288,7 +288,15 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   parser(List(s"-json=$testJSON"))
 
   HeapBuild.jscache = {
-    register(aaddrType = heapBuildConfig.aaddrType)
+    register(
+      heapBuildConfig.AbsUndef,
+      heapBuildConfig.AbsNull,
+      heapBuildConfig.AbsBool,
+      heapBuildConfig.AbsNum,
+      heapBuildConfig.AbsStr,
+      DefaultLoc,
+      heapBuildConfig.recencyMode
+    )
     Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))
   }
 

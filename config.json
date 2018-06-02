@@ -9,7 +9,7 @@
   },
   "heapBuilder": {
     "maxStrSetSize": 10,
-    "aaddrType": "recency",
+    "recency": true,
     "callsiteSensitivity": 10,
     "loopIter": 10,
     "loopDepth": 10,
