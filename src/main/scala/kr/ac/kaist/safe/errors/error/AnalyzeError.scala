@@ -55,7 +55,7 @@ case class ModelParseError(msg: String) extends AnalyzeError(
 )
 
 case object LocTopGammaError extends AnalyzeError(
-  "AbsLoc.Top.gamma is impossible"
+  "LocSet.Top.gamma is impossible"
 )
 
 case class UserAllocSiteError(u: UserAllocSite) extends AnalyzeError({

@@ -32,7 +32,7 @@ object DefaultContext extends ContextDomain {
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
   lazy val Empty: Elem =
-    CtxMap(EmptyMap, OldASiteSet.Empty, AbsLoc(BuiltinGlobal.loc))
+    CtxMap(EmptyMap, OldASiteSet.Empty, LocSet(BuiltinGlobal.loc))
 
   def alpha(ctx: Context): Elem = Top // TODO more precise
 
@@ -138,7 +138,7 @@ object DefaultContext extends ContextDomain {
       case (envRec, loc) => envRec ⊔ getOrElse(loc, AbsLexEnv.Bot)
     }
 
-    def apply(locSet: AbsLoc): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
+    def apply(locSet: LocSet): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
       case (envRec, loc) => envRec ⊔ getOrElse(loc, AbsLexEnv.Bot)
     }
 

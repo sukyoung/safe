@@ -30,7 +30,7 @@ trait ContextDomain extends AbsDomain[Context] {
     // lookup
     def apply(loc: Loc): Option[AbsLexEnv]
     def apply(locSet: Set[Loc]): AbsLexEnv
-    def apply(locSet: AbsLoc): AbsLexEnv
+    def apply(locSet: LocSet): AbsLexEnv
     def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv
     def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T
 

@@ -37,7 +37,6 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       config.AbsBool,
       config.AbsNum,
       config.AbsStr,
-      DefaultLoc,
       config.recencyMode
     )
     var initSt = Initialize(cfg, config.jsModel)

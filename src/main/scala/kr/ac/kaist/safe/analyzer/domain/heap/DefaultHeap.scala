@@ -138,7 +138,7 @@ object DefaultHeap extends HeapDomain {
       }
     }
 
-    def get(locSet: AbsLoc): AbsObj = locSet.foldLeft(AbsObj.Bot) {
+    def get(locSet: LocSet): AbsObj = locSet.foldLeft(AbsObj.Bot) {
       case (obj, loc) => obj ⊔ get(loc)
     }
 
@@ -283,7 +283,7 @@ object DefaultHeap extends HeapDomain {
     // Proto
     ////////////////////////////////////////////////////////////////
     def proto(loc: Loc, absStr: AbsStr): AbsValue = {
-      var visited = AbsLoc.Bot
+      var visited = LocSet.Bot
       val valueBot = AbsValue.Bot
       def visit(currentLoc: Loc): AbsValue = {
         if (visited.contains(currentLoc)) valueBot
@@ -314,25 +314,25 @@ object DefaultHeap extends HeapDomain {
       visit(loc)
     }
 
-    def protoBase(loc: Loc, absStr: AbsStr): AbsLoc = {
-      var visited = AbsLoc.Bot
-      def visit(l: Loc): AbsLoc = {
-        if (visited.contains(l)) AbsLoc.Bot
+    def protoBase(loc: Loc, absStr: AbsStr): LocSet = {
+      var visited = LocSet.Bot
+      def visit(l: Loc): LocSet = {
+        if (visited.contains(l)) LocSet.Bot
         else {
           visited += l
           val obj = this.get(l)
           val isElemIn = (obj contains absStr)
           val locSet1 =
-            if (AbsBool.True ⊑ isElemIn) AbsLoc(l)
-            else AbsLoc.Bot
+            if (AbsBool.True ⊑ isElemIn) LocSet(l)
+            else LocSet.Bot
           val locSet2 =
             if (AbsBool.False ⊑ isElemIn) {
               val protoLocSet = obj(IPrototype).value.locset
-              protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
+              protoLocSet.foldLeft(LocSet.Bot)((res, protoLoc) => {
                 res ⊔ visit(protoLoc)
               })
             } else {
-              AbsLoc.Bot
+              LocSet.Bot
             }
           locSet1 ⊔ locSet2
         }

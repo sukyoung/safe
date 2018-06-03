@@ -375,7 +375,7 @@ object CKeyObject extends ObjDomain {
 
     // Section 8.12.6 [[HasProperty]](P)
     def HasProperty(P: AbsStr, h: AbsHeap): AbsBool = {
-      var visited = AbsLoc.Bot
+      var visited = LocSet.Bot
       def visit(currObj: Elem): AbsBool = {
         val test = currObj contains P
         val b1 =
@@ -601,9 +601,9 @@ object CKeyObject extends ObjDomain {
   ////////////////////////////////////////////////////////////////
   def newObject: Elem = newObject(BuiltinObjectProto.loc)
 
-  def newObject(loc: Loc): Elem = newObject(AbsLoc(loc))
+  def newObject(loc: Loc): Elem = newObject(LocSet(loc))
 
-  def newObject(locSet: AbsLoc): Elem = {
+  def newObject(locSet: LocSet): Elem = {
     Empty
       .update(IClass, AbsIValue(AbsStr("Object")))
       .update(IPrototype, AbsIValue(locSet))
@@ -710,12 +710,12 @@ object CKeyObject extends ObjDomain {
       .update(IExtensible, AbsIValue(AbsBool.True))
   }
 
-  def defaultValue(locSet: AbsLoc): AbsPValue = {
+  def defaultValue(locSet: LocSet): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else AbsPValue.Top
   }
 
-  def defaultValue(locSet: AbsLoc, preferredType: String): AbsPValue = {
+  def defaultValue(locSet: LocSet, preferredType: String): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else {
       preferredType match {
@@ -726,7 +726,7 @@ object CKeyObject extends ObjDomain {
     }
   }
 
-  def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue = {
+  def defaultValue(locSet: LocSet, h: AbsHeap, preferredType: String): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else locSet.foldLeft(AbsPValue.Bot)((pv, loc) => h.get(loc).DefaultValue(preferredType, h))
   }

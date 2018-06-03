@@ -60,7 +60,7 @@ object DefaultState extends StateDomain {
       if (excSet.isEmpty) Bot
       else {
         val (oldValue, _) = context.pureLocal.record.decEnvRec.GetBindingValue("@exception_all")
-        val (newSt: Elem, newExcSet) = excSet.foldLeft[(Elem, AbsLoc)]((this, AbsLoc.Bot)) {
+        val (newSt: Elem, newExcSet) = excSet.foldLeft[(Elem, LocSet)]((this, LocSet.Bot)) {
           case ((st, locSet), exc) => {
             val errModel = exc.getModel
             val errLoc = Loc(errModel.name + "<instance>")
@@ -107,11 +107,11 @@ object DefaultState extends StateDomain {
     def lookupBase(id: CFGId): AbsValue = {
       val x = id.text
       id.kind match {
-        case PureLocalVar => AbsLoc(PredAllocSite.PURE_LOCAL)
+        case PureLocalVar => LocSet(PredAllocSite.PURE_LOCAL)
         case CapturedVar =>
           AbsLexEnv.getIdBase(context.pureLocal.outer, x, false)(this)
-        case CapturedCatchVar => AbsLoc(PredAllocSite.COLLAPSED)
-        case GlobalVar => AbsLoc(BuiltinGlobal.loc)
+        case CapturedCatchVar => LocSet(PredAllocSite.COLLAPSED)
+        case GlobalVar => LocSet(BuiltinGlobal.loc)
       }
     }
 

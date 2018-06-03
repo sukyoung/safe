@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.util._
 // value abstract domain
 trait ValueDomain extends AbsDomain[Value] {
   def apply(pvalue: AbsPValue): Elem
-  def apply(locset: AbsLoc): Elem
-  def apply(pvalue: AbsPValue, locset: AbsLoc): Elem
+  def apply(locset: LocSet): Elem
+  def apply(pvalue: AbsPValue, locset: LocSet): Elem
 
   // abstract value element
   type Elem <: ElemTrait
@@ -25,14 +25,14 @@ trait ValueDomain extends AbsDomain[Value] {
   // abstract value element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     val pvalue: AbsPValue
-    val locset: AbsLoc
+    val locset: LocSet
 
     /* substitute locR by locO */
     def subsLoc(locR: Recency, locO: Recency): Elem
     /* weakly substitute locR by locO, that is keep locR together */
     def weakSubsLoc(locR: Recency, locO: Recency): Elem
     // TODO working but a more simple way exists with modifying getBase
-    def getThis(h: AbsHeap): AbsLoc
+    def getThis(h: AbsHeap): LocSet
 
     def typeCount: Int
   }

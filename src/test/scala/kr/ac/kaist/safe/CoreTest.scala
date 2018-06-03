@@ -294,7 +294,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       heapBuildConfig.AbsBool,
       heapBuildConfig.AbsNum,
       heapBuildConfig.AbsStr,
-      DefaultLoc,
       heapBuildConfig.recencyMode
     )
     Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))

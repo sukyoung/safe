@@ -18,25 +18,25 @@ import spray.json._
 
 // default value abstract domain
 object DefaultValue extends ValueDomain {
-  lazy val Bot: Elem = Elem(AbsPValue.Bot, AbsLoc.Bot)
-  lazy val Top: Elem = Elem(AbsPValue.Top, AbsLoc.Top)
+  lazy val Bot: Elem = Elem(AbsPValue.Bot, LocSet.Bot)
+  lazy val Top: Elem = Elem(AbsPValue.Top, LocSet.Top)
 
   def alpha(value: Value): Elem = value match {
     case (pvalue: PValue) => apply(AbsPValue(pvalue))
-    case (loc: Loc) => apply(AbsLoc(loc))
+    case (loc: Loc) => apply(LocSet(loc))
     case StringT => apply(AbsStr.Top)
     case NumberT => apply(AbsNum.Top)
     case BoolT => apply(AbsBool.Top)
   }
 
   def apply(pvalue: AbsPValue): Elem = Bot.copy(pvalue = pvalue)
-  def apply(locset: AbsLoc): Elem = Bot.copy(locset = locset)
-  def apply(pvalue: AbsPValue, locset: AbsLoc): Elem = Elem(pvalue, locset)
+  def apply(locset: LocSet): Elem = Bot.copy(locset = locset)
+  def apply(pvalue: AbsPValue, locset: LocSet): Elem = Elem(pvalue, locset)
 
   def fromJson(v: JsValue): Elem = v match {
     case JsObject(m) => (
       m.get("pvalue").map(AbsPValue.fromJson _),
-      m.get("locset").map(AbsLoc.fromJson _)
+      m.get("locset").map(LocSet.fromJson _)
     ) match {
         case (Some(p), Some(l)) => Elem(p, l)
         case _ => throw AbsValueParseError(v)
@@ -44,7 +44,7 @@ object DefaultValue extends ValueDomain {
     case _ => throw AbsValueParseError(v)
   }
 
-  case class Elem(pvalue: AbsPValue, locset: AbsLoc) extends ElemTrait {
+  case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf // TODO more precisely
 
     def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
@@ -101,18 +101,18 @@ object DefaultValue extends ValueDomain {
         pvalue.typeCount + 1
     }
 
-    def getThis(h: AbsHeap): AbsLoc = {
+    def getThis(h: AbsHeap): LocSet = {
       val locSet1 = (pvalue.nullval.isBottom, pvalue.undefval.isBottom) match {
-        case (true, true) => AbsLoc.Bot
-        case _ => AbsLoc(BuiltinGlobal.loc)
+        case (true, true) => LocSet.Bot
+        case _ => LocSet(BuiltinGlobal.loc)
       }
 
       val foundDeclEnvRecord = locset.exists(loc => !h.isObject(loc))
 
       val locSet2 =
-        if (foundDeclEnvRecord) AbsLoc(BuiltinGlobal.loc)
-        else AbsLoc.Bot
-      val locSet3 = locset.foldLeft(AbsLoc.Bot)((tmpLocSet, loc) => {
+        if (foundDeclEnvRecord) LocSet(BuiltinGlobal.loc)
+        else LocSet.Bot
+      val locSet3 = locset.foldLeft(LocSet.Bot)((tmpLocSet, loc) => {
         if (h.isObject(loc)) tmpLocSet + loc
         else tmpLocSet
       })

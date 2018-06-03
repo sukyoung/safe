@@ -20,7 +20,7 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   def newObject: Elem
   def newObject(loc: Loc): Elem
-  def newObject(locSet: AbsLoc): Elem
+  def newObject(locSet: LocSet): Elem
 
   def newArgObject(absLength: AbsNum = AbsNum(0)): Elem
 
@@ -41,9 +41,9 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   def newErrorObj(errorName: String, protoLoc: Loc): Elem
 
-  def defaultValue(locSet: AbsLoc): AbsPValue
-  def defaultValue(locSet: AbsLoc, preferredType: String): AbsPValue
-  def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue
+  def defaultValue(locSet: LocSet): AbsPValue
+  def defaultValue(locSet: LocSet, preferredType: String): AbsPValue
+  def defaultValue(locSet: LocSet, h: AbsHeap, preferredType: String): AbsPValue
 
   // 8.10.4 FromPropertyDescriptor ( Desc )
   def FromPropertyDescriptor(h: AbsHeap, desc: AbsDesc): (Elem, Set[Exception])

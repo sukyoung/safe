@@ -105,7 +105,7 @@ object Helper {
       AbsHeap.Bot
   }
 
-  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsStr, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
+  def storeHelp(objLocSet: LocSet, idxAbsStr: AbsStr, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
       (afalse ⊑ heap.isArray(l)) && atrue ⊑ heap.get(l).CanPut(idxAbsStr, heap))
@@ -144,7 +144,7 @@ object Helper {
   }
 
   def inherit(h: AbsHeap, loc1: Loc, loc2: Loc): AbsValue = {
-    var visited = AbsLoc.Bot
+    var visited = LocSet.Bot
     val locVal2 = AbsValue(loc2)
     val boolBotVal = AbsValue(AbsPValue.Bot)
     val boolTrueVal = AbsValue(true)

@@ -207,7 +207,7 @@ case class Semantics(
     i match {
       case _ if st.isBottom => (AbsState.Bot, excSt)
       case CFGAlloc(_, _, x, e, newASite) => {
-        val objProtoSingleton = AbsLoc(BuiltinObjectProto.loc)
+        val objProtoSingleton = LocSet(BuiltinObjectProto.loc)
         val loc = Loc(newASite)
         val st1 = st.oldify(loc)
         val (vLocSet, excSet) = e match {
@@ -589,7 +589,7 @@ case class Semantics(
         val descLoc = Loc(aNew)
         val state = st.oldify(descLoc)
         val retH = state.heap.update(descLoc, descObj.oldify(aNew))
-        val retV = AbsValue(undef, AbsLoc(descLoc))
+        val retV = AbsValue(undef, LocSet(descLoc))
         (AbsState(retH, state.context), retV, excSet)
       } else (st, AbsValue(undef), ExcSetEmpty)
       val newSt = retSt.varStore(lhs, retV)
@@ -1066,8 +1066,8 @@ case class Semantics(
     case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
       val (v, excSetV) = V(exprV, st)
       val locset = v.pvalue.strval.gamma match {
-        case ConInf => AbsLoc.Top
-        case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
+        case ConInf => LocSet.Top
+        case ConFin(strset) => LocSet(strset.map(str => Loc(str)))
       }
       val newSt = st.varStore(lhs, locset)
       val newExcSt = st.raiseException(excSetV)
@@ -1151,8 +1151,8 @@ case class Semantics(
     case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
       val (v, excSetV) = V(exprV, st)
       val locset = v.pvalue.strval.gamma match {
-        case ConInf => AbsLoc.Top
-        case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
+        case ConInf => LocSet.Top
+        case ConFin(strset) => LocSet(strset.map(str => Loc(str)))
       }
       val newSt = st.varStore(lhs, locset)
       val newExcSt = st.raiseException(excSetV)
@@ -1255,7 +1255,7 @@ case class Semantics(
           cfg.getFunc(fid) match {
             case Some(funCFG) => {
               val scopeValue = funObj(IScope).value
-              val newEnv = AbsLexEnv.newPureLocal(AbsLoc(loc))
+              val newEnv = AbsLexEnv.newPureLocal(LocSet(loc))
               val (newRec, _) = newEnv.record.decEnvRec
                 .CreateMutableBinding(funCFG.argumentsName)
                 .SetMutableBinding(funCFG.argumentsName, argVal)

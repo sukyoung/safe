@@ -31,13 +31,13 @@ object TypeConversionHelper {
   def ToPrimitive(value: AbsValue, preferredType: String): AbsPValue =
     value.pvalue ⊔ AbsObj.defaultValue(value.locset, preferredType)
 
-  def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
+  def ToPrimitive(locSet: LocSet, preferredType: String): AbsPValue =
     AbsObj.defaultValue(locSet, preferredType)
 
   def ToPrimitive(value: AbsValue, h: AbsHeap, preferredType: String = "String"): AbsPValue =
     value.pvalue ⊔ AbsObj.defaultValue(value.locset, h, preferredType)
 
-  def ToPrimitive(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue =
+  def ToPrimitive(locSet: LocSet, h: AbsHeap, preferredType: String): AbsPValue =
     AbsObj.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ object TypeConversionHelper {
     (obj3 ⊔ obj4 ⊔ obj5, excSet)
   }
 
-  def ToObject(value: AbsValue, st: AbsState, asite: AllocSite): (AbsLoc, AbsState, Set[Exception]) = {
+  def ToObject(value: AbsValue, st: AbsState, asite: AllocSite): (LocSet, AbsState, Set[Exception]) = {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
@@ -202,11 +202,11 @@ object TypeConversionHelper {
       if (!obj.isBottom) {
         val loc = Loc(asite)
         val state = st.oldify(loc)
-        (AbsLoc(loc), AbsState(state.heap.update(loc, obj), state.context))
-      } else (AbsLoc.Bot, AbsState.Bot)
+        (LocSet(loc), AbsState(state.heap.update(loc, obj), state.context))
+      } else (LocSet.Bot, AbsState.Bot)
     val (locSet2, st2) =
       if (!locSet.isBottom) (locSet, st)
-      else (AbsLoc.Bot, AbsState.Bot)
+      else (LocSet.Bot, AbsState.Bot)
 
     (locSet1 ⊔ locSet2, st1 ⊔ st2, excSet)
   }

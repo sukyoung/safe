@@ -89,8 +89,8 @@ package object domain {
   // AbsPValue -> AbsValue
   implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
 
-  // AbsLoc -> AbsValue
-  implicit def loc2v[T <% AbsLoc](loc: T): AbsValue = AbsValue(loc)
+  // LocSet -> AbsValue
+  implicit def loc2v[T <% LocSet](loc: T): AbsValue = AbsValue(loc)
 
   // AbsValue -> AbsIValue
   implicit def v2iv[T <% AbsValue](v: T): AbsIValue = AbsIValue(v)
@@ -111,7 +111,6 @@ package object domain {
     absBool: BoolDomain = DefaultBool,
     absNum: NumDomain = DefaultNumber,
     absStr: StrDomain = StringSet(0),
-    absLoc: LocDomain = DefaultLoc,
     recencyMode: Boolean = true
   ): Unit = {
     this.absUndef = Some(absUndef)
@@ -119,7 +118,6 @@ package object domain {
     this.absBool = Some(absBool)
     this.absNum = Some(absNum)
     this.absStr = Some(absStr)
-    this.absLoc = Some(absLoc)
     this.recencyMode = Some(recencyMode)
   }
 
@@ -151,10 +149,8 @@ package object domain {
   private var recencyMode: Option[Boolean] = None
   lazy val RecencyMode: Boolean = get("RecencyMode", recencyMode)
 
-  // location
-  private var absLoc: Option[LocDomain] = None
-  lazy val AbsLoc: LocDomain = get("LocDomain", absLoc)
-  type AbsLoc = AbsLoc.Elem
+  // location set
+  type LocSet = LocSet.Elem
 
   // value
   val AbsValue: DefaultValue.type = DefaultValue

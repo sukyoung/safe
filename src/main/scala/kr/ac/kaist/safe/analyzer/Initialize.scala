@@ -22,7 +22,7 @@ import scala.collection.immutable.{ HashMap, HashSet }
 
 object Initialize {
   def apply(cfg: CFG, jsModel: Boolean): AbsState = {
-    val globalLocSet = AbsLoc(BuiltinGlobal.loc)
+    val globalLocSet = LocSet(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
       BuiltinGlobal.loc -> AbsObj.Bot

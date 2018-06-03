@@ -24,7 +24,7 @@ trait HeapDomain extends AbsDomain[Heap] {
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     // lookup
     def get(loc: Loc): AbsObj
-    def get(locSet: AbsLoc): AbsObj
+    def get(locSet: LocSet): AbsObj
 
     // heap update
     def weakUpdate(loc: Loc, obj: AbsObj): Elem
@@ -50,7 +50,7 @@ trait HeapDomain extends AbsDomain[Heap] {
     def canPutVar(x: String): AbsBool
 
     // proto
-    def protoBase(loc: Loc, absStr: AbsStr): AbsLoc
+    def protoBase(loc: Loc, absStr: AbsStr): LocSet
 
     // store
     def propStore(loc: Loc, absStr: AbsStr, value: AbsValue): Elem

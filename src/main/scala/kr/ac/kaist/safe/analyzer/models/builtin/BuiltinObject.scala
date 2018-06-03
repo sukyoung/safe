@@ -292,7 +292,7 @@ object BuiltinObjectHelper {
       val descLoc = Loc(getOPDDescASite)
       val state = st.oldify(descLoc)
       val retH = state.heap.update(descLoc, descObj.oldify(descLoc))
-      val retV = AbsValue(undef, AbsLoc(descLoc))
+      val retV = AbsValue(undef, LocSet(descLoc))
       (AbsState(retH, state.context), retV, excSet)
     } else (st, AbsValue(undef), ExcSetEmpty)
 
@@ -382,7 +382,7 @@ object BuiltinObjectHelper {
     val loc = Loc(createObjASite)
     val state = st.oldify(loc)
     val newH = state.heap.update(loc, newObj.oldify(loc))
-    val retV = AbsLoc(loc)
+    val retV = LocSet(loc)
     val (retSt, e) =
       if (propsV ⊑ AbsUndef.Top) (AbsState(newH, state.context), ExcSetEmpty)
       else defProps(retV, propsV, AbsState(newH, state.context))
@@ -721,7 +721,7 @@ object BuiltinObjectHelper {
         val falseV = value.pvalue.nullval.fold(AbsBool.Bot)(_ => AbsBool.False)
         // c. If O and V refer to the same object, return true.
         val trueV =
-          if (AbsLoc(loc) ⊑ thisLoc) AbsBool.True
+          if (LocSet(loc) ⊑ thisLoc) AbsBool.True
           else AbsBool.Bot
         value.locset.foldLeft(falseV ⊔ trueV)(_ ⊔ repeat(_))
       }

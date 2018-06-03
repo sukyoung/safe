@@ -110,7 +110,7 @@ case class RecencyParseError(value: JsValue) extends JsonFormatError("Recency", 
 
 case class RecencyTagParseError(value: JsValue) extends JsonFormatError("RecencyTag", value)
 
-case class AbsLocParseError(value: JsValue) extends JsonFormatError("AbsLoc", value)
+case class LocSetParseError(value: JsValue) extends JsonFormatError("LocSet", value)
 
 case class AbsPValueParseError(value: JsValue) extends JsonFormatError("AbsPValue", value)
 
