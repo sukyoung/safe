@@ -77,33 +77,35 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   // Check block/instruction-level rules: ConditionalBranch
   private def checkBlock(block: CFGBlock, semantics: Semantics): List[String] =
     if (isReachableUserCode(semantics, block) && !block.getInsts.isEmpty) {
-      // TODO it is working only when for each CFGBlock has only one control point.
-      val (_, st) = semantics.getState(block).head
-      val (bugs, _) =
-        block.getInsts.foldRight(List[String](), st)((inst, r) => {
-          val (bs, state) = r
-          inst match {
-            case i @ CFGAssert(_, _, cond, true) =>
-              val exprBugs = checkExpr(cond, state, semantics)
-              val (v, _) = semantics.V(cond, state)
-              val bv = TypeConversionHelper.ToBoolean(v)
-              val (res, _) = semantics.I(i, state, AbsState.Bot)
-              if (!bv.isBottom && ((bv StrictEquals AbsBool.True) ⊑ AbsBool.True))
-                (always(cond, true) :: exprBugs ++ bs, res)
-              else if (!bv.isBottom && ((bv StrictEquals AbsBool.False) ⊑ AbsBool.True))
-                (always(cond, false) :: exprBugs ++ bs, res)
-              else (exprBugs ++ bs, res)
+      semantics.getState(block).foldLeft(List[String]()) {
+        case (bugs, (tp, st)) => {
+          val cp = ControlPoint(block, tp)
+          val (res, _) = block.getInsts.foldRight(bugs, st)((inst, r) => {
+            val (bs, state) = r
+            inst match {
+              case i @ CFGAssert(_, _, cond, true) =>
+                val exprBugs = checkExpr(cond, state, semantics)
+                val (v, _) = semantics.V(cond, state)
+                val bv = TypeConversionHelper.ToBoolean(v)
+                val (res, _) = semantics.I(cp, i, state, AbsState.Bot)
+                if (!bv.isBottom && ((bv StrictEquals AbsBool.True) ⊑ AbsBool.True))
+                  (always(cond, true) :: exprBugs ++ bs, res)
+                else if (!bv.isBottom && ((bv StrictEquals AbsBool.False) ⊑ AbsBool.True))
+                  (always(cond, false) :: exprBugs ++ bs, res)
+                else (exprBugs ++ bs, res)
 
-            case i: CFGNormalInst =>
-              val exprsBugs = collectExprs(i).foldRight(bs)((e, r) =>
-                checkExpr(e, state, semantics) ++ r)
-              val (res, _) = semantics.I(i, state, AbsState.Bot)
-              (exprsBugs, res)
+              case i: CFGNormalInst =>
+                val exprsBugs = collectExprs(i).foldRight(bs)((e, r) =>
+                  checkExpr(e, state, semantics) ++ r)
+                val (res, _) = semantics.I(cp, i, state, AbsState.Bot)
+                (exprsBugs, res)
 
-            case _ => r
-          }
-        })
-      bugs
+              case _ => r
+            }
+          })
+          res
+        }
+      }
     } else List[String]()
 
   def apply(

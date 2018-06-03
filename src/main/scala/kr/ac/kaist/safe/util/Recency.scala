@@ -20,7 +20,7 @@ import spray.json._
 ////////////////////////////////////////////////////////////////////////////////
 case class Recency(
     loc: Loc,
-    recency: RecencyTag = Recent
+    recency: RecencyTag
 ) extends Loc {
   override def toString: String = s"${recency}${loc}"
   def toJson: JsValue = JsObject(

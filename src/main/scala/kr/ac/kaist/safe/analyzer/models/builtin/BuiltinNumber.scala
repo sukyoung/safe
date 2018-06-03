@@ -43,7 +43,7 @@ object BuiltinNumberHelper {
     asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val num = typeConvert(args, st)
-      val loc = Loc(instanceASite)
+      val loc = Loc(instanceASite, Sensitivity.initTP)
       val state = st.oldify(loc)
       val heap = state.heap.update(loc, AbsObj.newNumberObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))

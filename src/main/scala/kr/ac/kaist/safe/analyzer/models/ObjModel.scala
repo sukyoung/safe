@@ -21,7 +21,7 @@ class ObjModel(
     val props: List[PropDesc] = Nil
 ) extends Model {
   val asite: PredAllocSite = PredAllocSite(name)
-  val loc: Loc = Loc(asite)
+  val loc: Loc = Loc(asite, Sensitivity.initTP)
   def init(h: AbsHeap, cfg: CFG): (AbsHeap, AbsValue) =
     (initHeap(h, cfg), AbsValue(loc))
 

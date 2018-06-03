@@ -159,7 +159,7 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 9. [[Call]]
-    val argsLoc = Loc(asite)
+    val argsLoc = Loc(asite, Sensitivity.initTP)
     val st1 = st.oldify(argsLoc)
     val h3 = st1.heap.update(argsLoc, argList1 ⊔ argList2)
     val newState =
@@ -211,7 +211,7 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 4. [[Call]]
-    val argsLoc = Loc(asite)
+    val argsLoc = Loc(asite, Sensitivity.initTP)
     val st1 = st.oldify(argsLoc)
     val h3 = st1.heap.update(argsLoc, argList)
     val newState =

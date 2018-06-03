@@ -37,17 +37,21 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       config.AbsBool,
       config.AbsNum,
       config.AbsStr,
-      config.recencyMode
+      config.recencyMode,
+      config.heapClone,
+      config.callsiteSensitivity *
+        config.loopSensitivity
     )
+    // trace sensitivity
+    val initTP = Sensitivity.initTP
+    val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
+
+    // initial abstract state
     var initSt = Initialize(cfg, config.jsModel)
 
     // handling snapshot mode
     config.snapshot.map(str =>
       initSt = Initialize.addSnapshot(initSt, str))
-
-    val sens = config.callsiteSensitivity * config.loopSensitivity
-    val initTP = sens.initTP
-    val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
     val worklist = Worklist(cfg)
     worklist.add(entryCP)
@@ -66,6 +70,8 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       "the analyzer will use the AbsStr Set domain with given size limit n."),
     ("recency", BoolOption(c => c.recencyMode = true),
       "analysis with recency abstraction"),
+    ("heap-clone", BoolOption(c => c.heapClone = true),
+      "analysis with heap cloning that divides locations based on the given trace sensitivity"),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = CallSiteSensitivity(n)),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("loopIter", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxIter = n)),
@@ -74,11 +80,6 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       "{number}-depth loop-sensitive analysis will be executed."),
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
       "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
-    // TODO ("number", StrOption((c, s) => s match {
-    //   case "default" => c.AbsNum = DefaultNumber
-    //   // TODO case "flat" => c.AbsNum = FlatNumber
-    //   case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
-    // }), "analysis with a selected number domain."),
     ("jsModel", BoolOption(c => c.jsModel = true),
       "analysis with JavaScript models.")
   )
@@ -99,5 +100,6 @@ case class HeapBuildConfig(
   var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
   var jsModel: Boolean = false,
-  var recencyMode: Boolean = false
+  var recencyMode: Boolean = false,
+  var heapClone: Boolean = false
 ) extends Config

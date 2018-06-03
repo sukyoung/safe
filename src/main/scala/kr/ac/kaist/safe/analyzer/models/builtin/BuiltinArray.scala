@@ -318,7 +318,7 @@ object BuiltinArrayHelper {
         (arrObj, HashSet(RangeError))
       }
     }
-    val arrLoc = Loc(arrInstanceASite)
+    val arrLoc = Loc(arrInstanceASite, Sensitivity.initTP)
     val state = st.oldify(arrLoc)
     val retH = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = state.raiseException(retExcSet)
@@ -346,7 +346,7 @@ object BuiltinArrayHelper {
     // 1. Let array be the result of calling ToObject on the this value.
     val asite = toStringObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
 
     val array = h.get(thisLoc)
@@ -355,7 +355,7 @@ object BuiltinArrayHelper {
     // 3. If IsCallable(func) is false, then let func be the standard built-in method Object.prototype.toString (15.2.4.2).
     // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an
     //    empty arguments list.
-    val tempLoc = Loc(tempASite)
+    val tempLoc = Loc(tempASite, Sensitivity.initTP)
     val newArgs = AbsObj.newArgObject()
     val tempH = h.update(tempLoc, newArgs)
     val tempSt = AbsState(tempH, state.context)
@@ -450,7 +450,7 @@ object BuiltinArrayHelper {
       }
       case ConMany() => Top
     }
-    val arrLoc = Loc(concatArrASite)
+    val arrLoc = Loc(concatArrASite, Sensitivity.initTP)
     val state = st.oldify(arrLoc)
     val retH = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     (AbsState(retH, state.context), AbsState.Bot, LocSet(arrLoc))
@@ -461,7 +461,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = joinObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val result = thisLoc.foldLeft(AbsStr.Bot)((str, loc) => {
       val obj = h.get(loc)
@@ -522,7 +522,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = popObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, es)) {
       case ((h, value, excSet), loc) => {
@@ -577,7 +577,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = pushObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, es)) {
       case ((h, value, excSet), loc) => {
@@ -628,7 +628,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = reverseObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val (retH, excSet) = thisLoc.foldLeft((h, es)) {
       case ((h, excSet), loc) => {
@@ -679,7 +679,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = shiftObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, es)) {
       case ((h, value, excSet), loc) => {
@@ -755,7 +755,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = sliceObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val obj = h.get(thisLoc)
     // 2. Let A be a new array created as if by the expression new Array().
@@ -823,7 +823,7 @@ object BuiltinArrayHelper {
       case _ => (arr.update(AbsStr.Top, AbsDataProp.Top), HashSet(TypeError))
     }
     // 11. Return A.
-    val arrLoc = Loc(sliceArrASite)
+    val arrLoc = Loc(sliceArrASite, Sensitivity.initTP)
     val st1 = state.oldify(arrLoc)
     val retH = st1.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = st1.raiseException(retExcSet)
@@ -914,7 +914,7 @@ object BuiltinArrayHelper {
         (retH, arr ⊔ retArr, excSet ++ retExcSet)
       }
     }
-    val arrLoc = Loc(spliceArrASite)
+    val arrLoc = Loc(spliceArrASite, Sensitivity.initTP)
     val newSt = AbsState(retH, st.context)
     val state = newSt.oldify(arrLoc)
     val finalH = state.heap.update(arrLoc, retArr.oldify(arrLoc))
@@ -977,7 +977,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = indexOfObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val searchElement = Helper.propLoad(args, Set(AbsStr("0")), h)
     val fromIndex = Helper.propLoad(args, Set(AbsStr("1")), h)
@@ -1062,7 +1062,7 @@ object BuiltinArrayHelper {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = lastIndexOfObjASite
     val thisBinding = st.context.thisBinding
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     val searchElement = Helper.propLoad(args, Set(AbsStr("0")), h)
     val fromIndex = Helper.propLoad(args, Set(AbsStr("1")), h)

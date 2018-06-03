@@ -135,7 +135,7 @@ class CmdActor() extends Actor {
     breakable {
       for (inst <- insts) {
         val (s, e) = inst match {
-          case i: CFGNormalInst => c.sem.I(i, st, excSt)
+          case i: CFGNormalInst => c.sem.I(cp, i, st, excSt)
           case i: CFGCallInst => c.sem.CI(cp, i, st, excSt)
         }
         st = s; excSt = e

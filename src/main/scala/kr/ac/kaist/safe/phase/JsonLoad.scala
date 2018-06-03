@@ -62,7 +62,10 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Semantics, Tra
                   heapConfig.AbsBool,
                   heapConfig.AbsNum,
                   heapConfig.AbsStr,
-                  heapConfig.recencyMode
+                  heapConfig.recencyMode,
+                  heapConfig.heapClone,
+                  heapConfig.callsiteSensitivity *
+                    heapConfig.loopSensitivity
                 )
 
                 CFGProtocol.jsModel = heapConfig.jsModel

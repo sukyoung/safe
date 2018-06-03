@@ -106,12 +106,14 @@ package object domain {
   // abstract domains
   ////////////////////////////////////////////////////////////////
   def register(
-    absUndef: UndefDomain = DefaultUndef,
-    absNull: NullDomain = DefaultNull,
-    absBool: BoolDomain = DefaultBool,
-    absNum: NumDomain = DefaultNumber,
-    absStr: StrDomain = StringSet(0),
-    recencyMode: Boolean = true
+    absUndef: UndefDomain,
+    absNull: NullDomain,
+    absBool: BoolDomain,
+    absNum: NumDomain,
+    absStr: StrDomain,
+    recencyMode: Boolean,
+    heapClone: Boolean,
+    sensitivity: Sensitivity
   ): Unit = {
     this.absUndef = Some(absUndef)
     this.absNull = Some(absNull)
@@ -119,6 +121,8 @@ package object domain {
     this.absNum = Some(absNum)
     this.absStr = Some(absStr)
     this.recencyMode = Some(recencyMode)
+    this.heapClone = Some(heapClone)
+    this.sensitivity = Some(sensitivity)
   }
 
   // primitive values
@@ -148,6 +152,14 @@ package object domain {
   // recency mode
   private var recencyMode: Option[Boolean] = None
   lazy val RecencyMode: Boolean = get("RecencyMode", recencyMode)
+
+  // heap cloning mode
+  private var heapClone: Option[Boolean] = None
+  lazy val HeapClone: Boolean = get("HeapClone", heapClone)
+
+  // trace sensitivity
+  private var sensitivity: Option[Sensitivity] = None
+  lazy val Sensitivity: Sensitivity = get("Sensitivity", sensitivity)
 
   // location set
   type LocSet = LocSet.Elem

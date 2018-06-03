@@ -243,7 +243,7 @@ object BuiltinObjectHelper {
     val (v1, st1) =
       if (argV.pvalue.copy(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, AbsState.Bot)
       else {
-        val (loc, state, _) = TypeConversionHelper.ToObject(argV, st, asite)
+        val (loc, state, _) = TypeConversionHelper.ToObject(Sensitivity.initTP, argV, st, asite)
         (AbsValue(loc), state)
       }
 
@@ -289,7 +289,7 @@ object BuiltinObjectHelper {
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retSt, retV, excSet2) = if (!desc.isBottom) {
       val (descObj, excSet) = AbsObj.FromPropertyDescriptor(h, desc)
-      val descLoc = Loc(getOPDDescASite)
+      val descLoc = Loc(getOPDDescASite, Sensitivity.initTP)
       val state = st.oldify(descLoc)
       val retH = state.heap.update(descLoc, descObj.oldify(descLoc))
       val retV = AbsValue(undef, LocSet(descLoc))
@@ -353,7 +353,7 @@ object BuiltinObjectHelper {
     retObj.isBottom match {
       case true => (AbsState.Bot, st.raiseException(retExcSet), AbsValue.Bot)
       case false => {
-        val arrLoc = Loc(getOPNArrASite)
+        val arrLoc = Loc(getOPNArrASite, Sensitivity.initTP)
         val state = st.oldify(arrLoc)
         val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
         val excSt = state.raiseException(retExcSet)
@@ -379,7 +379,7 @@ object BuiltinObjectHelper {
     val newObj = obj.update(IPrototype, AbsIValue(protoV))
     // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
-    val loc = Loc(createObjASite)
+    val loc = Loc(createObjASite, Sensitivity.initTP)
     val state = st.oldify(loc)
     val newH = state.heap.update(loc, newObj.oldify(loc))
     val retV = LocSet(loc)
@@ -633,7 +633,7 @@ object BuiltinObjectHelper {
       }
     }
     // 6. Return array.
-    val arrLoc = Loc(keysArrASite)
+    val arrLoc = Loc(keysArrASite, Sensitivity.initTP)
     val state = st.oldify(arrLoc)
     val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = st.raiseException(retExcSet)
@@ -654,7 +654,7 @@ object BuiltinObjectHelper {
     val (checkN, nu) = thisBinding.pvalue.nullval.fold((false, AbsStr.Bot))(_ => (true, AbsStr("[object Null]")))
     // 3. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = toStringObjASite
-    val (loc1, st1, _) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (loc1, st1, _) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val obj = st1.heap.get(loc1)
     // 4. Let class be the value of the [[Class]] internal property of O.
     val className = obj(IClass).value.pvalue.strval
@@ -671,7 +671,7 @@ object BuiltinObjectHelper {
     val thisBinding = st.context.thisBinding
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = valueOfObjASite
-    val (loc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (loc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val excSt = st.raiseException(excSet)
 
     // 2. Return O.
@@ -686,7 +686,7 @@ object BuiltinObjectHelper {
     val prop = TypeConversionHelper.ToString(value)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = hasOPObjASite
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
     val obj = state.heap.get(thisLoc)
     val (desc, undef) = obj.GetOwnProperty(prop)
@@ -706,7 +706,7 @@ object BuiltinObjectHelper {
     val v1 = value.pvalue.fold(AbsBool.Bot)(_ => AbsBool.False)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = isPObjASite
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     // 3. Repeat
     var visited: Set[Loc] = HashSet()
@@ -738,7 +738,7 @@ object BuiltinObjectHelper {
     val prop = TypeConversionHelper.ToString(value)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
     val asite = propIsEObjASite
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, thisBinding, st, asite)
     val h = state.heap
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
     val obj = h.get(thisLoc)
@@ -761,7 +761,7 @@ object BuiltinObjectHelper {
   }
 
   private def newObjSt(st: AbsState, asite: PredAllocSite): (AbsValue, AbsState) = {
-    val loc = Loc(asite)
+    val loc = Loc(asite, Sensitivity.initTP)
     val state = st.oldify(loc)
     val obj = AbsObj.newObject
     val heap = state.heap.update(loc, obj)
@@ -811,7 +811,7 @@ object BuiltinObjectHelper {
     val excSet = objCheck(objV)
     // 2. Let props be ToObject(Properties).
     val asite = definePropsObjASite
-    val (loc1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, asite)
+    val (loc1, st1, toExcSet) = TypeConversionHelper.ToObject(Sensitivity.initTP, propsV, st, asite)
     val h1 = st1.heap
     val ctx1 = st1.context
     val props = h1.get(loc1)

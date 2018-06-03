@@ -47,19 +47,7 @@ object HTMLWriter {
   }
 
   private def isReachable(block: CFGBlock, sem: Semantics): Boolean = sem.getState(block).exists {
-    case (tp, oldSt) => block.getInsts.lastOption match {
-      case None => true
-      case Some(inst) => {
-        val st = inst match {
-          case inst: CFGAssert => {
-            val (st, _) = sem.I(inst, oldSt, AbsState.Bot)
-            st
-          }
-          case _ => oldSt
-        }
-        !st.isBottom
-      }
-    }
+    case (tp, st) => !st.isBottom
   }
 
   def connectEdge(from: CFGBlock, succs: Set[CFGBlock], edgeStyle: String = NORMAL_EDGE, sem: Semantics): String = {

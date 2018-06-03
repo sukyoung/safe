@@ -80,7 +80,7 @@ private object BuiltinErrorHelper {
 
     val errorObj = undefObject ⊔ notUndefObject
 
-    val errorLoc = Loc(instanceASite(errorName))
+    val errorLoc = Loc(instanceASite(errorName), Sensitivity.initTP)
     val st1 = st.oldify(errorLoc)
     val h2 = st1.heap.update(errorLoc, errorObj)
 

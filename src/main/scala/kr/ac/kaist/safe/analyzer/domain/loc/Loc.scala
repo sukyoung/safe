@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.TracePartition
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.PipeOps._
@@ -22,6 +23,7 @@ import spray.json._
 abstract class Loc extends Value {
   def isUser: Boolean = this match {
     case Recency(loc, _) => loc.isUser
+    case TraceSensLoc(loc, _) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
   }
@@ -53,14 +55,16 @@ object Loc {
       // recency abstraction
       case recency("R", str) => parse(str).map(Recency(_, Recent))
       case recency("O", str) => parse(str).map(Recency(_, Old))
+      // TODO trace sensitive address abstraction
       // otherwise
       case str => Failure(NoLoc(str))
     }
   }
 
-  def apply(str: String): Loc = apply(PredAllocSite(str))
-  def apply(asite: AllocSite): Loc = {
+  def apply(str: String): Loc = apply(PredAllocSite(str), Sensitivity.initTP)
+  def apply(asite: AllocSite, tp: TracePartition): Loc = {
     asite |>
+      condApply(HeapClone, TraceSensLoc(_, tp)) |>
       condApply(RecencyMode, Recency(_, Recent))
   }
   private def condApply(cond: Boolean, f: Loc => Loc)(input: Loc): Loc = {
