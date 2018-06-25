@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util.PredAllocSite
 import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
 
 package object domain {
   ////////////////////////////////////////////////////////////////
@@ -226,54 +225,5 @@ package object domain {
   private def get[T](name: String, opt: Option[T]): T = opt match {
     case Some(choice) => choice
     case None => throw NotYetDefined(name)
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // load from JSON for general structures
-  ////////////////////////////////////////////////////////////////
-  // for string
-  def json2str(v: JsValue): String = v match {
-    case JsString(str) => str
-    case _ => throw StringParseError(v)
-  }
-
-  // for integer
-  def json2int(v: JsValue): Int = v match {
-    case JsNumber(n) => n.toInt
-    case _ => throw IntParseError(v)
-  }
-
-  // for map structure
-  def json2map[K, V](
-    v: JsValue,
-    kFromJson: JsValue => K,
-    vFromJson: JsValue => V
-  ): Map[K, V] = v match {
-    case JsArray(vec) => vec.foldLeft[Map[K, V]](HashMap()) {
-      case (m, JsArray(Vector(k, v))) => m + (kFromJson(k) -> vFromJson(v))
-      case _ => throw MapParseError(v)
-    }
-    case _ => throw MapParseError(v)
-  }
-
-  // for set structure
-  def json2set[X](
-    v: JsValue,
-    fromJson: JsValue => X
-  ): Set[X] = v match {
-    case JsArray(vec) => vec.foldLeft[Set[X]](HashSet()) {
-      case (set, x) => set + fromJson(x)
-    }
-    case _ => throw SetParseError(v)
-  }
-
-  // for pair structure
-  def json2pair[L, R](
-    v: JsValue,
-    lFromJson: JsValue => L,
-    rFromJson: JsValue => R
-  ): (L, R) = v match {
-    case JsArray(Vector(l, r)) => (lFromJson(l), rFromJson(r))
-    case _ => throw PairParseError(v)
   }
 }

@@ -77,9 +77,6 @@ object Safe {
     CmdHeapBuild,
     CmdAnalyze,
     CmdBugDetect,
-    CmdTestRewrite,
-    CmdAndroidCheck,
-    CmdWALARewrite,
     CmdHelp,
     CmdWeb
   )
@@ -96,15 +93,13 @@ object Safe {
     HeapBuild,
     Analyze,
     BugDetect,
-    TestRewrite,
-    AndroidCheck,
     Help,
     Web
   )
 
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
-    ("json", StrOption((c, str) => ()),
+    ("config", StrOption((c, str) => ()),
       "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
@@ -112,7 +107,7 @@ object Safe {
       "switch on the test mode.")
   )
 
-  // indentation 
+  // indentation
   private val INDENT = 15
 
   // print usage message.

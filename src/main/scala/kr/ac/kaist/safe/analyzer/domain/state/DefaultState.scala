@@ -12,12 +12,10 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.model._
-import kr.ac.kaist.safe.errors.error.AbsStateParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap }
-import spray.json._
 
 // default state abstract domain
 object DefaultState extends StateDomain {
@@ -27,17 +25,6 @@ object DefaultState extends StateDomain {
   def alpha(st: State): Elem = Top // TODO more precise
 
   def apply(heap: AbsHeap, context: AbsContext): Elem = Elem(heap, context)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("heap").map(AbsHeap.fromJson _),
-      m.get("context").map(AbsContext.fromJson _)
-    ) match {
-        case (Some(h), Some(c)) => Elem(h, c)
-        case _ => throw AbsStateParseError(v)
-      }
-    case _ => throw AbsStateParseError(v)
-  }
 
   case class Elem(
       heap: AbsHeap,
@@ -214,10 +201,5 @@ object DefaultState extends StateDomain {
         "** old allocation site set **" + LINE_SEP +
         context.old.toString
     }
-
-    def toJson: JsValue = JsObject(
-      ("heap", heap.toJson),
-      ("context", context.toJson)
-    )
   }
 }

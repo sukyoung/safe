@@ -37,7 +37,6 @@ object AnalyzeTest extends Tag("AnalyzeTest")
 object HtmlTest extends Tag("HtmlTest")
 object Test262Test extends Tag("Test262Test")
 object BenchTest extends Tag("BenchTest")
-// TODO object DumpTest extends Tag("DumpTest")
 
 class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val SEP = File.separator
@@ -63,9 +62,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   }
 
   def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
-
-  def getDumped(filename: String): Try[(CFG, Semantics, TracePartition, HeapBuildConfig, Int)] =
-    CmdJsonLoad(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -203,21 +199,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
           case e => assert(false)
         }
       }
-    } else if (filename.endsWith(".json")) {
-      registerTest(prefix + filename, tag) {
-        val safeConfig = testSafeConfig.copy(fileNames = List(name))
-        val dumped = getDumped(name)
-        val analysis = dumped.flatMap(Analyze(_, safeConfig, analyzeConfig))
-        testList ::= relPath
-        val (ar, iter) = analyzeTest(analysis, tag)
-        totalIteration += iter
-        ar match {
-          case Precise => preciseList ::= relPath
-          case Imprecise => impreciseList ::= relPath
-          case Benchmark => // Not yet decided what to do
-          case Fail => // unreachable
-        }
-      }
     }
   }
 
@@ -260,14 +241,14 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var totalIteration = 0
 
   val analysisDetail = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
-  val testJSON = BASE_DIR + SEP + "config.json"
+  val testConfig = BASE_DIR + SEP + "config.json"
 
   val parser = new ArgParser(CmdBase, testSafeConfig)
   val heapBuildConfig = HeapBuild.defaultConfig
   val analyzeConfig = Analyze.defaultConfig
   parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
   parser.addRule(analyzeConfig, Analyze.name, Analyze.options)
-  parser(List(s"-json=$testJSON"))
+  parser(List(s"-config=$testConfig"))
 
   HeapBuild.jscache = {
     register(
@@ -302,10 +283,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val benchTestDir = testDir + "benchmarks"
   for (file <- shuffle(walkTree(new File(benchTestDir))))
     analyzeHelper("[Benchmarks]", BenchTest, file)
-
-  // TODO val dumpTestDir = testDir + "semantics" + SEP + "result"
-  // for (file <- shuffle(walkTree(new File(dumpTestDir))))
-  //   analyzeHelper("[Dump]", DumpTest, file)
 
   override def afterAll(): Unit = {
     val file = new File(analysisDetail)

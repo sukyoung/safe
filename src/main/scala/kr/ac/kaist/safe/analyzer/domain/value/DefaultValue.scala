@@ -12,9 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
-import kr.ac.kaist.safe.errors.error.AbsValueParseError
 import kr.ac.kaist.safe.util._
-import spray.json._
 
 // default value abstract domain
 object DefaultValue extends ValueDomain {
@@ -32,17 +30,6 @@ object DefaultValue extends ValueDomain {
   def apply(pvalue: AbsPValue): Elem = Bot.copy(pvalue = pvalue)
   def apply(locset: LocSet): Elem = Bot.copy(locset = locset)
   def apply(pvalue: AbsPValue, locset: LocSet): Elem = Elem(pvalue, locset)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("pvalue").map(AbsPValue.fromJson _),
-      m.get("locset").map(LocSet.fromJson _)
-    ) match {
-        case (Some(p), Some(l)) => Elem(p, l)
-        case _ => throw AbsValueParseError(v)
-      }
-    case _ => throw AbsValueParseError(v)
-  }
 
   case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf // TODO more precisely
@@ -119,10 +106,5 @@ object DefaultValue extends ValueDomain {
 
       locSet1 ⊔ locSet2 ⊔ locSet3
     }
-
-    def toJson: JsValue = JsObject(
-      ("pvalue", pvalue.toJson),
-      ("locset", locset.toJson)
-    )
   }
 }

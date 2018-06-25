@@ -11,10 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsEnvRecParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import spray.json._
 
 // default environment record abstract domain
 object DefaultEnvRec extends EnvRecDomain {
@@ -28,17 +26,6 @@ object DefaultEnvRec extends EnvRecDomain {
 
   def apply(envRec: AbsDecEnvRec): Elem = Bot.copy(decEnvRec = envRec)
   def apply(envRec: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = envRec)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("decEnvRec").map(AbsDecEnvRec.fromJson _),
-      m.get("globalEnvRec").map(AbsGlobalEnvRec.fromJson _)
-    ) match {
-        case (Some(d), Some(g)) => Elem(d, g)
-        case _ => throw AbsEnvRecParseError(v)
-      }
-    case _ => throw AbsEnvRecParseError(v)
-  }
 
   case class Elem(
       decEnvRec: AbsDecEnvRec,
@@ -131,10 +118,5 @@ object DefaultEnvRec extends EnvRecDomain {
 
     def weakSubsLoc(locR: Recency, locO: Recency): Elem =
       Elem(decEnvRec.weakSubsLoc(locR, locO), globalEnvRec)
-
-    def toJson: JsValue = JsObject(
-      ("decEnvRec", decEnvRec.toJson),
-      ("globalEnvRec", globalEnvRec.toJson)
-    )
   }
 }

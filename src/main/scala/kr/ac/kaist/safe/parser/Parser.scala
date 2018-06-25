@@ -153,7 +153,7 @@ object Parser {
         pair
       }
       case HTMLFile => JSFromHTML.parseScripts(fileName)
-      case JSONFile | JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
+      case JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
     }
   }
 

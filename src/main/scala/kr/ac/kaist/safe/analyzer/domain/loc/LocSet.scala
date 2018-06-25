@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
-import spray.json._
 
 // location set
 object LocSet extends AbsDomain[Loc] {
@@ -33,11 +32,6 @@ object LocSet extends AbsDomain[Loc] {
 
   def alpha(loc: Loc): Elem = LSet(loc)
   override def alpha(locset: Set[Loc]): Elem = LSet(locset)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case _ => LSet(json2set(v, Loc.fromJson))
-  }
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Loc] = this match {
@@ -126,11 +120,6 @@ object LocSet extends AbsDomain[Loc] {
       case LSet(set) =>
         if (set contains locR) LSet(set + locO)
         else this
-    }
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case LSet(set) => JsArray(set.toSeq.map(_.toJson): _*)
     }
   }
 }

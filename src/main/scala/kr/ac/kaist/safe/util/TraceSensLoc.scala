@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.analyzer.TracePartition
 import kr.ac.kaist.safe.analyzer.domain.Loc
-import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // trace sensitive location
@@ -23,10 +22,6 @@ case class TraceSensLoc(
     tp: TracePartition
 ) extends Loc {
   override def toString: String = s"${loc}:${tp}"
-  def toJson: JsValue = JsObject(
-    ("loc", loc.toJson)
-  // TODO ("tp", tp.toJson)
-  )
 }
 object TraceSensLoc {
   def apply(name: String, tp: TracePartition): TraceSensLoc =

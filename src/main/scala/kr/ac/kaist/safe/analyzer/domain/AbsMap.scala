@@ -17,7 +17,6 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
 
 // abstract map
 case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
@@ -106,13 +105,6 @@ case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
     if (absent.isBottom) "-!>"
     else "-?>"
   }
-
-  def toJson(kf: K => JsValue, vf: V => JsValue): JsValue = JsObject(
-    ("map", JsArray(map.toSeq.map {
-      case (k, opt) => JsArray(kf(k), opt.toJson(vf))
-    }: _*)),
-    ("default", default.toJson(vf))
-  )
 }
 
 object AbsMap {
@@ -124,15 +116,4 @@ object AbsMap {
 
   // empty
   def Empty[K, V](botV: => V): AbsMap[K, V] = AbsMap(HashMap(), AbsOpt(botV, AbsAbsent.Top))
-
-  def fromJson[K, V](k: JsValue => K, v: JsValue => V)(value: JsValue): AbsMap[K, V] = value match {
-    case JsObject(m) => (
-      m.get("map").map(json2map(_, k, AbsOpt.fromJson(v))),
-      m.get("default").map(AbsOpt.fromJson(v))
-    ) match {
-        case (Some(m), Some(d)) => AbsMap(m, d)
-        case _ => throw AbsMapParseError(value)
-      }
-    case _ => throw AbsMapParseError(value)
-  }
 }

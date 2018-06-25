@@ -17,7 +17,6 @@ object FileKind {
     if (fileName.endsWith(".js")) JSFile
     else if (fileName.endsWith(".js.err")) JSErrFile
     else if (fileName.endsWith(".js.todo")) JSTodoFile
-    else if (fileName.endsWith(".json")) JSONFile
     else if (fileName.endsWith(".html") ||
       fileName.endsWith(".xhtml") ||
       fileName.endsWith(".htm")) HTMLFile
@@ -29,5 +28,4 @@ case object JSFile extends FileKind
 case object JSErrFile extends FileKind
 case object JSTodoFile extends FileKind
 case object HTMLFile extends FileKind
-case object JSONFile extends FileKind
 case object NormalFile extends FileKind

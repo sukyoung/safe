@@ -42,6 +42,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       config.callsiteSensitivity *
         config.loopSensitivity
     )
+
     // trace sensitivity
     val initTP = Sensitivity.initTP
     val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)

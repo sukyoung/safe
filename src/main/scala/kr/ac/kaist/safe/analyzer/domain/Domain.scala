@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import spray.json._
-
 // domain
 trait Domain {
   // top element
@@ -23,9 +21,6 @@ trait Domain {
 
   // element
   type Elem <: ElemTrait
-
-  // load from JSON format
-  def fromJson(v: JsValue): Elem
 
   // element traits
   protected trait ElemTrait { this: Elem =>
@@ -54,8 +49,5 @@ trait Domain {
 
     // meet operator
     def ⊓(that: Elem): Elem
-
-    // to JSON format for dump
-    def toJson: JsValue
   }
 }

@@ -11,9 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsDataPropParseError
-import spray.json._
-
 // default data property abstract domain
 object DefaultDataProp extends DataPropDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
@@ -52,19 +49,6 @@ object DefaultDataProp extends DataPropDomain {
       if (ca.isTop) c ⊔ AbsBool.False
       else c
     Elem(value, writable, enumerable, configurable)
-  }
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("value").map(AbsValue.fromJson _),
-      m.get("writable").map(AbsBool.fromJson _),
-      m.get("enumerable").map(AbsBool.fromJson _),
-      m.get("configurable").map(AbsBool.fromJson _)
-    ) match {
-        case (Some(v), Some(w), Some(e), Some(c)) => Elem(v, w, e, c)
-        case _ => throw AbsDataPropParseError(v)
-      }
-    case _ => throw AbsDataPropParseError(v)
   }
 
   case class Elem(
@@ -121,12 +105,5 @@ object DefaultDataProp extends DataPropDomain {
       enumerable: AbsBool,
       configurable: AbsBool
     ): Elem = Elem(value, writable, enumerable, configurable)
-
-    def toJson: JsValue = JsObject(
-      ("value", value.toJson),
-      ("writable", writable.toJson),
-      ("enumerable", enumerable.toJson),
-      ("configurable", configurable.toJson)
-    )
   }
 }

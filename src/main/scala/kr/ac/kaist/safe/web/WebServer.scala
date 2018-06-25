@@ -26,8 +26,8 @@ import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.analyzer.console.{ Interactive, WebConsole }
 import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
 import kr.ac.kaist.safe.compiler.Translator
-import kr.ac.kaist.safe.json.JsonImplicits._
-import kr.ac.kaist.safe.json.JsonUtil
+import kr.ac.kaist.safe.util.JsonImplicits._
+import kr.ac.kaist.safe.util.JsonUtil
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util._

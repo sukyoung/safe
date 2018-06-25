@@ -17,7 +17,6 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
 
 // abstract optional
 case class AbsOpt[T](content: T, absent: AbsAbsent = AbsAbsent.Bot) {
@@ -45,11 +44,6 @@ case class AbsOpt[T](content: T, absent: AbsAbsent = AbsAbsent.Bot) {
   }
 
   override def toString: String = s"($content, $absent)"
-
-  def toJson(f: T => JsValue): JsValue = JsObject(
-    ("content", f(content)),
-    ("absent", absent.toJson)
-  )
 }
 
 object AbsOpt {
@@ -58,15 +52,4 @@ object AbsOpt {
 
   // top
   def Top[T](topV: => T): AbsOpt[T] = AbsOpt(topV, AbsAbsent.Top)
-
-  def fromJson[T](f: JsValue => T)(v: JsValue): AbsOpt[T] = v match {
-    case JsObject(m) => (
-      m.get("content").map(f),
-      m.get("absent").map(AbsAbsent.fromJson)
-    ) match {
-        case (Some(c), Some(a)) => AbsOpt(c, a)
-        case _ => throw AbsOptParseError(v)
-      }
-    case _ => throw AbsOptParseError(v)
-  }
 }

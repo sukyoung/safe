@@ -76,7 +76,7 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
     }
 
     // setting options using a JSON file.
-    lazy val json: Parser[Try[Unit]] = ("-json=" ~> str) ^^ {
+    lazy val json: Parser[Try[Unit]] = ("-config=" ~> str) ^^ {
       case fileName => Try({
         Source.fromFile(fileName)("UTF-8").mkString.parseJson match {
           case (obj: JsObject) => obj.fields.foreach {

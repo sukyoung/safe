@@ -17,7 +17,6 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.PipeOps._
 import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
-import spray.json._
 
 // concrete location type
 abstract class Loc extends Value {
@@ -33,8 +32,6 @@ abstract class Loc extends Value {
     case u @ UserAllocSite(_) => throw UserAllocSiteError(u)
     case p @ PredAllocSite(_) => p.toString
   }
-
-  def toJson: JsValue
 }
 
 object Loc {
@@ -69,15 +66,4 @@ object Loc {
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
     case addrPart => addrPart.toString
   })
-
-  def fromJson(v: JsValue): Loc = v match {
-    case JsObject(m) => (
-      m.get("loc").map(Loc.fromJson _),
-      m.get("recency").map(RecencyTag.fromJson _)
-    ) match {
-        case (Some(l), Some(r)) => Recency(l, r)
-        case _ => throw RecencyParseError(v)
-      }
-    case _ => AllocSite.fromJson(v)
-  }
 }

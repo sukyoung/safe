@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.console.{ Console, Interactive, WebConsole }
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
-import kr.ac.kaist.safe.json.NodeProtocol
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.web.WebServer
@@ -32,7 +31,6 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     config: AnalyzeConfig
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
     val (cfg, sem, initTP, heapConfig, iter) = in
-    NodeProtocol.test = safeConfig.testMode
 
     // set the start time.
     val startTime = System.currentTimeMillis

@@ -11,9 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsPValueParseError
 import scala.collection.immutable.HashSet
-import spray.json._
 
 // default primitive value abstract domain
 object DefaultPValue extends PValueDomain {
@@ -37,20 +35,6 @@ object DefaultPValue extends PValueDomain {
     numval: AbsNum,
     strval: AbsStr
   ): Elem = Elem(undefval, nullval, boolval, numval, strval)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("undefval").map(AbsUndef.fromJson _),
-      m.get("nullval").map(AbsNull.fromJson _),
-      m.get("boolval").map(AbsBool.fromJson _),
-      m.get("numval").map(AbsNum.fromJson _),
-      m.get("strval").map(AbsStr.fromJson _)
-    ) match {
-        case (Some(u), Some(l), Some(b), Some(n), Some(s)) => Elem(u, l, b, n, s)
-        case _ => throw AbsPValueParseError(v)
-      }
-    case _ => throw AbsPValueParseError(v)
-  }
 
   case class Elem(
       undefval: AbsUndef,
@@ -165,13 +149,5 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum = this.numval,
       strval: AbsStr = this.strval
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
-
-    def toJson: JsValue = JsObject(
-      ("undefval", undefval.toJson),
-      ("nullval", nullval.toJson),
-      ("boolval", boolval.toJson),
-      ("numval", numval.toJson),
-      ("strval", strval.toJson)
-    )
   }
 }

@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.analyzer.{ ControlPoint, Fixpoint, TracePartition }
-import kr.ac.kaist.safe.json.JsonUtil
+import kr.ac.kaist.safe.util.JsonUtil
 import kr.ac.kaist.safe.nodes.cfg.{ BlockId, CFGCallInst, CFGNormalInst, FunctionId }
 import kr.ac.kaist.safe.web.domain.Actions
 import kr.ac.kaist.safe.web.domain.Protocol._

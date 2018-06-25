@@ -12,11 +12,9 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
-import kr.ac.kaist.safe.errors.error.AbsLexEnvParseError
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.{ HashSet, HashMap }
-import spray.json._
 
 // default lexical environment abstract domain
 object DefaultLexEnv extends LexEnvDomain {
@@ -33,18 +31,6 @@ object DefaultLexEnv extends LexEnvDomain {
     outer: LocSet,
     nullOuter: AbsAbsent
   ): Elem = Elem(record, outer, nullOuter)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("record").map(AbsEnvRec.fromJson _),
-      m.get("outer").map(LocSet.fromJson _),
-      m.get("nullOuter").map(AbsAbsent.fromJson _)
-    ) match {
-        case (Some(r), Some(o), Some(n)) => Elem(r, o, n)
-        case _ => throw AbsLexEnvParseError(v)
-      }
-    case _ => throw AbsLexEnvParseError(v)
-  }
 
   case class Elem(
       record: AbsEnvRec,
@@ -101,12 +87,6 @@ object DefaultLexEnv extends LexEnvDomain {
 
     def weakSubsLoc(locR: Recency, locO: Recency): Elem =
       Elem(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
-
-    def toJson: JsValue = JsObject(
-      ("record", record.toJson),
-      ("outer", outer.toJson),
-      ("nullOuter", nullOuter.toJson)
-    )
   }
 
   def getIdBase(

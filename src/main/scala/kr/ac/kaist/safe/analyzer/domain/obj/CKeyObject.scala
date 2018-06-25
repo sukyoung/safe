@@ -18,7 +18,6 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with concrete keys
@@ -38,18 +37,6 @@ object CKeyObject extends ObjDomain {
       case (map, (iname, iv)) => map + (iname -> AbsOpt(AbsIValue(iv)))
     }, AbsOpt(AbsIValue.Bot, AbsAbsent.Top))
   )
-
-  // from json value to abstract object
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("nmap").map(AbsMap.fromJson(json2str, AbsDataProp.fromJson)),
-      m.get("imap").map(AbsMap.fromJson(IName.fromJson, AbsIValue.fromJson))
-    ) match {
-        case (Some(n), Some(i)) => Elem(n, i)
-        case _ => throw AbsObjParseError(v)
-      }
-    case _ => throw AbsObjParseError(v)
-  }
 
   // abstract object element
   case class Elem(
@@ -589,11 +576,6 @@ object CKeyObject extends ObjDomain {
         excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet5 ++ excSet6 ++ excSet7
       )
     }
-
-    def toJson: JsValue = JsObject(
-      ("nmap", nmap.toJson(JsString(_), _.toJson)),
-      ("imap", imap.toJson(_.toJson, _.toJson))
-    )
   }
 
   ////////////////////////////////////////////////////////////////

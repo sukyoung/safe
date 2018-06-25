@@ -11,10 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ AbsStrParseError }
 import scala.collection.immutable.HashSet
 import scala.util.Try
-import spray.json._
 
 // string set domain with max set size
 case class StringSet(maxSetSize: Int) extends StrDomain {
@@ -38,13 +36,6 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       else Number
     } else if (hasOther(strSet)) Other
     else Top
-  }
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case JsString("number") => Number
-    case JsString("other") => Other
-    case _ => StrSet(json2set(v, json2str))
   }
 
   sealed abstract class Elem extends ElemTrait {
@@ -313,13 +304,6 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case Number => isNumber(str)
       case Other => !isNumber(str)
       case StrSet(v) => v contains str
-    }
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case Number => JsString("number")
-      case Other => JsString("other")
-      case StrSet(set) => JsArray(set.toSeq.map(JsString(_)): _*)
     }
   }
 

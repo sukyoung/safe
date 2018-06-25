@@ -11,10 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsIValueParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
-import spray.json._
 
 // default internal value abstract domain
 object DefaultIValue extends IValueDomain {
@@ -29,17 +27,6 @@ object DefaultIValue extends IValueDomain {
   def apply(value: AbsValue): Elem = Bot.copy(value = value)
   def apply(fidset: AbsFId): Elem = Bot.copy(fidset = fidset)
   def apply(value: AbsValue, fidset: AbsFId): Elem = Elem(value, fidset)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("value").map(AbsValue.fromJson _),
-      m.get("fidset").map(AbsFId.fromJson _)
-    ) match {
-        case (Some(v), Some(f)) => Elem(v, f)
-        case _ => throw AbsIValueParseError(v)
-      }
-    case _ => throw AbsIValueParseError(v)
-  }
 
   case class Elem(value: AbsValue, fidset: AbsFId) extends ElemTrait {
     def gamma: ConSet[IValue] = ConInf // TODO more precisely
@@ -77,11 +64,6 @@ object DefaultIValue extends IValueDomain {
         left.fidset ⊓ right.fidset
       )
     }
-
-    def toJson: JsValue = JsObject(
-      ("value", value.toJson),
-      ("fidset", fidset.toJson)
-    )
 
     def copy(
       value: AbsValue,

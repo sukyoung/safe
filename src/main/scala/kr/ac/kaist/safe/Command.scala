@@ -94,16 +94,8 @@ case object CmdHeapBuild extends CommandObj("heapBuild", CmdCFGBuild >> HeapBuil
   }
 }
 
-// jsonLoad
-case object CmdJsonLoad extends CommandObj("jsonLoad", CmdBase >> JsonLoad) {
-  override def display(result: (CFG, Semantics, TracePartition, HeapBuildConfig, Int)): Unit = {
-    val (cfg, _, _, _, _) = result
-    println(cfg.toString(0))
-  }
-}
-
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap( // TODO "fromJson" -> (CmdJsonLoad >> Analyze)
+case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap( // TODO "load" -> (CmdAnalysisLoad >> Analyze)
 )) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result
@@ -145,15 +137,6 @@ case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, Ha
 case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect) {
   override def display(cfg: CFG): Unit = ()
 }
-
-// testRewrite
-case object CmdTestRewrite extends CommandObj("testRewrite", CmdParse >> TestRewrite)
-
-// androidCheck
-case object CmdAndroidCheck extends CommandObj("androidCheck", CmdBase >> AndroidCheck)
-
-// WALAModelRewrite
-case object CmdWALARewrite extends CommandObj("walaModelRewrite", CmdBase >> WALARewrite);
 
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

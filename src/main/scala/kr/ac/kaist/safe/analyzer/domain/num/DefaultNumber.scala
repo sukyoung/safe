@@ -11,9 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsNumParseError
-import spray.json._
-
 // default number abstract domain
 object DefaultNumber extends NumDomain {
   case object Top extends Elem
@@ -35,21 +32,6 @@ object DefaultNumber extends NumDomain {
       val uint = num.toLong
       if ((num == uint) && (uint > 0 || (num compare 0.0) == 0)) UIntConst(uint)
       else NUIntConst(num)
-  }
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case JsString("⊥") => Bot
-    case JsString("+inf|-inf") => Inf
-    case JsString("+inf") => PosInf
-    case JsString("-inf") => NegInf
-    case JsString("NaN") => NaN
-    case JsString("uint") => UInt
-    case JsString("nuint") => NUInt
-    case JsString("-0") => NUIntConst(-0.0)
-    case JsArray(Vector(JsString("uint"), JsNumber(v))) => UIntConst(v.toLong)
-    case JsArray(Vector(JsString("nuint"), JsNumber(v))) => NUIntConst(v.toDouble)
-    case _ => throw AbsNumParseError(v)
   }
 
   sealed abstract class Elem extends ElemTrait {
@@ -820,20 +802,6 @@ object DefaultNumber extends NumDomain {
       case NUIntConst(v) =>
         if (Math.floor(v) == v && !v.isInfinity) v.toLong.toString
         else v.toString
-    }
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case Bot => JsString("⊥")
-      case Inf => JsString("+inf|-inf")
-      case PosInf => JsString("+inf")
-      case NegInf => JsString("-inf")
-      case NaN => JsString("NaN")
-      case UInt => JsString("uint")
-      case NUInt => JsString("nuint")
-      case UIntConst(n) => JsArray(JsString("uint"), JsNumber(n))
-      case NUIntConst(n) if isNegZero(n) => JsString("-0")
-      case NUIntConst(n) => JsArray(JsString("nuint"), JsNumber(n))
     }
   }
 

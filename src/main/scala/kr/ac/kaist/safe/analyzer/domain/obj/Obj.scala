@@ -11,9 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.INameParseError
 import scala.collection.immutable.HashMap
-import spray.json._
 
 // concrete object type
 case class Obj(nmap: Map[String, DataProp], imap: Map[IName, IValue]) {
@@ -41,7 +39,6 @@ case class Obj(nmap: Map[String, DataProp], imap: Map[IName, IValue]) {
 // internal property names
 sealed abstract class IName(name: String) {
   override def toString: String = s"[[$name]]"
-  def toJson: JsValue = JsString(name)
 }
 object IName {
   val all: List[IName] = List(
@@ -59,20 +56,6 @@ object IName {
   )
   def makeMap[V](value: V): Map[IName, V] = all.foldLeft(HashMap[IName, V]()) {
     case (map, iname) => map + (iname -> value)
-  }
-  def fromJson(v: JsValue): IName = v match {
-    case JsString("Prototype") => IPrototype
-    case JsString("Class") => IClass
-    case JsString("Extensible") => IExtensible
-    case JsString("PrimitiveValue") => IPrimitiveValue
-    case JsString("Call") => ICall
-    case JsString("Construct") => IConstruct
-    case JsString("Scope") => IScope
-    case JsString("HasInstance") => IHasInstance
-    case JsString("TargetFunction") => ITargetFunction
-    case JsString("BoundThis") => IBoundThis
-    case JsString("BoundArgs") => IBoundArgs
-    case _ => throw INameParseError(v)
   }
 }
 case object IPrototype extends IName("Prototype")

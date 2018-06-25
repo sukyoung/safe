@@ -63,11 +63,6 @@ case class CFG(
   ): CFGFunction = {
     val func: CFGFunction =
       new CFGFunction(ir, argumentsName, argVars, localVars, name, isUser)
-    addFunction(func)
-  }
-
-  // add function - used when create cfg from json
-  def addFunction(func: CFGFunction): CFGFunction = {
     func.id = getFId
     fidCount += 1
     funcs ::= func

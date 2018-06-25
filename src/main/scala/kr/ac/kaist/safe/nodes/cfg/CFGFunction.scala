@@ -16,8 +16,6 @@ import kr.ac.kaist.safe.{ LINE_SEP, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
-import spray.json._
-
 case class CFGFunction(
     ir: IRNode,
     argumentsName: String,
@@ -44,10 +42,6 @@ case class CFGFunction(
   )
   def getBlock(bid: BlockId): Option[CFGBlock] = blockMap.get(bid)
   def getAllBlocks: List[CFGBlock] = blocks
-
-  // used when create CFGFunction from JSON
-  var blockData: Vector[JsValue] = _
-  var capturedData: Vector[JsValue] = _
 
   // out blocks
   var outBlocks: List[CFGBlock] = List(exit, exitExc)
