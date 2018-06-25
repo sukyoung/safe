@@ -49,7 +49,7 @@ object ConfigProtocol extends DefaultJsonProtocol {
   implicit object HeapBuildConfigFormat extends RootJsonFormat[HeapBuildConfig] {
 
     def write(config: HeapBuildConfig): JsValue = config match {
-      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, js, _, _) => JsArray()
+      case HeapBuildConfig(silent, _, _, _, num, str, call, loop, snapshot, _, _) => JsArray()
     }
 
     def read(value: JsValue): HeapBuildConfig = value match {

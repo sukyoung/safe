@@ -116,19 +116,6 @@ case class CFG(
     asite
   }
 
-  // predefined allocation site set
-  private var predASiteSet: Set[AllocSite] = HashSet(
-    PredAllocSite.GLOBAL_ENV,
-    PredAllocSite.PURE_LOCAL,
-    PredAllocSite.COLLAPSED
-  )
-  def getPredASiteSet: Set[AllocSite] = predASiteSet
-  def registerPredASite(asite: AllocSite): Unit = predASiteSet += asite
-
-  // get all locations
-  def getAllASiteSet: Set[AllocSite] =
-    (1 to userASiteSize).foldLeft(predASiteSet)(_ + UserAllocSite(_))
-
   // find block from a given string
   def findBlock(str: String): Try[CFGBlock] = {
     val idPattern = "(-?\\d+):(\\d+)".r

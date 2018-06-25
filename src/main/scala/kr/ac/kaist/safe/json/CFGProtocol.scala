@@ -30,9 +30,6 @@ import spray.json._
 import DefaultJsonProtocol._
 
 object CFGProtocol extends DefaultJsonProtocol {
-
-  var jsModel = false
-
   implicit object CFGJsonFormat extends RootJsonFormat[CFG] {
 
     private val map: Map[CFGEdgeType, Int] = Map(
@@ -139,7 +136,7 @@ object CFGProtocol extends DefaultJsonProtocol {
         for (func <- cfg.getAllFuncs)
           CFGFunctionProtocol.restoreBlock(func)
         cfg.setUserASiteSize(user.toInt)
-        Initialize(cfg, jsModel)
+        Initialize(cfg)
         for (edge <- edges)
           edge match {
             case JsArray(Vector(

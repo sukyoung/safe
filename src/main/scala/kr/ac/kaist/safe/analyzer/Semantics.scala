@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
@@ -197,7 +197,6 @@ case class Semantics(
             val (oldSt, oldExcSt) = states
             I(cp, inst, oldSt, oldExcSt)
           })
-        case ModelBlock(_, sem) => sem(st)
         case _ => (st, AbsState.Bot)
       }
     }
@@ -208,7 +207,7 @@ case class Semantics(
     i match {
       case _ if st.isBottom => (AbsState.Bot, excSt)
       case CFGAlloc(_, _, x, e, newASite) => {
-        val objProtoSingleton = LocSet(BuiltinObjectProto.loc)
+        val objProtoSingleton = LocSet(OBJ_PROTO_LOC)
         val loc = Loc(newASite, tp)
         val st1 = st.oldify(loc)
         val (vLocSet, excSet) = e match {
@@ -216,7 +215,7 @@ case class Semantics(
           case Some(proto) => {
             val (v, es) = V(proto, st1)
             if (!v.pvalue.isBottom)
-              (v.locset + BuiltinObjectProto.loc, es)
+              (v.locset + OBJ_PROTO_LOC, es)
             else
               (v.locset, es)
           }
@@ -356,7 +355,7 @@ case class Semantics(
         val loc2 = Loc(aNew2, tp)
         val st1 = st.oldify(loc1)
         val st2 = st1.oldify(loc2)
-        val oNew = AbsObj.newObject(BuiltinObjectProto.loc)
+        val oNew = AbsObj.newObject(OBJ_PROTO_LOC)
 
         val n = AbsNum(f.argVars.length)
         val localEnv = st2.context.pureLocal
@@ -377,7 +376,7 @@ case class Semantics(
         val st2 = st1.oldify(loc2)
         val st3 = st2.oldify(loc3)
 
-        val oNew = AbsObj.newObject(BuiltinObjectProto.loc)
+        val oNew = AbsObj.newObject(OBJ_PROTO_LOC)
         val n = AbsNum(f.argVars.length)
         val fObjValue = AbsValue(loc3)
         val h4 = st3.heap.update(loc1, AbsObj.newFunctionObject(f.id, fObjValue, loc2, n))
@@ -449,25 +448,26 @@ case class Semantics(
     case (NodeUtil.INTERNAL_TOP) => Some(AbsValue.Top)
     case (NodeUtil.INTERNAL_UINT) => Some(AbsNum.UInt)
     case (NodeUtil.INTERNAL_NUINT) => Some(AbsNum.NUInt)
-    case (NodeUtil.INTERNAL_GLOBAL) => Some(AbsValue(BuiltinGlobal.loc))
+    case (NodeUtil.INTERNAL_GLOBAL) => Some(AbsValue(GLOBAL_LOC))
     case (NodeUtil.INTERNAL_BOOL_TOP) => Some(AbsBool.Top)
     case (NodeUtil.INTERNAL_NUM_TOP) => Some(AbsNum.Top)
     case (NodeUtil.INTERNAL_STR_TOP) => Some(AbsStr.Top)
-    case (NodeUtil.INTERNAL_EVAL_ERR) => Some(AbsValue(BuiltinEvalError.loc))
-    case (NodeUtil.INTERNAL_RANGE_ERR) => Some(AbsValue(BuiltinRangeError.loc))
-    case (NodeUtil.INTERNAL_REF_ERR) => Some(AbsValue(BuiltinRefError.loc))
-    case (NodeUtil.INTERNAL_SYNTAX_ERR) => Some(AbsValue(BuiltinSyntaxError.loc))
-    case (NodeUtil.INTERNAL_TYPE_ERR) => Some(AbsValue(BuiltinTypeError.loc))
-    case (NodeUtil.INTERNAL_URI_ERR) => Some(AbsValue(BuiltinURIError.loc))
-    case (NodeUtil.INTERNAL_EVAL_ERR_PROTO) => Some(AbsValue(BuiltinEvalErrorProto.loc))
-    case (NodeUtil.INTERNAL_RANGE_ERR_PROTO) => Some(AbsValue(BuiltinRangeErrorProto.loc))
-    case (NodeUtil.INTERNAL_REF_ERR_PROTO) => Some(AbsValue(BuiltinRefErrorProto.loc))
-    case (NodeUtil.INTERNAL_SYNTAX_ERR_PROTO) => Some(AbsValue(BuiltinSyntaxErrorProto.loc))
-    case (NodeUtil.INTERNAL_TYPE_ERR_PROTO) => Some(AbsValue(BuiltinTypeErrorProto.loc))
-    case (NodeUtil.INTERNAL_URI_ERR_PROTO) => Some(AbsValue(BuiltinURIErrorProto.loc))
-    case (NodeUtil.INTERNAL_ERR_PROTO) => Some(AbsValue(BuiltinErrorProto.loc))
-    case (NodeUtil.INTERNAL_OBJ_CONST) => Some(AbsValue(BuiltinObject.loc))
-    case (NodeUtil.INTERNAL_ARRAY_CONST) => Some(AbsValue(BuiltinArray.loc))
+
+    case (NodeUtil.INTERNAL_EVAL_ERR) => Some(EVAL_ERROR_LOC)
+    case (NodeUtil.INTERNAL_RANGE_ERR) => Some(RANGE_ERROR_LOC)
+    case (NodeUtil.INTERNAL_REF_ERR) => Some(REF_ERROR_LOC)
+    case (NodeUtil.INTERNAL_SYNTAX_ERR) => Some(SYNTAX_ERROR_LOC)
+    case (NodeUtil.INTERNAL_TYPE_ERR) => Some(TYPE_ERROR_LOC)
+    case (NodeUtil.INTERNAL_URI_ERR) => Some(URI_ERROR_LOC)
+    case (NodeUtil.INTERNAL_EVAL_ERR_PROTO) => Some(EVAL_ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_RANGE_ERR_PROTO) => Some(RANGE_ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_REF_ERR_PROTO) => Some(REF_ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_SYNTAX_ERR_PROTO) => Some(SYNTAX_ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_TYPE_ERR_PROTO) => Some(TYPE_ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_URI_ERR_PROTO) => Some(URI_ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_ERR_PROTO) => Some(ERROR_PROTO_LOC)
+    case (NodeUtil.INTERNAL_OBJ_CONST) => Some(OBJ_LOC)
+    case (NodeUtil.INTERNAL_ARRAY_CONST) => Some(ARR_LOC)
     case _ => None
   }
 

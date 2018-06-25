@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet

@@ -38,12 +38,6 @@ abstract class Loc extends Value {
 }
 
 object Loc {
-  // predefined special concrete location
-  lazy val predConSet: Set[Loc] = HashSet(
-    PredAllocSite.GLOBAL_ENV,
-    PredAllocSite.PURE_LOCAL
-  )
-
   def parse(str: String): Try[Loc] = {
     val recency = "(R|O)(.+)".r
     val userASite = "#([0-9]+)".r

@@ -13,40 +13,36 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.phase._
 import scala.collection.immutable.{ HashMap, HashSet }
 
 object Initialize {
-  def apply(cfg: CFG, jsModel: Boolean): AbsState = {
-    val globalLocSet = LocSet(BuiltinGlobal.loc)
+  def apply(cfg: CFG): AbsState = {
+    val globalLocSet = LocSet(GLOBAL_LOC)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
-      BuiltinGlobal.loc -> AbsObj.Bot
+      GLOBAL_LOC -> AbsObj.Bot
     // TODO If delete, not working because not allowed update to bottom heap
     ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
-      PredAllocSite.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
-      PredAllocSite.PURE_LOCAL -> globalPureLocalEnv,
-      PredAllocSite.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
+      GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
+      PURE_LOCAL -> globalPureLocalEnv,
+      COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldASiteSet.Empty, globalLocSet)
 
-    val modeledHeap: AbsHeap =
-      if (jsModel) {
-        val model = HeapBuild.jscache getOrElse {
-          // val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
-          // ModelParser.parseFile(fileName).get
-          ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
-        }
-        model.funcs.foreach {
-          case (_, func) => cfg.addJSModel(func)
-        }
-        AbsHeap(model.heap)
-      } else BuiltinGlobal.initHeap(initHeap, cfg)
+    val modeledHeap: AbsHeap = {
+      val model = HeapBuild.jscache getOrElse {
+        ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
+      }
+      model.funcs.foreach {
+        case (_, func) => cfg.addJSModel(func)
+      }
+      AbsHeap(model.heap)
+    }
 
     AbsState(modeledHeap, initCtx)
   }

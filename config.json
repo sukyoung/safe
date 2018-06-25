@@ -14,7 +14,6 @@
     "callsiteSensitivity": 10,
     "loopIter": 10,
     "loopDepth": 10,
-    "snapshot": "",
-    "jsModel": true
+    "snapshot": ""
   }
 }

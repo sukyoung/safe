@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
@@ -599,7 +599,7 @@ object CKeyObject extends ObjDomain {
   ////////////////////////////////////////////////////////////////
   // new Object constructors
   ////////////////////////////////////////////////////////////////
-  def newObject: Elem = newObject(BuiltinObjectProto.loc)
+  def newObject: Elem = newObject(OBJ_PROTO_LOC)
 
   def newObject(loc: Loc): Elem = newObject(LocSet(loc))
 
@@ -613,7 +613,7 @@ object CKeyObject extends ObjDomain {
   def newArgObject(absLength: AbsNum = AbsNum(0)): Elem = {
     Empty
       .update(IClass, AbsIValue(AbsStr("Arguments")))
-      .update(IPrototype, AbsIValue(BuiltinObjectProto.loc))
+      .update(IPrototype, AbsIValue(OBJ_PROTO_LOC))
       .update(IExtensible, AbsIValue(AT))
       .update("length", AbsDataProp(absLength, AT, AF, AT))
   }
@@ -621,7 +621,7 @@ object CKeyObject extends ObjDomain {
   def newArrayObject(absLength: AbsNum = AbsNum(0)): Elem = {
     Empty
       .update(IClass, AbsIValue(AbsStr("Array")))
-      .update(IPrototype, AbsIValue(BuiltinArrayProto.loc))
+      .update(IPrototype, AbsIValue(ARR_PROTO_LOC))
       .update(IExtensible, AbsIValue(AT))
       .update("length", AbsDataProp(absLength, AT, AF, AF))
   }
@@ -642,7 +642,7 @@ object CKeyObject extends ObjDomain {
     val obj1 =
       Empty
         .update(IClass, AbsIValue(AbsStr("Function")))
-        .update(IPrototype, AbsIValue(BuiltinFunctionProto.loc))
+        .update(IPrototype, AbsIValue(FUNC_PROTO_LOC))
         .update(IExtensible, AbsIValue(AT))
         .update(IScope, AbsIValue(env))
         .update("length", AbsDataProp(absLength, AF, AF, AF))
@@ -666,19 +666,19 @@ object CKeyObject extends ObjDomain {
   }
 
   def newBooleanObj(absB: AbsBool): Elem = {
-    val newObj = newObject(BuiltinBooleanProto.loc)
+    val newObj = newObject(BOOL_PROTO_LOC)
     newObj.update(IClass, AbsIValue(AbsStr("Boolean")))
       .update(IPrimitiveValue, AbsIValue(absB))
   }
 
   def newNumberObj(absNum: AbsNum): Elem = {
-    val newObj = newObject(BuiltinNumberProto.loc)
+    val newObj = newObject(NUM_PROTO_LOC)
     newObj.update(IClass, AbsIValue(AbsStr("Number")))
       .update(IPrimitiveValue, AbsIValue(absNum))
   }
 
   def newStringObj(absStr: AbsStr): Elem = {
-    val newObj = newObject(BuiltinStringProto.loc)
+    val newObj = newObject(STR_PROTO_LOC)
 
     val newObj2 = newObj
       .update(IClass, AbsIValue(AbsStr("String")))

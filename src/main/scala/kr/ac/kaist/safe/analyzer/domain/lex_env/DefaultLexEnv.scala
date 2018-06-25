@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.errors.error.AbsLexEnvParseError
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
@@ -207,7 +207,7 @@ object DefaultLexEnv extends LexEnvDomain {
           val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
           val newEnv = env.copy(record = er)
           ctxUpdatePairSet += ((loc, newEnv))
-          newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
+          newH = newH.weakUpdate(GLOBAL_LOC, h.get(GLOBAL_LOC))
           excSet ++= e
           AbsAbsent.Bot
         } else AbsAbsent.Bot
@@ -218,7 +218,7 @@ object DefaultLexEnv extends LexEnvDomain {
             else {
               val (_, h, e) = AbsGlobalEnvRec.Top
                 .SetMutableBinding(name, value, false)(newH)
-              newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
+              newH = newH.weakUpdate(GLOBAL_LOC, h.get(GLOBAL_LOC))
               excSet ++= e
             }
           }

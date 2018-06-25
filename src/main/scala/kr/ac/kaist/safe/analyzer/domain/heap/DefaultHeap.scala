@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.errors.error.AbsHeapParseError
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashMap
 import spray.json._
@@ -126,7 +126,7 @@ object DefaultHeap extends HeapDomain {
     }
 
     override def toString: String = {
-      buildString(loc => loc.isUser || loc == BuiltinGlobal.loc)
+      buildString(loc => loc.isUser || loc == GLOBAL_LOC)
     }
 
     def get(loc: Loc): AbsObj = this match {
@@ -267,7 +267,7 @@ object DefaultHeap extends HeapDomain {
     def isObject(loc: Loc): Boolean = !get(loc).isBottom
 
     def canPutVar(x: String): AbsBool = {
-      val globalLoc = BuiltinGlobal.loc
+      val globalLoc = GLOBAL_LOC
       val globalObj = get(globalLoc)
       val domIn = globalObj contains x
       val b1 =
@@ -372,7 +372,6 @@ object DefaultHeap extends HeapDomain {
     ////////////////////////////////////////////////////////////////
     def isConcrete(loc: Loc): Boolean = loc match {
       case Recency(_, Recent) => true
-      case l if Loc.predConSet contains l => true
       case _ => false
     }
 

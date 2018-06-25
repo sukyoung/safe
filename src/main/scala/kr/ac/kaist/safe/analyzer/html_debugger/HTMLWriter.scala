@@ -16,7 +16,7 @@ import java.io.{ File, FileWriter }
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer.domain._
@@ -164,7 +164,7 @@ object HTMLWriter {
           .foreach {
             case (loc, obj) =>
               val parent = loc match {
-                case BuiltinGlobal.loc => "heap"
+                case GLOBAL_LOC => "heap"
                 case l if !l.isUser => "predLoc"
                 case _ => "heap"
               }

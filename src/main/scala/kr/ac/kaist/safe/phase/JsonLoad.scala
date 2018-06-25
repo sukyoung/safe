@@ -68,7 +68,6 @@ case object JsonLoad extends PhaseObj[Unit, JsonLoadConfig, (CFG, Semantics, Tra
                     heapConfig.loopSensitivity
                 )
 
-                CFGProtocol.jsModel = heapConfig.jsModel
                 val cfg = cfgJson.convertTo[CFG]
                 WorklistProtocol.cfg = cfg
                 val worklist = worklistJson.convertTo[Worklist]

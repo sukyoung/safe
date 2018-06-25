@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.util.PredAllocSite
 import scala.collection.immutable.{ HashMap, HashSet }
 import spray.json._
 
@@ -86,11 +87,14 @@ package object domain {
   implicit def num2pv(num: AbsNum): AbsPValue = AbsPValue(numval = num)
   implicit def str2pv(str: AbsStr): AbsPValue = AbsPValue(strval = str)
 
+  // location -> LocSet
+  implicit def loc2locset(loc: Loc): LocSet = LocSet(loc)
+
   // AbsPValue -> AbsValue
   implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
 
   // LocSet -> AbsValue
-  implicit def loc2v[T <% LocSet](loc: T): AbsValue = AbsValue(loc)
+  implicit def locset2v[T <% LocSet](loc: T): AbsValue = AbsValue(loc)
 
   // AbsValue -> AbsIValue
   implicit def v2iv[T <% AbsValue](v: T): AbsIValue = AbsIValue(v)

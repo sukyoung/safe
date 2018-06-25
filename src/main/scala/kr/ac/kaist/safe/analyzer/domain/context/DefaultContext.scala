@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.errors.error.AbsContextParseError
 import kr.ac.kaist.safe.util._
@@ -32,7 +32,7 @@ object DefaultContext extends ContextDomain {
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
   lazy val Empty: Elem =
-    CtxMap(EmptyMap, OldASiteSet.Empty, LocSet(BuiltinGlobal.loc))
+    CtxMap(EmptyMap, OldASiteSet.Empty, LocSet(GLOBAL_LOC))
 
   def alpha(ctx: Context): Elem = Top // TODO more precise
 
@@ -306,16 +306,15 @@ object DefaultContext extends ContextDomain {
     // pure local environment
     ////////////////////////////////////////////////////////////////
     def pureLocal: AbsLexEnv =
-      getOrElse(PredAllocSite.PURE_LOCAL, AbsLexEnv.Bot)
+      getOrElse(PURE_LOCAL, AbsLexEnv.Bot)
     def subsPureLocal(env: AbsLexEnv): Elem =
-      update(PredAllocSite.PURE_LOCAL, env)
+      update(PURE_LOCAL, env)
 
     ////////////////////////////////////////////////////////////////
     // location concrete check
     ////////////////////////////////////////////////////////////////
     def isConcrete(loc: Loc): Boolean = loc match {
       case Recency(_, Recent) => true
-      case l if Loc.predConSet contains l => true
       case _ => false
     }
 

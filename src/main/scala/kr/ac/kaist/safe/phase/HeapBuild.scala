@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.JSModel
+import kr.ac.kaist.safe.analyzer.model.JSModel
 import kr.ac.kaist.safe.errors.error.NoChoiceError
 
 // HeapBuild phase
@@ -47,7 +47,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
     val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
     // initial abstract state
-    var initSt = Initialize(cfg, config.jsModel)
+    var initSt = Initialize(cfg)
 
     // handling snapshot mode
     config.snapshot.map(str =>
@@ -79,9 +79,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
     ("loopDepth", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxDepth = n)),
       "{number}-depth loop-sensitive analysis will be executed."),
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
-      "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
-    ("jsModel", BoolOption(c => c.jsModel = true),
-      "analysis with JavaScript models.")
+      "analysis with an initial heap generated from a dynamic snapshot(*.json).")
   )
 
   // cache for JS model
@@ -99,7 +97,6 @@ case class HeapBuildConfig(
   var callsiteSensitivity: CallSiteSensitivity = CallSiteSensitivity(0),
   var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
-  var jsModel: Boolean = false,
   var recencyMode: Boolean = false,
   var heapClone: Boolean = false
 ) extends Config

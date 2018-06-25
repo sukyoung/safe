@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.errors.error.AbsGlobalEnvRecParseError
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import scala.collection.immutable.HashMap
 import spray.json._
 
@@ -99,7 +99,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
             true,
             heap
           )
-          (this, heap.update(BuiltinGlobal.loc, newObj), excSet)
+          (this, heap.update(GLOBAL_LOC, newObj), excSet)
         } else { (Bot, AbsHeap.Bot, ExcSetEmpty) }
     }
 
@@ -120,7 +120,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
         val (newObj, excSet) = bindings.Put(AbsStr(name), v, strict, heap)
         (
           this,
-          heap.update(BuiltinGlobal.loc, newObj),
+          heap.update(GLOBAL_LOC, newObj),
           excSet
         )
     }
@@ -189,7 +189,6 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
         AbsUndef.Top
     }
 
-    private val GLOBAL_LOC: Loc = BuiltinGlobal.loc
     private def getGlobalObj(heap: AbsHeap): AbsObj =
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)

@@ -36,11 +36,3 @@ case class PredAllocSite(name: String) extends AllocSite {
   override def toString: String = s"#$name"
   def toJson: JsValue = JsString(name)
 }
-object PredAllocSite {
-  // global environment
-  val GLOBAL_ENV: PredAllocSite = PredAllocSite("GlobalEnv")
-  // pure local environment
-  val PURE_LOCAL: PredAllocSite = PredAllocSite("PureLocal")
-  // collapsed environment for try-catch
-  val COLLAPSED: PredAllocSite = PredAllocSite("Collapsed")
-}

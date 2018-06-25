@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.errors.error.AbsValueParseError
 import kr.ac.kaist.safe.util._
 import spray.json._
@@ -104,13 +104,13 @@ object DefaultValue extends ValueDomain {
     def getThis(h: AbsHeap): LocSet = {
       val locSet1 = (pvalue.nullval.isBottom, pvalue.undefval.isBottom) match {
         case (true, true) => LocSet.Bot
-        case _ => LocSet(BuiltinGlobal.loc)
+        case _ => LocSet(GLOBAL_LOC)
       }
 
       val foundDeclEnvRecord = locset.exists(loc => !h.isObject(loc))
 
       val locSet2 =
-        if (foundDeclEnvRecord) LocSet(BuiltinGlobal.loc)
+        if (foundDeclEnvRecord) LocSet(GLOBAL_LOC)
         else LocSet.Bot
       val locSet3 = locset.foldLeft(LocSet.Bot)((tmpLocSet, loc) => {
         if (h.isObject(loc)) tmpLocSet + loc

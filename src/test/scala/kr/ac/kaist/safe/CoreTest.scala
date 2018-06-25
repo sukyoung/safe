@@ -18,8 +18,7 @@ import scala.io.Source
 import scala.util.{ Failure, Success, Try }
 import scala.util.Random.shuffle
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.ParserError
@@ -45,20 +44,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val testDir = BASE_DIR + SEP + "tests" + SEP
   val jsDir = testDir + "cfg" + SEP + "js" + SEP + "success" + SEP
   val resDir = testDir + "cfg" + SEP + "result" + SEP + "success" + SEP
-  val noTestForWithoutJSModel: List[String] = List(
-    "/tests/semantics/result/15.3.4.5_BASE.json",
-    "/tests/semantics/builtin/15.3/15.3.4/15.3.4.5/15.3.4.5_BASE.js",
-    "/tests/test262/15.3/15.3.4/15.3.4.5/",
-    "/tests/test262/15.3/15.3.4/15.3.4.5.1/",
-    "/tests/test262/15.3/15.3.4/15.3.4.5.2/",
-    ".html"
-  )
-  def noTestCheckForWithoutJSModel(file: File): Boolean = {
-    val filename = file.getName
-    val name = file.toString
-    val relPath = name.substring(BASE_DIR.length)
-    noTestForWithoutJSModel.exists(relPath contains _)
-  }
 
   def walkTree(file: File): Iterable[File] = {
     val children = new Iterable[File] {
@@ -143,7 +128,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         val normalSt = sem.getState(ControlPoint(cfg.globalFunc.exit, globalTP))
         val excSt = sem.getState(ControlPoint(cfg.globalFunc.exitExc, globalTP))
         assert(!normalSt.heap.isBottom)
-        val ar = normalSt.heap.get(BuiltinGlobal.loc) match {
+        val ar = normalSt.heap.get(GLOBAL_LOC) match {
           case globalObj if globalObj.isBottom =>
             assert(false)
             Fail
@@ -190,22 +175,19 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val name = file.toString
     val relPath = name.substring(BASE_DIR.length + 1)
     if (filename.endsWith(".js") || filename.endsWith(".html")) {
-      // no test when jsModel option is deactive.
-      if (heapBuildConfig.jsModel || !(noTestCheckForWithoutJSModel(file))) {
-        registerTest(prefix + filename, tag) {
-          val safeConfig = testSafeConfig.copy(fileNames = List(name))
-          val cfg = getCFG(name)
-          val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
-          val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
-          testList ::= relPath
-          val (ar, iter) = analyzeTest(analysis, tag)
-          totalIteration += iter
-          ar match {
-            case Precise => preciseList ::= relPath
-            case Imprecise => impreciseList ::= relPath
-            case Benchmark => // Not yet decided what to do
-            case Fail => // unreachable
-          }
+      registerTest(prefix + filename, tag) {
+        val safeConfig = testSafeConfig.copy(fileNames = List(name))
+        val cfg = getCFG(name)
+        val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
+        val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
+        testList ::= relPath
+        val (ar, iter) = analyzeTest(analysis, tag)
+        totalIteration += iter
+        ar match {
+          case Precise => preciseList ::= relPath
+          case Imprecise => impreciseList ::= relPath
+          case Benchmark => // Not yet decided what to do
+          case Fail => // unreachable
         }
       }
     } else if (filename.endsWith(".js.todo")) {
@@ -221,7 +203,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
           case e => assert(false)
         }
       }
-    } else if (filename.endsWith(".json") && !(noTestCheckForWithoutJSModel(file))) {
+    } else if (filename.endsWith(".json")) {
       registerTest(prefix + filename, tag) {
         val safeConfig = testSafeConfig.copy(fileNames = List(name))
         val dumped = getDumped(name)
