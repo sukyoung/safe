@@ -18,6 +18,7 @@ trait ContextDomain extends AbsDomain[Context] {
   val Empty: Elem
   def apply(
     map: Map[Loc, AbsLexEnv],
+    merged: LocSet,
     thisBinding: AbsValue
   ): Elem
 
@@ -37,11 +38,10 @@ trait ContextDomain extends AbsDomain[Context] {
     def weakUpdate(loc: Loc, env: AbsLexEnv): Elem
     def update(loc: Loc, env: AbsLexEnv): Elem
 
-    // remove location
-    def remove(loc: Loc): Elem
-
     // substitute location
     def subsLoc(from: Loc, to: Loc): Elem
+
+    def alloc(loc: Loc): Elem
 
     def domIn(loc: Loc): Boolean
 

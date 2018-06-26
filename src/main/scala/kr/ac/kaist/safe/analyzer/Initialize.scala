@@ -23,16 +23,13 @@ object Initialize {
   def apply(cfg: CFG): AbsState = {
     val globalLocSet = LocSet(GLOBAL_LOC)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
-    val initHeap = AbsHeap(HashMap(
-      GLOBAL_LOC -> AbsObj.Bot
-    // TODO If delete, not working because not allowed update to bottom heap
-    ))
+    val initHeap = AbsHeap.Empty
 
     val initCtx = AbsContext(HashMap(
       GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PURE_LOCAL -> globalPureLocalEnv,
       COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), globalLocSet)
+    ), LocSet.Bot, globalLocSet)
 
     val modeledHeap: AbsHeap = {
       val model = HeapBuild.jscache getOrElse {
@@ -53,4 +50,3 @@ object Initialize {
     st.copy(heap = st.heap ⊔ abstractHeap)
   }
 }
-

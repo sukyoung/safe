@@ -26,17 +26,19 @@ object DefaultContext extends ContextDomain {
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
     val map: Map[Loc, AbsLexEnv],
+    val merged: LocSet,
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
   lazy val Empty: Elem =
-    CtxMap(EmptyMap, LocSet(GLOBAL_LOC))
+    CtxMap(EmptyMap, LocSet.Bot, LocSet(GLOBAL_LOC))
 
   def alpha(ctx: Context): Elem = Top // TODO more precise
 
   def apply(
     map: Map[Loc, AbsLexEnv],
+    merged: LocSet,
     thisBinding: AbsValue
-  ): Elem = CtxMap(map, thisBinding)
+  ): Elem = CtxMap(map, merged, thisBinding)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
@@ -48,8 +50,8 @@ object DefaultContext extends ContextDomain {
       case (_, Bot) => false
       case (_, Top) => true
       case (Top, _) => false
-      case (CtxMap(thisMap, thisThis),
-        CtxMap(thatMap, thatThis)) => {
+      case (CtxMap(thisMap, thisMerged, thisThis),
+        CtxMap(thatMap, thatMerged, thatThis)) => {
         val mapB =
           if (thisMap.isEmpty) true
           else if (thatMap.isEmpty) false
@@ -59,8 +61,9 @@ object DefaultContext extends ContextDomain {
               case Some(thatEnv) => thisEnv ⊑ thatEnv
             }
           }
+        val mergedB = thisMerged ⊑ thatMerged
         val thisB = thisThis ⊑ thatThis
-        mapB && thisB
+        mapB && mergedB && thisB
       }
     }
 
@@ -68,8 +71,8 @@ object DefaultContext extends ContextDomain {
       case (Bot, _) => that
       case (_, Bot) => this
       case (Top, _) | (_, Top) => Top
-      case (CtxMap(thisMap, thisThis),
-        CtxMap(thatMap, thatThis)) => {
+      case (CtxMap(thisMap, thisMerged, thisThis),
+        CtxMap(thatMap, thatMerged, thatThis)) => {
         if (this eq that) this
         else {
           val newMap = thatMap.foldLeft(thisMap) {
@@ -79,8 +82,9 @@ object DefaultContext extends ContextDomain {
                 m + (loc -> (thisEnv ⊔ thatEnv))
             }
           }
+          val newMerged = thisMerged ⊔ thatMerged
           val newThis = thisThis ⊔ thatThis
-          CtxMap(newMap, newThis)
+          CtxMap(newMap, newMerged, newThis)
         }
       }
     }
@@ -89,8 +93,8 @@ object DefaultContext extends ContextDomain {
       case (Bot, _) | (_, Bot) => Bot
       case (Top, _) => that
       case (_, Top) => this
-      case (CtxMap(thisMap, thisThis),
-        CtxMap(thatMap, thatThis)) => {
+      case (CtxMap(thisMap, thisMerged, thisThis),
+        CtxMap(thatMap, thatMerged, thatThis)) => {
         if (thisMap eq thatMap) this
         else {
           val locSet = thisMap.keySet intersect thatMap.keySet
@@ -101,8 +105,9 @@ object DefaultContext extends ContextDomain {
               m + (loc -> (thisEnv ⊓ thatEnv))
             }
           }
+          val newMerged = thisMerged ⊓ thatMerged
           val newThis = thisThis ⊓ thatThis
-          CtxMap(newMap, newThis)
+          CtxMap(newMap, newMerged, newThis)
         }
       }
     }
@@ -110,7 +115,7 @@ object DefaultContext extends ContextDomain {
     def apply(loc: Loc): Option[AbsLexEnv] = this match {
       case Bot => None
       case Top => Some(AbsLexEnv.Top)
-      case CtxMap(map, _) => map.get(loc)
+      case CtxMap(map, _, _) => map.get(loc)
     }
 
     def apply(locSet: Set[Loc]): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
@@ -143,14 +148,14 @@ object DefaultContext extends ContextDomain {
     def weakUpdate(loc: Loc, env: AbsLexEnv): Elem = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, thisBinding) =>
-        CtxMap(weakUpdated(map, loc, env), thisBinding)
+      case CtxMap(map, merged, thisBinding) =>
+        CtxMap(weakUpdated(map, loc, env), merged, thisBinding)
     }
 
     def update(loc: Loc, env: AbsLexEnv): Elem = this match {
       case Bot => Bot
       case Top => Top
-      case cmap @ CtxMap(map, _) => {
+      case cmap @ CtxMap(map, _, _) => {
         if (isConcrete(loc)) {
           cmap.copy(map = map.updated(loc, env))
         } else {
@@ -159,50 +164,70 @@ object DefaultContext extends ContextDomain {
       }
     }
 
-    def remove(loc: Loc): Elem = this match {
-      case Bot => Bot
-      case Top => Top
-      case CtxMap(map, thisBinding) => CtxMap(map - loc, thisBinding)
+    private def subsLoc(cmap: CtxMap, from: Loc, to: Loc): CtxMap = {
+      val CtxMap(map, merged, thisBinding) = cmap
+      val (newMap, newMerged) = (map.get(from) match {
+        case Some(fromEnv) => {
+          val (newEnv, newMerged) = map.get(to) match {
+            case Some(toEnv) => (fromEnv ⊔ toEnv, merged + to)
+            case None => (fromEnv, merged)
+          }
+          (map - from + (to -> newEnv), newMerged)
+        }
+        case None => (map, merged)
+      })
+      CtxMap(
+        newMap.mapValues(_.subsLoc(from, to)),
+        newMerged.subsLoc(from, to),
+        thisBinding.subsLoc(from, to)
+      )
     }
 
     def subsLoc(from: Loc, to: Loc): Elem = this match {
-      case Bot => Bot
       case Top => Top
-      case CtxMap(map, thisBinding) => {
-        val newMap = (map.get(from) match {
-          case Some(env) => map - from + (to -> (map.getOrElse(to, AbsLexEnv.Bot) ⊔ env))
-          case None => map
-        }).foldLeft(EmptyMap) {
-          case (m, (loc, env)) =>
-            m + (loc -> env.subsLoc(from, to))
+      case Bot => Bot
+      case (map: CtxMap) => subsLoc(map, from, to)
+    }
+
+    def alloc(loc: Loc): Elem = this match {
+      case Top => Top
+      case Bot => Bot
+      case (cmap: CtxMap) => {
+        val CtxMap(map, merged, thisBinding) = loc match {
+          case locR @ Recency(l, Recent) =>
+            val locO = Recency(l, Old)
+            subsLoc(cmap, locR, locO)
+          case _ => cmap
         }
-        val newThis = thisBinding.subsLoc(from, to)
-        CtxMap(newMap, newThis)
+        val newMerged =
+          if (map contains loc) merged + loc
+          else merged
+        CtxMap(map, newMerged, thisBinding)
       }
     }
 
     def domIn(loc: Loc): Boolean = this match {
       case Bot => false
       case Top => true
-      case CtxMap(map, _) => map.contains(loc)
+      case CtxMap(map, _, _) => map.contains(loc)
     }
 
     def setThisBinding(thisBinding: AbsValue): Elem = this match {
       case Bot => Bot
       case Top => Top
-      case cmap @ CtxMap(_, _) => cmap.copy(thisBinding = thisBinding)
+      case cmap @ CtxMap(_, _, _) => cmap.copy(thisBinding = thisBinding)
     }
 
     def getMap: Map[Loc, AbsLexEnv] = this match {
       case Bot => HashMap()
       case Top => HashMap() // TODO it is not sound
-      case CtxMap(map, _) => map
+      case CtxMap(map, _, _) => map
     }
 
     def thisBinding: AbsValue = this match {
       case Bot => AbsValue.Bot
       case Top => AbsValue.Top
-      case CtxMap(_, thisBinding) => thisBinding
+      case CtxMap(_, _, thisBinding) => thisBinding
     }
 
     override def toString: String = {
@@ -212,7 +237,7 @@ object DefaultContext extends ContextDomain {
     private def buildString(filter: Loc => Boolean): String = this match {
       case Bot => "⊥Elem"
       case Top => "Top"
-      case CtxMap(map, thisBinding) => {
+      case CtxMap(map, _, thisBinding) => {
         val s = new StringBuilder
         val sortedSeq =
           map.toSeq.filter { case (loc, _) => filter(loc) }
@@ -228,7 +253,7 @@ object DefaultContext extends ContextDomain {
     def toStringLoc(loc: Loc): Option[String] = this match {
       case Bot => None
       case Top => Some(toStringLoc(loc, AbsLexEnv.Top, true))
-      case CtxMap(map, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
+      case CtxMap(map, _, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
     }
 
     private def toStringLoc(loc: Loc, env: AbsLexEnv, con: Boolean): String = {
@@ -267,9 +292,10 @@ object DefaultContext extends ContextDomain {
     ////////////////////////////////////////////////////////////////
     // location concrete check
     ////////////////////////////////////////////////////////////////
-    def isConcrete(loc: Loc): Boolean = loc match {
-      case Recency(_, Recent) => true
-      case _ => false
+    def isConcrete(loc: Loc): Boolean = this match {
+      case Top => false
+      case Bot => true
+      case CtxMap(_, merged, _) => !(merged contains loc)
     }
   }
 }

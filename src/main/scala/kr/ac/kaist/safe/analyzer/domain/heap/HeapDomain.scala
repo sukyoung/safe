@@ -15,7 +15,9 @@ import kr.ac.kaist.safe.util._
 
 // heap abstract domain
 trait HeapDomain extends AbsDomain[Heap] {
-  def apply(map: Map[Loc, AbsObj]): Elem
+  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem
+
+  val Empty: Elem
 
   // abstract heap element
   type Elem <: ElemTrait
@@ -30,11 +32,11 @@ trait HeapDomain extends AbsDomain[Heap] {
     def weakUpdate(loc: Loc, obj: AbsObj): Elem
     def update(loc: Loc, obj: AbsObj): Elem
 
-    // remove location
-    def remove(loc: Loc): Elem
-
     // substitute from by to
     def subsLoc(from: Loc, to: Loc): Elem
+
+    def alloc(loc: Loc): Elem
+
     def domIn(loc: Loc): Boolean
 
     // toString
