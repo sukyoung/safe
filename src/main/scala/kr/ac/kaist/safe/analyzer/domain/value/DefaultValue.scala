@@ -75,11 +75,11 @@ object DefaultValue extends ValueDomain {
       }
     }
 
-    def subsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(this.pvalue, this.locset.subsLoc(locR, locO))
+    def subsLoc(from: Loc, to: Loc): Elem =
+      Elem(this.pvalue, this.locset.subsLoc(from, to))
 
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(this.pvalue, this.locset.weakSubsLoc(locR, locO))
+    def weakSubsLoc(from: Loc, to: Loc): Elem =
+      Elem(this.pvalue, this.locset.weakSubsLoc(from, to))
 
     def typeCount: Int = {
       if (this.locset.isBottom)

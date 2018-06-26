@@ -75,23 +75,25 @@ object CKeyObject extends ObjDomain {
     ///////////////////////////////////////////////////////////////
     def isEmpty: Boolean = this == Empty
 
-    // oldify locations
-    def oldify(loc: Loc): Elem = loc match {
-      case locR @ Recency(subLoc, Recent) => subsLoc(locR, Recency(subLoc, Old))
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem = Elem(
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.subsLoc(from, to)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.subsLoc(from, to)) }
+    )
+
+    // weakly substitute from by to
+    def weakSubsLoc(from: Loc, to: Loc): Elem = Elem(
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.weakSubsLoc(from, to)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.weakSubsLoc(from, to)) }
+    )
+
+    // allocate location
+    def alloc(loc: Loc): Elem = loc match {
+      case locR @ Recency(l, Recent) =>
+        val locO = Recency(l, Old)
+        subsLoc(locR, locO)
       case _ => this
     }
-
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem = Elem(
-      nmap = nmap.mapCValues { dp => dp.copy(dp.value.subsLoc(locR, locO)) },
-      imap = imap.mapCValues { iv => iv.copy(iv.value.subsLoc(locR, locO)) }
-    )
-
-    // weakly substitute locR by locO
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem = Elem(
-      nmap = nmap.mapCValues { dp => dp.copy(dp.value.weakSubsLoc(locR, locO)) },
-      imap = imap.mapCValues { iv => iv.copy(iv.value.weakSubsLoc(locR, locO)) }
-    )
 
     // lookup
     private def lookup(astr: AbsStr): AbsOpt[AbsDataProp] = astr.gamma match {
@@ -613,13 +615,13 @@ object CKeyObject extends ObjDomain {
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], n: AbsNum): Elem = {
+    topt: Option[Loc], n: AbsNum): Elem = {
     newFunctionObject(fidOpt, constructIdOpt, env,
-      locOpt, AT, AF, AF, n)
+      topt, AT, AF, AF, n)
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
+    topt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNum): Elem = {
     val obj1 =
       Empty
@@ -637,7 +639,7 @@ object CKeyObject extends ObjDomain {
       case Some(cid) => obj2.update(IConstruct, AbsFId(cid))
       case None => obj2
     }
-    val obj4 = locOpt match {
+    val obj4 = topt match {
       case Some(loc) =>
         val prototypeVal = AbsValue(loc)
         obj3.update(IHasInstance, AbsIValue(AbsNull.Top))

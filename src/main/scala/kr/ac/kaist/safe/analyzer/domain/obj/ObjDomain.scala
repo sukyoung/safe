@@ -28,9 +28,9 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   def newFunctionObject(fid: FunctionId, env: AbsValue, l: Loc, n: AbsNum): Elem
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], n: AbsNum): Elem
+    topt: Option[Loc], n: AbsNum): Elem
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
+    topt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNum): Elem
 
   def newBooleanObj(absB: AbsBool): Elem
@@ -53,10 +53,10 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   // abstract object element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
-    /* substitute locR by locO */
-    def oldify(loc: Loc): Elem
-    def subsLoc(locR: Recency, locO: Recency): Elem
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+    /* substitute from by to */
+    def subsLoc(from: Loc, to: Loc): Elem
+    def weakSubsLoc(from: Loc, to: Loc): Elem
+    def alloc(loc: Loc): Elem
 
     def apply(str: String): AbsDataProp
     def apply(astr: AbsStr): AbsDataProp

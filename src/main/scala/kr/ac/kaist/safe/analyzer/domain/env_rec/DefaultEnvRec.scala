@@ -113,10 +113,10 @@ object DefaultEnvRec extends EnvRecDomain {
     def ImplicitThisValue(heap: AbsHeap): AbsValue =
       decEnvRec.ImplicitThisValue ⊔ globalEnvRec.ImplicitThisValue(heap)
 
-    def subsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(decEnvRec.subsLoc(locR, locO), globalEnvRec)
+    def subsLoc(from: Loc, to: Loc): Elem =
+      Elem(decEnvRec.subsLoc(from, to), globalEnvRec)
 
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(decEnvRec.weakSubsLoc(locR, locO), globalEnvRec)
+    def weakSubsLoc(from: Loc, to: Loc): Elem =
+      Elem(decEnvRec.weakSubsLoc(from, to), globalEnvRec)
   }
 }

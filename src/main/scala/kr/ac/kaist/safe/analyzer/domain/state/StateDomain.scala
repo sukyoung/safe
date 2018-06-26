@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 
 // state abstract domain
 trait StateDomain extends AbsDomain[State] {
-  def apply(heap: AbsHeap, context: AbsContext): Elem
+  def apply(heap: AbsHeap, context: AbsContext, allocs: AllocLocSet): Elem
 
   // abstract state element
   type Elem <: ElemTrait
@@ -25,8 +25,12 @@ trait StateDomain extends AbsDomain[State] {
     val heap: AbsHeap
     val context: AbsContext
 
+    def subsLoc(from: Loc, to: Loc): Elem
+    def weakSubsLoc(from: Loc, to: Loc): Elem
     def raiseException(excSet: Set[Exception]): Elem
-    def oldify(loc: Loc): Elem
+    def alloc(loc: Loc): Elem
+    def setAllocLocSet(allocs: AllocLocSet): Elem
+    def allocs: AllocLocSet
 
     // Lookup
     def lookup(id: CFGId): (AbsValue, Set[Exception])

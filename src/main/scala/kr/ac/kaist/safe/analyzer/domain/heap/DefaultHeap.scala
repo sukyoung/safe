@@ -18,12 +18,14 @@ import scala.collection.immutable.HashMap
 
 // default heap abstract domain
 object DefaultHeap extends HeapDomain {
+  private val EmptyMap: Map[Loc, AbsObj] = HashMap()
+
   case object Top extends Elem
   case object Bot extends Elem
   case class HeapMap(map: Map[Loc, AbsObj]) extends Elem
 
   def alpha(heap: Heap): Elem = {
-    val map = heap.map.foldLeft[Map[Loc, AbsObj]](HashMap()) {
+    val map = heap.map.foldLeft(EmptyMap) {
       case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
     HeapMap(map)
@@ -65,7 +67,7 @@ object DefaultHeap extends HeapDomain {
           else if (right.isBottom) left.map
           else {
             val joinKeySet = left.map.keySet ++ right.map.keySet
-            joinKeySet.foldLeft(HashMap[Loc, AbsObj]())((m, key) => {
+            joinKeySet.foldLeft(EmptyMap)((m, key) => {
               val joinObj = (left.map.get(key), right.map.get(key)) match {
                 case (Some(obj1), Some(obj2)) => Some(obj1 ⊔ obj2)
                 case (Some(obj1), None) => Some(obj1)
@@ -88,8 +90,8 @@ object DefaultHeap extends HeapDomain {
       case (left: HeapMap, right: HeapMap) =>
         val newMap: Map[Loc, AbsObj] =
           if (left.map eq right.map) left.map
-          else if (left.map.isEmpty) HashMap()
-          else if (right.map.isEmpty) HashMap()
+          else if (left.map.isEmpty) EmptyMap
+          else if (right.map.isEmpty) EmptyMap
           else {
             right.map.foldLeft(left.map)(
               (m, kv) => kv match {
@@ -164,31 +166,18 @@ object DefaultHeap extends HeapDomain {
       case HeapMap(map) => HeapMap(map - loc)
     }
 
-    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
+    def subsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
       case HeapMap(map) =>
-        val newMap = map.foldLeft(Map[Loc, AbsObj]())((m, kv) => {
+        val newMap = (map.get(from) match {
+          case Some(obj) => map - from + (to -> (map.getOrElse(to, AbsObj.Bot) ⊔ obj))
+          case None => map
+        }).foldLeft(Map[Loc, AbsObj]())((m, kv) => {
           val (l, obj) = kv
-          m + (l -> obj.subsLoc(locR, locO))
+          m + (l -> obj.subsLoc(from, to))
         })
         HeapMap(newMap)
-    }
-
-    def oldify(loc: Loc): Elem = loc match {
-      case locR @ Recency(subLoc, Recent) => this match {
-        case Top => Top
-        case Bot => Bot
-        case heap @ HeapMap(map) => {
-          val locO = Recency(subLoc, Old)
-          if (heap domIn locR) {
-            update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
-          } else {
-            subsLoc(locR, locO)
-          }
-        }
-      }
-      case _ => this
     }
 
     def domIn(loc: Loc): Boolean = this match {

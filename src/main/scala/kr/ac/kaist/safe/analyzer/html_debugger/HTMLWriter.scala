@@ -192,14 +192,12 @@ object HTMLWriter {
 
     val thisBinding = ctx.thisBinding
     sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
-    // old allocation site set
-    val old = ctx.old
-    val mayOld = old.mayOld.mkString(", ")
-    val mustOld =
-      if (old.mustOld == null) "bottom"
-      else old.mustOld.mkString(", ")
-    sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
-    sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
+    // allocated location set
+    val allocs = st.allocs
+    val mayAlloc = allocs.mayAlloc
+    val mustAlloc = allocs.mustAlloc
+    sb.append(s"{ value: {value: 'mayAlloc: [$mayAlloc]'} },").append(LINE_SEP)
+    sb.append(s"{ value: {value: 'mustAlloc: [$mustAlloc]'} },").append(LINE_SEP)
     sb.append(s"],").append(LINE_SEP)
 
     sb.toString

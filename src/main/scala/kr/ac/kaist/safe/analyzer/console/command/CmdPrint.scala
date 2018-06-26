@@ -150,7 +150,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
                 printResult("- dst:")
                 m.foreach {
                   case (cp, data) =>
-                    printResult(s"  $cp, ${data.old}")
+                    printResult(s"  $cp, $data")
                 }
               }
               case None => printResult("- Nothing")

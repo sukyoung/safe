@@ -89,7 +89,7 @@ case class Semantics(
         case None =>
           map2 + (cp2 -> data)
         case Some(oldData) =>
-          map2 + (cp2 -> (data + oldData))
+          map2 + (cp2 -> (data ⊔ oldData))
       }
     }
     ipSuccMap += (cp1 -> updatedSuccMap)
@@ -108,38 +108,36 @@ case class Semantics(
           val ctx3 = data.env.outer.foldLeft[AbsContext](AbsContext.Bot)((hi, locEnv) => {
             hi ⊔ ctx2.update(locEnv, objEnv)
           })
-          AbsState(st.heap, ctx3
-            .setOldASiteSet(data.old)
-            .setThisBinding(data.thisBinding))
+          st.copy(context = ctx3.setThisBinding(data.thisBinding))
+            .setAllocLocSet(data.allocs)
         }
       }
       case (Exit(_), _) if st.context.isBottom => AbsState.Bot
       case (Exit(f1), AfterCall(f2, retVar, call)) =>
-        val (ctx1, old1) = (st.context, st.context.old)
-        val (old2, env1) = data.old.fixOldify(data.env, old1.mayOld, old1.mustOld)
-        if (old2.isBottom) AbsState.Bot
+        val (ctx1, allocs1) = (st.context, st.allocs)
+        val (allocs2, env1) = data.allocs.fix(data.env, allocs1)
+        if (allocs2.isBottom) AbsState.Bot
         else {
           val localEnv = ctx1.pureLocal
           val (returnV, _) = localEnv.record.decEnvRec.GetBindingValue("@return")
           val ctx2 = ctx1.subsPureLocal(env1)
-          val newSt = AbsState(st.heap, ctx2
-            .setOldASiteSet(old2)
-            .setThisBinding(data.thisBinding))
+          val newSt = st.copy(context = ctx2.setThisBinding(data.thisBinding))
+            .setAllocLocSet(allocs2)
           newSt.varStore(retVar, returnV)
         }
       case (Exit(f), _) =>
-        val old1 = st.context.old
-        val (old2, env1) = data.old.fixOldify(data.env, old1.mayOld, old1.mustOld)
-        if (old2.isBottom) AbsState.Bot
+        val allocs1 = st.allocs
+        val (allocs2, env1) = data.allocs.fix(data.env, allocs1)
+        if (allocs2.isBottom) AbsState.Bot
         else {
           excLog.signal(IPFromExitToNoneError(f.ir))
           AbsState.Bot
         }
       case (ExitExc(_), _) if st.context.isBottom => AbsState.Bot
-      case (ExitExc(_), _) if st.context.old.isBottom => AbsState.Bot
+      case (ExitExc(_), _) if st.allocs.isBottom => AbsState.Bot
       case (ExitExc(_), AfterCatch(_, _)) =>
-        val (ctx1, c1) = (st.context, st.context.old)
-        val (c2, envL) = data.old.fixOldify(data.env, c1.mayOld, c1.mustOld)
+        val (ctx1, c1) = (st.context, st.allocs)
+        val (c2, envL) = data.allocs.fix(data.env, c1)
         val env1 = envL.record.decEnvRec
         if (c2.isBottom) AbsState.Bot
         else {
@@ -149,14 +147,13 @@ case class Semantics(
           val (env2, _) = env1.SetMutableBinding("@exception", excValue)
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue ⊔ oldExcAllValue)
           val ctx2 = ctx1.subsPureLocal(envL.copy(record = env3))
-          AbsState(st.heap, ctx2
-            .setOldASiteSet(c2)
-            .setThisBinding(data.thisBinding))
+          st.copy(context = ctx2.setThisBinding(data.thisBinding))
+            .setAllocLocSet(c2)
         }
       case (ExitExc(f), _) =>
-        val old1 = st.context.old
-        val (old2, env1) = data.old.fixOldify(data.env, old1.mayOld, old1.mustOld)
-        if (old2.isBottom) AbsState.Bot
+        val allocs1 = st.allocs
+        val (allocs2, env1) = data.allocs.fix(data.env, allocs1)
+        if (allocs2.isBottom) AbsState.Bot
         else {
           excLog.signal(IPFromExitToNoneError(f.ir))
           AbsState.Bot
@@ -170,7 +167,7 @@ case class Semantics(
     else {
       val h = st.heap
       val ctx = st.context
-      val old = ctx.old
+      val allocs = st.allocs
       cp.block match {
         case Entry(_) => {
           val fun = cp.block.func
@@ -209,7 +206,7 @@ case class Semantics(
       case CFGAlloc(_, _, x, e, newASite) => {
         val objProtoSingleton = LocSet(OBJ_PROTO_LOC)
         val loc = Loc(newASite, tp)
-        val st1 = st.oldify(loc)
+        val st1 = st.alloc(loc)
         val (vLocSet, excSet) = e match {
           case None => (objProtoSingleton, ExcSetEmpty)
           case Some(proto) => {
@@ -221,25 +218,25 @@ case class Semantics(
           }
         }
         val h2 = st1.heap.update(loc, AbsObj.newObject(vLocSet))
-        val newSt = AbsState(h2, st1.context).varStore(x, AbsValue(loc))
+        val newSt = st1.copy(heap = h2).varStore(x, AbsValue(loc))
         val newExcSt = st.raiseException(excSet)
         val s1 = excSt ⊔ newExcSt
         (newSt, s1)
       }
       case CFGAllocArray(_, _, x, n, newASite) => {
         val loc = Loc(newASite, tp)
-        val st1 = st.oldify(loc)
+        val st1 = st.alloc(loc)
         val np = AbsNum(n.toInt)
         val h2 = st1.heap.update(loc, AbsObj.newArrayObject(np))
-        val newSt = AbsState(h2, st1.context).varStore(x, AbsValue(loc))
+        val newSt = st1.copy(heap = h2).varStore(x, AbsValue(loc))
         (newSt, excSt)
       }
       case CFGAllocArg(_, _, x, n, newASite) => {
         val loc = Loc(newASite, tp)
-        val st1 = st.oldify(loc)
+        val st1 = st.alloc(loc)
         val absN = AbsNum(n.toInt)
         val h2 = st1.heap.update(loc, AbsObj.newArgObject(absN))
-        val newSt = AbsState(h2, st1.context).varStore(x, AbsValue(loc))
+        val newSt = st1.copy(heap = h2).varStore(x, AbsValue(loc))
         (newSt, excSt)
       }
       case CFGEnterCode(_, _, x, e) => {
@@ -297,7 +294,7 @@ case class Semantics(
             (tmpHeap2 ⊔ delHeap, tmpB2 ⊔ delB)
           })
         })
-        val st1 = AbsState(h1, st.context)
+        val st1 = st.copy(heap = h1)
         val st2 =
           if (st1.isBottom) AbsState.Bot
           else {
@@ -329,7 +326,7 @@ case class Semantics(
           }
 
         val newExcSt = st.raiseException(excSet1)
-        (AbsState(heap1, st.context), excSt ⊔ newExcSt)
+        (st.copy(heap = heap1), excSt ⊔ newExcSt)
       }
       case CFGStoreStringIdx(_, block, obj, strIdx, rhs) => {
         // locSet must not be empty because obj is coming through <>toObject.
@@ -347,14 +344,14 @@ case class Semantics(
           }
 
         val newExcSt = st.raiseException(excSet1)
-        (AbsState(heap1, st.context), excSt ⊔ newExcSt)
+        (st.copy(heap = heap1), excSt ⊔ newExcSt)
       }
       case CFGFunExpr(_, block, lhs, None, f, aNew1, aNew2, None) => {
         //Recency Abstraction
         val loc1 = Loc(aNew1, tp)
         val loc2 = Loc(aNew2, tp)
-        val st1 = st.oldify(loc1)
-        val st2 = st1.oldify(loc2)
+        val st1 = st.alloc(loc1)
+        val st2 = st1.alloc(loc2)
         val oNew = AbsObj.newObject(OBJ_PROTO_LOC)
 
         val n = AbsNum(f.argVars.length)
@@ -364,7 +361,7 @@ case class Semantics(
         val fVal = AbsValue(loc1)
         val h4 = h3.update(loc2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT)))
 
-        val newSt = AbsState(h4, st2.context).varStore(lhs, fVal)
+        val newSt = st2.copy(heap = h4).varStore(lhs, fVal)
         (newSt, excSt)
       }
       case CFGFunExpr(_, block, lhs, Some(name), f, aNew1, aNew2, Some(aNew3)) => {
@@ -372,9 +369,9 @@ case class Semantics(
         val loc1 = Loc(aNew1, tp)
         val loc2 = Loc(aNew2, tp)
         val loc3 = Loc(aNew3, tp)
-        val st1 = st.oldify(loc1)
-        val st2 = st1.oldify(loc2)
-        val st3 = st2.oldify(loc3)
+        val st1 = st.alloc(loc1)
+        val st2 = st1.alloc(loc2)
+        val st3 = st2.alloc(loc3)
 
         val oNew = AbsObj.newObject(OBJ_PROTO_LOC)
         val n = AbsNum(f.argVars.length)
@@ -390,7 +387,7 @@ case class Semantics(
           .CreateImmutableBinding(name.text)
           .InitializeImmutableBinding(name.text, fVal)
         val newCtx = st3.context.update(loc3, oEnv.copy(record = oEnvRec2))
-        val newSt = AbsState(h5, newCtx).varStore(lhs, fVal)
+        val newSt = AbsState(h5, newCtx, st3.allocs).varStore(lhs, fVal)
         (newSt, excSt)
       }
       case CFGAssert(_, _, expr, _) => B(expr, st, excSt)
@@ -402,7 +399,7 @@ case class Semantics(
         val env = st1.context.pureLocal
         val (newEnv, _) = env.record.decEnvRec.SetMutableBinding("@exception", excSetV)
         val newCtx = st1.context.subsPureLocal(env.copy(record = newEnv))
-        val newSt = AbsState(st1.heap, newCtx)
+        val newSt = st1.copy(context = newCtx)
         (newSt, AbsState.Bot)
       }
       case CFGReturn(_, _, Some(expr)) => {
@@ -414,13 +411,13 @@ case class Semantics(
             st.context.subsPureLocal(localEnv.copy(record = localEnv2))
           } else AbsContext.Bot
         val newExcSt = st.raiseException(excSet)
-        (AbsState(st.heap, ctx1), excSt ⊔ newExcSt)
+        (st.copy(context = ctx1), excSt ⊔ newExcSt)
       }
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
         val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", AbsUndef.Top)
         val ctx1 = st.context.subsPureLocal(localEnv.copy(record = localEnv2))
-        val newSt = AbsState(st.heap, ctx1)
+        val newSt = st.copy(context = ctx1)
         (newSt, excSt)
       }
       case CFGThrow(_, _, expr) => {
@@ -435,7 +432,7 @@ case class Semantics(
         val ctx1 = st.context.subsPureLocal(localEnv.copy(record = newEnv3))
         val newExcSt = st.raiseException(excSet)
 
-        (AbsState.Bot, excSt ⊔ AbsState(st.heap, ctx1) ⊔ newExcSt)
+        (AbsState.Bot, excSt ⊔ st.copy(context = ctx1) ⊔ newExcSt)
       }
       case CFGInternalCall(ir, _, lhs, name, arguments, loc) =>
         IC(cp, ir, lhs, name, arguments, loc, st, excSt)
@@ -489,7 +486,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -514,7 +511,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -539,7 +536,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -564,7 +561,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -593,10 +590,10 @@ case class Semantics(
         val (retSt, retV, excSet) = if (!desc.isBottom) {
           val (descObj, excSet) = AbsObj.FromPropertyDescriptor(st.heap, desc)
           val descLoc = Loc(aNew, tp)
-          val state = st.oldify(descLoc)
-          val retH = state.heap.update(descLoc, descObj.oldify(aNew))
+          val state = st.alloc(descLoc)
+          val retH = state.heap.update(descLoc, descObj.alloc(aNew))
           val retV = AbsValue(undef, LocSet(descLoc))
-          (AbsState(retH, state.context), retV, excSet)
+          (state.copy(heap = retH), retV, excSet)
         } else (st, AbsValue(undef), ExcSetEmpty)
         val newSt = retSt.varStore(lhs, retV)
         val newExcSt = st.raiseException(excSetO ++ excSetP ++ excSet)
@@ -624,7 +621,7 @@ case class Semantics(
             (retH, e ++ newExcSet)
           }
         }
-        val retSt = AbsState(retH, st.context).varStore(lhs, AbsValue(objV.locset))
+        val retSt = st.copy(heap = retH).varStore(lhs, AbsValue(objV.locset))
         val excSt = st.raiseException(retExcSet)
         (retSt, excSt)
       }
@@ -775,10 +772,10 @@ case class Semantics(
           case true => (AbsState.Bot, excSt)
           case false => {
             val arrLoc = Loc(arrASite, tp)
-            val state = st.oldify(arrLoc)
-            val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
+            val state = st.alloc(arrLoc)
+            val retHeap = state.heap.update(arrLoc, retObj.alloc(arrLoc))
             val excSt = state.raiseException(retExcSet)
-            val st2 = AbsState(retHeap, state.context)
+            val st2 = state.copy(heap = retHeap)
             val retSt = st2.varStore(lhs, AbsValue(arrLoc))
 
             (retSt, excSt)
@@ -789,9 +786,9 @@ case class Semantics(
         val (v, excSet) = V(expr, st)
         val str = TypeConversionHelper.ToString(v)
         val loc = Loc(aNew, tp)
-        val st1 = st.oldify(loc)
+        val st1 = st.alloc(loc)
         val heap = st1.heap.update(loc, AbsObj.newStringObj(str))
-        val st2 = AbsState(heap, st1.context)
+        val st2 = st1.copy(heap = heap)
         val st3 =
           if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))
           else AbsState.Bot
@@ -802,9 +799,9 @@ case class Semantics(
         val (v, excSet) = V(expr, st)
         val bool = TypeConversionHelper.ToBoolean(v)
         val loc = Loc(aNew, tp)
-        val st1 = st.oldify(loc)
+        val st1 = st.alloc(loc)
         val heap = st1.heap.update(loc, AbsObj.newBooleanObj(bool))
-        val st2 = AbsState(heap, st1.context)
+        val st2 = st1.copy(heap = heap)
         val st3 =
           if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))
           else AbsState.Bot
@@ -815,9 +812,9 @@ case class Semantics(
         val (v, excSet) = V(expr, st)
         val num = TypeConversionHelper.ToNumber(v)
         val loc = Loc(aNew, tp)
-        val st1 = st.oldify(loc)
+        val st1 = st.alloc(loc)
         val heap = st1.heap.update(loc, AbsObj.newNumberObj(num))
-        val st2 = AbsState(heap, st1.context)
+        val st2 = st1.copy(heap = heap)
         val st3 =
           if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))
           else AbsState.Bot
@@ -1008,7 +1005,7 @@ case class Semantics(
             val heap = st.heap
             val newObj = heap.get(locset) ⊔ AbsObj.Empty
             val loc = Loc(aNew, tp)
-            (locset + loc, AbsState(st1.heap ⊔ heap.update(loc, newObj), st.context))
+            (locset + loc, st.copy(heap = st1.heap ⊔ heap.update(loc, newObj)))
           } else (locset, st1)
         val st3 = st2.varStore(lhs, AbsValue(AbsNum(0), locset2))
         val newExcSt = st.raiseException(excSet1 ++ excSet2)
@@ -1089,7 +1086,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -1114,7 +1111,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -1139,7 +1136,7 @@ case class Semantics(
             h.update(loc, newObj)
           }
         }
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -1169,7 +1166,7 @@ case class Semantics(
           }
         }
 
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -1188,7 +1185,7 @@ case class Semantics(
           }
         }
 
-        val newSt = AbsState(newH, st.context).varStore(lhs, p)
+        val newSt = st.copy(heap = newH).varStore(lhs, p)
         val newExcSt = st.raiseException(excSetO ++ excSetP)
         (newSt, excSt ⊔ newExcSt)
       }
@@ -1220,7 +1217,7 @@ case class Semantics(
     // cons, thisArg and arguments must not be bottom
     val tp = cp.tracePartition
     val loc = Loc(i.asite, tp)
-    val st1 = st.oldify(loc)
+    val st1 = st.alloc(loc)
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {
       case (_: CFGConstruct) => funVal.locset.filter(l => AT ⊑ st1.heap.hasConstruct(l))
@@ -1265,17 +1262,17 @@ case class Semantics(
                 val exitCP = ControlPoint(funCFG.exit, newTP)
                 val exitExcCP = ControlPoint(funCFG.exitExc, newTP)
                 addIPEdge(cp, entryCP, EdgeData(
-                  OldASiteSet.Empty,
+                  AllocLocSet.Empty,
                   newEnv.copy(record = newRec2),
                   thisVal
                 ))
                 addIPEdge(exitCP, cpAfterCall, EdgeData(
-                  st1.context.old,
+                  st1.allocs,
                   oldLocalEnv,
                   st1.context.thisBinding
                 ))
                 addIPEdge(exitExcCP, cpAfterCatch, EdgeData(
-                  st1.context.old,
+                  st1.allocs,
                   oldLocalEnv,
                   st1.context.thisBinding
                 ))
@@ -1308,7 +1305,7 @@ case class Semantics(
         if (!funLocSet.isBottom) h2
         else AbsHeap.Bot
 
-      val newSt = AbsState(h3, st1.context)
+      val newSt = st1.copy(heap = h3)
       (newSt, excSt ⊔ newExcSt)
     }
   }
@@ -1445,16 +1442,15 @@ case class Semantics(
 }
 
 // Interprocedural edges
-case class EdgeData(old: OldASiteSet, env: AbsLexEnv, thisBinding: AbsValue) {
-  def +(other: EdgeData): EdgeData = EdgeData(
-    this.old + other.old,
+case class EdgeData(allocs: AllocLocSet, env: AbsLexEnv, thisBinding: AbsValue) {
+  def ⊔(other: EdgeData): EdgeData = EdgeData(
+    this.allocs ⊔ other.allocs,
     this.env ⊔ other.env,
     this.thisBinding ⊔ other.thisBinding
   )
-  def <=(other: EdgeData): Boolean = {
-    this.old <= other.old &&
+  def ⊑(other: EdgeData): Boolean = {
+    this.allocs ⊑ other.allocs &&
       this.env ⊑ other.env &&
       this.thisBinding ⊑ other.thisBinding
   }
-  def </(other: EdgeData): Boolean = !(this <= other)
 }

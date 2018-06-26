@@ -18,7 +18,6 @@ trait ContextDomain extends AbsDomain[Context] {
   val Empty: Elem
   def apply(
     map: Map[Loc, AbsLexEnv],
-    old: OldASiteSet,
     thisBinding: AbsValue
   ): Elem
 
@@ -41,20 +40,14 @@ trait ContextDomain extends AbsDomain[Context] {
     // remove location
     def remove(loc: Loc): Elem
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem
-
-    def oldify(loc: Loc): Elem
+    // substitute location
+    def subsLoc(from: Loc, to: Loc): Elem
 
     def domIn(loc: Loc): Boolean
-
-    def setOldASiteSet(old: OldASiteSet): Elem
 
     def setThisBinding(thisBinding: AbsValue): Elem
 
     def getMap: Map[Loc, AbsLexEnv]
-
-    def old: OldASiteSet
 
     def thisBinding: AbsValue
 

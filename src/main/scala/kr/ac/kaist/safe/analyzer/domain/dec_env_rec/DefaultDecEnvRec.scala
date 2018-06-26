@@ -309,11 +309,11 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem = {
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
-          val newV = bind.value.subsLoc(locR, locO)
+          val newV = bind.value.subsLoc(from, to)
           val newBind = bind.copy(value = newV)
           m + (key -> (newBind, abs))
         }
@@ -325,11 +325,11 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
-    // weak substitute locR by locO
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem = {
+    // weak substitute from by to
+    def weakSubsLoc(from: Loc, to: Loc): Elem = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
-          val newV = bind.value.weakSubsLoc(locR, locO)
+          val newV = bind.value.weakSubsLoc(from, to)
           val newBind = bind.copy(value = newV)
           m + (key -> (newBind, abs))
         }

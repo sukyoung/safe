@@ -108,17 +108,17 @@ object LocSet extends AbsDomain[Loc] {
       case LSet(set) => LSet(set - loc)
     }
 
-    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
-      case Top => Top // TODO LSet(locSet - locR + locO)
+    def subsLoc(from: Loc, to: Loc): Elem = this match {
+      case Top => Top // TODO LSet(locSet - from + to)
       case LSet(set) =>
-        if (set contains locR) LSet(set - locR + locO)
+        if (set contains from) LSet(set - from + to)
         else this
     }
 
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem = this match {
+    def weakSubsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case LSet(set) =>
-        if (set contains locR) LSet(set + locO)
+        if (set contains from) LSet(set + to)
         else this
     }
   }

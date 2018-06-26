@@ -27,10 +27,10 @@ trait ValueDomain extends AbsDomain[Value] {
     val pvalue: AbsPValue
     val locset: LocSet
 
-    /* substitute locR by locO */
-    def subsLoc(locR: Recency, locO: Recency): Elem
-    /* weakly substitute locR by locO, that is keep locR together */
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+    /* substitute from by to */
+    def subsLoc(from: Loc, to: Loc): Elem
+    /* weakly substitute from by to, that is keep from together */
+    def weakSubsLoc(from: Loc, to: Loc): Elem
     // TODO working but a more simple way exists with modifying getBase
     def getThis(h: AbsHeap): LocSet
 

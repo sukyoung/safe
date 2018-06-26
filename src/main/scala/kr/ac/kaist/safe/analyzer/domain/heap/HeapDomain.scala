@@ -33,9 +33,8 @@ trait HeapDomain extends AbsDomain[Heap] {
     // remove location
     def remove(loc: Loc): Elem
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem
-    def oldify(loc: Loc): Elem
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem
     def domIn(loc: Loc): Boolean
 
     // toString

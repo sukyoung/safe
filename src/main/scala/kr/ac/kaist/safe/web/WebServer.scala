@@ -112,7 +112,7 @@ object WebServer extends {
                 val heapBuildConfig = HeapBuild.defaultConfig
                 val testJSON = Useful.path("config.json")
                 parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
-                parser(List(s"-json=$testJSON"))
+                parser(List(s"-config=$testJSON"))
 
                 // AST
                 val (ast, _) = ASTRewrite.rewrite(pgm)

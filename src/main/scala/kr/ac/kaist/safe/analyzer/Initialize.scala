@@ -28,11 +28,11 @@ object Initialize {
     // TODO If delete, not working because not allowed update to bottom heap
     ))
 
-    val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
+    val initCtx = AbsContext(HashMap(
       GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PURE_LOCAL -> globalPureLocalEnv,
       COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), OldASiteSet.Empty, globalLocSet)
+    ), globalLocSet)
 
     val modeledHeap: AbsHeap = {
       val model = HeapBuild.jscache getOrElse {
@@ -44,13 +44,13 @@ object Initialize {
       AbsHeap(model.heap)
     }
 
-    AbsState(modeledHeap, initCtx)
+    AbsState(modeledHeap, initCtx, AllocLocSet.Empty)
   }
 
   def addSnapshot(st: AbsState, snapshot: String): AbsState = {
     val concreteHeap = Heap.parse(snapshot)
     val abstractHeap = AbsHeap.alpha(concreteHeap)
-    AbsState(st.heap ⊔ abstractHeap, st.context)
+    st.copy(heap = st.heap ⊔ abstractHeap)
   }
 }
 

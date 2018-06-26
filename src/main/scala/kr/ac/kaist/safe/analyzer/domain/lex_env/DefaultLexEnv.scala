@@ -82,11 +82,11 @@ object DefaultLexEnv extends LexEnvDomain {
       nullOuter: AbsAbsent = this.nullOuter
     ): Elem = Elem(record, outer, nullOuter)
 
-    def subsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
+    def subsLoc(from: Loc, to: Loc): Elem =
+      Elem(record.subsLoc(from, to), outer.subsLoc(from, to), nullOuter)
 
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
+    def weakSubsLoc(from: Loc, to: Loc): Elem =
+      Elem(record.weakSubsLoc(from, to), outer.subsLoc(from, to), nullOuter)
   }
 
   def getIdBase(
@@ -216,7 +216,7 @@ object DefaultLexEnv extends LexEnvDomain {
         case (loc, newEnv) => newCtx = newCtx.weakUpdate(loc, newEnv)
       }
     }
-    (AbsState(newH, newCtx), excSet)
+    (AbsState(newH, newCtx, st.allocs), excSet)
   }
 
   def NewDeclarativeEnvironment(outer: LocSet): Elem =
