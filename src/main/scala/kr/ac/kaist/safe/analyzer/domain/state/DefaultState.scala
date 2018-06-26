@@ -75,13 +75,11 @@ object DefaultState extends StateDomain {
       Elem(heap.subsLoc(from, to), context.subsLoc(from, to), allocs.subsLoc(from, to))
     }
 
-    def alloc(loc: Loc): Elem = loc match {
-      case locR @ Recency(l, Recent) =>
-        val newHeap = heap.alloc(loc)
-        val newCtxt = context.alloc(loc)
-        val newAllocs = allocs.alloc(loc)
-        Elem(newHeap, newCtxt, newAllocs)
-      case _ => Elem(heap, context, allocs.alloc(loc))
+    def alloc(loc: Loc): Elem = {
+      val newHeap = heap.alloc(loc)
+      val newCtxt = context.alloc(loc)
+      val newAllocs = allocs.alloc(loc)
+      Elem(newHeap, newCtxt, newAllocs)
     }
 
     def setAllocLocSet(allocs: AllocLocSet): Elem = copy(allocs = allocs)
