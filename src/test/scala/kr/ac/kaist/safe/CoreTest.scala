@@ -259,6 +259,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       heapBuildConfig.AbsStr,
       heapBuildConfig.recencyMode,
       heapBuildConfig.heapClone,
+      heapBuildConfig.acs,
       heapBuildConfig.callsiteSensitivity *
         heapBuildConfig.loopSensitivity
     )

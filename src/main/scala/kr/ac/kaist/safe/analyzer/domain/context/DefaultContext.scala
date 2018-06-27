@@ -164,46 +164,53 @@ object DefaultContext extends ContextDomain {
       }
     }
 
-    private def subsLoc(cmap: CtxMap, from: Loc, to: Loc): CtxMap = {
-      val CtxMap(map, merged, thisBinding) = cmap
-      val (newMap, newMerged) = (map.get(from) match {
-        case Some(fromEnv) => {
-          val (newEnv, newMerged) = map.get(to) match {
-            case Some(toEnv) => (fromEnv ⊔ toEnv, merged + to)
-            case None => (fromEnv, merged)
-          }
-          (map - from + (to -> newEnv), newMerged)
-        }
-        case None => (map, merged)
-      })
-      CtxMap(
-        newMap.mapValues(_.subsLoc(from, to)),
-        newMerged.subsLoc(from, to),
-        thisBinding.subsLoc(from, to)
-      )
-    }
-
     def subsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case (map: CtxMap) => subsLoc(map, from, to)
+      case CtxMap(map, merged, thisBinding) => {
+        val (newMap, newMerged) = (map.get(from) match {
+          case Some(fromEnv) => {
+            val (newEnv, newMerged) = map.get(to) match {
+              case Some(toEnv) => (fromEnv ⊔ toEnv, merged + to)
+              case None => (fromEnv, merged)
+            }
+            (map - from + (to -> newEnv), newMerged)
+          }
+          case None => (map, merged)
+        })
+        CtxMap(
+          newMap.mapValues(_.subsLoc(from, to)),
+          newMerged.subsLoc(from, to),
+          thisBinding.subsLoc(from, to)
+        )
+      }
+    }
+
+    def remove(locs: Set[Loc]): Elem = this match {
+      case Top => Top
+      case Bot => Bot
+      case CtxMap(map, merged, thisBinding) => CtxMap(
+        (map -- locs).mapValues(_.remove(locs)),
+        merged.remove(locs),
+        thisBinding.remove(locs)
+      )
     }
 
     def alloc(loc: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case (cmap: CtxMap) => {
-        val CtxMap(map, merged, thisBinding) = loc match {
-          case locR @ Recency(l, Recent) =>
-            val locO = Recency(l, Old)
-            subsLoc(cmap, locR, locO)
-          case _ => cmap
-        }
+      case CtxMap(map, merged, thisBinding) => {
         val newMerged =
           if (map contains loc) merged + loc
           else merged
         CtxMap(map, newMerged, thisBinding)
       }
+    }
+
+    def getLocSet: LocSet = this match {
+      case Top => LocSet.Top
+      case Bot => LocSet.Bot
+      case CtxMap(map, _, _) => LocSet(map.keySet)
     }
 
     def domIn(loc: Loc): Boolean = this match {

@@ -87,6 +87,9 @@ object DefaultLexEnv extends LexEnvDomain {
 
     def weakSubsLoc(from: Loc, to: Loc): Elem =
       Elem(record.weakSubsLoc(from, to), outer.subsLoc(from, to), nullOuter)
+
+    def remove(locs: Set[Loc]): Elem =
+      Elem(record.remove(locs), outer.remove(locs), nullOuter)
   }
 
   def getIdBase(

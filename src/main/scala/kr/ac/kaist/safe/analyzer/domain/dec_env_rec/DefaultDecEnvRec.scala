@@ -341,6 +341,22 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
+    // remove locations
+    def remove(locs: Set[Loc]): Elem = {
+      def rm(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
+        case (m, (key, (bind, abs))) => {
+          val newV = bind.value.remove(locs)
+          val newBind = bind.copy(value = newV)
+          m + (key -> (newBind, abs))
+        }
+      }
+      this match {
+        case Bot => Bot
+        case LBindMap(map) => LBindMap(rm(map))
+        case UBindMap(map) => UBindMap(rm(map))
+      }
+    }
+
     // accessor
     def get(name: String): (AbsBinding, AbsAbsent) = this match {
       case Bot => (AbsBinding.Bot, AbsAbsent.Bot)

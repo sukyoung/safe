@@ -81,6 +81,9 @@ object DefaultValue extends ValueDomain {
     def weakSubsLoc(from: Loc, to: Loc): Elem =
       Elem(this.pvalue, this.locset.weakSubsLoc(from, to))
 
+    def remove(locs: Set[Loc]): Elem =
+      Elem(this.pvalue, this.locset.remove(locs))
+
     def typeCount: Int = {
       if (this.locset.isBottom)
         pvalue.typeCount

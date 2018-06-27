@@ -31,6 +31,8 @@ trait ValueDomain extends AbsDomain[Value] {
     def subsLoc(from: Loc, to: Loc): Elem
     /* weakly substitute from by to, that is keep from together */
     def weakSubsLoc(from: Loc, to: Loc): Elem
+    /* remove locations */
+    def remove(locs: Set[Loc]): Elem
     // TODO working but a more simple way exists with modifying getBase
     def getThis(h: AbsHeap): LocSet
 

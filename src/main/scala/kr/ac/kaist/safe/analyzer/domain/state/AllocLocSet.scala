@@ -46,7 +46,12 @@ case class AllocLocSet(mayAlloc: LocSet, mustAlloc: LocSet) {
 
   /* weakly substitute location */
   def weakSubsLoc(from: Loc, to: Loc): AllocLocSet = {
-    AllocLocSet(mayAlloc.weakSubsLoc(from, to), mustAlloc.weakSubsLoc(from, to))
+    AllocLocSet(mayAlloc.weakSubsLoc(from, to) + to, mustAlloc.weakSubsLoc(from, to) + to)
+  }
+
+  /* remove locations */
+  def remove(locs: Set[Loc]): AllocLocSet = {
+    AllocLocSet(mayAlloc.remove(locs), mustAlloc.remove(locs))
   }
 
   /* allocate location */
@@ -60,26 +65,6 @@ case class AllocLocSet(mayAlloc: LocSet, mustAlloc: LocSet) {
   }
 
   override def toString: String = s"mayAlloc: ($mayAlloc), mustAlloc: ($mustAlloc)"
-
-  def fix(env: AbsLexEnv, that: AllocLocSet): (AllocLocSet, AbsLexEnv) = {
-    if (this.isBottom) (AllocLocSet.Bot, AbsLexEnv.Bot)
-    else that.mayAlloc.foldLeft(this, env) {
-      case ((resAllocs, resEnv), loc) => {
-        val newAllocs =
-          if (that.mustAlloc contains loc) resAllocs.alloc(loc)
-          else resAllocs.weakAlloc(loc)
-        val newEnv = loc match {
-          case locR @ Recency(l, Recent) => {
-            val locO = Recency(l, Old)
-            if (that.mustAlloc contains locR) resEnv.subsLoc(locR, locO)
-            else resEnv.weakSubsLoc(locR, locO)
-          }
-          case _ => resEnv
-        }
-        (newAllocs, newEnv)
-      }
-    }
-  }
 }
 
 object AllocLocSet {

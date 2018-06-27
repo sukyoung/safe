@@ -25,12 +25,15 @@ trait StateDomain extends AbsDomain[State] {
     val heap: AbsHeap
     val context: AbsContext
 
+    def remove(locs: Set[Loc]): Elem
     def subsLoc(from: Loc, to: Loc): Elem
-    def weakSubsLoc(from: Loc, to: Loc): Elem
     def raiseException(excSet: Set[Exception]): Elem
+    def oldify(loc: Loc): Elem
     def alloc(loc: Loc): Elem
+    def afterCall(call: Call, locSet: LocSet): Elem
     def setAllocLocSet(allocs: AllocLocSet): Elem
     def allocs: AllocLocSet
+    def getLocSet: LocSet
 
     // Lookup
     def lookup(id: CFGId): (AbsValue, Set[Exception])

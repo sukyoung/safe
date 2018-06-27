@@ -39,8 +39,22 @@ case class Semantics(
 
   private val AB = AbsBool.Bot
 
+  // ControlPoint 
+  private val ccpToLocSet: MMap[Call, MMap[TracePartition, LocSet]] = MHashMap()
+  def setBeforeCallLocSet(call: Call, tp: TracePartition, locs: LocSet): Unit = {
+    val map = ccpToLocSet.getOrElse(call, {
+      val newMap = MHashMap[TracePartition, LocSet]()
+      ccpToLocSet(call) = newMap
+      newMap
+    })
+    map(tp) = locs
+  }
+  def getBeforeCallLocSet(call: Call, tp: TracePartition): LocSet = {
+    ccpToLocSet.getOrElse(call, MHashMap()).getOrElse(tp, LocSet.Bot)
+  }
+
   // control point maps to state
-  protected val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MHashMap()
+  private val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MHashMap()
   def getAllState: Map[CFGBlock, Map[TracePartition, AbsState]] =
     cpToState.toMap map { case (block, mmap) => block -> mmap.toMap }
   def getState(block: CFGBlock): Map[TracePartition, AbsState] =
@@ -113,31 +127,29 @@ case class Semantics(
         }
       }
       case (Exit(_), _) if st.context.isBottom => AbsState.Bot
-      case (Exit(f1), AfterCall(f2, retVar, call)) =>
-        val (ctx1, allocs1) = (st.context, st.allocs)
-        val (allocs2, env1) = data.allocs.fix(data.env, allocs1)
+      case (Exit(f1), acall @ AfterCall(f2, retVar, call)) =>
+        val call = acall.call
+        val callLocSet = getBeforeCallLocSet(call, cp2.tracePartition)
+        val state = st.afterCall(call, callLocSet)
+        val (ctx1, allocs1) = (state.context, state.allocs)
+        val EdgeData(allocs2, env1, thisBinding) = data.fix(allocs1)
         if (allocs2.isBottom) AbsState.Bot
         else {
           val localEnv = ctx1.pureLocal
           val (returnV, _) = localEnv.record.decEnvRec.GetBindingValue("@return")
           val ctx2 = ctx1.subsPureLocal(env1)
-          val newSt = st.copy(context = ctx2.setThisBinding(data.thisBinding))
+          val newSt = state.copy(context = ctx2.setThisBinding(thisBinding))
             .setAllocLocSet(allocs2)
           newSt.varStore(retVar, returnV)
         }
-      case (Exit(f), _) =>
-        val allocs1 = st.allocs
-        val (allocs2, env1) = data.allocs.fix(data.env, allocs1)
-        if (allocs2.isBottom) AbsState.Bot
-        else {
-          excLog.signal(IPFromExitToNoneError(f.ir))
-          AbsState.Bot
-        }
       case (ExitExc(_), _) if st.context.isBottom => AbsState.Bot
       case (ExitExc(_), _) if st.allocs.isBottom => AbsState.Bot
-      case (ExitExc(_), AfterCatch(_, _)) =>
-        val (ctx1, c1) = (st.context, st.allocs)
-        val (c2, envL) = data.allocs.fix(data.env, c1)
+      case (ExitExc(_), acatch @ AfterCatch(_, _)) =>
+        val call = acatch.call
+        val callLocSet = getBeforeCallLocSet(call, cp2.tracePartition)
+        val state = st.afterCall(call, callLocSet)
+        val (ctx1, c1) = (state.context, state.allocs)
+        val EdgeData(c2, envL, thisBinding) = data.fix(c1)
         val env1 = envL.record.decEnvRec
         if (c2.isBottom) AbsState.Bot
         else {
@@ -147,16 +159,8 @@ case class Semantics(
           val (env2, _) = env1.SetMutableBinding("@exception", excValue)
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue ⊔ oldExcAllValue)
           val ctx2 = ctx1.subsPureLocal(envL.copy(record = env3))
-          st.copy(context = ctx2.setThisBinding(data.thisBinding))
+          state.copy(context = ctx2.setThisBinding(thisBinding))
             .setAllocLocSet(c2)
-        }
-      case (ExitExc(f), _) =>
-        val allocs1 = st.allocs
-        val (allocs2, env1) = data.allocs.fix(data.env, allocs1)
-        if (allocs2.isBottom) AbsState.Bot
-        else {
-          excLog.signal(IPFromExitToNoneError(f.ir))
-          AbsState.Bot
         }
       case _ => st
     }
@@ -188,7 +192,10 @@ case class Semantics(
           })
           (newSt, AbsState.Bot)
         }
-        case call: Call => CI(cp, call.callInst, st, AbsState.Bot)
+        case (call: Call) =>
+          val (resSt, resExcSt) = CI(cp, call.callInst, st, AbsState.Bot)
+          setBeforeCallLocSet(call, cp.tracePartition, resSt.getLocSet)
+          (resSt, resExcSt)
         case block: NormalBlock =>
           block.getInsts.foldRight((st, AbsState.Bot))((inst, states) => {
             val (oldSt, oldExcSt) = states
@@ -1453,4 +1460,36 @@ case class EdgeData(allocs: AllocLocSet, env: AbsLexEnv, thisBinding: AbsValue) 
       this.env ⊑ other.env &&
       this.thisBinding ⊑ other.thisBinding
   }
+
+  def subsLoc(from: Loc, to: Loc): EdgeData = EdgeData(
+    allocs.subsLoc(from, to),
+    env.subsLoc(from, to),
+    thisBinding.subsLoc(from, to)
+  )
+
+  def weakSubsLoc(from: Loc, to: Loc): EdgeData = EdgeData(
+    allocs.weakSubsLoc(from, to),
+    env.weakSubsLoc(from, to),
+    thisBinding.weakSubsLoc(from, to)
+  )
+
+  def fix(given: AllocLocSet): EdgeData = given.mayAlloc.foldLeft(this) {
+    case (data, loc) => {
+      val EdgeData(allocs, env, thisBinding) = loc match {
+        case locR @ Recency(l, Recent) => {
+          val locO = Recency(l, Old)
+          if (given.mustAlloc contains locR) data.subsLoc(locR, locO)
+          else data.weakSubsLoc(locR, locO)
+        }
+        case _ => data
+      }
+      val newAllocs =
+        if (given.mustAlloc contains loc) allocs.alloc(loc)
+        else allocs.weakAlloc(loc)
+      EdgeData(newAllocs, env, thisBinding)
+    }
+  }
+}
+object EdgeData {
+  val Bot: EdgeData = EdgeData(AllocLocSet.Bot, AbsLexEnv.Bot, AbsValue.Bot)
 }

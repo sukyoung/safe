@@ -23,8 +23,15 @@ abstract class Loc extends Value {
   def isUser: Boolean = this match {
     case Recency(loc, _) => loc.isUser
     case TraceSensLoc(loc, _) => loc.isUser
+    case AllocCallSite(loc, _) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
+  }
+
+  def getACS: Option[AllocCallSite] = this match {
+    case Recency(loc, _) => loc.getACS
+    case acs @ AllocCallSite(_, _) => Some(acs)
+    case _ => None
   }
 
   override def toString: String = this match {
@@ -56,6 +63,7 @@ object Loc {
   def apply(asite: AllocSite, tp: TracePartition): Loc = {
     asite |>
       condApply(HeapClone, TraceSensLoc(_, tp)) |>
+      condApply(ACS > 0, AllocCallSite(_, Nil)) |>
       condApply(RecencyMode, Recency(_, Recent))
   }
   private def condApply(cond: Boolean, f: Loc => Loc)(input: Loc): Loc = {

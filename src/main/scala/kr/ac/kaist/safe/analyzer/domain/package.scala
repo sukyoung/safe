@@ -116,6 +116,7 @@ package object domain {
     absStr: StrDomain,
     recencyMode: Boolean,
     heapClone: Boolean,
+    acs: Int,
     sensitivity: Sensitivity
   ): Unit = {
     this.absUndef = Some(absUndef)
@@ -125,6 +126,7 @@ package object domain {
     this.absStr = Some(absStr)
     this.recencyMode = Some(recencyMode)
     this.heapClone = Some(heapClone)
+    this.acs = Some(acs)
     this.sensitivity = Some(sensitivity)
   }
 
@@ -159,6 +161,10 @@ package object domain {
   // heap cloning mode
   private var heapClone: Option[Boolean] = None
   lazy val HeapClone: Boolean = get("HeapClone", heapClone)
+
+  // k-allocation callsite abstraction
+  private var acs: Option[Int] = None
+  lazy val ACS: Int = get("ACS", acs)
 
   // trace sensitivity
   private var sensitivity: Option[Sensitivity] = None

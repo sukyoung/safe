@@ -166,45 +166,51 @@ object DefaultHeap extends HeapDomain {
         }
     }
 
-    private def subsLoc(hmap: HeapMap, from: Loc, to: Loc): HeapMap = {
-      val HeapMap(map, merged) = hmap
-      val (newMap, newMerged) = (map.get(from) match {
-        case Some(fromObj) => {
-          val (newObj, newMerged) = map.get(to) match {
-            case Some(toObj) => (fromObj ⊔ toObj, merged + to)
-            case None => (fromObj, merged)
-          }
-          (map - from + (to -> newObj), newMerged)
-        }
-        case None => (map, merged)
-      })
-      HeapMap(
-        newMap.mapValues(_.subsLoc(from, to)),
-        newMerged.subsLoc(from, to)
-      )
-    }
-
     def subsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case (map: HeapMap) => subsLoc(map, from, to)
+      case HeapMap(map, merged) => {
+        val (newMap, newMerged) = (map.get(from) match {
+          case Some(fromObj) => {
+            val (newObj, newMerged) = map.get(to) match {
+              case Some(toObj) => (fromObj ⊔ toObj, merged + to)
+              case None => (fromObj, merged)
+            }
+            (map - from + (to -> newObj), newMerged)
+          }
+          case None => (map, merged)
+        })
+        HeapMap(
+          newMap.mapValues(_.subsLoc(from, to)),
+          newMerged.subsLoc(from, to)
+        )
+      }
+    }
+
+    def remove(locs: Set[Loc]): Elem = this match {
+      case Top => Top
+      case Bot => Bot
+      case HeapMap(map, merged) => HeapMap(
+        (map -- locs).mapValues(_.remove(locs)),
+        merged.remove(locs)
+      )
     }
 
     def alloc(loc: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case (hmap: HeapMap) => {
-        val HeapMap(map, merged) = loc match {
-          case locR @ Recency(l, Recent) =>
-            val locO = Recency(l, Old)
-            subsLoc(hmap, locR, locO)
-          case _ => hmap
-        }
+      case HeapMap(map, merged) => {
         val newMerged =
           if (map contains loc) merged + loc
           else merged
         HeapMap(map, newMerged)
       }
+    }
+
+    def getLocSet: LocSet = this match {
+      case Top => LocSet.Top
+      case Bot => LocSet.Bot
+      case HeapMap(map, _) => LocSet(map.keySet)
     }
 
     def domIn(loc: Loc): Boolean = this match {

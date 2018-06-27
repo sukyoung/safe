@@ -39,6 +39,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       config.AbsStr,
       config.recencyMode,
       config.heapClone,
+      config.acs,
       config.callsiteSensitivity *
         config.loopSensitivity
     )
@@ -70,9 +71,11 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsStr = StringSet(n)),
       "the analyzer will use the AbsStr Set domain with given size limit n."),
     ("recency", BoolOption(c => c.recencyMode = true),
-      "analysis with recency abstraction"),
+      "analysis with recency abstraction."),
     ("heap-clone", BoolOption(c => c.heapClone = true),
-      "analysis with heap cloning that divides locations based on the given trace sensitivity"),
+      "analysis with heap cloning that divides locations based on the given trace sensitivity."),
+    ("acs", NumOption((c, k) => c.acs = k),
+      "analysis with k-allocation callsite abstraction."),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = CallSiteSensitivity(n)),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("loopIter", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxIter = n)),
@@ -99,5 +102,6 @@ case class HeapBuildConfig(
   var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
   var recencyMode: Boolean = false,
-  var heapClone: Boolean = false
+  var heapClone: Boolean = false,
+  var acs: Int = 0
 ) extends Config

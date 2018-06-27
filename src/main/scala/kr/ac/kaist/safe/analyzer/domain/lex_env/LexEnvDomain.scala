@@ -75,5 +75,8 @@ trait LexEnvDomain extends AbsDomain[LexEnv] {
 
     // weak substitute from by to
     def weakSubsLoc(from: Loc, to: Loc): Elem
+
+    // remove locations
+    def remove(locs: Set[Loc]): Elem
   }
 }

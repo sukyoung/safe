@@ -118,5 +118,8 @@ object DefaultEnvRec extends EnvRecDomain {
 
     def weakSubsLoc(from: Loc, to: Loc): Elem =
       Elem(decEnvRec.weakSubsLoc(from, to), globalEnvRec)
+
+    def remove(locs: Set[Loc]): Elem =
+      Elem(decEnvRec.remove(locs), globalEnvRec)
   }
 }

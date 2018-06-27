@@ -57,6 +57,7 @@ trait ObjDomain extends AbsDomain[Obj] {
     def subsLoc(from: Loc, to: Loc): Elem
     def weakSubsLoc(from: Loc, to: Loc): Elem
     def alloc(loc: Loc): Elem
+    def remove(locs: Set[Loc]): Elem
 
     def apply(str: String): AbsDataProp
     def apply(astr: AbsStr): AbsDataProp

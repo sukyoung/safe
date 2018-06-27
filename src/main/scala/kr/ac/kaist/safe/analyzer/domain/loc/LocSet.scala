@@ -121,5 +121,10 @@ object LocSet extends AbsDomain[Loc] {
         if (set contains from) LSet(set + to)
         else this
     }
+
+    def remove(locs: Set[Loc]): Elem = this match {
+      case Top => Top
+      case LSet(set) => LSet(set -- locs)
+    }
   }
 }

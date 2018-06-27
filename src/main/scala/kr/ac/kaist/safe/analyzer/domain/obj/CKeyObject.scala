@@ -95,6 +95,12 @@ object CKeyObject extends ObjDomain {
       case _ => this
     }
 
+    // remove locations
+    def remove(locs: Set[Loc]): Elem = Elem(
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.remove(locs)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.remove(locs)) }
+    )
+
     // lookup
     private def lookup(astr: AbsStr): AbsOpt[AbsDataProp] = astr.gamma match {
       case ConInf => nmap.map.foldLeft(nmap.default) {

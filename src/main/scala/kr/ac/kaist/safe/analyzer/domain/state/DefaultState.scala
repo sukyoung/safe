@@ -67,22 +67,65 @@ object DefaultState extends StateDomain {
       }
     }
 
-    def subsLoc(from: Loc, to: Loc): Elem = {
-      Elem(heap.subsLoc(from, to), context.subsLoc(from, to), allocs.subsLoc(from, to))
+    def remove(locs: Set[Loc]): Elem = {
+      Elem(
+        heap.remove(locs),
+        context.remove(locs),
+        allocs.remove(locs)
+      )
     }
 
-    def weakSubsLoc(from: Loc, to: Loc): Elem = {
-      Elem(heap.subsLoc(from, to), context.subsLoc(from, to), allocs.subsLoc(from, to))
+    def subsLoc(from: Loc, to: Loc): Elem = {
+      Elem(
+        heap.subsLoc(from, to),
+        context.subsLoc(from, to),
+        allocs.subsLoc(from, to)
+      )
+    }
+
+    def oldify(loc: Loc): Elem = loc match {
+      case locR @ Recency(l, Recent) => {
+        val locO = Recency(l, Old)
+        subsLoc(locR, locO)
+      }
+      case _ => this
     }
 
     def alloc(loc: Loc): Elem = {
+      val Elem(heap, context, allocs) = oldify(loc)
       val newHeap = heap.alloc(loc)
       val newCtxt = context.alloc(loc)
       val newAllocs = allocs.alloc(loc)
       Elem(newHeap, newCtxt, newAllocs)
     }
 
+    def afterCall(call: Call, locSet: LocSet): Elem = {
+      val allocs = this.allocs.mayAlloc ⊔ this.allocs.mustAlloc
+      val oldified = allocs.foldLeft(locSet) {
+        case (set, locR @ Recency(l, Recent)) =>
+          val locO = Recency(l, Old)
+          set.subsLoc(locR, locO)
+        case (set, _) => set
+      }
+      val pruned = (getLocSet.gamma, (oldified ⊔ allocs).gamma) match {
+        case (ConFin(given), ConFin(wanted)) => remove(given -- wanted)
+        case _ => this
+      }
+      allocs.foldLeft(pruned) {
+        case (st, loc) => loc.getACS match {
+          case Some(from @ AllocCallSite(l, cs)) => {
+            val to = AllocCallSite(l, (call :: cs).take(ACS))
+            st.subsLoc(from, to)
+          }
+          case None => st
+        }
+      }
+    }
+
     def setAllocLocSet(allocs: AllocLocSet): Elem = copy(allocs = allocs)
+
+    def getLocSet: LocSet =
+      heap.getLocSet ⊔ context.getLocSet ⊔ allocs.mayAlloc ⊔ allocs.mustAlloc
 
     ////////////////////////////////////////////////////////////////
     // Lookup
