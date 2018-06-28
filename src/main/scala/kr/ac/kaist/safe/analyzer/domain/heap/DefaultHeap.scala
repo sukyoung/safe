@@ -14,25 +14,24 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashMap
 
 // default heap abstract domain
 object DefaultHeap extends HeapDomain {
-  private val EmptyMap: Map[Loc, AbsObj] = HashMap()
+  private val EmptyMap: LayerMap[Loc, AbsObj] = LayerMap()
 
   case object Top extends Elem
   case object Bot extends Elem
-  val Empty: Elem = HeapMap(HashMap(), LocSet.Bot)
-  case class HeapMap(map: Map[Loc, AbsObj], merged: LocSet) extends Elem
+  val Empty: Elem = HeapMap(LayerMap(), LocSet.Bot)
+  case class HeapMap(map: LayerMap[Loc, AbsObj], merged: LocSet) extends Elem
 
   def alpha(heap: Heap): Elem = {
     val map = heap.map.foldLeft(EmptyMap) {
       case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
-    HeapMap(map, LocSet.Bot)
+    HeapMap(map.createLayer, LocSet.Bot)
   }
 
-  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem = HeapMap(map, merged)
+  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem = HeapMap(LayerMap(map), merged)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
@@ -45,15 +44,8 @@ object DefaultHeap extends HeapDomain {
       case (left: HeapMap, right: HeapMap) => {
         val mapB =
           if (left.map eq right.map) true
-          else if (left.map.size > right.map.size) false
-          else if (left.map.isEmpty) true
-          else if (right.map.isEmpty) false
-          else if (!(left.map.keySet subsetOf right.map.keySet)) false
-          else right.map.forall {
-            case (l, obj) => left.map.get(l) match {
-              case Some(leftObj) => leftObj ⊑ obj
-              case None => false
-            }
+          else left.map.forallWith(right.map) {
+            case (l, r) => l.getOrElse(AbsObj.Bot) ⊑ r.getOrElse(AbsObj.Bot)
           }
         val mergedB = left.merged ⊑ right.merged
         mapB && mergedB
@@ -67,23 +59,7 @@ object DefaultHeap extends HeapDomain {
       case (left: HeapMap, right: HeapMap) =>
         val newMap =
           if (left.map eq right.map) left.map
-          else if (left.isBottom) right.map
-          else if (right.isBottom) left.map
-          else {
-            val joinKeySet = left.map.keySet ++ right.map.keySet
-            joinKeySet.foldLeft(EmptyMap)((m, key) => {
-              val joinObj = (left.map.get(key), right.map.get(key)) match {
-                case (Some(obj1), Some(obj2)) => Some(obj1 ⊔ obj2)
-                case (Some(obj1), None) => Some(obj1)
-                case (None, Some(obj2)) => Some(obj2)
-                case (None, None) => None
-              }
-              joinObj match {
-                case Some(obj) => m.updated(key, obj)
-                case None => m
-              }
-            })
-          }
+          else left.map.unionWith(right.map)(_ ⊔ _)
         val newMerged = left.merged ⊔ right.merged
         HeapMap(newMap, newMerged)
     }
@@ -93,20 +69,9 @@ object DefaultHeap extends HeapDomain {
       case (Top, right) => right
       case (Bot, _) | (_, Bot) => Bot
       case (left: HeapMap, right: HeapMap) =>
-        val newMap: Map[Loc, AbsObj] =
+        val newMap: LayerMap[Loc, AbsObj] =
           if (left.map eq right.map) left.map
-          else if (left.map.isEmpty) EmptyMap
-          else if (right.map.isEmpty) EmptyMap
-          else {
-            right.map.foldLeft(left.map)(
-              (m, kv) => kv match {
-                case (k, v) => m.get(k) match {
-                  case None => m - k
-                  case Some(vv) => m + (k -> (v ⊓ vv))
-                }
-              }
-            )
-          }
+          else left.map.intersectWith(right.map)(_ ⊓ _)
         val newMerged = left.merged ⊓ right.merged
         HeapMap(newMap, newMerged)
     }
@@ -142,7 +107,7 @@ object DefaultHeap extends HeapDomain {
       case (obj, loc) => obj ⊔ get(loc)
     }
 
-    private def weakUpdated(m: Map[Loc, AbsObj], loc: Loc, newObj: AbsObj): Map[Loc, AbsObj] = m.get(loc) match {
+    private def weakUpdated(m: LayerMap[Loc, AbsObj], loc: Loc, newObj: AbsObj): LayerMap[Loc, AbsObj] = m.get(loc) match {
       case Some(oldObj) => m.updated(loc, oldObj ⊔ newObj)
       case None => m.updated(loc, newObj)
     }
