@@ -130,7 +130,7 @@ sealed class HashMap[A, +B] extends AbstractMap[A, B]
   protected def merge0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = that
 
   /**
-   * Creates a new map which is the join of this and the argument hash map with
+   * Creates a new map which is the union of this and the argument hash map with
    * an idempotent collision resolution.
    *
    *  Uses the specified collision resolution function if two keys are the same.
@@ -141,15 +141,15 @@ sealed class HashMap[A, +B] extends AbstractMap[A, B]
    *  @param that     the other hash map
    *  @param mergef   the merge function
    */
-  def joinWithIdem[B1 >: B](
+  def unionWithIdem[B1 >: B](
     that: HashMap[A, B1]
   )(mergef: (B1, B1) => B1): HashMap[A, B1] = {
     if (this eq that) this
-    else joinWithIdem0(that, 0, liftMerger[A, B1] {
+    else unionWithIdem0(that, 0, liftMerger[A, B1] {
       case ((k, l), (_, r)) => k -> mergef(l, r)
     })
   }
-  protected def joinWithIdem0[B1 >: B](
+  protected def unionWithIdem0[B1 >: B](
     that: HashMap[A, B1], level: Int, merger: Merger[A, B1]
   ): HashMap[A, B1] = that
 
@@ -184,13 +184,13 @@ sealed class HashMap[A, +B] extends AbstractMap[A, B]
    *  @param that     the other hash map
    *  @param compf    the compare function
    */
-  def compareWithPO[B1 >: B](
+  def compareWithPartialOrder[B1 >: B](
     that: HashMap[A, B1]
   )(compf: CompareFunction[B1]): Boolean = {
     if (this eq that) true
-    else compareWithPO0(that, 0, compf)
+    else compareWithPartialOrder0(that, 0, compf)
   }
-  protected def compareWithPO0[B1 >: B](
+  protected def compareWithPartialOrder0[B1 >: B](
     that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]
   ): Boolean = true
 }
@@ -305,7 +305,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
     protected override def merge0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
       that.updated0(key, hash, level, value, kv, merger.invert)
     }
-    protected override def joinWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
+    protected override def unionWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
       that.updated0(key, hash, level, value, kv, merger.invert)
     }
     protected override def intersectWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = that.get(key) match {
@@ -314,7 +314,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
         new HashMap1(nkv._1, hash, nkv._2, nkv)
       case None => this
     }
-    protected override def compareWithPO0[B1 >: B](that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]): Boolean = that.get(key) match {
+    protected override def compareWithPartialOrder0[B1 >: B](that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]): Boolean = that.get(key) match {
       case Some(thatValue) => compf(value, thatValue)
       case None => false
     }
@@ -385,7 +385,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
       for (p <- kvs) m = m.updated0(p._1, this.hash, level, p._2, p, merger.invert)
       m
     }
-    protected override def joinWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
+    protected override def unionWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
       var m = that
       for (p <- kvs) m = m.updated0(p._1, this.hash, level, p._2, p, merger.invert)
       m
@@ -400,7 +400,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
       }
       m
     }
-    protected override def compareWithPO0[B1 >: B](that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]): Boolean = {
+    protected override def compareWithPartialOrder0[B1 >: B](that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]): Boolean = {
       var res = true
       var it = kvs.iterator
       while (res && it.hasNext) {
@@ -661,7 +661,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
       case _ => sys.error("section supposed to be unreachable.")
     }
 
-    protected override def joinWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = that match {
+    protected override def unionWithIdem0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = that match {
       case hm: HashMap1[_, _] =>
         this.updated0(hm.key, hm.hash, level, hm.value.asInstanceOf[B1], hm.kv, merger)
       case hm: HashTrieMap[_, _] => if (this eq that) this else {
@@ -688,7 +688,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
 
           // collision
           if (thislsb == thatlsb) {
-            val m = thiselems(thisi).joinWithIdem0(thatelems(thati), level + 5, merger)
+            val m = thiselems(thisi).unionWithIdem0(thatelems(thati), level + 5, merger)
             totalelems += m.size
             merged(i) = m
             thisbm = thisbm & ~thislsb
@@ -718,7 +718,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
 
         new HashTrieMap[A, B1](this.bitmap | that.bitmap, merged, totalelems)
       }
-      case hm: HashMapCollision1[_, _] => that.joinWithIdem0(this, level, merger.invert)
+      case hm: HashMapCollision1[_, _] => that.unionWithIdem0(this, level, merger.invert)
       case hm: HashMap[_, _] => this
       case _ => sys.error("section supposed to be unreachable.")
     }
@@ -748,7 +748,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
 
           // collision
           if (thislsb == thatlsb) {
-            val m = thiselems(thisi).joinWithIdem0(thatelems(thati), level + 5, merger)
+            val m = thiselems(thisi).intersectWithIdem0(thatelems(thati), level + 5, merger)
             totalelems += m.size
             merged(i) = m
             thisbm = thisbm & ~thislsb
@@ -776,7 +776,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
       case _ => sys.error("section supposed to be unreachable.")
     }
 
-    protected override def compareWithPO0[B1 >: B](that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]): Boolean = that match {
+    protected override def compareWithPartialOrder0[B1 >: B](that: HashMap[A, B1], level: Int, compf: CompareFunction[B1]): Boolean = that match {
       case hm: HashTrieMap[_, _] => if (this eq that) true else {
         val that = hm.asInstanceOf[HashTrieMap[A, B1]]
         val thiselems = this.elems
@@ -801,7 +801,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
 
           // collision
           if (thislsb == thatlsb) {
-            res = thiselems(thisi).compareWithPO0(thatelems(thati), level + 5, compf)
+            res = thiselems(thisi).compareWithPartialOrder0(thatelems(thati), level + 5, compf)
             thisbm = thisbm & ~thislsb
             thatbm = thatbm & ~thatlsb
             thati += 1

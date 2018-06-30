@@ -17,21 +17,21 @@ import kr.ac.kaist.safe.util._
 
 // default heap abstract domain
 object DefaultHeap extends HeapDomain {
-  private val EmptyMap: LayerMap[Loc, AbsObj] = LayerMap()
+  private val EmptyMap: HashMap[Loc, AbsObj] = HashMap()
 
   case object Top extends Elem
   case object Bot extends Elem
-  val Empty: Elem = HeapMap(LayerMap(), LocSet.Bot)
-  case class HeapMap(map: LayerMap[Loc, AbsObj], merged: LocSet) extends Elem
+  val Empty: Elem = HeapMap(HashMap(), LocSet.Bot)
+  case class HeapMap(map: HashMap[Loc, AbsObj], merged: LocSet) extends Elem
 
   def alpha(heap: Heap): Elem = {
     val map = heap.map.foldLeft(EmptyMap) {
       case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
-    HeapMap(map.createLayer, LocSet.Bot)
+    HeapMap(map, LocSet.Bot)
   }
 
-  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem = HeapMap(LayerMap(map), merged)
+  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem = HeapMap(HashMap(map.toSeq: _*), merged)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
@@ -42,11 +42,7 @@ object DefaultHeap extends HeapDomain {
       case (_, Top) | (Bot, _) => true
       case (Top, _) | (_, Bot) => false
       case (left: HeapMap, right: HeapMap) => {
-        val mapB =
-          if (left.map eq right.map) true
-          else left.map.forallWith(right.map) {
-            case (l, r) => l.getOrElse(AbsObj.Bot) ⊑ r.getOrElse(AbsObj.Bot)
-          }
+        val mapB = left.map.compareWithPartialOrder(right.map)(_ ⊑ _)
         val mergedB = left.merged ⊑ right.merged
         mapB && mergedB
       }
@@ -57,9 +53,7 @@ object DefaultHeap extends HeapDomain {
       case (left, Bot) => left
       case (Bot, right) => right
       case (left: HeapMap, right: HeapMap) =>
-        val newMap =
-          if (left.map eq right.map) left.map
-          else left.map.unionWith(right.map)(_ ⊔ _)
+        val newMap = left.map.unionWithIdem(right.map)(_ ⊔ _)
         val newMerged = left.merged ⊔ right.merged
         HeapMap(newMap, newMerged)
     }
@@ -69,9 +63,7 @@ object DefaultHeap extends HeapDomain {
       case (Top, right) => right
       case (Bot, _) | (_, Bot) => Bot
       case (left: HeapMap, right: HeapMap) =>
-        val newMap: LayerMap[Loc, AbsObj] =
-          if (left.map eq right.map) left.map
-          else left.map.intersectWith(right.map)(_ ⊓ _)
+        val newMap = left.map.intersectWithIdem(right.map)(_ ⊓ _)
         val newMerged = left.merged ⊓ right.merged
         HeapMap(newMap, newMerged)
     }
@@ -107,7 +99,7 @@ object DefaultHeap extends HeapDomain {
       case (obj, loc) => obj ⊔ get(loc)
     }
 
-    private def weakUpdated(m: LayerMap[Loc, AbsObj], loc: Loc, newObj: AbsObj): LayerMap[Loc, AbsObj] = m.get(loc) match {
+    private def weakUpdated(m: HashMap[Loc, AbsObj], loc: Loc, newObj: AbsObj): HashMap[Loc, AbsObj] = m.get(loc) match {
       case Some(oldObj) => m.updated(loc, oldObj ⊔ newObj)
       case None => m.updated(loc, newObj)
     }
@@ -146,7 +138,7 @@ object DefaultHeap extends HeapDomain {
           case None => (map, merged)
         })
         HeapMap(
-          newMap.mapValues(_.subsLoc(from, to)),
+          newMap.map { case (k, v) => k -> v.subsLoc(from, to) },
           newMerged.subsLoc(from, to)
         )
       }
@@ -156,7 +148,7 @@ object DefaultHeap extends HeapDomain {
       case Top => Top
       case Bot => Bot
       case HeapMap(map, merged) => HeapMap(
-        (map -- locs).mapValues(_.remove(locs)),
+        (map -- locs).map { case (k, v) => k -> v.remove(locs) },
         merged.remove(locs)
       )
     }
