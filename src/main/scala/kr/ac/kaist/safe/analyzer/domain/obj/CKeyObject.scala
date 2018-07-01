@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.HashSet
 
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with concrete keys
@@ -30,10 +30,10 @@ object CKeyObject extends ObjDomain {
 
   // abstraction function
   def alpha(obj: Obj): Elem = Elem(
-    nmap = AbsMap(obj.nmap.foldLeft[Map[String, AbsOpt[AbsDataProp]]](HashMap()) {
+    nmap = AbsMap(obj.nmap.foldLeft[HashMap[String, AbsOpt[AbsDataProp]]](HashMap()) {
       case (map, (str, dp)) => map + (str -> AbsOpt(AbsDataProp(dp)))
     }, AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)),
-    imap = AbsMap(obj.imap.foldLeft[Map[IName, AbsOpt[AbsIValue]]](HashMap()) {
+    imap = AbsMap(obj.imap.foldLeft[HashMap[IName, AbsOpt[AbsIValue]]](HashMap()) {
       case (map, (iname, iv)) => map + (iname -> AbsOpt(AbsIValue(iv)))
     }, AbsOpt(AbsIValue.Bot, AbsAbsent.Top))
   )

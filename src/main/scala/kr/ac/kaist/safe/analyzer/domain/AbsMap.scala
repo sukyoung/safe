@@ -16,41 +16,34 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.HashSet
 
 // abstract map
-case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
+case class AbsMap[K, V](map: HashMap[K, AbsOpt[V]], default: AbsOpt[V]) {
   // partial order
   def ⊑(order: (V, V) => Boolean)(that: AbsMap[K, V]): Boolean = {
-    val keySet = this.map.keySet ++ that.map.keySet
-    this.default.⊑(order)(that.default) && keySet.forall(k => {
-      this(k).⊑(order)(that(k))
+    this.default.⊑(order)(that.default) && (this.map.compareOptionWithPartialOrder(that.map) {
+      case (v1, v2) => v1.getOrElse(this.default).⊑(order)(v2.getOrElse(that.default))
     })
   }
 
   // join
   def ⊔(join: (V, V) => V)(that: AbsMap[K, V]): AbsMap[K, V] = {
-    val keySet = this.map.keySet ++ that.map.keySet
     val default = this.default.⊔(join)(that.default)
-    val map = keySet.foldLeft[Map[K, AbsOpt[V]]](HashMap()) {
-      case (map, k) =>
-        val opt = this(k).⊔(join)(that(k))
-        if (opt == default) map
-        else map + (k -> opt)
+    val map = this.map.mergeWithIdem(that.map) {
+      case (v1, v2) => v1.getOrElse(this.default).⊔(join)(v2.getOrElse(that.default))
     }
+    map.keySet.foreach(_ => {})
     AbsMap(map, default)
   }
 
   // meet
   def ⊓(meet: (V, V) => V)(that: AbsMap[K, V]): AbsMap[K, V] = {
-    val keySet = this.map.keySet ++ that.map.keySet
     val default = this.default.⊓(meet)(that.default)
-    val map = keySet.foldLeft[Map[K, AbsOpt[V]]](HashMap()) {
-      case (map, k) =>
-        val opt = this(k).⊓(meet)(that(k))
-        if (opt == default) map
-        else map + (k -> opt)
+    val map = this.map.mergeWithIdem(that.map) {
+      case (v1, v2) => v1.getOrElse(this.default).⊓(meet)(v2.getOrElse(that.default))
     }
+    map.keySet.foreach(_ => {})
     AbsMap(map, default)
   }
 
@@ -63,7 +56,7 @@ case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
     filter: (K, AbsOpt[V]) => Boolean = (_, _) => true
   ): AbsMap[K, V] = {
     val default = f(this.default)
-    val map = this.map.foldLeft[Map[K, AbsOpt[V]]](HashMap()) {
+    val map = this.map.foldLeft[HashMap[K, AbsOpt[V]]](HashMap()) {
       case (map, (key, value)) =>
         val res =
           if (filter(key, value)) f(value)
@@ -71,6 +64,7 @@ case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
         if (res == default) map
         else map + (key -> res)
     }
+    map.keySet.foreach(_ => {})
     AbsMap(map, default)
   }
   def mapCValues(
@@ -81,11 +75,13 @@ case class AbsMap[K, V](map: Map[K, AbsOpt[V]], default: AbsOpt[V]) {
   }, filter)
 
   // update
-  def update(k: K, v: AbsOpt[V]): AbsMap[K, V] = copy(
-    map =
-    if (v == default) map - k
-    else map + (k -> v)
-  )
+  def update(k: K, v: AbsOpt[V]): AbsMap[K, V] = {
+    val m =
+      if (v == default) map - k
+      else map + (k -> v)
+    map.keySet.foreach(_ => {})
+    copy(map = m)
+  }
 
   // contain check
   def contains(f: V => Boolean)(k: K): AbsBool = this(k).exists(f)

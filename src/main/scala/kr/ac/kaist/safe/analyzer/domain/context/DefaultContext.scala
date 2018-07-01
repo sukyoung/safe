@@ -15,17 +15,17 @@ import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.HashSet
 
 // default execution context abstract domain
 object DefaultContext extends ContextDomain {
-  private val EmptyMap: Map[Loc, AbsLexEnv] = HashMap()
+  private val EmptyMap: HashMap[Loc, AbsLexEnv] = HashMap()
 
   case object Bot extends Elem
   case object Top extends Elem
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
-    val map: Map[Loc, AbsLexEnv],
+    val map: HashMap[Loc, AbsLexEnv],
     val merged: LocSet,
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
@@ -38,7 +38,7 @@ object DefaultContext extends ContextDomain {
     map: Map[Loc, AbsLexEnv],
     merged: LocSet,
     thisBinding: AbsValue
-  ): Elem = CtxMap(map, merged, thisBinding)
+  ): Elem = CtxMap(HashMap(map.toSeq: _*), merged, thisBinding)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
@@ -52,15 +52,7 @@ object DefaultContext extends ContextDomain {
       case (Top, _) => false
       case (CtxMap(thisMap, thisMerged, thisThis),
         CtxMap(thatMap, thatMerged, thatThis)) => {
-        val mapB =
-          if (thisMap.isEmpty) true
-          else if (thatMap.isEmpty) false
-          else thisMap.forall {
-            case (loc, thisEnv) => thatMap.get(loc) match {
-              case None => false
-              case Some(thatEnv) => thisEnv ⊑ thatEnv
-            }
-          }
+        val mapB = thisMap.compareWithPartialOrder(thatMap)(_ ⊑ _)
         val mergedB = thisMerged ⊑ thatMerged
         val thisB = thisThis ⊑ thatThis
         mapB && mergedB && thisB
@@ -75,13 +67,7 @@ object DefaultContext extends ContextDomain {
         CtxMap(thatMap, thatMerged, thatThis)) => {
         if (this eq that) this
         else {
-          val newMap = thatMap.foldLeft(thisMap) {
-            case (m, (loc, thatEnv)) => m.get(loc) match {
-              case None => m + (loc -> thatEnv)
-              case Some(thisEnv) =>
-                m + (loc -> (thisEnv ⊔ thatEnv))
-            }
-          }
+          val newMap = thisMap.unionWithIdem(thatMap)(_ ⊔ _)
           val newMerged = thisMerged ⊔ thatMerged
           val newThis = thisThis ⊔ thatThis
           CtxMap(newMap, newMerged, newThis)
@@ -98,13 +84,7 @@ object DefaultContext extends ContextDomain {
         if (thisMap eq thatMap) this
         else {
           val locSet = thisMap.keySet intersect thatMap.keySet
-          val newMap = locSet.foldLeft(EmptyMap) {
-            case (m, loc) => {
-              val thisEnv = thisMap(loc)
-              val thatEnv = thatMap(loc)
-              m + (loc -> (thisEnv ⊓ thatEnv))
-            }
-          }
+          val newMap = thisMap.intersectWithIdem(thatMap)(_ ⊓ _)
           val newMerged = thisMerged ⊓ thatMerged
           val newThis = thisThis ⊓ thatThis
           CtxMap(newMap, newMerged, newThis)
@@ -139,7 +119,7 @@ object DefaultContext extends ContextDomain {
       }
     }
 
-    private def weakUpdated(m: Map[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): Map[Loc, AbsLexEnv] =
+    private def weakUpdated(m: HashMap[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): HashMap[Loc, AbsLexEnv] =
       m.get(loc) match {
         case Some(oldEnv) => m.updated(loc, oldEnv ⊔ newEnv)
         case None => m.updated(loc, newEnv)
@@ -179,7 +159,7 @@ object DefaultContext extends ContextDomain {
           case None => (map, merged)
         })
         CtxMap(
-          newMap.mapValues(_.subsLoc(from, to)),
+          newMap.map { case (k, v) => k -> v.subsLoc(from, to) },
           newMerged.subsLoc(from, to),
           thisBinding.subsLoc(from, to)
         )
@@ -190,7 +170,7 @@ object DefaultContext extends ContextDomain {
       case Top => Top
       case Bot => Bot
       case CtxMap(map, merged, thisBinding) => CtxMap(
-        (map -- locs).mapValues(_.remove(locs)),
+        (map -- locs).map { case (k, v) => k -> v.remove(locs) },
         merged.remove(locs),
         thisBinding.remove(locs)
       )
