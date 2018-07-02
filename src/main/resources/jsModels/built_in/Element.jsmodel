@@ -32,7 +32,8 @@ Heap: {
     [[Prototype]]: #Node.prototype,
     "constructor": <#Element, T, F, T>,
     "getElementsByTagName": <#Element.prototype.getElementsByTagName, T, T, T>,
-    "getElementById": <#Element.prototype.getElementById, T, T, T>
+    "getElementById": <#Element.prototype.getElementById, T, T, T>,
+    "setAttribute": <#Element.prototype.setAttribute, T, T, T>
   },
   #Element.prototype.getElementsByTagName: {
     [[Call]]: fun(19),
@@ -51,6 +52,15 @@ Heap: {
     [[Class]]: "Function",
     "length": <1, F, F, T>,
     "name": <"getElementById", F, F, T>
+  },
+  #Element.prototype.setAttribute: {
+    [[Call]]: fun(31),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <2, F, F, T>,
+    "name": <"setAttribute", F, F, T>
   },
   #Node: {
     [[Call]]: fun(3),
@@ -468,6 +478,10 @@ Function: {
   \\],
   30: [\\
   function XMLHttpRequest() {
+  }
+  \\],
+  31: [\\
+  function setAttribute() {
   }
   \\]
 }

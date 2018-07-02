@@ -39,7 +39,7 @@ case class Semantics(
 
   private val AB = AbsBool.Bot
 
-  // ControlPoint 
+  // ControlPoint
   private val ccpToLocSet: MMap[Call, MMap[TracePartition, LocSet]] = MHashMap()
   def setBeforeCallLocSet(call: Call, tp: TracePartition, locs: LocSet): Unit = {
     val map = ccpToLocSet.getOrElse(call, {
@@ -801,6 +801,16 @@ case class Semantics(
           else AbsState.Bot
         val newExcSt = st.raiseException(excSet)
         (st3, newExcSt)
+      }
+      case (NodeUtil.INTERNAL_TO_LOWER_CASE, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val str = TypeConversionHelper.ToString(v)
+        val lower = AbsStr.alpha(s => Str(s.str.toLowerCase))(AbsStr)(str)
+        val st1 =
+          if (!v.isBottom) st.varStore(lhs, AbsValue(lower))
+          else AbsState.Bot
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt ⊔ newExcSt)
       }
       case (NodeUtil.INTERNAL_BOOL_OBJ, List(expr), Some(aNew)) => {
         val (v, excSet) = V(expr, st)

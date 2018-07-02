@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.LINE_SEP
 import java.io.BufferedWriter
 import java.io.IOException
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.HashSet
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
@@ -97,6 +97,8 @@ object NodeUtil {
   val INTERNAL_BOUND_ARGS = internalAPIName("BoundArgs")
   // 15.5.2.1 new String (value)
   val INTERNAL_STR_OBJ = internalAPIName("StrObj")
+  // 15.5.4.16 String.prototype.toLowerCase ( )
+  val INTERNAL_TO_LOWER_CASE = internalAPIName("ToLowerCase")
   // 15.6.2.1 new Boolean (value)
   val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
   // 15.7.2.1 new Number (value)
@@ -164,6 +166,7 @@ object NodeUtil {
     INTERNAL_SAME_VALUE,
     INTERNAL_GET_OWN_PROP_NAMES,
     INTERNAL_STR_OBJ,
+    INTERNAL_TO_LOWER_CASE,
     INTERNAL_BOOL_OBJ,
     INTERNAL_NUM_OBJ,
     INTERNAL_ABS,
