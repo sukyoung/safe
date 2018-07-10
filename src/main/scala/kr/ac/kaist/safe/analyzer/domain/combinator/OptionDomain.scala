@@ -27,6 +27,8 @@ case class OptionDomain[V, VD <: AbsDomain[V]](
   lazy val Bot: Elem = Elem(AbsV.Bot, AbsNone.Bot)
   lazy val Top: Elem = Elem(AbsV.Top, AbsNone.Top)
 
+  def apply(value: AbsV, none: AbsNone): Elem = Elem(value, none)
+
   // pair abstract element
   case class Elem(value: AbsV, none: AbsNone) extends ElemTrait {
     ////////////////////////////////////////////////////////////////////////////
@@ -56,6 +58,17 @@ case class OptionDomain[V, VD <: AbsDomain[V]](
       case Bot => "⊥"
       case Top => "⊤"
       case _ => s"($value, $none)"
+    }
+
+    // existence check
+    def exists(f: AbsV => Boolean): AbsBool = {
+      val trueB =
+        if (!f(value)) AT
+        else AbsBool.Bot
+      val falseB =
+        if (!none.isBottom) AF
+        else AbsBool.Bot
+      trueB ⊔ falseB
     }
   }
 }
