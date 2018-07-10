@@ -36,7 +36,7 @@ object DefaultHeap extends HeapDomain {
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[Heap] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Heap] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) | (Bot, _) => true

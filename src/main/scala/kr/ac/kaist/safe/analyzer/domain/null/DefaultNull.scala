@@ -25,7 +25,7 @@ object DefaultNull extends NullDomain {
     }
 
     def getSingle: ConSingle[Null] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case Top => ConOne(Null)
     }
 

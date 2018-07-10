@@ -43,7 +43,7 @@ object DefaultContext extends ContextDomain {
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[Context] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Context] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true

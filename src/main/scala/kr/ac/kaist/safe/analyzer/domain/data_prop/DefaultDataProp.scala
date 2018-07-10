@@ -59,7 +59,7 @@ object DefaultDataProp extends DataPropDomain {
   ) extends ElemTrait {
     def gamma: ConSet[DataProp] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[DataProp] = ConMany() // TODO more precise
+    def getSingle: ConSingle[DataProp] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)

@@ -52,11 +52,11 @@ object DefaultBinding extends BindingDomain {
 
     def getSingle: ConSingle[Binding] = {
       (value.getSingle, uninit.getSingle, mutable.getSingle) match {
-        case (ConZero(), ConZero(), ConZero()) => ConZero()
-        case (ConOne(value), ConZero(), ConOne(Bool(true))) => ConOne(MBinding(value))
-        case (ConZero(), ConOne(Absent), ConOne(Bool(false))) => ConOne(IBinding(None))
-        case (ConOne(value), ConZero(), ConOne(Bool(false))) => ConOne(IBinding(Some(value)))
-        case _ => ConMany()
+        case (ConZero, ConZero, ConZero) => ConZero
+        case (ConOne(value), ConZero, ConOne(Bool(true))) => ConOne(MBinding(value))
+        case (ConZero, ConOne(Absent), ConOne(Bool(false))) => ConOne(IBinding(None))
+        case (ConOne(value), ConZero, ConOne(Bool(false))) => ConOne(IBinding(Some(value)))
+        case _ => ConMany
       }
     }
 

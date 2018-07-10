@@ -34,7 +34,7 @@ object DefaultValue extends ValueDomain {
   case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
+    def getSingle: ConSingle[Value] = ConMany // TODO more precisely
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)

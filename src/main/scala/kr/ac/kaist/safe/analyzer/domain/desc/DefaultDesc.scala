@@ -57,7 +57,7 @@ object DefaultDesc extends DescDomain {
   ) extends ElemTrait {
     def gamma: ConSet[Desc] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[Desc] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Desc] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)

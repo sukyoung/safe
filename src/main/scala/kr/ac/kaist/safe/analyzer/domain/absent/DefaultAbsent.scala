@@ -25,7 +25,7 @@ object DefaultAbsent extends AbsentDomain {
     }
 
     def getSingle: ConSingle[Absent] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case Top => ConOne(Absent)
     }
 

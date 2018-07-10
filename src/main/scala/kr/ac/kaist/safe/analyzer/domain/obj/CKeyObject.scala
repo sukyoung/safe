@@ -47,7 +47,7 @@ object CKeyObject extends ObjDomain {
     def gamma: ConSet[Obj] = ConInf // TODO more precise
 
     // get single element
-    def getSingle: ConSingle[Obj] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Obj] = ConMany // TODO more precise
 
     // partial order
     def ⊑(that: Elem): Boolean =

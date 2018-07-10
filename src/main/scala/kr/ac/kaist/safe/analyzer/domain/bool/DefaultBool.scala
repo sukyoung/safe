@@ -29,10 +29,10 @@ object DefaultBool extends BoolDomain {
     }
 
     def getSingle: ConSingle[Bool] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case True => ConOne(true)
       case False => ConOne(false)
-      case Top => ConMany()
+      case Top => ConMany
     }
 
     override def toString: String = this match {

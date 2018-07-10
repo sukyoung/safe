@@ -29,7 +29,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     }
 
     def getSingle: ConSingle[GlobalEnvRec] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case Top => ConOne(GlobalEnvRec)
     }
 

@@ -33,7 +33,7 @@ object DefaultEnvRec extends EnvRecDomain {
   ) extends ElemTrait {
     def gamma: ConSet[EnvRec] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[EnvRec] = ConMany() // TODO more precise
+    def getSingle: ConSingle[EnvRec] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val right = that

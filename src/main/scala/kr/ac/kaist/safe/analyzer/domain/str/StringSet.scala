@@ -45,9 +45,9 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     }
 
     def getSingle: ConSingle[Str] = this match {
-      case StrSet(set) if set.size == 0 => ConZero()
+      case StrSet(set) if set.size == 0 => ConZero
       case StrSet(set) if set.size == 1 => ConOne(set.head)
-      case _ => ConMany()
+      case _ => ConMany
     }
 
     def isNum: AbsBool = this match {
@@ -149,7 +149,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     def StrictEquals(that: Elem): AbsBool =
       (this.getSingle, that.getSingle) match {
         case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
-        case (ConZero(), _) | (_, ConZero()) => AbsBool.Bot
+        case (ConZero, _) | (_, ConZero) => AbsBool.Bot
         case _ => (this ⊑ that, that ⊑ this) match {
           case (false, false) => AbsBool.False
           case _ => AbsBool.Top
@@ -244,8 +244,8 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         case Number => AbsBool.Top
         case Other => AbsBool.Top
         case StrSet(vs) => that.getSingle match {
-          case ConMany() => AbsBool.Top
-          case ConZero() => AbsBool.Bot
+          case ConMany => AbsBool.Top
+          case ConZero => AbsBool.Bot
           case ConOne(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
             result ⊔ AbsBool(v.contains(s))
           })

@@ -45,7 +45,7 @@ object DefaultPValue extends PValueDomain {
   ) extends ElemTrait {
     def gamma: ConSet[PValue] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
+    def getSingle: ConSingle[PValue] = ConMany // TODO more precisely
 
     /* partial order */
     def ⊑(that: Elem): Boolean = {

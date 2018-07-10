@@ -38,7 +38,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
   abstract class Elem extends ElemTrait {
     def gamma: ConSet[DecEnvRec] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[DecEnvRec] = ConMany() // TODO more precise
+    def getSingle: ConSingle[DecEnvRec] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val right = that

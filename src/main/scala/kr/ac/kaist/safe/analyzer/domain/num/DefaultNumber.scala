@@ -47,13 +47,13 @@ object DefaultNumber extends NumDomain {
     }
 
     def getSingle: ConSingle[Num] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case PosInf => ConOne(Double.PositiveInfinity)
       case NegInf => ConOne(Double.NegativeInfinity)
       case NaN => ConOne(Double.NaN)
       case UIntConst(v) => ConOne(v)
       case NUIntConst(v) => ConOne(v)
-      case Top | UInt | NUInt | Inf => ConMany()
+      case Top | UInt | NUInt | Inf => ConMany
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {

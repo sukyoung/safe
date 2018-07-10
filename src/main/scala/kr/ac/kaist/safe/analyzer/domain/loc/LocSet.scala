@@ -40,9 +40,9 @@ object LocSet extends AbsDomain[Loc] {
     }
 
     def getSingle: ConSingle[Loc] = this match {
-      case LSet(set) if set.size == 0 => ConZero()
+      case LSet(set) if set.size == 0 => ConZero
       case LSet(set) if set.size == 1 => ConOne(set.head)
-      case _ => ConMany()
+      case _ => ConMany
     }
 
     override def toString: String = this match {

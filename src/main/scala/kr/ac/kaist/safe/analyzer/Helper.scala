@@ -51,7 +51,7 @@ object Helper {
                 val (tmpHeap, _) = hj.delete(l, AbsStr(i.toString))
                 tmpHeap
               })
-            case (ConZero(), _) | (_, ConZero()) => AbsHeap.Bot
+            case (ConZero, _) | (_, ConZero) => AbsHeap.Bot
             case _ =>
               val (tmpHeap, _) = hi.delete(l, AbsStr.Number)
               tmpHeap
@@ -311,7 +311,7 @@ object Helper {
       if (!left.locset.isBottom && !right.locset.isBottom) {
         val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
-          case (_, _, ConZero()) => afalse
+          case (_, _, ConZero) => afalse
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
           case _ => AbsBool.Top
         }
@@ -452,7 +452,7 @@ object Helper {
       if (!left.locset.isBottom && !right.locset.isBottom) {
         val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
-          case (_, _, ConZero()) => afalse
+          case (_, _, ConZero) => afalse
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
           case _ => AbsBool.Top
         }

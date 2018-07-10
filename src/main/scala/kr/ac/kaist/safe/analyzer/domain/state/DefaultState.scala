@@ -34,7 +34,7 @@ object DefaultState extends StateDomain {
   ) extends ElemTrait {
     def gamma: ConSet[State] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[State] = ConMany() // TODO more precise
+    def getSingle: ConSingle[State] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean =
       this.heap ⊑ that.heap && this.context ⊑ that.context

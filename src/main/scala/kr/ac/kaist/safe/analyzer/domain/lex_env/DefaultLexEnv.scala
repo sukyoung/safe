@@ -39,7 +39,7 @@ object DefaultLexEnv extends LexEnvDomain {
   ) extends ElemTrait {
     def gamma: ConSet[LexEnv] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[LexEnv] = ConMany() // TODO more precise
+    def getSingle: ConSingle[LexEnv] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val right = that

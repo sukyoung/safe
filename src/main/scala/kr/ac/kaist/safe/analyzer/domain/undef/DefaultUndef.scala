@@ -25,7 +25,7 @@ object DefaultUndef extends UndefDomain {
     }
 
     def getSingle: ConSingle[Undef] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case Top => ConOne(Undef)
     }
 
