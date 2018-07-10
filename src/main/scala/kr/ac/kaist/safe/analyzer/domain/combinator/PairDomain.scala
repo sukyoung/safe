@@ -13,61 +13,74 @@ package kr.ac.kaist.safe.analyzer.domain
 
 // pair abstract domain
 case class PairDomain[L, R, LD <: AbsDomain[L], RD <: AbsDomain[R]](
-    ldom: LD,
-    rdom: RD
+    AbsL: LD,
+    AbsR: RD
 ) extends AbsDomain[(L, R)] {
   // abstraction function
   def alpha(pair: (L, R)): Elem = {
     val (l, r) = pair
-    Elem(ldom(l), rdom(r))
+    Pair(AbsL(l), AbsR(r))
   }
 
-  lazy val Bot: Elem = Elem(ldom.Bot, rdom.Bot)
-  lazy val Top: Elem = Elem(ldom.Top, rdom.Top)
+  case object Bot extends Elem
+  case class Pair(left: AbsL.Elem, right: AbsR.Elem) extends Elem
+  lazy val Top: Elem = Pair(AbsL.Top, AbsR.Top)
 
   // pair abstract element
-  case class Elem(left: ldom.Elem, right: rdom.Elem) extends ElemTrait {
+  sealed trait Elem extends ElemTrait {
     ////////////////////////////////////////////////////////////////////////////
     // Domain member functions
     ////////////////////////////////////////////////////////////////////////////
     // partial order
-    def ⊑(that: Elem): Boolean = {
-      this.left ⊑ that.left &&
-        this.right ⊑ that.right
+    def ⊑(that: Elem): Boolean = (this, that) match {
+      case (Bot, _) => true
+      case (_, Bot) => true
+      case (Pair(thisL, thisR), Pair(thatL, thatR)) =>
+        thisL ⊑ thatL && thisR ⊑ thatR
     }
 
-    // join operator
-    def ⊔(that: Elem): Elem = Elem(
-      this.left ⊔ that.left,
-      this.right ⊔ that.right
-    )
+    def ⊔(that: Elem): Elem = (this, that) match {
+      case (Bot, _) => that
+      case (_, Bot) => this
+      case (Pair(thisL, thisR), Pair(thatL, thatR)) =>
+        Pair(thisL ⊔ thatL, thisR ⊔ thatR)
+    }
 
-    // meet operator
-    def ⊓(that: Elem): Elem = Elem(
-      this.left ⊓ that.left,
-      this.right ⊓ that.right
-    )
+    def ⊓(that: Elem): Elem = (this, that) match {
+      case (Bot, _) | (_, Bot) => Bot
+      case (Pair(thisL, thisR), Pair(thatL, thatR)) =>
+        (thisL ⊓ thatL, thisR ⊓ thatR) match {
+          case (AbsL.Bot, _) | (_, AbsR.Bot) => Bot
+          case (l, r) => Pair(l, r)
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // AbsDomain member functions
     ////////////////////////////////////////////////////////////////////////////
-    def gamma: ConSet[(L, R)] = (left.gamma, right.gamma) match {
-      case (ConFin(lset), ConFin(rset)) => ConFin((Set[(L, R)]() /: lset)((set, l) => {
-        (set /: rset)((set, r) => set + ((l, r)))
-      }))
-      case _ => ConInf
+    def gamma: ConSet[(L, R)] = this match {
+      case Bot => ConFin()
+      case Pair(left, right) => (left.gamma, right.gamma) match {
+        case (ConFin(lset), ConFin(rset)) => ConFin((Set[(L, R)]() /: lset)((set, l) => {
+          (set /: rset)((set, r) => set + ((l, r)))
+        }))
+        case _ => ConInf
+      }
     }
 
-    def getSingle: ConSingle[(L, R)] = (left.getSingle, right.getSingle) match {
-      case (ConOne(l), ConOne(r)) => ConOne((l, r))
-      case (ConMany, _) | (_, ConMany) => ConMany
-      case _ => ConZero
+    def getSingle: ConSingle[(L, R)] = this match {
+      case Bot => ConZero
+      case Pair(left, right) => (left.getSingle, right.getSingle) match {
+        case (ConOne(l), ConOne(r)) => ConOne((l, r))
+        case (ConMany, _) | (_, ConMany) => ConMany
+        case _ => ConZero
+      }
     }
 
     override def toString: String = this match {
-      case Top => "⊤"
       case Bot => "⊥"
-      case _ => s"($left, $right)"
+      case Top => "⊤"
+      case Pair(left, right) => s"($left, $right)"
     }
   }
 }
