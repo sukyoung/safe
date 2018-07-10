@@ -11,65 +11,48 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
-
-// flat abstract domain for
-abstract class FlatDomain[V](total: Option[Set[V]]) { this: AbsDomain[V] =>
-  // uni-value element
-  trait UniConstructor {
-    def apply(v: V): Elem
-    def unapply(uni: Elem): Option[V]
-  }
-  val Uni: UniConstructor
+// single abstract domain
+case class SingleDomain[V](value: V) extends AbsDomain[V] {
+  object Top extends Elem
+  object Bot extends Elem
 
   // abstraction function
-  def alpha(v: V): Elem = Uni(v)
+  def alpha(v: V): Elem = Top
 
-  // other constructors
-  def this(set: Set[V]) = this(Some(set))
-  def this(seq: V*) = this(seq.size match {
-    case 0 => None
-    case _ => Some(seq.toSet)
-  })
-
-  // abstract element
-  type Elem <: ElemTrait with FlatTrait
-
-  // flat abstract element
-  trait FlatTrait { this: this.Elem =>
+  // single abstract element
+  trait Elem extends ElemTrait {
     ////////////////////////////////////////////////////////////////////////////
     // Domain member functions
     ////////////////////////////////////////////////////////////////////////////
     // partial order
     def ⊑(that: Elem): Boolean = (this, that) match {
-      case (Bot, _) | (_, Top) => true
-      case (Top, _) | (_, Bot) => false
-      case (Uni(l), Uni(r)) => l == r
+      case (Top, Bot) => false
+      case _ => true
     }
 
     // join operator
     def ⊔(that: Elem): Elem = (this, that) match {
-      case (Bot, _) => that
-      case (_, Bot) => this
-      case (Uni(l), Uni(r)) if l == r => this
+      case (Bot, Bot) => Bot
       case _ => Top
     }
 
     // meet operator
     def ⊓(that: Elem): Elem = (this, that) match {
-      case (Top, _) => that
-      case (_, Top) => this
-      case (Uni(l), Uni(r)) if l == r => this
+      case (Top, Top) => Top
       case _ => Bot
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // AbsDomain member functions
     ////////////////////////////////////////////////////////////////////////////
-    def gamma: Option[Set[V]] = this match {
-      case Top => total
-      case Uni(v) => Some(HashSet(v))
-      case Bot => Some(HashSet())
+    def gamma: ConSet[V] = this match {
+      case Top => ConFin(value)
+      case Bot => ConFin()
+    }
+
+    def getSingle: ConSingle[V] = this match {
+      case Top => ConOne(value)
+      case Bot => ConZero
     }
   }
 }

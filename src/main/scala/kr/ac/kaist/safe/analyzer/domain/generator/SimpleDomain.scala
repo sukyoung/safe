@@ -11,25 +11,16 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
-
 // simple abstract domain
-abstract class SimpleDomain[V](total: Option[Set[V]]) { this: AbsDomain[V] =>
+class SimpleDomain[V] extends AbsDomain[V] {
+  object Top extends Elem
+  object Bot extends Elem
+
   // abstraction function
   def alpha(v: V): Elem = Top
 
-  // other constructors
-  def this(set: Set[V]) = this(Some(set))
-  def this(seq: V*) = this(seq.size match {
-    case 0 => None
-    case _ => Some(seq.toSet)
-  })
-
-  // abstract element
-  type Elem <: ElemTrait with SimpleTrait
-
   // simple abstract element
-  trait SimpleTrait { this: this.Elem =>
+  trait Elem extends ElemTrait {
     ////////////////////////////////////////////////////////////////////////////
     // Domain member functions
     ////////////////////////////////////////////////////////////////////////////
@@ -54,9 +45,18 @@ abstract class SimpleDomain[V](total: Option[Set[V]]) { this: AbsDomain[V] =>
     ////////////////////////////////////////////////////////////////////////////
     // AbsDomain member functions
     ////////////////////////////////////////////////////////////////////////////
-    def gamma: Option[Set[V]] = this match {
-      case Top => total
-      case Bot => Some(HashSet())
+    def gamma: ConSet[V] = this match {
+      case Top => ConInf
+      case Bot => ConFin()
+    }
+
+    def getSingle: ConSingle[V] = this match {
+      case Top => ConMany
+      case Bot => ConZero
     }
   }
+}
+
+object SimpleDomain {
+  def apply[V]: SimpleDomain[V] = new SimpleDomain[V]()
 }
