@@ -54,6 +54,11 @@ class SimpleDomain[V] extends AbsDomain[V] {
       case Top => ConMany
       case Bot => ConZero
     }
+
+    override def toString: String = this match {
+      case Top => "⊤"
+      case Bot => "⊥"
+    }
   }
 }
 
