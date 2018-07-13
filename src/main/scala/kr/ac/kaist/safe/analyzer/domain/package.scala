@@ -194,8 +194,8 @@ package object domain {
   type AbsDesc = DefaultDesc.Elem
 
   // absent value for parital map
-  val AbsAbsent: DefaultAbsent.type = DefaultAbsent
-  type AbsAbsent = DefaultAbsent.Elem
+  object AbsAbsent extends SimpleDomain[None.type]
+  type AbsAbsent = AbsAbsent.Elem
 
   // execution context
   val AbsBinding: DefaultBinding.type = DefaultBinding

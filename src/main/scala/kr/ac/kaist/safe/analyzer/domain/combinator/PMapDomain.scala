@@ -21,7 +21,6 @@ case class PMapDomain[K, V, VD <: AbsDomain[V]](
   val AbsVOpt = OptionDomain[V, AbsV.type](AbsV)
   type AbsV = AbsV.Elem
   type AbsVOpt = AbsVOpt.Elem
-  type AbsNone = AbsVOpt.AbsNone
 
   // abstraction function
   def alpha(map: Map[K, V]): Elem = {
@@ -83,12 +82,12 @@ case class PMapDomain[K, V, VD <: AbsDomain[V]](
           case (key, _) => key.toString
         }
         val s = new StringBuilder
-        def arrow(none: AbsNone): String = {
-          if (none.isBottom) "-!>"
+        def arrow(absent: AbsAbsent): String = {
+          if (absent.isBottom) "-!>"
           else "-?>"
         }
         sortedMap.foreach {
-          case (k, vopt) => s.append(s"$k ${arrow(vopt.none)} ${vopt.value}").append(LINE_SEP)
+          case (k, vopt) => s.append(s"$k ${arrow(vopt.absent)} ${vopt.value}").append(LINE_SEP)
         }
         s.append(s"DEFAULT: $default").append(LINE_SEP)
         s.toString
@@ -121,7 +120,7 @@ case class PMapDomain[K, V, VD <: AbsDomain[V]](
     def mapCValues(
       f: AbsV => AbsV,
       filter: (K, AbsVOpt) => Boolean = (_, _) => true
-    ): Elem = mapValues(vopt => AbsVOpt(f(vopt.value), vopt.none), filter)
+    ): Elem = mapValues(vopt => AbsVOpt(f(vopt.value), vopt.absent), filter)
 
     // update
     def update(k: K, v: AbsVOpt): Elem = {
