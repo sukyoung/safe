@@ -745,65 +745,49 @@ case class Semantics(
       }
       case (NodeUtil.INTERNAL_GET_OWN_PROP_NAMES, List(expr), Some(aNew)) => {
         val h = st.heap
-        val (objV, excSet1) = V(expr, st)
         val arrASite = aNew
-        val (keyStr, lenSet) = objV.locset.foldLeft((AbsStr.Bot, Set[Option[Int]]())) {
-          case ((str, lenSet), loc) => {
-            val obj = h.get(loc)
-            val (keys, size) = obj.collectKeySet("") match {
-              case ConInf => (AbsStr.Top, None)
-              case ConFin(set) => (AbsStr(set), Some(set.size))
-            }
-            (str ⊔ keys, lenSet + size)
-          }
-        }
-        val (maxOpt, len) =
-          if (lenSet.isEmpty) (None, AbsNum.Bot)
-          else {
-            val (opt, num) = lenSet.foldLeft[(Option[Int], AbsNum)]((Some(0), AbsNum.Bot)) {
-              case ((None, _), _) | (_, None) => (None, AbsNum.Top)
-              case ((Some(k), num), Some(t)) => (Some(math.max(k, t)), num ⊔ AbsNum(t))
-            }
-            (Some(opt), num)
-          }
-
+        val (objV, excSet1) = V(expr, st)
         // 1. If Type(O) is not Object throw a TypeError exception.
         val excSet2: Set[Exception] =
           if (objV.pvalue.isBottom) ExcSetEmpty
           else HashSet(TypeError)
+
         // 2. Let array be the result of creating a new Array object.
         // (XXX: we assign the length of the Array object as the number of properties)
-        val array = AbsObj.newArrayObject(len)
-        // 3. For each named own property P of O (with index n started from 0)
-        //   a. Let name be the String value that is the name of P.
-        val AT = (AbsBool.True, AbsAbsent.Bot)
-        val name = AbsValue(AbsPValue(strval = keyStr))
-        val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
-        val (retObj, retExcSet) = maxOpt match {
-          case Some(Some(max)) => (0 until max.toInt).foldLeft((array, excSet2)) {
-            case ((obj, e), n) => {
-              val prop = AbsStr(n.toString)
-              // b. Call the [[DefineOwnProperty]] internal method of array with arguments
-              //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
-              //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-              val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false, h)
-              (obj ⊔ newObj, e ++ excSet)
+        val (obj, resExcSt) = objV.locset.foldLeft(AbsObj.Bot, excSet1 ++ excSet2) {
+          case ((o, es), loc) => h.get(loc).collectKeySet match {
+            case ConInf => (AbsObj.Top, es)
+            case ConFin(set) => {
+              val array = AbsObj.newArrayObject(AbsNum(set.size))
+              val AT = (AbsBool.True, AbsAbsent.Bot)
+              // 3. For each named own property P of O (with index n started from 0)
+              //   a. Let name be the String value that is the name of P.
+              val (obj, resExcSt) = set.toSeq.sorted.zipWithIndex.foldLeft((array, es)) {
+                case ((arr, es), (key, n)) => {
+                  val desc = AbsDesc((AbsValue(AbsStr(key)), AbsAbsent.Bot), AT, AT, AT)
+                  val prop = AbsStr(n.toString)
+                  // b. Call the [[DefineOwnProperty]] internal method of array with arguments
+                  //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
+                  //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
+                  val (newArr, _, excSet) = arr.DefineOwnProperty(prop, desc, false, h)
+                  (newArr, es ++ excSet)
+                }
+              }
+              (o ⊔ obj, resExcSt)
             }
           }
-          case Some(None) => (AbsObj.Top, excSet2 + TypeError + RangeError)
-          case None => (AbsObj.Bot, excSet2)
         }
 
-        val excSt = st.raiseException(excSet1 ++ retExcSet)
+        val excSt = st.raiseException(resExcSt)
 
         // 5. Return array.
-        retObj.isBottom match {
+        obj.isBottom match {
           case true => (AbsState.Bot, excSt)
           case false => {
             val arrLoc = Loc(arrASite, tp)
             val state = st.alloc(arrLoc)
-            val retHeap = state.heap.update(arrLoc, retObj.alloc(arrLoc))
-            val excSt = state.raiseException(retExcSet)
+            val retHeap = state.heap.update(arrLoc, obj.alloc(arrLoc))
+            val excSt = state.raiseException(resExcSt)
             val st2 = state.copy(heap = retHeap)
             val retSt = st2.varStore(lhs, AbsValue(arrLoc))
 

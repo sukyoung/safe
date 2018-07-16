@@ -71,5 +71,7 @@ case class OptionDomain[V, VD <: AbsDomain[V]](
         else AbsBool.Bot
       trueB ⊔ falseB
     }
+
+    def isAbsent: Boolean = value.isBottom && absent.isTop
   }
 }

@@ -183,7 +183,10 @@ object CKeyObject extends ObjDomain {
     }
 
     // collect key set with prefix
-    def collectKeySet(prefix: String): ConSet[String] = ConFin(nmap.map.keySet.filter(_ startsWith prefix))
+    def collectKeySet: ConSet[String] = {
+      if (nmap.default.isAbsent) ConFin(nmap.map.keySet)
+      else ConInf
+    }
 
     // key set pair
     def keySetPair(h: AbsHeap): (List[String], AbsStr) = {
