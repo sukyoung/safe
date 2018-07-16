@@ -59,7 +59,7 @@ object Loc {
     }
   }
 
-  def apply(str: String): Loc = apply(PredAllocSite(str), Sensitivity.initTP)
+  def apply(str: String, tp: TracePartition = Sensitivity.initTP): Loc = apply(PredAllocSite(str), tp)
   def apply(asite: AllocSite, tp: TracePartition): Loc = {
     asite |>
       condApply(HeapClone, TraceSensLoc(_, tp)) |>
