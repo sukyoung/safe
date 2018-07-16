@@ -818,6 +818,16 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet)
         (st1, excSt ⊔ newExcSt)
       }
+      case (NodeUtil.INTERNAL_TO_UPPER_CASE, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val str = v.pvalue.strval
+        val upper = AbsStr.alpha(s => Str(s.str.toUpperCase))(AbsStr)(str)
+        val st1 =
+          if (!v.isBottom) st.varStore(lhs, AbsValue(upper))
+          else AbsState.Bot
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_BOOL_OBJ, List(expr), Some(aNew)) => {
         val (v, excSet) = V(expr, st)
         val bool = TypeConversionHelper.ToBoolean(v)
