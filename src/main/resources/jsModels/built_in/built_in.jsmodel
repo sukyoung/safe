@@ -4950,13 +4950,22 @@ Function: {
   101: [\\
   function RegExp () {
     var obj = {};
-    @Class(obj,"RegExp");
-    @Prototype(obj,RegExp.prototype);
-    obj.source = @StrTop;
-    obj.global = @BoolTop;
-    obj.ignoreCase = @BoolTop;
-    obj.multiline = @BoolTop;
-    obj.lastIndex = @NumTop;
+    @Class(obj, "RegExp");
+    @Prototype(obj, RegExp.prototype);
+    var desc = {
+      value: @StrTop,
+      writable: false,
+      enumerable: false,
+      configurable: false
+    };
+    @DefineOwnProperty(obj, "source", desc);
+    desc.value = @BoolTop;
+    @DefineOwnProperty(obj, "global", desc);
+    @DefineOwnProperty(obj, "ignoreCase", desc);
+    @DefineOwnProperty(obj, "multiline", desc);
+    desc.value = @NumTop;
+    desc.writable = @NumTop;
+    @DefineOwnProperty(obj, "lastIndex", desc);
     return obj;
   }
   \\],
