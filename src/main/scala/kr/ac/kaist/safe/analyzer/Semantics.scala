@@ -1104,7 +1104,7 @@ case class Semantics(
         val (v, excSetV) = V(exprV, st)
         val locset = v.pvalue.strval.gamma match {
           case ConInf => LocSet.Top
-          case ConFin(strset) => LocSet(strset.map(str => Loc(str, tp)))
+          case ConFin(strset) => LocSet(strset.map(str => Loc(str)))
         }
         val newSt = st.varStore(lhs, locset)
         val newExcSt = st.raiseException(excSetV)
