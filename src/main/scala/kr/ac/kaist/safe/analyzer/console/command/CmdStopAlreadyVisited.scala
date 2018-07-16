@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.analyzer.console._
 case object CmdStopAlreadyVisited extends Command("stop-already-visited", "Switch about stopping on already visited controlpoints.") {
   override val help: String = {
     s"""usage: $name on
-           $name off"""
+       $name off"""
   }
 
   def run(c: Interactive, args: List[String]): Option[Target] = {
