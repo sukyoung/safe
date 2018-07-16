@@ -56,6 +56,9 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
+  // Helper for Debugging
+  val INTERNAL_PRINT = internalAPIName("Print")
+  val INTERNAL_PRINT_OBJ = internalAPIName("PrintObj")
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
@@ -146,6 +149,8 @@ object NodeUtil {
   val INTERNAL_GET_LOC = internalAPIName("getLoc")
   val INTERNAL_HAS_CONST = internalAPIName("HasConstruct")
   val internalCallSet: Set[String] = HashSet(
+    INTERNAL_PRINT,
+    INTERNAL_PRINT_OBJ,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,

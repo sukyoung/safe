@@ -483,6 +483,28 @@ case class Semantics(
   ): (AbsState, AbsState) = {
     val tp = cp.tracePartition
     (name, args, loc) match {
+      case (NodeUtil.INTERNAL_PRINT, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        println(s"[DEBUG] expression: $expr")
+        println(s"        exceptions: $excSet")
+        println(s"        value     : $v")
+        (st, excSt)
+      }
+      case (NodeUtil.INTERNAL_PRINT_OBJ, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        println(s"[DEBUG] expression: $expr")
+        println(s"        exceptions: $excSet")
+        if (!v.pvalue.isBottom)
+          println(s"        * $expr might be primitive values: ${v.pvalue}")
+        println(s"        objects:")
+        v.locset.foreach(loc => {
+          st.heap.toStringLoc(loc) match {
+            case Some(str) => println(str)
+            case None =>
+          }
+        })
+        (st, excSt)
+      }
       case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
         val (v, excSetO) = V(exprO, st)
         val (p, excSetP) = V(exprP, st)
