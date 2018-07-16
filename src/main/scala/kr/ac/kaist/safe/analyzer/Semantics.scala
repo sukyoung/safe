@@ -754,6 +754,17 @@ case class Semantics(
 
         // 2. Let array be the result of creating a new Array object.
         // (XXX: we assign the length of the Array object as the number of properties)
+        val uint = "(0|[1-9][0-9]*)".r
+        def toUInt(str: String): Option[Int] = str match {
+          case uint(n) => Some(n.toInt)
+          case _ => None
+        }
+        val uintFirst: (String, String) => Boolean = (l, r) => (toUInt(l), toUInt(r)) match {
+          case (Some(l), Some(r)) => l < r
+          case (Some(_), _) => true
+          case (_, Some(_)) => false
+          case _ => l < r
+        }
         val (obj, resExcSt) = objV.locset.foldLeft(AbsObj.Bot, excSet1 ++ excSet2) {
           case ((o, es), loc) => h.get(loc).collectKeySet match {
             case ConInf => (AbsObj.Top, es)
@@ -762,7 +773,7 @@ case class Semantics(
               val AT = (AbsBool.True, AbsAbsent.Bot)
               // 3. For each named own property P of O (with index n started from 0)
               //   a. Let name be the String value that is the name of P.
-              val (obj, resExcSt) = set.toSeq.sorted.zipWithIndex.foldLeft((array, es)) {
+              val (obj, resExcSt) = set.toSeq.sortWith(uintFirst).zipWithIndex.foldLeft((array, es)) {
                 case ((arr, es), (key, n)) => {
                   val desc = AbsDesc((AbsValue(AbsStr(key)), AbsAbsent.Bot), AT, AT, AT)
                   val prop = AbsStr(n.toString)
