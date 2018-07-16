@@ -44,7 +44,7 @@ class Console(
   ////////////////////////////////////////////////////////////////
 
   override def runFixpoint(): Unit = {
-    if (prepareToRunFixpoint) {
+    if (prepareToRunFixpoint || (stopAlreadyVisited && visited.contains(cur))) {
       setPrompt()
       while ({
         println
@@ -65,6 +65,7 @@ class Console(
         loop
       }) {}
     }
+    visited += cur
   }
   override def goHome(): Unit = {
     if (cur == home) {

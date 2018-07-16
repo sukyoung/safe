@@ -23,6 +23,8 @@ trait Interactive {
   val sem: Semantics
   val config: HeapBuildConfig
   var iter: Int = -1
+  var visited: Set[ControlPoint] = Set()
+  var stopAlreadyVisited: Boolean = false
 
   ////////////////////////////////////////////////////////////////
   // private variables
