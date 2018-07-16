@@ -1267,6 +1267,18 @@ Heap: {
     [[Call]]: fun(137),
     [[Construct]]: fun(138),
     [[HasInstance]]: null
+  },
+  #DefaultValue: {
+    [[Call]]: fun(139)
+  },
+  #ToPrimitive: {
+    [[Call]]: fun(140)
+  },
+  #ToString: {
+    [[Call]]: fun(141)
+  },
+  #ToNumber: {
+    [[Call]]: fun(142)
   }
 }
 
@@ -5322,6 +5334,47 @@ Function: {
     }
     // 5. Return the result of calling the [[Construct]] internal method of target providing args as the arguments.
     return @Construct(target, this, args);
+  }
+  \\],
+  139: [\\
+  function DefaultValue (v, hint) {
+    if (hint === 'String') {
+      if (@IsCallable(v.toString)) {
+        var result = @Call(v.toString, v, []);
+        if (!@isObject(result)) return result;
+      }
+      if (@IsCallable(v.valueOf)) {
+        var result = @Call(v.valueOf, v, []);
+        if (!@isObject(result)) return result;
+      }
+    }
+    if (hint === 'Number') {
+      if (@IsCallable(v.valueOf)) {
+        var result = @Call(v.valueOf, v, []);
+        if (!@isObject(result)) return result;
+      }
+      if (@IsCallable(v.toString)) {
+        var result = @Call(v.toString, v, []);
+        if (!@isObject(result)) return result;
+      }
+    }
+    throw new TypeError();
+  }
+  \\],
+  140: [\\
+  function ToPrimitive (v, hint) {
+    if (@isObject(v)) return @getLoc('DefaultValue')(v, hint);
+    else return v;
+  }
+  \\],
+  141: [\\
+  function ToString (v) {
+    return @ToString(@getLoc('ToPrimitive')(v, 'String'));
+  }
+  \\],
+  142: [\\
+  function ToNumber (v) {
+    return @ToNumber(@getLoc('ToPrimitive')(v, 'number'));
   }
   \\]
 }

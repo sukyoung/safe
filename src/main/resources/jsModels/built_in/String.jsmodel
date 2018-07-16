@@ -516,9 +516,10 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @getLoc('ToString')(this);
     //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
     //4. Return L.
-    return @ToLowerCase(this)
+    return @ToLowerCase(S)
   }
   \\],
   17: [\\

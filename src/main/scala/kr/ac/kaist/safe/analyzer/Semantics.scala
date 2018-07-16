@@ -18,6 +18,7 @@ import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.LINE_SEP
 
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
@@ -485,24 +486,12 @@ case class Semantics(
     (name, args, loc) match {
       case (NodeUtil.INTERNAL_PRINT, List(expr), None) => {
         val (v, excSet) = V(expr, st)
-        println(s"[DEBUG] expression: $expr")
+        println(s"[DEBUG] $cp")
+        println(s"        expression: $expr")
         println(s"        exceptions: $excSet")
-        println(s"        value     : $v")
-        (st, excSt)
-      }
-      case (NodeUtil.INTERNAL_PRINT_OBJ, List(expr), None) => {
-        val (v, excSet) = V(expr, st)
-        println(s"[DEBUG] expression: $expr")
-        println(s"        exceptions: $excSet")
-        if (!v.pvalue.isBottom)
-          println(s"        * $expr might be primitive values: ${v.pvalue}")
+        println(s"        pvalue    : ${v.pvalue}")
         println(s"        objects:")
-        v.locset.foreach(loc => {
-          st.heap.toStringLoc(loc) match {
-            case Some(str) => println(str)
-            case None =>
-          }
-        })
+        v.locset.foreach(loc => println(st.heap.toStringLoc(loc).get))
         (st, excSt)
       }
       case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
@@ -821,7 +810,7 @@ case class Semantics(
       }
       case (NodeUtil.INTERNAL_TO_LOWER_CASE, List(expr), None) => {
         val (v, excSet) = V(expr, st)
-        val str = TypeConversionHelper.ToString(v)
+        val str = v.pvalue.strval
         val lower = AbsStr.alpha(s => Str(s.str.toLowerCase))(AbsStr)(str)
         val st1 =
           if (!v.isBottom) st.varStore(lhs, AbsValue(lower))
