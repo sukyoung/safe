@@ -4952,6 +4952,8 @@ Function: {
   \\],
   99: [\\
   function toString () {
+    // TODO
+    return @StrTop;
   }
   \\],
   100: [\\
