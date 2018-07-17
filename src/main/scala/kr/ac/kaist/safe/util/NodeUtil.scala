@@ -106,6 +106,8 @@ object NodeUtil {
   val INTERNAL_INDEX_OF = internalAPIName("indexOf")
   // 15.5.4.8 String.prototype.lastIndexOf (searchString, position)
   val INTERNAL_LAST_INDEX_OF = internalAPIName("lastIndexOf")
+  // 15.5.4.14 String.prototype.split (separator, limit)
+  val INTERNAL_SPLIT = internalAPIName("split")
   // 15.5.4.16 String.prototype.toLowerCase ( )
   val INTERNAL_TO_LOWER_CASE = internalAPIName("toLowerCase")
   // 15.5.4.19 String.prototype.toUpperCase ( )
@@ -184,6 +186,7 @@ object NodeUtil {
     INTERNAL_STR_OBJ,
     INTERNAL_INDEX_OF,
     INTERNAL_LAST_INDEX_OF,
+    INTERNAL_SPLIT,
     INTERNAL_TO_LOWER_CASE,
     INTERNAL_TO_UPPER_CASE,
     INTERNAL_TRIM,

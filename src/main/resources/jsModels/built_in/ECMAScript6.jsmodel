@@ -1,0 +1,42 @@
+Heap: {
+  #Global: {
+    "Set": <#Set, T, F, T>
+  },
+  #Set: {
+    [[Call]]: fun(1),
+    [[Class]]: "Function",
+    [[Construct]]: fun(2),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "prototype": <#Set.prototype, F, F, F>
+  },
+  #Set.prototype: {
+    [[Class]]: "Set",
+    [[Extensible]]: true,
+    [[PrimitiveValue]]: "",
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#Set, T, F, T>
+  },
+  #Set.prototype.size: {
+    [[Call]]: fun(4),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+}
+
+Function: {
+  1: [\\
+  function Set () {
+  }
+  \\],
+  2: [\\
+  function Set () {
+    return {};
+  }
+  \\]
+}

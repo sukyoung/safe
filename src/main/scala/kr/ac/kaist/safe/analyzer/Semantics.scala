@@ -867,6 +867,42 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet1 ++ excSet2 ++ excSet3)
         (st1, excSt ⊔ newExcSt)
       }
+      case (NodeUtil.INTERNAL_SPLIT, List(str, sep, lim), Some(aNew)) => {
+        val h = st.heap
+        val arrASite = aNew
+        val (strval, excSet1) = V(str, st)
+        val (sepval, excSet2) = V(sep, st)
+        val (limval, excSet3) = V(lim, st)
+        val arr = (
+          strval.pvalue.strval.gamma,
+          sepval.pvalue.strval.gamma,
+          limval.pvalue.numval.gamma
+        ) match {
+            case (ConFin(strset), ConFin(sepset), ConFin(limset)) => {
+              val arrs = {
+                for (s <- strset; p <- sepset; l <- limset)
+                  yield s.str.split(p.str).take(l.num.toInt)
+              }
+              (AbsObj.Bot /: arrs) {
+                case (obj, arr) => obj ⊔ ((AbsObj.newArrayObject(AbsNum(arr.length)) /: arr.zipWithIndex) {
+                  case (arr, (str, idx)) => arr.update(
+                    AbsStr(idx.toString),
+                    AbsDataProp(DataProp(str, T, T, T))
+                  )
+                })
+              }
+            }
+            case _ => AbsObj.newArrayObject(AbsNum.Top).update(AbsStr.Number, AbsDataProp.Top)
+          }
+        val arrLoc = Loc(arrASite, tp)
+        val state = st.alloc(arrLoc)
+        val retHeap = state.heap.update(arrLoc, arr.alloc(arrLoc))
+        val excSt = state.raiseException(excSet1 ++ excSet2 ++ excSet3)
+        val st2 = state.copy(heap = retHeap)
+        val retSt = st2.varStore(lhs, AbsValue(arrLoc))
+
+        (retSt, excSt)
+      }
       case (NodeUtil.INTERNAL_TO_LOWER_CASE, List(expr), None) => {
         val (v, excSet) = V(expr, st)
         val str = v.pvalue.strval
