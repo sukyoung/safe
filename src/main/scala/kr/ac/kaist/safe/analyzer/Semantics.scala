@@ -131,7 +131,9 @@ case class Semantics(
       case (Exit(f1), acall @ AfterCall(f2, retVar, call)) =>
         val call = acall.call
         val callLocSet = getBeforeCallLocSet(call, cp2.tracePartition)
-        val state = st //.afterCall(call, callLocSet)
+        val state =
+          if (RecencyMode || ACS > 0) st.afterCall(call, callLocSet)
+          else st
         val (ctx1, allocs1) = (state.context, state.allocs)
         val EdgeData(allocs2, env1, thisBinding) = data.fix(allocs1)
         if (allocs2.isBottom) AbsState.Bot
