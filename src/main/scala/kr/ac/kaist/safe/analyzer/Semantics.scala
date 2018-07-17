@@ -808,6 +808,24 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet)
         (st3, newExcSt)
       }
+      case (NodeUtil.INTERNAL_INDEX_OF, List(expr, str, pos), None) => {
+        val (thisval, excSet1) = V(expr, st)
+        val (strval, excSet2) = V(str, st)
+        val (posval, excSet3) = V(pos, st)
+        val kval = (
+          thisval.pvalue.strval.gamma,
+          strval.pvalue.strval.gamma,
+          posval.pvalue.numval.gamma
+        ) match {
+            case (ConFin(thisset), ConFin(strset), ConFin(posset)) =>
+              AbsNum(for (t <- thisset; s <- strset; p <- posset)
+                yield Num(t.str.indexOf(s.str, p.num.toInt)))
+            case _ => AbsNum.Top
+          }
+        val st1 = st.varStore(lhs, AbsValue(kval))
+        val newExcSt = st.raiseException(excSet1 ++ excSet2 ++ excSet3)
+        (st1, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_TO_LOWER_CASE, List(expr), None) => {
         val (v, excSet) = V(expr, st)
         val str = v.pvalue.strval
