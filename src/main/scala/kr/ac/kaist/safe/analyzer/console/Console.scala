@@ -44,7 +44,12 @@ class Console(
   ////////////////////////////////////////////////////////////////
 
   override def runFixpoint(): Unit = {
-    if (prepareToRunFixpoint || (stopAlreadyVisited && visited.contains(cur))) {
+    if (prepareToRunFixpoint ||
+      (stopAlreadyVisited && visited.contains(cur)) ||
+      (stopExitExc && (cur.block match {
+        case ExitExc(_) => true
+        case _ => false
+      }))) {
       setPrompt()
       while ({
         println

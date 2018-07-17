@@ -58,6 +58,7 @@ object Command {
     CmdHome,
     CmdRun,
     CmdStopAlreadyVisited,
+    CmdStopExitExc,
     CmdBreak,
     CmdBreakList,
     CmdBreakRemove,

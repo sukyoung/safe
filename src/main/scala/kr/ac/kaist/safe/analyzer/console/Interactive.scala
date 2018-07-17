@@ -25,6 +25,7 @@ trait Interactive {
   var iter: Int = -1
   var visited: Set[ControlPoint] = Set()
   var stopAlreadyVisited: Boolean = false
+  var stopExitExc: Boolean = false
 
   ////////////////////////////////////////////////////////////////
   // private variables

@@ -13,22 +13,17 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 
-// help
-case object CmdHelp extends Command("help") {
-  override val help: String = "usage: " + name + " (command)"
+// add break
+case object CmdStopExitExc extends Command("stop-exit-exc", "Switch about stopping on ExitExcs.") {
+  override val help: String = {
+    s"""usage: $name on
+       $name off"""
+  }
+
   def run(c: Interactive, args: List[String]): Option[Target] = {
     args match {
-      case Nil => {
-        printResult("Command list:")
-        Command.commands.foreach(cmd =>
-          printResult("- %-25s%s".format(cmd.name, cmd.info)))
-        printResult("For more information, see '" + name + " <command>'.")
-      }
-      case str :: Nil => Command.cmdMap.get(str) match {
-        case Some(cmd) => printResult(cmd.help)
-        case None =>
-          printResult("* '" + str + "' is not a command. See '" + name + "'.")
-      }
+      case "on" :: Nil => c.stopExitExc = true
+      case "off" :: Nil => c.stopExitExc = false
       case _ => printResult(help)
     }
     None
