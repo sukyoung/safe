@@ -86,7 +86,6 @@ cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-library" % scalaVersion.value,
   "org.scala-lang" % "scala-compiler" % scalaVersion.value % "scala-tool",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test" withSources,
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
   "io.spray" %% "spray-json" % "1.3.2",
