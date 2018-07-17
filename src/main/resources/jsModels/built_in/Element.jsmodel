@@ -8,9 +8,11 @@ Heap: {
     "HTMLDocument": <#HTMLDocument, T, F, T>,
     "window": <#Global, F, T, F>,
     "document": <#document, T, F, T>,
+    "addEventListener": <#EventTarget.prototype.addEventListener, T, T, T>,
     "location": <#location, F, T, T>,
     "setInterval": <#Document.prototype.setInterval, T, T, T>,
-    "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
+    "setTimeout": <#Global.setTimeout, T, T, T>,
+    "clearTimeout": <#Global.clearTimeout, T, T, T>,
     "navigator": <#Global.clientInformation, F, T, T>,
     "HTMLElement": <#HTMLElement, T, F, T>,
     "HTMLHtmlElement": <#HTMLHtmlElement, T, F, T>,
@@ -195,12 +197,11 @@ Heap: {
     "constructor": <#Document, T, F, T>,
     "createComment": <#Document.prototype.createComment, T, T, T>,
     "createElement": <#Document.prototype.createElement, T, T, T>,
+    "createEvent": <#Document.prototype.createEvent, T, T, T>,
     "documentElement": <#Document.prototype.documentElement, T, T, T>,
     "getElementsByTagName": <#Document.prototype.getElementsByTagName, T, T, T>,
     "getElementById": <#Document.prototype.getElementById, T, T, T>,
     "location": <#location, F, T, T>,
-    "setInterval": <#Document.prototype.setInterval, T, T, T>,
-    "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
     "write": <#Document.prototype.write, F, T, T>,
     "writeln": <#Document.prototype.writeln, F, T, T>,
     "URL": <string, F, T, T>
@@ -241,6 +242,15 @@ Heap: {
     [[Scope]]: null,
     "length": <1, F, F, T>
   },
+  #Document.prototype.createEvent: {
+    [[Call]]: fun(33),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, T>
+  },
   #Document.prototype.documentElement: {
     [[Class]]: "Object",
     [[Extensible]]: true,
@@ -256,8 +266,16 @@ Heap: {
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null
   },
-  #Document.prototype.setTimeout: {
+  #Window.setTimeout: {
     [[Call]]: fun(15),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Window.clearTimeout: {
+    [[Call]]: fun(32),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[HasInstance]]: null,
@@ -482,6 +500,14 @@ Function: {
   \\],
   31: [\\
   function setAttribute() {
+  }
+  \\],
+  32: [\\
+  function clearTimeout() {
+  }
+  \\],
+  33: [\\
+  function createEvent() {
   }
   \\]
 }
