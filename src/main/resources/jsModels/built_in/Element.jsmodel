@@ -266,7 +266,7 @@ Heap: {
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null
   },
-  #Window.setTimeout: {
+  #Global.setTimeout: {
     [[Call]]: fun(15),
     [[Class]]: "Function",
     [[Extensible]]: true,
@@ -274,7 +274,7 @@ Heap: {
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null
   },
-  #Window.clearTimeout: {
+  #Global.clearTimeout: {
     [[Call]]: fun(32),
     [[Class]]: "Function",
     [[Extensible]]: true,
