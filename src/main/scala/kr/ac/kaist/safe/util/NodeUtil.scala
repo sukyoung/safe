@@ -56,8 +56,9 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
-  // Helper for Debugging
+  // Helpers
   val INTERNAL_PRINT = internalAPIName("Print")
+  val INTERNAL_CHAR_CODE = internalAPIName("CharCode")
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
@@ -80,7 +81,9 @@ object NodeUtil {
   // 9.4 ToInteger
   val INTERNAL_TO_INT = internalAPIName("ToInteger")
   // 9.6 ToUint32: (Unsigned 32 Bit Integer)
-  val INTERNAL_TO_UINT = internalAPIName("ToUint32")
+  val INTERNAL_TO_UINT_32 = internalAPIName("ToUint32")
+  // 9.7 ToUint16: (Unsigned 16 Bit Integer)
+  val INTERNAL_TO_UINT_16 = internalAPIName("ToUint16")
   // 9.8 ToString
   val INTERNAL_TO_STR = internalAPIName("ToString")
   // 9.9 ToObject
@@ -101,10 +104,14 @@ object NodeUtil {
   val INTERNAL_STR_OBJ = internalAPIName("StrObj")
   // 15.5.4.7 String.prototype.indexOf (searchString, position)
   val INTERNAL_INDEX_OF = internalAPIName("indexOf")
+  // 15.5.4.8 String.prototype.lastIndexOf (searchString, position)
+  val INTERNAL_LAST_INDEX_OF = internalAPIName("lastIndexOf")
   // 15.5.4.16 String.prototype.toLowerCase ( )
   val INTERNAL_TO_LOWER_CASE = internalAPIName("toLowerCase")
   // 15.5.4.19 String.prototype.toUpperCase ( )
   val INTERNAL_TO_UPPER_CASE = internalAPIName("toUpperCase")
+  // 15.5.4.20 String.prototype.trim ( )
+  val INTERNAL_TRIM = internalAPIName("trim")
   // 15.6.2.1 new Boolean (value)
   val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
   // 15.7.2.1 new Number (value)
@@ -153,6 +160,7 @@ object NodeUtil {
   val INTERNAL_HAS_CONST = internalAPIName("HasConstruct")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_PRINT,
+    INTERNAL_CHAR_CODE,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
@@ -166,7 +174,8 @@ object NodeUtil {
     INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
     INTERNAL_TO_INT,
-    INTERNAL_TO_UINT,
+    INTERNAL_TO_UINT_32,
+    INTERNAL_TO_UINT_16,
     INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
     INTERNAL_IS_CALLABLE,
@@ -174,8 +183,10 @@ object NodeUtil {
     INTERNAL_GET_OWN_PROP_NAMES,
     INTERNAL_STR_OBJ,
     INTERNAL_INDEX_OF,
+    INTERNAL_LAST_INDEX_OF,
     INTERNAL_TO_LOWER_CASE,
     INTERNAL_TO_UPPER_CASE,
+    INTERNAL_TRIM,
     INTERNAL_BOOL_OBJ,
     INTERNAL_NUM_OBJ,
     INTERNAL_ABS,

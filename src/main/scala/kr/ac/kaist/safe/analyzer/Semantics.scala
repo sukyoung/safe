@@ -494,6 +494,18 @@ case class Semantics(
         v.locset.foreach(loc => println(st.heap.toStringLoc(loc).get))
         (st, excSt)
       }
+      case (NodeUtil.INTERNAL_CHAR_CODE, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val numval = v.pvalue.strval.gamma match {
+          case ConFin(strset) => AbsNum(strset.map {
+            case Str(str) => Num(str(0).toInt)
+          })
+          case ConInf => AbsNum.UInt
+        }
+        val newSt = st.varStore(lhs, AbsValue(numval))
+        val newExcSt = st.raiseException(excSet)
+        (newSt, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
         val (v, excSetO) = V(exprO, st)
         val (p, excSetP) = V(exprP, st)
@@ -679,10 +691,19 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet)
         (st1, excSt ⊔ newExcSt)
       }
-      case (NodeUtil.INTERNAL_TO_UINT, List(expr), None) => {
+      case (NodeUtil.INTERNAL_TO_UINT_32, List(expr), None) => {
         val (v, excSet) = V(expr, st)
         val st1 =
           if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToUint32(v, st.heap)))
+          else AbsState.Bot
+
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt ⊔ newExcSt)
+      }
+      case (NodeUtil.INTERNAL_TO_UINT_16, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val st1 =
+          if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToUint16(v, st.heap)))
           else AbsState.Bot
 
         val newExcSt = st.raiseException(excSet)
@@ -826,6 +847,24 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet1 ++ excSet2 ++ excSet3)
         (st1, excSt ⊔ newExcSt)
       }
+      case (NodeUtil.INTERNAL_LAST_INDEX_OF, List(expr, str, pos), None) => {
+        val (thisval, excSet1) = V(expr, st)
+        val (strval, excSet2) = V(str, st)
+        val (posval, excSet3) = V(pos, st)
+        val kval = (
+          thisval.pvalue.strval.gamma,
+          strval.pvalue.strval.gamma,
+          posval.pvalue.numval.gamma
+        ) match {
+            case (ConFin(thisset), ConFin(strset), ConFin(posset)) =>
+              AbsNum(for (t <- thisset; s <- strset; p <- posset)
+                yield Num(t.str.lastIndexOf(s.str, p.num.toInt)))
+            case _ => AbsNum.Top
+          }
+        val st1 = st.varStore(lhs, AbsValue(kval))
+        val newExcSt = st.raiseException(excSet1 ++ excSet2 ++ excSet3)
+        (st1, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_TO_LOWER_CASE, List(expr), None) => {
         val (v, excSet) = V(expr, st)
         val str = v.pvalue.strval
@@ -842,6 +881,16 @@ case class Semantics(
         val upper = AbsStr.alpha(s => Str(s.str.toUpperCase))(AbsStr)(str)
         val st1 =
           if (!v.isBottom) st.varStore(lhs, AbsValue(upper))
+          else AbsState.Bot
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt ⊔ newExcSt)
+      }
+      case (NodeUtil.INTERNAL_TRIM, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val str = v.pvalue.strval
+        val trimmed = AbsStr.alpha(s => Str(s.str.trim))(AbsStr)(str)
+        val st1 =
+          if (!v.isBottom) st.varStore(lhs, AbsValue(trimmed))
           else AbsState.Bot
         val newExcSt = st.raiseException(excSet)
         (st1, excSt ⊔ newExcSt)
