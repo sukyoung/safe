@@ -131,7 +131,7 @@ case class Semantics(
       case (Exit(f1), acall @ AfterCall(f2, retVar, call)) =>
         val call = acall.call
         val callLocSet = getBeforeCallLocSet(call, cp2.tracePartition)
-        val state = st.afterCall(call, callLocSet)
+        val state = st //.afterCall(call, callLocSet)
         val (ctx1, allocs1) = (state.context, state.allocs)
         val EdgeData(allocs2, env1, thisBinding) = data.fix(allocs1)
         if (allocs2.isBottom) AbsState.Bot
@@ -1308,7 +1308,7 @@ case class Semantics(
               val (newRec2, _) = newRec
                 .CreateMutableBinding("@scope")
                 .SetMutableBinding("@scope", scopeValue)
-              cp.next(funCFG.entry, CFGEdgeCall, this).foreach(entryCP => {
+              cp.next(funCFG.entry, CFGEdgeCall, this, st1).foreach(entryCP => {
                 val newTP = entryCP.tracePartition
                 val exitCP = ControlPoint(funCFG.exit, newTP)
                 val exitExcCP = ControlPoint(funCFG.exitExc, newTP)

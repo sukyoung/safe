@@ -32,7 +32,8 @@ trait TracePartition {
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[TracePartition]
 }
 
@@ -44,7 +45,8 @@ case object EmptyTP extends TracePartition {
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[EmptyTP.type] = List(EmptyTP)
   override def toString: String = s"Empty"
 }
@@ -60,11 +62,12 @@ case class ProductTP(
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[ProductTP] =
-    ltp.next(from, to, edgeType, sem).foldLeft(List[ProductTP]()) {
+    ltp.next(from, to, edgeType, sem, st).foldLeft(List[ProductTP]()) {
       case (list, l) =>
-        rtp.next(from, to, edgeType, sem).map(ProductTP(l, _)) ++ list
+        rtp.next(from, to, edgeType, sem, st).map(ProductTP(l, _)) ++ list
     }
   override def toString: String = s"$ltp x $rtp"
 }
@@ -85,7 +88,8 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[CallSiteContext] = List((from, to, edgeType) match {
     case (call: Call, _: Entry, CFGEdgeCall) =>
       CallSiteContext((call :: callsiteList).take(depth), depth)
@@ -121,7 +125,8 @@ case class LoopContext(
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[LoopContext] = (from, to, edgeType) match {
     // function start
     case (entry: Entry, _, CFGEdgeNormal) =>
@@ -133,7 +138,11 @@ case class LoopContext(
       iterList match {
         case Nil => List(this)
         case LoopIter(head, iter) :: rest =>
-          val newCtxt = copy(iterList = LoopIter(head, math.min(iter + 1, maxIter)) :: rest)
+          val (condV, _) = sem.V(head.cond, st)
+          val newIter =
+            if (TypeConversionHelper.ToBoolean(condV).isTop) iter
+            else iter + 1
+          val newCtxt = copy(iterList = LoopIter(head, math.min(newIter, maxIter)) :: rest)
           head.outBlocks.foreach(sem.addOutCtxt(_, newCtxt))
           List(newCtxt)
       }

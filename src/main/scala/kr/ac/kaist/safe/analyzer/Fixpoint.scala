@@ -49,7 +49,7 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeNormal) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        cp.next(block, CFGEdgeNormal, semantics).foreach(succCP => {
+        cp.next(block, CFGEdgeNormal, semantics, nextSt).foreach(succCP => {
           val oldSt = semantics.getState(succCP)
           if (!(nextSt ⊑ oldSt)) {
             val newSt = oldSt ⊔ nextSt
@@ -70,7 +70,7 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeExc) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        cp.next(block, CFGEdgeExc, semantics).foreach(excSuccCP => {
+        cp.next(block, CFGEdgeExc, semantics, nextExcSt).foreach(excSuccCP => {
           val oldExcSt = semantics.getState(excSuccCP)
           if (!(nextExcSt ⊑ oldExcSt)) {
             val newExcSet = oldExcSt ⊔ nextExcSt

@@ -76,8 +76,8 @@ case class CFGFunction(
     addBlock(block)
     block
   }
-  def createLoopHead(outer: Option[LoopHead], span: Span): LoopHead = {
-    val loopHead = LoopHead(this, span)
+  def createLoopHead(outer: Option[LoopHead], cond: CFGExpr, span: Span): LoopHead = {
+    val loopHead = LoopHead(this, cond, span)
     loopHead.outerLoop = outer
     addBlock(loopHead)
     loopHead

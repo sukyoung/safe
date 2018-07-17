@@ -559,8 +559,9 @@ class DefaultCFGBuilder(
         /* tail block */
         val tailBlock: NormalBlock = getTail(blocks, func)
         /* while loop head */
+        val condExpr = ir2cfgExpr(cond)
         val headBlockSpan: Span = stmt.span.copy(end = stmt.span.begin)
-        val headBlock: LoopHead = func.createLoopHead(currentLoop, headBlockSpan)
+        val headBlock: LoopHead = func.createLoopHead(currentLoop, condExpr, headBlockSpan)
         val prevLoop = currentLoop
         currentLoop = Some(headBlock)
 
@@ -570,12 +571,12 @@ class DefaultCFGBuilder(
         val loopOutBlock: NormalBlock = func.createBlock(currentLoop)
 
         /* Insert assert instruction */
-        loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
+        loopBodyBlock.createInst(CFGAssert(cond, _, condExpr, true))
         cond match {
           case IRBin(_, first, op, second) if op.isAssertOperator =>
             loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, condExpr), false))
         }
         /* add edge from tail to loop head */
         cfg.addEdge(tailBlock, headBlock)

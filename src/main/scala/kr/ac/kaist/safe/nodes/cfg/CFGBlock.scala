@@ -208,7 +208,7 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
 }
 
 // loop head
-case class LoopHead(func: CFGFunction, span: Span) extends CFGBlock {
+case class LoopHead(func: CFGFunction, cond: CFGExpr, span: Span) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
