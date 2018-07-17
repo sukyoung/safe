@@ -2380,6 +2380,7 @@ Function: {
   \\],
   76: [\\
   function setUTCMilliseconds (ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let time be MakeTime(HourFromTime(t), MinFromTime(t), SecFromTime(t), ToNumber(ms)).
@@ -2459,10 +2460,11 @@ Function: {
     }else {
       var v = return_val;
     }
+    */
     // 4. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 5. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   77: [\\
@@ -2474,6 +2476,7 @@ Function: {
   \\],
   78: [\\
   function setUTCSeconds (set,ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let s be ToNumber(sec).
@@ -2553,10 +2556,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 6. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 7. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   79: [\\
@@ -2568,6 +2572,7 @@ Function: {
   \\],
   80: [\\
   function setUTCMinutes (min,sec,ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     //2. Let m be ToNumber(min).
@@ -2652,10 +2657,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 7. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     //8. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   81: [\\
@@ -2667,6 +2673,7 @@ Function: {
   \\],
   82: [\\
   function setUTCHours (hour,min,sec,ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let h be ToNumber(hour).
@@ -2753,10 +2760,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 8. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 9. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   83: [\\
@@ -2768,6 +2776,7 @@ Function: {
   \\],
   84: [\\
   function setUTCDate (date) {
+    /*
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let dt be ToNumber(date).
@@ -3107,21 +3116,23 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 5. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 6. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   85: [\\
   function setMonth (month,date) {
     // Need LocalTime(t);
-    @PrimitiveValue(this ,@NumTop);
+    @PrimitiveValue(this, @NumTop);
     return @NumTop;
   }
   \\],
   86: [\\
   function setUTCMonth (month,date) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let m be ToNumber(month).
@@ -3491,10 +3502,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 6. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 7. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   87: [\\
@@ -3506,6 +3518,7 @@ Function: {
   \\],
   88: [\\
   function setUTCFullYear (year,month,date) {
+    /* TODO
     // 1. Let t be this time value; but if this time value is NaN, let t be +0.
     var t = @PrimitiveValue(this);
     if (@SameValue(t,NaN)) {
@@ -3948,10 +3961,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 7. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 8. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   89: [\\
@@ -3984,6 +3998,7 @@ Function: {
   \\],
   93: [\\
   function Date () {
+    /* TODO
     if (arguments.length === 0) {
       var obj = {};
       @Prototype(obj, Date.prototype);
@@ -4326,6 +4341,13 @@ Function: {
       @PrimitiveValue(obj, return_val);
       return obj;
     }
+    */
+    var obj = {};
+    @Prototype(obj, Date.prototype);
+    @Class(obj, "Date");
+    @Extensible(obj, true);
+    @PrimitiveValue(obj, @NumTop);
+    return obj;
   }
   \\],
   94: [\\
@@ -4336,6 +4358,7 @@ Function: {
   \\],
   95: [\\
   function UTC (year,month,date,hours,minutes,seconds,ms) {
+    /* TODO
     // 1. Let y be ToNumber(year).
     var y = @ToNumber(year);
     // 2. Let m be ToNumber(month).
@@ -4635,6 +4658,8 @@ Function: {
       return_val = @ToInteger(time);
     }
     return return_val;
+    */
+    return @NumTop;
   }
   \\],
   96: [\\
