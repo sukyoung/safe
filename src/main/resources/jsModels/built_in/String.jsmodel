@@ -248,7 +248,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -268,7 +268,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -278,10 +278,7 @@ Function: {
       return NaN;
     }
     // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
-    // TODO implement @ToUint16
-    // Need char -> Unicode-16
-    // return @ToUint16(S[position]);
-    return @ToNumber(S[position]);
+    return @CharCode(S[position]);
   }
   \\],
   6: [\\
@@ -291,7 +288,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let args be an internal list that is a copy of the argument list passed to this function.
     var args = arguments;
     // 4. Let R be S.
@@ -329,7 +326,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let searchStr be ToString(searchString).
     var searchStr = @ToString(searchString);
     // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
@@ -344,23 +341,7 @@ Function: {
     var len = S.length;
     // 7. Let start min(max(pos, 0), len).
     var start = Math.min(Math.max(pos,0),len);
-    // 8. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    // 9. Return the largest possible nonnegative integer k not larger than start such that k+ searchLen  is not greater than len, and for all nonnegative integers j less than searchLen, the character at         position k+j of S is the same as the character at position j of searchStr; but if there is no such        integer k, then return the value -1.
-    var k = start;
-    while (k >= 0 && (k+searchLen) <= len){
-      var b = true;
-      for (var j=0;j < searchLen && b;j++) {
-        if (S[k+j] !== searchStr[j]) {
-          b = false;
-        }
-      }
-      if (b) {
-        return k;
-      }
-      k -= 1;
-    }
-    return -1;
+    return @lastIndexOf(S, searchStr, start);
   }
   \\],
   9: [\\
@@ -463,7 +444,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let len be the number of characters in S.
     var len = S.length;
     // 4. Let intStart be ToInteger(start).
@@ -549,20 +530,10 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
-    var f = 0;
-    while (S[f] === " "){
-      f += 1;
-    }
-    var t = S.length - 1;
-    while (S[t] === " "){
-      t -= 1;
-    }
-    t +=1;
-    var T = S.substring(f,t);
     // 4. Return T.
-    return T;
+    return @trim(S);
   }
   \\],
   21: [\\
@@ -596,7 +567,7 @@ Function: {
   function substr (start, length) {
     // ECMASCript 5 Appendix B.2.3 String.prototype.substr(start, length)
     // 1. Call ToString, giving it the this value as its argument.
-    var result1 = @ToString(this);
+    var result1 = @getLoc('ToString')(this);
     // 2. Call ToInteger(start).
     var result2 = @ToInteger(start);
     // 3. If length is undefined, use +; otherwise call ToInteger(length).

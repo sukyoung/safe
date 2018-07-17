@@ -395,11 +395,7 @@ Function: {
   \\],
   7: [\\
   function addEventListener(type, func) {
-    var o = {
-      elem: this,
-      func: func
-    }
-    @addEventFunc(o);
+    // TODO
   }
   \\],
   8: [\\
