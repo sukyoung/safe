@@ -447,11 +447,7 @@ Function: {
     // 9. Let to be max(finalStart, finalEnd).
     var to = Math.max(finalStart,finalEnd);
     // 10. Return a String whose length is to - from, containing characters from S, namely the characters with indices from through to -1, in ascending order.
-    var Str = "";
-    for (var i = 0; i<(to-from);i++){
-      Str = Str + S[from+i];
-    }
-    return Str;
+    return @substring(S, from, to);
   }
   \\],
   16: [\\

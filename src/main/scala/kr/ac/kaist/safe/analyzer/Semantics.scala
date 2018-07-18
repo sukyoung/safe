@@ -903,6 +903,24 @@ case class Semantics(
 
         (retSt, excSt)
       }
+      case (NodeUtil.INTERNAL_SUBSTRING, List(str, from, to), None) => {
+        val (strval, excSet1) = V(str, st)
+        val (fromval, excSet2) = V(from, st)
+        val (toval, excSet3) = V(to, st)
+        val res = (
+          strval.pvalue.strval.gamma,
+          fromval.pvalue.numval.gamma,
+          toval.pvalue.numval.gamma
+        ) match {
+            case (ConFin(strset), ConFin(fromset), ConFin(toset)) =>
+              AbsStr(for (s <- strset; f <- fromset; t <- toset)
+                yield Str(s.str.substring(f.num.toInt, t.num.toInt)))
+            case _ => AbsStr.Top
+          }
+        val st1 = st.varStore(lhs, AbsValue(res))
+        val newExcSt = st.raiseException(excSet1 ++ excSet2 ++ excSet3)
+        (st1, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_TO_LOWER_CASE, List(expr), None) => {
         val (v, excSet) = V(expr, st)
         val str = v.pvalue.strval
