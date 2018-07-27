@@ -150,10 +150,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       (this.getSingle, that.getSingle) match {
         case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
         case (ConZero, _) | (_, ConZero) => AbsBool.Bot
-        case _ => (this ⊑ that, that ⊑ this) match {
-          case (false, false) => AbsBool.False
-          case _ => AbsBool.Top
-        }
+        case _ => AbsBool.Top
       }
 
     def <(that: Elem): AbsBool = (this, that) match {
