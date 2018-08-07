@@ -361,15 +361,18 @@ Function: {
   }
   \\],
   10: [\\
-  function () {
+  function match (regexp) {
+    @NotYetImplemented("String.prototype.match");
   }
   \\],
   11: [\\
-  function () {
+  function replace (searchValue, replaceValue) {
+    @NotYetImplemented("String.prototype.replace");
   }
   \\],
   12: [\\
-  function () {
+  function search (regexp) {
+    @NotYetImplemented("String.prototype.search");
   }
   \\],
   13: [\\
