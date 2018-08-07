@@ -323,6 +323,8 @@ Heap: {
     "encodeURIComponent": <#Global.encodeURIComponent, T, F, T>,
     "EvalError": <#EvalError, T, F, T>,
     "encodeURI": <#Global.encodeURI, T, F, T>,
+    "escape": <#Global.escape, T, F, T>,
+    "unescape": <#Global.unescape, T, F, T>,
     "eval": <#Global.eval, T, F, T>,
     "isFinite": <#Global.isFinite, T, F, T>,
     "Object": <#Object, T, F, T>,
@@ -1199,6 +1201,22 @@ Heap: {
     [[Call]]: fun(6),
     "length": <1.0, F, F, F>
   },
+  #Global.escape: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(38),
+    "length": <1.0, F, F, F>
+  },
+  #Global.unescape: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(39),
+    "length": <1.0, F, F, F>
+  },
   #Date.prototype.toLocaleTimeString: {
     [[Class]]: "Function",
     [[Extensible]]: true,
@@ -1284,15 +1302,18 @@ Heap: {
 
 Function: {
   1: [\\
-  function () {
+  function eval (x) {
+    @NotYetImplemented("eval");
   }
   \\],
   2: [\\
-  function () {
+  function parseInt (string, radix) {
+    @NotYetImplemented("parseInt");
   }
   \\],
   3: [\\
-  function () {
+  function parseFloat (string) {
+    @NotYetImplemented("parseFloat");
   }
   \\],
   4: [\\
@@ -1313,19 +1334,23 @@ Function: {
   }
   \\],
   6: [\\
-  function () {
+  function decodeURI (encodedURI) {
+    @NotYetImplemented("decodeURI");
   }
   \\],
   7: [\\
-  function () {
+  function decodeURIComponent (encodedURIComponent) {
+    @NotYetImplemented("decodeURIComponent");
   }
   \\],
   8: [\\
-  function () {
+  function encodeURI (uri) {
+    @NotYetImplemented("encodeURI");
   }
   \\],
   9: [\\
-  function () {
+  function encodeURIComponent (uriComponent) {
+    @NotYetImplemented("encodeURIComponent");
   }
   \\],
   10: [\\
@@ -1752,19 +1777,23 @@ Function: {
   }
   \\],
   36: [\\
-  function () {
+  function Function () {
+    @NotYetImplemented("Function");
   }
   \\],
   37: [\\
-  function () {
+  function Function () {
+    @NotYetImplemented("Function");
   }
   \\],
   38: [\\
-  function () {
+  function escape (string) {
+    @NotYetImplemented("escape");
   }
   \\],
   39: [\\
-  function () {
+  function unescape (string) {
+    @NotYetImplemented("unescape");
   }
   \\],
   40: [\\
@@ -3987,7 +4016,8 @@ Function: {
   }
   \\],
   91: [\\
-  function () {
+  function toJSON (key) {
+    @NotYetImplemented("Date.prototype.toJSON")
   }
   \\],
   92: [\\
@@ -4669,7 +4699,8 @@ Function: {
   }
   \\],
   97: [\\
-  function exec () {
+  function exec (string) {
+    @NotYetImplemented("RegExp.prototype.exec");
   }
   \\],
   98: [\\
@@ -5021,11 +5052,13 @@ Function: {
   }
   \\],
   135: [\\
-  function () {
+  function parse (text, reviver) {
+    @NotYetImplemented("JSON.parse")
   }
   \\],
   136: [\\
-  function () {
+  function stringify (value, replacer, space) {
+    @NotYetImplemented("JSON.stringify")
   }
   \\],
   137: [\\
