@@ -110,7 +110,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
 
   def printLoc(c: Interactive, args: List[String]): Unit = args match {
     case locStr :: args if args.length <= 1 =>
-      Loc.parse(locStr) match {
+      Loc.parse(locStr, c.cfg) match {
         case Success(loc) =>
           val state = c.sem.getState(c.getCurCP)
           val heap = state.heap

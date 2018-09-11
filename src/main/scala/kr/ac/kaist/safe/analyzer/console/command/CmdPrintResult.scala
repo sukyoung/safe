@@ -23,25 +23,28 @@ case object CmdPrintResult extends Command("result", "Print out various informat
   }
 
   def run(c: Interactive, args: List[String]): Option[Target] = {
-    val sem = c.sem
-    val cp = c.getCurCP
-    val st = sem.getState(cp)
-    val res = sem.C(cp, st)
     val stPattern = "(exc-|)state(-all|)".r
     val locPattern = "(exc-|)loc".r
     args match {
       case Nil => printResult(help)
       case subcmd :: args => subcmd match {
-        case stPattern(exc, all) => printState(res, args, exc == "exc", all == "all")
-        case locPattern(exc) =>
+        case stPattern(exc, all) => printState(c, args, exc == "exc-", all == "all")
+        case locPattern(exc) => printLoc(c, args, exc == "exc-")
         case _ => printResult(help)
       }
     }
     None
   }
 
-  def printState(res: (AbsState, AbsState), args: List[String], exc: Boolean, all: Boolean): Unit = {
-    val (resSt, resExcSt) = res
+  private def getResult(c: Interactive): (AbsState, AbsState) = {
+    val sem = c.sem
+    val cp = c.getCurCP
+    val st = sem.getState(cp)
+    sem.C(cp, st)
+  }
+
+  def printState(c: Interactive, args: List[String], exc: Boolean, all: Boolean): Unit = {
+    val (resSt, resExcSt) = getResult(c)
     val st = if (exc) resExcSt else resSt
     val str = if (all) st.toStringAll else st.toString
     args match {
@@ -51,11 +54,11 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     }
   }
 
-  def printState(res: (AbsState, AbsState), args: List[String], exc: Boolean): Unit = args match {
+  def printLoc(c: Interactive, args: List[String], exc: Boolean): Unit = args match {
     case locStr :: rest if rest.length <= 1 =>
-      Loc.parse(locStr) match {
+      Loc.parse(locStr, c.cfg) match {
         case Success(loc) =>
-          val (resSt, resExcSt) = res
+          val (resSt, resExcSt) = getResult(c)
           val st = if (exc) resExcSt else resSt
           val heap = st.heap
           heap.toStringLoc(loc)

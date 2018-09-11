@@ -21,7 +21,7 @@ case class AllocCallSite(
     loc: Loc,
     calls: List[Call]
 ) extends Loc {
-  override def toString: String = s"${loc}:CP[${calls.mkString(", ")}]"
+  override def toString: String = s"${loc}:ACS[${calls.mkString(",")}]"
 }
 object AllocCallSite {
   def apply(name: String, calls: List[Call]): AllocCallSite =

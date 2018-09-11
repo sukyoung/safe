@@ -50,7 +50,9 @@ case object EmptyTP extends TracePartition {
     sem: Semantics,
     st: AbsState
   ): List[EmptyTP.type] = List(EmptyTP)
+
   override def toString: String = s"Empty"
+
   def toStringList: List[String] = Nil
 }
 
@@ -72,7 +74,9 @@ case class ProductTP(
       case (list, l) =>
         rtp.next(from, to, edgeType, sem, st).map(ProductTP(l, _)) ++ list
     }
-  override def toString: String = s"$ltp x $rtp"
+
+  override def toString: String = s"$ltp||$rtp"
+
   def toStringList: List[String] = ltp.toStringList ++ rtp.toStringList
 }
 
@@ -99,12 +103,11 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
       CallSiteContext((call :: callsiteList).take(depth), depth)
     case _ => this
   })
-  override def toString: String = callsiteList match {
-    case Nil => "NoCall"
-    case _ => callsiteList
-      .map(call => s"${call.func.id}:${call.id}")
-      .mkString("Call[", ", ", "]")
-  }
+
+  override def toString: String = callsiteList
+    .map(call => s"${call.func.id}:${call.id}")
+    .mkString("Call[", ",", "]")
+
   def toStringList: List[String] = callsiteList.reverse.map(call => {
     val func = call.func
     val fname = func.simpleName
@@ -189,12 +192,10 @@ case class LoopContext(
     }.toList
   }
 
-  override def toString: String = iterList match {
-    case Nil => "NoLoop"
-    case _ => iterList
-      .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter/$maxIter)" }
-      .mkString("Loop[", ", ", "]")
-  }
+  override def toString: String = iterList
+    .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter/$maxIter)" }
+    .mkString("Loop[", ",", "]")
+
   def toStringList: List[String] = iterList.reverse.map(loop => {
     val head = loop.head
     val iter = loop.iter
