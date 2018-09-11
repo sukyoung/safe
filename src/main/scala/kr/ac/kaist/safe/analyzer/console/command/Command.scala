@@ -30,9 +30,7 @@ abstract class Command(
     val fid = func.id
     val name = func.simpleName
     val span = func.span
-    printResult(s"[$fid] $name")
-    printResult(s"* function name: $name")
-    printResult(s"* span info.   : $span")
+    printResult(s"[$fid] $name @ $span")
   }
 
   protected def grep(key: String, str: String): String = {

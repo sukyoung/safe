@@ -35,6 +35,8 @@ trait TracePartition {
     sem: Semantics,
     st: AbsState
   ): List[TracePartition]
+
+  def toStringList: List[String]
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,7 @@ case object EmptyTP extends TracePartition {
     st: AbsState
   ): List[EmptyTP.type] = List(EmptyTP)
   override def toString: String = s"Empty"
+  def toStringList: List[String] = Nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +73,7 @@ case class ProductTP(
         rtp.next(from, to, edgeType, sem, st).map(ProductTP(l, _)) ++ list
     }
   override def toString: String = s"$ltp x $rtp"
+  def toStringList: List[String] = ltp.toStringList ++ rtp.toStringList
 }
 
 case class ProductSensitivity(
@@ -101,6 +105,14 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
       .map(call => s"${call.func.id}:${call.id}")
       .mkString("Call[", ", ", "]")
   }
+  def toStringList: List[String] = callsiteList.reverse.map(call => {
+    val func = call.func
+    val fname = func.simpleName
+    val fid = func.id
+    val bid = call.id
+    val span = call.span
+    s"Call[$bid] of function[$fid] $fname @ $span"
+  })
 }
 
 case class CallSiteSensitivity(depth: Int) extends Sensitivity {
@@ -183,6 +195,16 @@ case class LoopContext(
       .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter/$maxIter)" }
       .mkString("Loop[", ", ", "]")
   }
+  def toStringList: List[String] = iterList.reverse.map(loop => {
+    val head = loop.head
+    val iter = loop.iter
+    val bid = head.id
+    val func = head.func
+    val fid = func.id
+    val fname = func.simpleName
+    val span = head.span
+    s"Loop[$bid] ($iter/$maxIter) function[$fid] $fname @ $span"
+  })
 }
 
 case class LoopSensitivity(maxIter: Int, maxDepth: Int) extends Sensitivity {

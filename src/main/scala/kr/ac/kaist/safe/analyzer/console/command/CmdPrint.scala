@@ -12,7 +12,8 @@
 package kr.ac.kaist.safe.analyzer.console.command
 
 import scala.util.{ Success, Failure }
-import kr.ac.kaist.safe.analyzer.ControlPoint //, Worklist }
+import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.ControlPoint
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.html_debugger._
 import kr.ac.kaist.safe.analyzer.domain._
@@ -28,7 +29,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
        $name loc {LocName} ({keyword})
        $name function ({fid})
        $name worklist
-       $name ipsucc"""
+       $name ipsucc
+       $name sens"""
 
   def run(c: Interactive, args: List[String]): Option[Target] = {
     val idPattern = "(-?\\d+):(\\d+)".r
@@ -46,6 +48,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         case "function" => printFunc(c, args)
         case "worklist" => printWorklist(c, args)
         case "ipsucc" => printIPSucc(c, args)
+        case "sens" => printSens(c, args)
         case _ => printResult(help)
       }
     }
@@ -157,6 +160,11 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         }
         case None => printResult("- Nothing")
       }
+    case _ => printResult(help)
+  }
+
+  def printSens(c: Interactive, args: List[String]): Unit = args match {
+    case Nil => c.getCurCP.tracePartition.toStringList.foreach(printResult)
     case _ => printResult(help)
   }
 }
