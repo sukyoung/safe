@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.analyzer.console
 
 import kr.ac.kaist.safe.analyzer.console.command._
+import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, Worklist }
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGBlock }
 import kr.ac.kaist.safe.phase.HeapBuildConfig
-
 import scala.collection.immutable.TreeSet
 
 trait Interactive {
@@ -93,6 +93,12 @@ trait Interactive {
   def addBreak(block: CFGBlock): Unit = breakList += block
   def getBreakList: List[CFGBlock] = breakList.toList
   def removeBreak(block: CFGBlock): Unit = breakList -= block
+
+  def getResult: (AbsState, AbsState) = {
+    val cp = getCurCP
+    val st = sem.getState(cp)
+    sem.C(cp, st)
+  }
 
   def getPrompt: String
 }

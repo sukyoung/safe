@@ -36,15 +36,8 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     None
   }
 
-  private def getResult(c: Interactive): (AbsState, AbsState) = {
-    val sem = c.sem
-    val cp = c.getCurCP
-    val st = sem.getState(cp)
-    sem.C(cp, st)
-  }
-
   def printState(c: Interactive, args: List[String], exc: Boolean, all: Boolean): Unit = {
-    val (resSt, resExcSt) = getResult(c)
+    val (resSt, resExcSt) = c.getResult
     val st = if (exc) resExcSt else resSt
     val str = if (all) st.toStringAll else st.toString
     args match {
@@ -58,7 +51,7 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     case locStr :: rest if rest.length <= 1 =>
       Loc.parse(locStr, c.cfg) match {
         case Success(loc) =>
-          val (resSt, resExcSt) = getResult(c)
+          val (resSt, resExcSt) = c.getResult
           val st = if (exc) resExcSt else resSt
           val heap = st.heap
           heap.toStringLoc(loc)
