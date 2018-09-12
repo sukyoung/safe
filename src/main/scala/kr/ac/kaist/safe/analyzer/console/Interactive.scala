@@ -26,6 +26,7 @@ trait Interactive {
   var visited: Set[ControlPoint] = Set()
   var stopAlreadyVisited: Boolean = false
   var stopExitExc: Boolean = false
+  var period: Option[Int] = None
 
   ////////////////////////////////////////////////////////////////
   // private variables
@@ -47,11 +48,15 @@ trait Interactive {
     cur = worklist.head
     home = cur
     val block = cur.block
-    (target match {
+
+    val targetB = (target match {
       case TargetStart => iter == 0
       case TargetIter(k) => iter == k
       case _ => false
-    }) || breakList(block)
+    })
+    val breakB = breakList(block)
+    val periodB = period.fold(false)(iter % _ == 0)
+    targetB || breakB || periodB
   }
 
   def runCmd(line: String): CmdResult = {

@@ -56,23 +56,23 @@ abstract class Command(
 
 object Command {
   val commands: List[Command] = List(
-    CmdHelp,
-    CmdNext,
-    CmdJump,
-    CmdPrint,
-    CmdPrintResult,
-    CmdRunInsts,
-    CmdMove,
-    CmdHome,
-    CmdRun,
-    CmdStopAlreadyVisited,
-    CmdStopExitExc,
     CmdBreak,
     CmdBreakList,
     CmdBreakRemove,
     CmdFindBot,
-    // TODO CmdDump,
-    CmdRestart
+    CmdHelp,
+    CmdHome,
+    CmdJump,
+    CmdMove,
+    CmdNext,
+    CmdPeriod,
+    CmdPrint,
+    CmdPrintResult,
+    CmdRestart,
+    CmdRun,
+    CmdRunInsts,
+    CmdStopAlreadyVisited,
+    CmdStopExitExc
   )
   val cmdMap: Map[String, Command] = commands.foldLeft(
     Map[String, Command]()
