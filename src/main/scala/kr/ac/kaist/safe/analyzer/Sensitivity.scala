@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.util.SimpleParser
 
 // analysis sensitivity
 sealed trait Sensitivity {
@@ -37,6 +38,33 @@ trait TracePartition {
   ): List[TracePartition]
 
   def toStringList: List[String]
+}
+
+// trace partition parser
+trait TracePartitionParser extends CFGBlockParser {
+  // no sensitivity
+  lazy val empty = "Empty" ^^^ EmptyTP
+
+  // product sensitivity
+  def product(lparser: Parser[TracePartition], rparser: Parser[TracePartition]) = {
+    "(" ~> (lparser <~ "|") ~ rparser <~ ")" ^^ { case ltp ~ rtp => ProductTP(ltp, rtp) }
+  }
+
+  // k-CFA
+  lazy val cfa = (nat <~ "-CFA(") ~ repsep(getTypedCFGBlock[Call], ",") <~ ")" ^^ {
+    case depth ~ calls => CallSiteContext(calls, depth)
+  }
+
+  // LSA
+  lazy val loopIter = getTypedCFGBlock[LoopHead] ~ ("(" ~> nat <~ ")") ^^ {
+    case head ~ iter => LoopIter(head, iter)
+  }
+  lazy val lsa = ("LSA[i:" ~> nat <~ ",j:") ~ nat ~ ("](" ~> repsep(loopIter, ",") <~ ")") ^^ {
+    case maxDepth ~ maxIter ~ iterList => LoopContext(iterList, maxIter, maxDepth)
+  }
+
+  // trace partition
+  lazy val tp: Parser[TracePartition] = empty | cfa | lsa | product(tp, tp)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +103,7 @@ case class ProductTP(
         rtp.next(from, to, edgeType, sem, st).map(ProductTP(l, _)) ++ list
     }
 
-  override def toString: String = s"$ltp||$rtp"
+  override def toString: String = s"($ltp|$rtp)"
 
   def toStringList: List[String] = ltp.toStringList ++ rtp.toStringList
 }
@@ -106,7 +134,7 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
 
   override def toString: String = callsiteList
     .map(call => s"${call.func.id}:${call.id}")
-    .mkString("Call[", ",", "]")
+    .mkString(s"$depth-CFA(", ",", ")")
 
   def toStringList: List[String] = callsiteList.reverse.map(call => {
     val func = call.func
@@ -193,8 +221,8 @@ case class LoopContext(
   }
 
   override def toString: String = iterList
-    .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter/$maxIter)" }
-    .mkString("Loop[", ",", "]")
+    .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter)" }
+    .mkString(s"LSA[i:$maxDepth,j:$maxIter](", ",", ")")
 
   def toStringList: List[String] = iterList.reverse.map(loop => {
     val head = loop.head
@@ -204,7 +232,7 @@ case class LoopContext(
     val fid = func.id
     val fname = func.simpleName
     val span = head.span
-    s"Loop[$bid] ($iter/$maxIter) function[$fid] $fname @ $span"
+    s"LoopHead[$bid] ($iter/$maxIter) function[$fid] $fname @ $span"
   })
 }
 

@@ -11,12 +11,13 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
-import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import kr.ac.kaist.safe.analyzer.TracePartition
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.TracePartition
-import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
+import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import scala.reflect.ClassTag
 
 sealed trait CFGBlock {
   val func: CFGFunction
@@ -95,6 +96,23 @@ object CFGBlock {
   implicit def ordering[B <: CFGBlock]: Ordering[B] = Ordering.by {
     case block => (block.func.id, block.id)
   }
+}
+
+// CFGBlock parser
+trait CFGBlockParser extends SimpleParser {
+  val cfg: CFG
+
+  // block
+  lazy val fid = num
+  lazy val entry = "entry" ^^^ -1
+  lazy val exit = "exit" ^^^ -2
+  lazy val exitExc = "exit-exc" ^^^ -3
+  lazy val bid = nat | entry | exit | exitExc
+  lazy val block = (fid <~ ":") ~ bid ^^ { case f ~ b => cfg.getBlock(f, b) }
+
+  // get typed CFGBlock
+  def getTypedCFGBlock[T](implicit tag: ClassTag[T]): Parser[T] =
+    block ^? { case Some(block: T) => block }
 }
 
 // entry, exit, exception exit

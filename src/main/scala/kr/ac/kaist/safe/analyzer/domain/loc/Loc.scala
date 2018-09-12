@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.TracePartition
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, Call }
 import kr.ac.kaist.safe.util.PipeOps._
@@ -42,51 +42,6 @@ abstract class Loc extends Value {
     case p @ PredAllocSite(_) => p.toString
   }
 }
-
-trait LocParser extends RegexParsers {
-  val cfg: CFG
-  lazy val any = ".+".r
-  lazy val nat = "[0-9]+".r ^^ { n => n.toInt }
-  lazy val num = "-?[0-9]+".r ^^ { n => n.toInt }
-  lazy val alpha = "[a-zA-Z]+".r
-  lazy val alphaNum = "[0-9a-zA-Z]+".r
-  lazy val predName = "[0-9a-zA-Z-.<>]+".r
-
-  // allocation site abstraction
-  lazy val userASite = "#" ~> nat ^^ { id => UserAllocSite(id) }
-  lazy val predASite = "#" ~> predName ^^ { name => PredAllocSite(name) }
-  lazy val allocSite = userASite | predASite
-
-  // block
-  lazy val fid = num
-  lazy val entry = "entry" ^^^ -1
-  lazy val exit = "exit" ^^^ -2
-  lazy val exitExc = "exit-exc" ^^^ -3
-  lazy val bid = nat | entry | exit | exitExc
-  lazy val block = (fid <~ ":") ~ bid ^^ { case f ~ b => cfg.getBlock(f, b) }
-
-  // allocation callsite abstraction
-  lazy val call = block ^? { case Some(call: Call) => call }
-  def acs(parser: Parser[Loc]): Parser[Loc] = (parser <~ ":ACS[") ~ repsep(call, ",") <~ "]" ^? {
-    case loc ~ bs => AllocCallSite(loc, bs)
-  }
-
-  // recency
-  lazy val recent = "R" ^^^ Recent
-  lazy val old = "O" ^^^ Old
-  lazy val recencyTag = recent | old
-  def recency(parser: Parser[Loc]): Parser[Loc] = recencyTag ~ parser ^^ {
-    case tag ~ loc => Recency(loc, tag)
-  }
-
-  // abstract location
-  lazy val loc = allocSite |>
-    condApply(ACS > 0, acs) |>
-    condApply(RecencyMode, recency)
-
-  def apply(str: String): Try[Loc] = Try(parse(loc, str).getOrElse(throw LocParseError(str)))
-}
-
 object Loc {
   def parse(str: String, cfgIn: CFG): Try[Loc] = (new LocParser { val cfg = cfgIn })(str)
   def apply(str: String): Loc = apply(PredAllocSite(str), Sensitivity.initTP)
@@ -100,4 +55,44 @@ object Loc {
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
     case addrPart => addrPart.toString
   })
+}
+
+// location parser
+trait LocParser extends TracePartitionParser {
+  // allocation site abstraction
+  lazy val userASite = "#" ~> nat ^^ { id => UserAllocSite(id) }
+  lazy val predName = "[0-9a-zA-Z-.<>]+".r
+  lazy val predASite = "#" ~> predName ^^ { name => PredAllocSite(name) }
+  lazy val allocSite = userASite | predASite
+
+  // allocation callsite abstraction
+  def acs(parser: Parser[Loc]): Parser[Loc] = {
+    (parser <~ ":ACS[") ~ repsep(getTypedCFGBlock[Call], ",") <~ "]" ^^ {
+      case loc ~ calls => AllocCallSite(loc, calls)
+    }
+  }
+
+  // trace sensitive address abstraction
+  def heapClone(parser: Parser[Loc]): Parser[Loc] = {
+    (parser <~ ":Sens[") ~ tp <~ "]" ^^ {
+      case loc ~ tp => TraceSensLoc(loc, tp)
+    }
+  }
+
+  // recency
+  lazy val recent = "R" ^^^ Recent
+  lazy val old = "O" ^^^ Old
+  lazy val recencyTag = recent | old
+  def recency(parser: Parser[Loc]): Parser[Loc] = recencyTag ~ parser ^^ {
+    case tag ~ loc => Recency(loc, tag)
+  }
+
+  // abstract location
+  lazy val loc = allocSite |>
+    condApply(HeapClone, heapClone) |>
+    condApply(ACS > 0, acs) |>
+    condApply(RecencyMode, recency)
+
+  def apply(str: String): Try[Loc] =
+    Try(parse(loc, str).getOrElse(throw LocParseError(str)))
 }
