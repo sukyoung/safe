@@ -65,12 +65,12 @@ object Command {
     CmdJump,
     CmdMove,
     CmdNext,
-    CmdPeriod,
     CmdPrint,
     CmdPrintResult,
     CmdRestart,
     CmdRun,
     CmdRunInsts,
+    CmdShowIter,
     CmdStopAlreadyVisited,
     CmdStopExitExc
   )
