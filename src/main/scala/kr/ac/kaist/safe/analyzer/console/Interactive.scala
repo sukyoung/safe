@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.analyzer.console
 
 import kr.ac.kaist.safe.analyzer.console.command._
+import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, Worklist }
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGBlock }
 import kr.ac.kaist.safe.phase.HeapBuildConfig
-
 import scala.collection.immutable.TreeSet
 
 trait Interactive {
@@ -26,6 +26,10 @@ trait Interactive {
   var visited: Set[ControlPoint] = Set()
   var stopAlreadyVisited: Boolean = false
   var stopExitExc: Boolean = false
+  var showIter: Boolean = false
+  var startTime: Long = 0
+  var beforeTime: Long = 0
+  val INTERVAL: Long = 1000 // 1 seccond
 
   ////////////////////////////////////////////////////////////////
   // private variables
@@ -47,11 +51,14 @@ trait Interactive {
     cur = worklist.head
     home = cur
     val block = cur.block
-    (target match {
+
+    val targetB = (target match {
       case TargetStart => iter == 0
       case TargetIter(k) => iter == k
       case _ => false
-    }) || breakList(block)
+    })
+    val breakB = breakList(block)
+    targetB || breakB
   }
 
   def runCmd(line: String): CmdResult = {
@@ -93,6 +100,12 @@ trait Interactive {
   def addBreak(block: CFGBlock): Unit = breakList += block
   def getBreakList: List[CFGBlock] = breakList.toList
   def removeBreak(block: CFGBlock): Unit = breakList -= block
+
+  def getResult: (AbsState, AbsState) = {
+    val cp = getCurCP
+    val st = sem.getState(cp)
+    sem.C(cp, st)
+  }
 
   def getPrompt: String
 }

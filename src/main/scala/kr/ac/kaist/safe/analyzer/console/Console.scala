@@ -44,16 +44,24 @@ class Console(
   ////////////////////////////////////////////////////////////////
 
   override def runFixpoint(): Unit = {
-    if (prepareToRunFixpoint ||
-      (stopAlreadyVisited && visited.contains(cur)) ||
-      (stopExitExc && (cur.block match {
-        case ExitExc(_) => true
-        case _ => false
-      }))) {
+    val prepare = prepareToRunFixpoint
+    val alreadyVisited = stopAlreadyVisited && (visited contains cur)
+    val exitExc = stopExitExc && (getResult match {
+      case (_, exc) => !exc.isBottom
+    })
+    if (prepare || alreadyVisited || exitExc) {
+      if (alreadyVisited) println("[STOP] already visited CFGBlock.")
+      if (exitExc) println("[STOP] it creates exceptions.")
+      if (showIter && startTime != beforeTime) {
+        val duration = System.currentTimeMillis - startTime
+        println(s"total: $duration ms")
+      }
       setPrompt()
       while ({
         println
         val line = reader.readLine
+        startTime = System.currentTimeMillis
+        beforeTime = System.currentTimeMillis
         val loop = runCmd(line) match {
           case CmdResultContinue(o) =>
             println(o)
@@ -69,6 +77,13 @@ class Console(
         out.flush()
         loop
       }) {}
+    } else if (showIter) {
+      val curTime = System.currentTimeMillis
+      val duration = curTime - beforeTime
+      if (duration > INTERVAL) {
+        println(s"Iter[$iter]: $duration ms")
+        beforeTime = curTime
+      }
     }
     visited += cur
   }
