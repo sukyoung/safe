@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.model
 
 import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.parser.{ Parser => JSParser }
-import kr.ac.kaist.safe.errors.error.ModelParseError
+import kr.ac.kaist.safe.errors.error.JSModelParseError
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase._
@@ -135,7 +135,7 @@ object JSModelParser extends RegexParsers with JavaTokenParsers {
   private def parseModel(reader: BufferedReader): Try[JSModel] = {
     parse(jsModel, reader) match {
       case Success(result, _) => Succ(result)
-      case fail @ NoSuccess(_, _) => Fail(ModelParseError(fail.toString))
+      case fail @ NoSuccess(_, _) => Fail(JSModelParseError(fail.toString))
     }
   }
   // repeat rules
@@ -265,7 +265,7 @@ object JSModelParser extends RegexParsers with JavaTokenParsers {
         Succ((fun, func))
       }
       case Fail(e) => {
-        println(ModelParseError(e.toString))
+        println(JSModelParseError(e.toString))
         Fail(e)
       }
     }
