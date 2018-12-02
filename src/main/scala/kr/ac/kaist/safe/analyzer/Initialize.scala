@@ -33,7 +33,7 @@ object Initialize {
 
     val modeledHeap: AbsHeap = {
       val model = HeapBuild.jscache getOrElse {
-        ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
+        JSModelParser.mergeJsModels(NodeUtil.jsModelsBase)
       }
       model.funcs.foreach {
         case (_, func) => cfg.addJSModel(func)

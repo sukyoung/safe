@@ -102,7 +102,7 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
 }
 
 // Argument parser by using Scala RegexParsers.
-object ModelParser extends RegexParsers with JavaTokenParsers {
+object JSModelParser extends RegexParsers with JavaTokenParsers {
   def apply(code: String): Try[JSModel] = {
     val sr = new StringReader(code)
     val in = new BufferedReader(sr)
@@ -122,7 +122,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     val fileNames: List[String] = new File(dir).list.toList
     val mergeModel = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
       case (model, fileName) if fileName.endsWith(".jsmodel") =>
-        model + ModelParser.parseFile(dir + fileName).get
+        model + JSModelParser.parseFile(dir + fileName).get
       case (model, _) => model
     }
     mergeModel
