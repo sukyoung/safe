@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.model
 
 import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.parser.{ Parser => JSParser }
-import kr.ac.kaist.safe.errors.error.ModelParseError
+import kr.ac.kaist.safe.errors.error.JSModelParseError
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase._
@@ -102,7 +102,7 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
 }
 
 // Argument parser by using Scala RegexParsers.
-object ModelParser extends RegexParsers with JavaTokenParsers {
+object JSModelParser extends RegexParsers with JavaTokenParsers {
   def apply(code: String): Try[JSModel] = {
     val sr = new StringReader(code)
     val in = new BufferedReader(sr)
@@ -122,7 +122,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     val fileNames: List[String] = new File(dir).list.toList
     val mergeModel = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
       case (model, fileName) if fileName.endsWith(".jsmodel") =>
-        model + ModelParser.parseFile(dir + fileName).get
+        model + JSModelParser.parseFile(dir + fileName).get
       case (model, _) => model
     }
     mergeModel
@@ -135,7 +135,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   private def parseModel(reader: BufferedReader): Try[JSModel] = {
     parse(jsModel, reader) match {
       case Success(result, _) => Succ(result)
-      case fail @ NoSuccess(_, _) => Fail(ModelParseError(fail.toString))
+      case fail @ NoSuccess(_, _) => Fail(JSModelParseError(fail.toString))
     }
   }
   // repeat rules
@@ -265,7 +265,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         Succ((fun, func))
       }
       case Fail(e) => {
-        println(ModelParseError(e.toString))
+        println(JSModelParseError(e.toString))
         Fail(e)
       }
     }

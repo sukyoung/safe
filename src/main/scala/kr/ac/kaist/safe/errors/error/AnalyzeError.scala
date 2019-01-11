@@ -50,8 +50,8 @@ case class HeapParseError(msg: String) extends AnalyzeError(
   s"[HeapParseError]: $msg"
 )
 
-case class ModelParseError(msg: String) extends AnalyzeError(
-  s"[ModelParseError]: $msg"
+case class JSModelParseError(msg: String) extends AnalyzeError(
+  s"[JSModelParseError]: $msg"
 )
 
 case object LocTopGammaError extends AnalyzeError(
