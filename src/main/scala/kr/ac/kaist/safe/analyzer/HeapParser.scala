@@ -13,8 +13,6 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.errors.error.HeapParseError
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashMap
 import spray.json._
 
 object HeapParser extends DefaultJsonProtocol {
@@ -22,11 +20,9 @@ object HeapParser extends DefaultJsonProtocol {
     def read(value: JsValue): Heap = {
       value match {
         case JsObject(objs) => {
-          val map = objs.foldLeft[Map[Loc, Obj]](HashMap()) {
+          val map = objs.foldLeft(Map[Loc, Obj]()) {
             case (map, (loc, JsObject(props))) => {
-              type NMap = Map[String, DataProp]
-              type IMap = Map[IName, Value]
-              val (nmap, imap) = props.foldLeft[(NMap, IMap)]((HashMap(), HashMap())) {
+              val (nmap, imap) = props.foldLeft((Map[String, DataProp](), Map[IName, Value]())) {
                 case ((am, im), (key, value)) => key match {
                   case "[[Prototype]]" => (am, im + (IPrototype -> readValue(value)))
                   case "[[Class]]" => (am, im + (IClass -> readValue(value)))

@@ -16,7 +16,6 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, Call }
 import kr.ac.kaist.safe.util.PipeOps._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashSet
 import scala.util.parsing.combinator._
 import scala.util.{ Try, Success, Failure }
 
@@ -25,21 +24,8 @@ abstract class Loc extends Value {
   def isUser: Boolean = this match {
     case Recency(loc, _) => loc.isUser
     case TraceSensLoc(loc, _) => loc.isUser
-    case AllocCallSite(loc, _) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
-  }
-
-  def getACS: Option[AllocCallSite] = this match {
-    case Recency(loc, _) => loc.getACS
-    case acs @ AllocCallSite(_, _) => Some(acs)
-    case _ => None
-  }
-
-  override def toString: String = this match {
-    case Recency(loc, _) => loc.toString
-    case u @ UserAllocSite(_) => throw UserAllocSiteError(u)
-    case p @ PredAllocSite(_) => p.toString
   }
 }
 object Loc {
@@ -48,7 +34,6 @@ object Loc {
   def apply(asite: AllocSite, tp: TracePartition): Loc = {
     asite |>
       condApply[Loc](HeapClone, TraceSensLoc(_, tp)) |>
-      condApply[Loc](ACS > 0, AllocCallSite(_, Nil)) |>
       condApply[Loc](RecencyMode, Recency(_, Recent))
   }
 
@@ -61,16 +46,9 @@ object Loc {
 trait LocParser extends TracePartitionParser {
   // allocation site abstraction
   lazy val userASite = "#" ~> nat ^^ { id => UserAllocSite(id) }
-  lazy val predName = "[0-9a-zA-Z-.<>]+".r
+  lazy val predName = "[0-9a-zA-Z-.<>\\[\\]]+".r
   lazy val predASite = "#" ~> predName ^^ { name => PredAllocSite(name) }
   lazy val allocSite = userASite | predASite
-
-  // allocation callsite abstraction
-  def acs(parser: Parser[Loc]): Parser[Loc] = {
-    (parser <~ ":ACS[") ~ repsep(getTypedCFGBlock[Call], ",") <~ "]" ^^ {
-      case loc ~ calls => AllocCallSite(loc, calls)
-    }
-  }
 
   // trace sensitive address abstraction
   def heapClone(parser: Parser[Loc]): Parser[Loc] = {
@@ -90,7 +68,6 @@ trait LocParser extends TracePartitionParser {
   // abstract location
   lazy val loc = allocSite |>
     condApply(HeapClone, heapClone) |>
-    condApply(ACS > 0, acs) |>
     condApply(RecencyMode, recency)
 
   def apply(str: String): Try[Loc] =

@@ -392,18 +392,18 @@ Function: {
     }
     // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
     if (intStart < 0) {
-      var from = Math.max(len+intStart,0);
+      var from = @max2(len+intStart,0);
     }else {
-      var from = Math.min(intStart,len);
+      var from = @min2(intStart,len);
     }
     // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
     if (intEnd < 0){
-      var to = Math.max(len + intEnd,0);
+      var to = @max2(len + intEnd,0);
     }else {
-      var to = Math.min(intEnd,len);
+      var to = @min2(intEnd,len);
     }
     // 8. Let span be max(to – from,0).
-    var span = Math.max(to-from,0);
+    var span = @max2(to-from,0);
     // 9. Return a String containing span consecutive characters from S beginning with the character at   position from.
     var Str = "";
     for (var i = 0;i<span;i++) {

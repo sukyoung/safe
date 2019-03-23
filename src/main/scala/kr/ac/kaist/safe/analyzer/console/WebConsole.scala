@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.console
 
-import kr.ac.kaist.safe.analyzer.Semantics
+import kr.ac.kaist.safe.analyzer.{ Semantics, EmptyTP }
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.phase.HeapBuildConfig
@@ -31,9 +31,7 @@ class WebConsole(
   // API
   ////////////////////////////////////////////////////////////////
 
-  override def runFixpoint: Unit = {
-    prepareToRunFixpoint
-  }
+  override def runFixpoint: Unit = {}
 
   override def moveCurCP(block: CFGBlock): Unit = {
     throw new NotImplementedError
@@ -41,10 +39,12 @@ class WebConsole(
 
   override def getPrompt: String = {
     val block = cur.block
-    val func = block.func.simpleName
+    val fname = block.func.simpleName
+    val fid = block.func.id
     val span = block.span
     val tp = cur.tracePartition
-    s"<$func: $block, $tp> @${span.toString}"
+    val tpStr = if (tp == EmptyTP) "" else s", $tp"
+    s"<$fname[$fid]: $block$tpStr> @$span"
   }
 
   ////////////////////////////////////////////////////////////////
@@ -52,6 +52,6 @@ class WebConsole(
   ////////////////////////////////////////////////////////////////
 
   private def init(): Unit = {
-    runFixpoint
+    prepareToRunFixpoint
   }
 }

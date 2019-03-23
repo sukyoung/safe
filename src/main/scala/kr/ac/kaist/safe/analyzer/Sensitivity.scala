@@ -19,10 +19,14 @@ import kr.ac.kaist.safe.util.SimpleParser
 sealed trait Sensitivity {
   val initTP: TracePartition
 
-  def *(that: Sensitivity): Sensitivity =
-    if (this.isInsensitive) that
-    else if (that.isInsensitive) this
-    else ProductSensitivity(this, that)
+  def *(that: Sensitivity): Sensitivity = {
+    (this.isInsensitive, that.isInsensitive) match {
+      case (true, true) => Insensitive
+      case (false, true) => this
+      case (true, false) => that
+      case (false, false) => ProductSensitivity(this, that)
+    }
+  }
 
   def isInsensitive: Boolean
 }
@@ -82,6 +86,11 @@ case object EmptyTP extends TracePartition {
   override def toString: String = s"Empty"
 
   def toStringList: List[String] = Nil
+}
+
+case object Insensitive extends Sensitivity {
+  val initTP: TracePartition = EmptyTP
+  def isInsensitive: Boolean = true
 }
 
 ////////////////////////////////////////////////////////////////////////////////

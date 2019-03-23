@@ -25,7 +25,9 @@ object DefaultEnvRec extends EnvRecDomain {
   }
 
   def apply(envRec: AbsDecEnvRec): Elem = Bot.copy(decEnvRec = envRec)
-  def apply(envRec: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = envRec)
+  def apply(global: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = global)
+  def apply(envRec: AbsDecEnvRec, global: AbsGlobalEnvRec): Elem =
+    Elem(envRec, global)
 
   case class Elem(
       decEnvRec: AbsDecEnvRec,

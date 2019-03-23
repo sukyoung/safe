@@ -60,6 +60,7 @@ object Command {
     CmdBreakList,
     CmdBreakRemove,
     CmdFindBot,
+    CmdFindExc,
     CmdHelp,
     CmdHome,
     CmdJump,
@@ -72,7 +73,8 @@ object Command {
     CmdRunInsts,
     CmdShowIter,
     CmdStopAlreadyVisited,
-    CmdStopExitExc
+    CmdStopExitExc,
+    CmdDebugMode
   )
   val cmdMap: Map[String, Command] = commands.foldLeft(
     Map[String, Command]()

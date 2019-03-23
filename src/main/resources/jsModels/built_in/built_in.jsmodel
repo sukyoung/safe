@@ -4673,9 +4673,8 @@ Function: {
   }
   \\],
   98: [\\
-  function test () {
-    // TODO
-    return @BoolTop;
+  function test (str) {
+    return @regexTest(this, str);
   }
   \\],
   99: [\\
@@ -4690,24 +4689,27 @@ Function: {
   }
   \\],
   101: [\\
-  function RegExp () {
+  function RegExp (source, flags) {
     var obj = {};
     @Class(obj, "RegExp");
     @Prototype(obj, RegExp.prototype);
     var desc = {
-      value: @StrTop,
+      value: @BoolTop,
       writable: false,
       enumerable: false,
       configurable: false
     };
-    @DefineOwnProperty(obj, "source", desc);
     desc.value = @BoolTop;
     @DefineOwnProperty(obj, "global", desc);
     @DefineOwnProperty(obj, "ignoreCase", desc);
     @DefineOwnProperty(obj, "multiline", desc);
     desc.value = @NumTop;
-    desc.writable = @NumTop;
     @DefineOwnProperty(obj, "lastIndex", desc);
+    desc.value = source;
+    @DefineOwnProperty(obj, "source", desc);
+    if (flags === undefined) flags = '';
+    desc.value = flags;
+    @DefineOwnProperty(obj, "flags", desc);
     return obj;
   }
   \\],

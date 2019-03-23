@@ -33,8 +33,8 @@ trait ASTGeneralWalker[Result] {
 
   def walk(node: ASTNode): Result = node match {
     case p: Program => walk(p)
-    case s: SourceElement => walk(s)
-    case s: SourceElements => walk(s)
+    case s: Stmt => walk(s)
+    case s: Stmts => walk(s)
     case v: VarDecl => walk(v)
     case c: Case => walk(c)
     case c: Catch => walk(c)
@@ -163,13 +163,8 @@ trait ASTGeneralWalker[Result] {
       walk(info)
   }
 
-  def walk(node: SourceElement): Result = node match {
-    case s: Stmt =>
-      walk(s)
-  }
-
-  def walk(node: SourceElements): Result = node match {
-    case SourceElements(info, body, isStrict) =>
+  def walk(node: Stmts): Result = node match {
+    case Stmts(info, body, isStrict) =>
       join(walk(info) :: body.map(walk): _*)
   }
 

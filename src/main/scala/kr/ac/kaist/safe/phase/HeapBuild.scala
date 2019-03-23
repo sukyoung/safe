@@ -39,7 +39,6 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       config.AbsStr,
       config.recencyMode,
       config.heapClone,
-      config.acs,
       config.callsiteSensitivity *
         config.loopSensitivity
     )
@@ -74,8 +73,6 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
       "analysis with recency abstraction."),
     ("heap-clone", BoolOption(c => c.heapClone = true),
       "analysis with heap cloning that divides locations based on the given trace sensitivity."),
-    ("acs", NumOption((c, k) => c.acs = k),
-      "analysis with k-allocation callsite abstraction."),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = CallSiteSensitivity(n)),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("loopIter", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxIter = n)),
@@ -102,6 +99,5 @@ case class HeapBuildConfig(
   var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
   var recencyMode: Boolean = false,
-  var heapClone: Boolean = false,
-  var acs: Int = 0
+  var heapClone: Boolean = false
 ) extends Config

@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.cfg.CFGId
 
 // heap abstract domain
 trait HeapDomain extends AbsDomain[Heap] {
@@ -68,5 +69,14 @@ trait HeapDomain extends AbsDomain[Heap] {
 
     // location concrete check
     def isConcrete(loc: Loc): Boolean
+
+    // location changed check
+    def isChanged(loc: Loc): Boolean
+
+    // delete changed info
+    def cleanChanged: Elem
+
+    // applied changed information
+    def <<(that: Elem): Elem
   }
 }

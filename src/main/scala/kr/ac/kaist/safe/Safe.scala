@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe
 
-import scala.collection.immutable.HashMap
 import scala.util.{ Try, Failure }
 import kr.ac.kaist.safe.errors.SafeException
 import kr.ac.kaist.safe.errors.error.{ NoCmdError, NoInputError }
@@ -72,7 +71,7 @@ object Safe {
   val commands: List[Command] = List(
     CmdParse,
     CmdASTRewrite,
-    CmdCompile,
+    CmdTranslate,
     CmdCFGBuild,
     CmdHeapBuild,
     CmdAnalyze,
@@ -80,7 +79,7 @@ object Safe {
     CmdHelp,
     CmdWeb
   )
-  val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
+  val cmdMap = commands.foldLeft[Map[String, Command]](Map()) {
     case (map, cmd) => map + (cmd.name -> cmd)
   }
 
@@ -88,7 +87,7 @@ object Safe {
   var phases: List[Phase] = List(
     Parse,
     ASTRewrite,
-    Compile,
+    Translate,
     CFGBuild,
     HeapBuild,
     Analyze,

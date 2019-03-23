@@ -51,7 +51,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   private lazy val TYPEOF_CALL =
     Some(FunApp(TO_OBJ_INFO, mkVarRef(mkId("typeof")), List(PARAM_EXPR)))
   private lazy val TO_OBJ_BODY =
-    SourceElements(
+    Stmts(
       TO_OBJ_INFO,
       List(
         VarStmt(
@@ -104,23 +104,23 @@ class WithRewriter(program: Program, forTest: Boolean) {
       case _ => (Nil, Nil)
     }
     def mkBody(fds: List[FunDecl], vds: List[VarDecl], name: Id,
-      params: List[Id], body: SourceElements, env: Env, node: ASTNode): SourceElements = env match {
+      params: List[Id], body: Stmts, env: Env, node: ASTNode): Stmts = env match {
       case EmptyEnv =>
-        SourceElements(body.info, body.body.map(walk(_, env)), body.strict)
+        Stmts(body.info, body.body.map(walk(_, env)), body.strict)
       case ConsEnv(withs, names, isNested) =>
         val (first, rest) = splitNames(names)
         var ids = params.map(_.text) ++
           fds.map(fd => fd match { case FunDecl(_, f, _) => f.name.text }) ++
           vds.map(vd => vd match { case VarDecl(_, n, _, _) => n.text }) ++ first
         ids = (List(name.text)) ++ ids
-        SourceElements(
+        Stmts(
           body.info,
           body.body.map(walk(_, new ConsEnv(withs, ids :: rest, isNested))),
           body.strict
         )
     }
     def mkFunctional(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl], name: Id,
-      params: List[Id], bodyS: String, body: SourceElements, env: Env, node: ASTNode): Functional =
+      params: List[Id], bodyS: String, body: Stmts, env: Env, node: ASTNode): Functional =
       Functional(info, fds.map(walk(_, env)),
         vds.map(walk(_, env)),
         mkBody(fds, vds, name, params, body, env, node), name, params, bodyS)
@@ -132,10 +132,6 @@ class WithRewriter(program: Program, forTest: Boolean) {
           fds.map(fd => walk(fd, env)),
           vds.map(vd => walk(vd, env)),
           ses.map(s => walk(s, env))))
-    }
-
-    def walk(node: SourceElement, env: Env): SourceElement = node match {
-      case s: Stmt => walk(s, env)
     }
 
     def walk(node: Stmt, env: Env): Stmt = node match {
@@ -404,9 +400,9 @@ class WithRewriter(program: Program, forTest: Boolean) {
         SetProp(info, prop, mkFunctional(i, fds, vds, name, params, bodyS, body, env, sp))
     }
 
-    def walk(node: SourceElements, env: Env): SourceElements = node match {
-      case SourceElements(info, stmts, strict) =>
-        SourceElements(info, stmts.map(walk(_, env)), strict)
+    def walk(node: Stmts, env: Env): Stmts = node match {
+      case Stmts(info, stmts, strict) =>
+        Stmts(info, stmts.map(walk(_, env)), strict)
     }
 
     def walk(node: VarDecl, env: Env): VarDecl = node match {

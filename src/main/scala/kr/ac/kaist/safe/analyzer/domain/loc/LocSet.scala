@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashSet
 import scala.util.{ Try, Success, Failure }
 
 // location set
@@ -26,7 +25,7 @@ object LocSet extends AbsDomain[Loc] {
   lazy val Bot: Elem = LSet()
 
   // TODO all location set
-  // lazy val locSet: Set[Loc] = cfg.getAllASiteSet.foldLeft(HashSet[Loc]()) {
+  // lazy val locSet: Set[Loc] = cfg.getAllASiteSet.foldLeft(Set[Loc]()) {
   //   case (set, asite) => set + Loc(asite, Recent) + Loc(asite, Old)
   // }
 

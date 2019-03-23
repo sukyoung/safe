@@ -69,8 +69,8 @@ body {
     static final int LHS = 2;
     static final int EXPR = 3;
 
-    static List<SourceElement> nilJSes = Collections.<SourceElement>emptyList();
-    static scala.collection.immutable.List<SourceElement> nilSes = toList(nilJSes);
+    static List<Stmt> nilJSes = Collections.<Stmt>emptyList();
+    static scala.collection.immutable.List<Stmt> nilSes = toList(nilJSes);
     static scala.collection.immutable.List<FunDecl> nilFds = toList(Collections.<FunDecl>emptyList());
     static scala.collection.immutable.List<VarDecl> nilVds = toList(Collections.<VarDecl>emptyList());
     static scala.collection.immutable.List<Id> nilIds = toList(Collections.<Id>emptyList());

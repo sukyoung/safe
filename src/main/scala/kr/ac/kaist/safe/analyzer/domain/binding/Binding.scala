@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
-
 // concrete binding type
 abstract class Binding
 

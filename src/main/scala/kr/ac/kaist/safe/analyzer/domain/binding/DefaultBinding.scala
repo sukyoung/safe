@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
-
 // default binding abstract domain
 object DefaultBinding extends BindingDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsAbsent.Bot, AbsBool.Bot)
@@ -38,7 +36,7 @@ object DefaultBinding extends BindingDomain {
     def gamma: ConSet[Binding] = value.gamma match {
       case ConInf => ConInf
       case ConFin(valSet) => {
-        var bindSet: Set[Binding] = HashSet()
+        var bindSet: Set[Binding] = Set()
         if (AbsBool.True ⊑ mutable) {
           bindSet ++= valSet.map(MBinding(_))
         }

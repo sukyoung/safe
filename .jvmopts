@@ -1,4 +1,5 @@
--Xms512M
--Xmx4G
--Xss2M
--XX:MaxMetaspaceSize=1024M
+-Xms16g
+-Xmx32g
+-Xss1g
+-Xmn512m
+-Dfile.encoding=utf8

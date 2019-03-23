@@ -14,11 +14,11 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
+import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar }
 
 // default declarative environment record abstract domain
 object DefaultDecEnvRec extends DecEnvRecDomain {
-  private val EmptyMap: EnvMap = HashMap()
+  private val EmptyMap: EnvMap = Map()
 
   case object Bot extends Elem
   case class LBindMap(map: EnvMap) extends Elem
@@ -96,7 +96,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
         case (UBindMap(_), _) => right ⊔ this
         case (LBindMap(lmap), _) => {
           val nameSet = (right match {
-            case Bot => HashSet() // XXX: not fisible
+            case Bot => Set() // XXX: not fisible
             case LBindMap(rmap) => rmap.keySet
             case UBindMap(rmap) => rmap.keySet
           }) ++ lmap.keySet

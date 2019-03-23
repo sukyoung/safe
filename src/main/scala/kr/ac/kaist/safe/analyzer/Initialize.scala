@@ -15,9 +15,8 @@ import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.phase._
-import scala.collection.immutable.{ HashMap, HashSet }
 
 object Initialize {
   def apply(cfg: CFG): AbsState = {
@@ -25,7 +24,7 @@ object Initialize {
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap.Empty
 
-    val initCtx = AbsContext(HashMap(
+    val initCtx = AbsContext(Map(
       GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PURE_LOCAL -> globalPureLocalEnv,
       COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
@@ -33,7 +32,7 @@ object Initialize {
 
     val modeledHeap: AbsHeap = {
       val model = HeapBuild.jscache getOrElse {
-        JSModelParser.mergeJsModels(NodeUtil.jsModelsBase)
+        ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
       }
       model.funcs.foreach {
         case (_, func) => cfg.addJSModel(func)

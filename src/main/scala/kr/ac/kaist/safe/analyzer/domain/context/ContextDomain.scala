@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.cfg.CFGId
 
 // execution context abstract domain
 trait ContextDomain extends AbsDomain[Context] {
@@ -66,5 +67,14 @@ trait ContextDomain extends AbsDomain[Context] {
 
     // location concrete check
     def isConcrete(loc: Loc): Boolean
+
+    // location changed check
+    def isChanged(loc: Loc): Boolean
+
+    // delete changed info
+    def cleanChanged: Elem
+
+    // applied changed information
+    def <<(that: Elem): Elem
   }
 }

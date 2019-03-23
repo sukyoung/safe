@@ -14,8 +14,6 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.util._
 
-import scala.collection.immutable.HashSet
-
 ////////////////////////////////////////////////////////////////
 // Abstract helper functions of
 // Section 9. Type Conversion and Testing, ECMASCript 5.1
@@ -219,8 +217,8 @@ object TypeConversionHelper {
 
   def CheckObjectCoercible(pvalue: AbsPValue): Set[Exception] = {
     (pvalue.undefval.isBottom, pvalue.nullval.isBottom) match {
-      case (false, _) | (_, false) => HashSet(TypeError)
-      case (true, true) => HashSet[Exception]()
+      case (false, _) | (_, false) => Set(TypeError)
+      case (true, true) => Set[Exception]()
     }
   }
 

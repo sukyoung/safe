@@ -19,7 +19,6 @@ import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util.ArgParser
 
-import scala.collection.immutable.HashMap
 import scala.util.Try
 
 sealed trait Command {
@@ -30,7 +29,7 @@ sealed trait Command {
 class CommandObj[Result](
     override val name: String,
     pList: PhaseList[Result],
-    modeMap: Map[String, PhaseList[Result]] = HashMap[String, PhaseList[Result]]()
+    modeMap: Map[String, PhaseList[Result]] = Map[String, PhaseList[Result]]()
 ) extends Command {
   def apply(
     args: List[String],
@@ -76,13 +75,13 @@ case object CmdASTRewrite extends CommandObj("astRewrite", CmdParse >> ASTRewrit
   override def display(program: Program): Unit = println(program.toString(0))
 }
 
-// compile
-case object CmdCompile extends CommandObj("compile", CmdASTRewrite >> Compile) {
+// translate
+case object CmdTranslate extends CommandObj("translate", CmdASTRewrite >> Translate) {
   override def display(ir: IRRoot): Unit = println(ir.toString(0))
 }
 
 // cfgBuild
-case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
+case object CmdCFGBuild extends CommandObj("cfgBuild", CmdTranslate >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
 }
 
@@ -95,7 +94,7 @@ case object CmdHeapBuild extends CommandObj("heapBuild", CmdCFGBuild >> HeapBuil
 }
 
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap( // TODO "load" -> (CmdAnalysisLoad >> Analyze)
+case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, Map( // TODO "load" -> (CmdAnalysisLoad >> Analyze)
 )) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result

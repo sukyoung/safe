@@ -50,12 +50,16 @@ case class HeapParseError(msg: String) extends AnalyzeError(
   s"[HeapParseError]: $msg"
 )
 
-case class JSModelParseError(msg: String) extends AnalyzeError(
-  s"[JSModelParseError]: $msg"
+case class ModelParseError(msg: String) extends AnalyzeError(
+  s"[ModelParseError]: $msg"
 )
 
 case object LocTopGammaError extends AnalyzeError(
   "LocSet.Top.gamma is impossible"
+)
+
+case object SymTopGammaError extends AnalyzeError(
+  "SymSet.Top.gamma is impossible"
 )
 
 case class LocParseError(msg: String) extends AnalyzeError(
