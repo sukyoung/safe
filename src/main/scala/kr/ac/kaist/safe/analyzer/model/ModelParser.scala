@@ -61,176 +61,89 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
     // 4. rearrange function id again
     // function id may be lost because of merging algorithm
   }
-  // TODO Complete the toString function
-  override def toString: String = {
-    val s: StringBuilder = new StringBuilder
-    val S: String = "  "
-    val L = LINE_SEP
-    // heap
-    s.append(s"Heap: {$L")
-    s.append(heap.map.map {
-      case (loc, obj) => s"$S$loc: {$L" +
-        (obj.imap.map {
-          case (iname, iv) => s"$S$S$iname: $iv"
-        }.mkString(s",$L")) + ({
-          if (!obj.imap.isEmpty && !obj.nmap.isEmpty) s",$L"
-          else ""
-        }) + (obj.nmap.map {
-          case (name, v) => s"""$S$S"$name": $v"""
-        }).mkString(s",$L") + s"$L$S}"
-    }.mkString(s",$L"))
-    s.append(s"$L}$L$L")
-
-    // function map
-    s.append(s"Function: {")
-    s.append(
-      ({
-        if (funcs.isEmpty) ""
-        else {
-          s"$L" + funcs.zipWithIndex.map {
-            case ((body, _), idx) =>
-              s"""$S${idx + 1}: [\\\\$L$S$body\\\\]"""
-          }.mkString(s",$L")
-        }
-      })
-    )
-    s.append(s"$L}$L")
-
-    s.toString
-  }
 }
 
-// Argument parser by using Scala RegexParsers.
-object ModelParser extends RegexParsers with JavaTokenParsers {
-  def apply(code: String): Try[JSModel] = {
-    val sr = new StringReader(code)
-    val in = new BufferedReader(sr)
-    val result = parseModel(in)
-    in.close; sr.close
-    result
-  }
-  def parseFile(fileName: String): Try[JSModel] = {
-    val fs = new FileInputStream(new File(fileName))
-    val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
-    val in = new BufferedReader(sr)
-    val result = parseModel(in)
-    in.close; sr.close; fs.close
-    result
-  }
-  def mergeJsModels(dir: String): JSModel = {
-    val fileNames: List[String] = new File(dir).list.toList
-    val mergeModel = fileNames.foldLeft(JSModel(Heap(Map()), Nil, 0)) {
-      case (model, fileName) if fileName.endsWith(".jsmodel") =>
-        model + ModelParser.parseFile(dir + fileName).get
-      case (model, _) => model
-    }
-    mergeModel
-  }
-
-  //////////////////////////////////////////////////////////////////////////
-  // Private Helper Functions
-  //////////////////////////////////////////////////////////////////////////
-  // parse
-  private def parseModel(reader: BufferedReader): Try[JSModel] = {
-    parse(jsModel, reader) match {
-      case Success(result, _) => Succ(result)
-      case fail @ NoSuccess(_, _) => Fail(ModelParseError(fail.toString))
-    }
-  }
-  // repeat rules
-  private def emptyList[T]: Parser[List[T]] = success(Nil)
-  private def repsepE[T](p: => Parser[T], sep: String): Parser[List[T]] =
-    p ~! (("," ~> repsepE(p, sep)) | emptyList) ^^ { case x ~ xs => x :: xs } | emptyList
-
+// Parser for models using regular expression parsers
+trait ModelParser extends JavaTokenParsers with RegexParsers {
   // primitive parser
-  private lazy val num: Parser[Double] =
+  val num: Parser[Double] =
     floatingPointNumber ^^ { _.toDouble } |
       "NaN" ^^^ Double.NaN |
       "Infinity" ^^^ Double.PositiveInfinity |
       "-Infinity" ^^^ Double.NegativeInfinity
-  private lazy val int: Parser[Int] = wholeNumber ^^ { _.toInt }
-  private lazy val str: Parser[String] = "\"" ~> "[^\"]*".r <~ "\""
-  private lazy val t: Parser[Boolean] = "true" ^^^ { true }
-  private lazy val f: Parser[Boolean] = "false" ^^^ { false }
-  private lazy val bool: Parser[Boolean] = t | f
-  private lazy val T: Parser[Boolean] = "T" ^^^ { true }
-  private lazy val F: Parser[Boolean] = "F" ^^^ { false }
-  private lazy val shortBool: Parser[Boolean] = T | F
-  private lazy val any: Parser[String] = """[^\\]*""".r
+  val int: Parser[Int] = wholeNumber ^^ { _.toInt }
+  val str: Parser[String] = stringLiteral ^^ { case s => s.substring(1, s.length - 1) }
+  val bool: Parser[Boolean] = "true" ^^^ true | "false" ^^^ false
+  val shortBool: Parser[Boolean] = "T" ^^^ true | "F" ^^^ false
 
   // JavaScript primitive value
-  private lazy val jsNum: Parser[Num] = num ^^ { Num(_) }
-  private lazy val jsStr: Parser[Str] = str ^^ { Str(_) }
-  private lazy val jsNull: Parser[Null] = "null" ^^^ { Null }
-  private lazy val jsBool: Parser[Bool] = bool ^^ { Bool(_) }
-  private lazy val jsShortBool: Parser[Bool] = shortBool ^^ { Bool(_) }
-  private lazy val jsShortBoolE: Parser[Bool] =
-    jsShortBool | "" ~> failure("illegal start of boolean(T/F)")
-  private lazy val jsUndef: Parser[Undef] = "undefined" ^^^ { Undef }
-  private lazy val jsPValue: Parser[PValue] = jsNum | jsStr | jsNull | jsBool | jsUndef
+  val jsNum: Parser[Num] = num ^^ { Num(_) }
+  val jsStr: Parser[Str] = str ^^ { Str(_) }
+  val jsNull: Parser[Null] = "null" ^^^ { Null }
+  val jsBool: Parser[Bool] = bool ^^ { Bool(_) }
+  val jsShortBool: Parser[Bool] = shortBool ^^ { Bool(_) }
+  val jsUndef: Parser[Undef] = "undefined" ^^^ { Undef }
+  val jsPValue: Parser[PValue] = jsNum | jsStr | jsNull | jsBool | jsUndef
 
   // JavaScript primitive type
-  private lazy val jsStrT: Parser[StringT.type] = "string" ^^^ { StringT }
-  private lazy val jsNumT: Parser[NumberT.type] = "number" ^^^ { NumberT }
-  private lazy val jsBoolT: Parser[BoolT.type] = "bool" ^^^ { BoolT }
-  private lazy val jsPrimType: Parser[Value] = jsStrT | jsNumT | jsBoolT
+  val jsStrT: Parser[StringT.type] = "string" ^^^ { StringT }
+  val jsNumT: Parser[NumberT.type] = "number" ^^^ { NumberT }
+  val jsBoolT: Parser[BoolT.type] = "bool" ^^^ { BoolT }
+  val jsPrimType: Parser[Value] = jsStrT | jsNumT | jsBoolT
 
   // JavaScript value
-  private lazy val jsLoc: Parser[Loc] = "#" ~> """[_\[\]0-9a-zA-Z.<>]+""".r ^^ { Loc(_) }
-  private lazy val jsValue: Parser[Value] = jsPValue | jsLoc | jsPrimType
-  private lazy val jsValueE: Parser[Value] = jsValue | failure("illegal start of value")
+  val jsLoc: Parser[Loc] = "#" ~> """[_\[\]0-9a-zA-Z.<>]+""".r ^^ { Loc(_) }
+  val jsValue: Parser[Value] = jsPValue | jsLoc | jsPrimType
 
   // JavaScript data property
-  private lazy val jsDataProp: Parser[DataProp] = "<" ~> (
-    jsValueE ~
-    ("," ~> jsShortBoolE) ~
-    ("," ~> jsShortBoolE) ~
-    ("," ~> jsShortBoolE)
+  val jsDataProp: Parser[DataProp] = "<" ~> (
+    jsValue ~
+    ("," ~> jsShortBool) ~
+    ("," ~> jsShortBool) ~
+    ("," ~> jsShortBool)
   ) <~ ">" ^^ {
       case value ~ writable ~ enumerable ~ configurable =>
         DataProp(value, writable, enumerable, configurable)
     }
 
   // JavaScript internal property
-  private lazy val jsIPrototype = "[[Prototype]]" ^^^ { IPrototype }
-  private lazy val jsIClass = "[[Class]]" ^^^ { IClass }
-  private lazy val jsIExtensible = "[[Extensible]]" ^^^ { IExtensible }
-  private lazy val jsIPrimitiveValue = "[[PrimitiveValue]]" ^^^ { IPrimitiveValue }
-  private lazy val jsICall = "[[Call]]" ^^^ { ICall }
-  private lazy val jsIConstruct = "[[Construct]]" ^^^ { IConstruct }
-  private lazy val jsIScope = "[[Scope]]" ^^^ { IScope }
-  private lazy val jsIHasInstance = "[[HasInstance]]" ^^^ { IHasInstance }
-  private lazy val jsIName: Parser[IName] = {
+  val jsIPrototype = "[[Prototype]]" ^^^ { IPrototype }
+  val jsIClass = "[[Class]]" ^^^ { IClass }
+  val jsIExtensible = "[[Extensible]]" ^^^ { IExtensible }
+  val jsIPrimitiveValue = "[[PrimitiveValue]]" ^^^ { IPrimitiveValue }
+  val jsICall = "[[Call]]" ^^^ { ICall }
+  val jsIConstruct = "[[Construct]]" ^^^ { IConstruct }
+  val jsIScope = "[[Scope]]" ^^^ { IScope }
+  val jsIHasInstance = "[[HasInstance]]" ^^^ { IHasInstance }
+  val jsIName: Parser[IName] = {
     jsIPrototype | jsIClass | jsIExtensible | jsIPrimitiveValue |
       jsICall | jsIConstruct | jsIScope | jsIHasInstance
   }
-  private lazy val jsFId: Parser[FId] = "fun(" ~> int <~ ")" ^^ { case n => FId(-n) }
-  private lazy val jsIValue: Parser[IValue] = jsValue | jsFId
-  private lazy val jsIValueE: Parser[IValue] =
-    jsIValue | "" ~> failure("illegal start of IValue")
+  val jsFId: Parser[FId] = "fun(" ~> int <~ ")" ^^ { case n => FId(-n) }
+  val jsIValue: Parser[IValue] = jsValue | jsFId
 
   // JavaScript object
-  private type PMap = Map[String, DataProp]
-  private type IMap = Map[IName, IValue]
-  private def jsObjMapTuple: Parser[(PMap, IMap)] = {
-    lazy val empty: Parser[(PMap, IMap)] = success((Map(), Map()))
-    lazy val jsMember = (str <~ ":") ~! jsDataProp ^^ { case n ~ d => (n, d) }
-    lazy val jsIMember = (jsIName <~ ":") ~! jsIValueE ^^ { case n ~ v => (n, v) }
-    lazy val next = ("," ~> jsObjMapTuple) | empty
-    jsMember ~! next ^^
-      { case (name, dp) ~ ((pmap, imap)) => (pmap + (name -> dp), imap) } |
-      jsIMember ~! next ^^
-      { case (iname, iv) ~ ((pmap, imap)) => (pmap, imap + (iname -> iv)) } |
-      empty
+  type PMap = Map[String, DataProp]
+  type IMap = Map[IName, IValue]
+  val jsMember = (str <~ ":") ~ jsDataProp ^^ { case n ~ d => (n, d) }
+  val jsIMember = (jsIName <~ ":") ~ jsIValue ^^ { case n ~ v => (n, v) }
+  val jsObjMapTuple: Parser[(PMap, IMap)] = repsep(jsMember | jsIMember, ",") ^^ {
+    case lst => ((Map[String, DataProp](), Map[IName, IValue]()) /: lst) {
+      case ((pmap, imap), kv) => kv match {
+        case (name: String, dp: DataProp) => (pmap + (name -> dp), imap)
+        case (iname: IName, iv: IValue) => (pmap, imap + (iname -> iv))
+        case _ => throw new IllegalStateException(s"Unexpected parse result: $kv")
+      }
+    }
   }
-  private lazy val jsObject: Parser[Obj] = "{" ~> jsObjMapTuple <~ "}" ^^ {
+  val jsObject: Parser[Obj] = "{" ~> jsObjMapTuple <~ (","?) <~ "}" ^^ {
     case (pmap, imap) => Obj(pmap, imap)
   }
 
   // JavaScript Heap
-  private lazy val jsHeap: Parser[Heap] = "{" ~> (
-    repsepE((jsLoc <~ ":") ~! jsObject, ",")
-  ) <~ "}" ^^ {
+  val jsHeap: Parser[Heap] = "{" ~> (
+    repsep((jsLoc <~ ":") ~ jsObject, ",")
+  ) <~ (","?) <~ "}" ^^ {
       case lst => {
         val map = lst.foldLeft(Map[Loc, Obj]()) {
           case (map, loc ~ obj) => {
@@ -242,7 +155,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     }
 
   // JavaScript function
-  private lazy val jsFun: Parser[(String, CFGFunction)] = """[\\""" ~> any <~ """\\]""" ^^ {
+  val jsFun: Parser[(String, CFGFunction)] = """[\\""" ~> """[^\\]*""".r <~ """\\]""" ^^ {
     case fun => JSParser.stringToAST(fun) match {
       case Succ((pgm, log)) => {
         if (log.hasError) println(log)
@@ -269,9 +182,9 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       }
     }
   } ^? { case Succ(pgm) => pgm }
-  private lazy val jsFuncs: Parser[(List[(String, CFGFunction)], Map[Int, Int])] = "{" ~> (
-    repsepE((int <~ ":") ~! jsFun, ",")
-  ) <~ "}" ^^ {
+  val jsFuncs: Parser[(List[(String, CFGFunction)], Map[Int, Int])] = "{" ~> (
+    repsep((int <~ ":") ~ jsFun, ",")
+  ) <~ (","?) <~ "}" ^^ {
       case lst => {
         var fidMap = Map[Int, Int]()
         var size = 0
@@ -303,8 +216,8 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     }
 
   // JavaScript model
-  private lazy val jsModel: Parser[JSModel] =
-    ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFuncs) ^^ {
+  val jsModel: Parser[JSModel] =
+    ("Heap" ~> ":" ~> jsHeap) ~ ("Function" ~> ":" ~> jsFuncs) ^^ {
       case heap ~ ((funcs, map)) => {
         // Check map whether it needs rewrite or not
         if (map.keySet == map.values.toSet) {
@@ -339,4 +252,24 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         }
       }
     }
+}
+object Model extends ModelParser {
+  def apply(str: String): JSModel = parseAll(jsModel, str).get
+  def parseFile(fileName: String): JSModel = {
+    val fs = new FileInputStream(new File(fileName))
+    val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
+    val in = new BufferedReader(sr)
+    val result = parseAll(jsModel, in).get
+    in.close; sr.close; fs.close
+    result
+  }
+  def parseDir(dir: String): JSModel = {
+    val fileNames: List[String] = new File(dir).list.toList
+    val mergeModel = fileNames.foldLeft(JSModel(Heap(Map()), Nil, 0)) {
+      case (model, fileName) if fileName.endsWith(".jsmodel") =>
+        model + parseFile(dir + fileName)
+      case (model, _) => model
+    }
+    mergeModel
+  }
 }
