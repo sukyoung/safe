@@ -248,7 +248,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -268,7 +268,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -278,10 +278,7 @@ Function: {
       return NaN;
     }
     // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
-    // TODO implement @ToUint16
-    // Need char -> Unicode-16
-    // return @ToUint16(S[position]);
-    return @ToNumber(S[position]);
+    return @CharCode(S[position]);
   }
   \\],
   6: [\\
@@ -291,7 +288,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let args be an internal list that is a copy of the argument list passed to this function.
     var args = arguments;
     // 4. Let R be S.
@@ -314,31 +311,12 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let searchStr be ToString(searchString).
     var searchStr = @ToString(searchString);
     // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
     var pos = @ToInteger(position);
-    // 5. Let len be the number of characters in S.
-    var len = S.length;
-    // 6. Let start be min(max(pos, 0), len).
-    var start = Math.min(Math.max(pos,0),len);
-    // 7. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    //8. Return the smallest possible integer k not smaller than start such that k+ searchLen is not      greater than len,and for all nonnegative integers j less than searchLen, the character at position k+j of S is the same as the character at position j of searchStr; but if there is no such integer k, then return the value -1.
-    var k = start;
-    while (k+searchLen<=len) {
-      var p = 0;
-      for (var j=0;j<searchLen;j++) {
-        if (S[k+j] !== searchStr[j]) break;
-        p+=1;
-      }
-      if (p === searchLen){
-        return k;
-      }
-      k += 1;
-    }
-    return -1;
+    return @indexOf(S, searchStr, pos);
   }
   \\],
   8: [\\
@@ -348,7 +326,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let searchStr be ToString(searchString).
     var searchStr = @ToString(searchString);
     // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
@@ -363,25 +341,7 @@ Function: {
     var len = S.length;
     // 7. Let start min(max(pos, 0), len).
     var start = Math.min(Math.max(pos,0),len);
-    // 8. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    // 9. Return the largest possible nonnegative integer k not larger than start such that k+ searchLen  is not greater than len, and for all nonnegative integers j less than searchLen, the character at         position k+j of S is the same as the character at position j of searchStr; but if there is no such        integer k, then return the value -1.
-    var k = start;
-    while (k>=0){
-      if ((k+searchLen) <= len){
-        var p = 0;
-        for (var j=0;j<searchLen;j++) {
-          if (S[k+j] !== searchStr[j]) {
-            break;
-          }
-          p += 1;
-        }
-        if (p === searchLen){
-          return k;
-        }
-      }
-    }
-    return -1;
+    return @lastIndexOf(S, searchStr, start);
   }
   \\],
   9: [\\
@@ -419,7 +379,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let len be the number of characters in S.
     var len = S.length;
     // 4. Let intStart be ToInteger(start).
@@ -432,18 +392,18 @@ Function: {
     }
     // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
     if (intStart < 0) {
-      var from = Math.max(len+intStart,0);
+      var from = @max2(len+intStart,0);
     }else {
-      var from = Math.min(intStart,len);
+      var from = @min2(intStart,len);
     }
     // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
     if (intEnd < 0){
-      var to = Math.max(len + intEnd,0);
+      var to = @max2(len + intEnd,0);
     }else {
-      var to = Math.min(intEnd,len);
+      var to = @min2(intEnd,len);
     }
     // 8. Let span be max(to – from,0).
-    var span = Math.max(to-from,0);
+    var span = @max2(to-from,0);
     // 9. Return a String containing span consecutive characters from S beginning with the character at   position from.
     var Str = "";
     for (var i = 0;i<span;i++) {
@@ -453,28 +413,11 @@ Function: {
   }
   \\],
   14: [\\
-  function split (separator) {
-    // TODO it is not following the formal semantics
-    var S = this;
-    var sep = separator;
-    var len = S.length;
-    var idx = 0;
-    var cur = 0;
-    var str = "";
-    var arr = [];
-    while (cur < len) {
-      var c = S[cur];
-      if (c == sep) {
-        arr[idx++] = str;
-        str = "";
-      } else {
-        str += c;
-      }
-      cur++;
-    }
-    arr[idx++] = str;
-    arr.length = idx;
-    return arr;
+  function split (separator, limit) {
+    var str = @getLoc('ToString')(this);
+    var sep = @ToString(separator);
+    var lim = @ToUint32(limit);
+    return @split(str, sep, lim);
   }
   \\],
   15: [\\
@@ -484,7 +427,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let len be the number of characters in S.
     var len = S.length;
     // 4. Let intStart be ToInteger(start).
@@ -504,11 +447,7 @@ Function: {
     // 9. Let to be max(finalStart, finalEnd).
     var to = Math.max(finalStart,finalEnd);
     // 10. Return a String whose length is to - from, containing characters from S, namely the characters with indices from through to -1, in ascending order.
-    var Str = "";
-    for (var i = 0; i<(to-from);i++){
-      Str = Str + S[from+i];
-    }
-    return Str;
+    return @substring(S, from, to);
   }
   \\],
   16: [\\
@@ -518,19 +457,10 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
-    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
     //4. Return L.
-    return L;
+    return @toLowerCase(S)
   }
   \\],
   17: [\\
@@ -540,57 +470,36 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
-    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
     //4. Return L.
-    return L;
+    return @toLowerCase(S)
   }
   \\],
   18: [\\
   function toUpperCase () {
-    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
     if(@SameValue(this,undefined) || @SameValue(this,null)) {
       throw new TypeError();
     }
-    var S = @ToString(this);
-    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    return L;
+    //2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @getLoc('ToString')(this);
+    //3. Let L be a String where each character of L is either the Unicode uppercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode uppercase equivalent exists.
+    //4. Return L.
+    return @toUpperCase(S)
   }
   \\],
   19: [\\
   function toLocaleUpperCase () {
-    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
     if(@SameValue(this,undefined) || @SameValue(this,null)) {
       throw new TypeError();
     }
-    var S = @ToString(this);
-    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    return L;
+    //2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @getLoc('ToString')(this);
+    //3. Let L be a String where each character of L is either the Unicode uppercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode uppercase equivalent exists.
+    //4. Return L.
+    return @toUpperCase(S)
   }
   \\],
   20: [\\
@@ -600,20 +509,10 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var S = @getLoc('ToString')(this);
     // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
-    var f = 0;
-    while (S[f] === " "){
-      f += 1;
-    }
-    var t = S.length - 1;
-    while (S[t] === " "){
-      t -= 1;
-    }
-    t +=1;
-    var T = S.substring(f,t);
     // 4. Return T.
-    return T;
+    return @trim(S);
   }
   \\],
   21: [\\
@@ -647,7 +546,7 @@ Function: {
   function substr (start, length) {
     // ECMASCript 5 Appendix B.2.3 String.prototype.substr(start, length)
     // 1. Call ToString, giving it the this value as its argument.
-    var result1 = @ToString(this);
+    var result1 = @getLoc('ToString')(this);
     // 2. Call ToInteger(start).
     var result2 = @ToInteger(start);
     // 3. If length is undefined, use +; otherwise call ToInteger(length).

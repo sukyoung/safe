@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -19,8 +19,8 @@ trait ASTWalker {
 
   def walk(node: ASTNode): ASTNode = node match {
     case p: Program => walk(p)
-    case s: SourceElement => walk(s)
-    case s: SourceElements => walk(s)
+    case s: Stmt => walk(s)
+    case s: Stmts => walk(s)
     case v: VarDecl => walk(v)
     case c: Case => walk(c)
     case c: Catch => walk(c)
@@ -149,14 +149,9 @@ trait ASTWalker {
       IntLiteral(walk(info), intVal, radix)
   }
 
-  def walk(node: SourceElement): SourceElement = node match {
-    case s: Stmt =>
-      walk(s)
-  }
-
-  def walk(node: SourceElements): SourceElements = node match {
-    case SourceElements(info, body, isStrict) =>
-      SourceElements(walk(info), body.map(walk), isStrict)
+  def walk(node: Stmts): Stmts = node match {
+    case Stmts(info, body, isStrict) =>
+      Stmts(walk(info), body.map(walk), isStrict)
   }
 
   def walk(node: FunDecl): FunDecl = node match {

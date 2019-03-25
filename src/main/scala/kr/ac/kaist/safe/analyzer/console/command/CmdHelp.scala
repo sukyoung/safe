@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -21,7 +21,7 @@ case object CmdHelp extends Command("help") {
       case Nil => {
         printResult("Command list:")
         Command.commands.foreach(cmd =>
-          printResult("- %-15s%s".format(cmd.name, cmd.info)))
+          printResult("- %-25s%s".format(cmd.name, cmd.info)))
         printResult("For more information, see '" + name + " <command>'.")
       }
       case str :: Nil => Command.cmdMap.get(str) match {

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -10,8 +10,6 @@
  */
 
 package kr.ac.kaist.safe.analyzer.domain
-
-import scala.collection.immutable.HashSet
 
 // binding abstract domain
 trait BindingDomain extends AbsDomain[Binding] {

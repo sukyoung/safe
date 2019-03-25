@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -13,8 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import kr.ac.kaist.safe.errors.error._
-import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
+import kr.ac.kaist.safe.util.{ PredAllocSite, HashMap }
 
 package object domain {
   ////////////////////////////////////////////////////////////////
@@ -28,10 +27,10 @@ package object domain {
   ////////////////////////////////////////////////////////////////
   // value constructors
   ////////////////////////////////////////////////////////////////
-  val ExcSetEmpty: Set[Exception] = HashSet[Exception]()
+  val ExcSetEmpty: Set[Exception] = Set[Exception]()
   val ExcSetTop: Set[Exception] = null // TODO refactoring
 
-  val FidSetEmpty: Set[FunctionId] = HashSet[FunctionId]()
+  val FidSetEmpty: Set[FunctionId] = Set[FunctionId]()
 
   ////////////////////////////////////////////////////////////////
   // constant values
@@ -86,11 +85,14 @@ package object domain {
   implicit def num2pv(num: AbsNum): AbsPValue = AbsPValue(numval = num)
   implicit def str2pv(str: AbsStr): AbsPValue = AbsPValue(strval = str)
 
+  // location -> LocSet
+  implicit def loc2locset(loc: Loc): LocSet = LocSet(loc)
+
   // AbsPValue -> AbsValue
   implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
 
-  // AbsLoc -> AbsValue
-  implicit def loc2v[T <% AbsLoc](loc: T): AbsValue = AbsValue(loc)
+  // LocSet -> AbsValue
+  implicit def locset2v[T <% LocSet](loc: T): AbsValue = AbsValue(loc)
 
   // AbsValue -> AbsIValue
   implicit def v2iv[T <% AbsValue](v: T): AbsIValue = AbsIValue(v)
@@ -106,109 +108,117 @@ package object domain {
   // abstract domains
   ////////////////////////////////////////////////////////////////
   def register(
-    absUndef: UndefDomain = DefaultUndef,
-    absNull: NullDomain = DefaultNull,
-    absBool: BoolDomain = DefaultBool,
-    absNum: NumDomain = DefaultNumber,
-    absStr: StrDomain = StringSet(0),
-    absLoc: LocDomain = DefaultLoc,
-    aaddrType: AAddrType = RecencyAAddr
+    absUndef: UndefDomain,
+    absNull: NullDomain,
+    absBool: BoolDomain,
+    absNum: NumDomain,
+    absStr: StrDomain,
+    recencyMode: Boolean,
+    heapClone: Boolean,
+    sensitivity: Sensitivity
   ): Unit = {
     this.absUndef = Some(absUndef)
     this.absNull = Some(absNull)
     this.absBool = Some(absBool)
     this.absNum = Some(absNum)
     this.absStr = Some(absStr)
-    this.absLoc = Some(absLoc)
-    this.aaddrType = Some(aaddrType)
+    this.recencyMode = Some(recencyMode)
+    this.heapClone = Some(heapClone)
+    this.sensitivity = Some(sensitivity)
   }
 
   // primitive values
-  private var absUndef: Option[UndefDomain] = _
+  private var absUndef: Option[UndefDomain] = None
   lazy val AbsUndef: UndefDomain = get("UndefDomain", absUndef)
   type AbsUndef = AbsUndef.Elem
 
-  private var absNull: Option[NullDomain] = _
+  private var absNull: Option[NullDomain] = None
   lazy val AbsNull: NullDomain = get("NullDomain", absNull)
   type AbsNull = AbsNull.Elem
 
-  private var absBool: Option[BoolDomain] = _
+  private var absBool: Option[BoolDomain] = None
   lazy val AbsBool: BoolDomain = get("BoolDomain", absBool)
   type AbsBool = AbsBool.Elem
 
-  private var absNum: Option[NumDomain] = _
+  private var absNum: Option[NumDomain] = None
   lazy val AbsNum: NumDomain = get("NumDomain", absNum)
   type AbsNum = AbsNum.Elem
 
-  private var absStr: Option[StrDomain] = _
+  private var absStr: Option[StrDomain] = None
   lazy val AbsStr: StrDomain = get("StrDomain", absStr)
   type AbsStr = AbsStr.Elem
 
-  val AbsPValue: DefaultPValue.type = DefaultPValue
+  lazy val AbsPValue: DefaultPValue.type = DefaultPValue
   type AbsPValue = DefaultPValue.Elem
 
-  // abstract address type
-  private var aaddrType: Option[AAddrType] = _
-  lazy val AAddrType: AAddrType = get("AAddrType", aaddrType)
+  // recency mode
+  private var recencyMode: Option[Boolean] = None
+  lazy val RecencyMode: Boolean = get("RecencyMode", recencyMode)
 
-  // location
-  private var absLoc: Option[LocDomain] = _
-  lazy val AbsLoc: LocDomain = get("LocDomain", absLoc)
-  type AbsLoc = AbsLoc.Elem
+  // heap cloning mode
+  private var heapClone: Option[Boolean] = None
+  lazy val HeapClone: Boolean = get("HeapClone", heapClone)
+
+  // trace sensitivity
+  private var sensitivity: Option[Sensitivity] = None
+  lazy val Sensitivity: Sensitivity = get("Sensitivity", sensitivity)
+
+  // location set
+  type LocSet = LocSet.Elem
 
   // value
-  val AbsValue: DefaultValue.type = DefaultValue
-  type AbsValue = DefaultValue.Elem
+  lazy val AbsValue: DefaultValue.type = DefaultValue
+  type AbsValue = AbsValue.Elem
 
   // function id
-  val AbsFId: DefaultFId.type = DefaultFId
+  lazy val AbsFId: DefaultFId.type = DefaultFId
   type AbsFId = DefaultFId.Elem
 
   // internal value
-  val AbsIValue: DefaultIValue.type = DefaultIValue
+  lazy val AbsIValue: DefaultIValue.type = DefaultIValue
   type AbsIValue = DefaultIValue.Elem
 
   // data property
-  val AbsDataProp: DefaultDataProp.type = DefaultDataProp
+  lazy val AbsDataProp: DefaultDataProp.type = DefaultDataProp
   type AbsDataProp = DefaultDataProp.Elem
 
   // descriptor
-  val AbsDesc: DefaultDesc.type = DefaultDesc
+  lazy val AbsDesc: DefaultDesc.type = DefaultDesc
   type AbsDesc = DefaultDesc.Elem
 
   // absent value for parital map
-  val AbsAbsent: DefaultAbsent.type = DefaultAbsent
-  type AbsAbsent = DefaultAbsent.Elem
+  object AbsAbsent extends SimpleDomain[None.type]
+  type AbsAbsent = AbsAbsent.Elem
 
   // execution context
-  val AbsBinding: DefaultBinding.type = DefaultBinding
+  lazy val AbsBinding: DefaultBinding.type = DefaultBinding
   type AbsBinding = DefaultBinding.Elem
 
-  val AbsDecEnvRec: DefaultDecEnvRec.type = DefaultDecEnvRec
+  lazy val AbsDecEnvRec: DefaultDecEnvRec.type = DefaultDecEnvRec
   type AbsDecEnvRec = DefaultDecEnvRec.Elem
 
-  val AbsGlobalEnvRec: DefaultGlobalEnvRec.type = DefaultGlobalEnvRec
+  lazy val AbsGlobalEnvRec: DefaultGlobalEnvRec.type = DefaultGlobalEnvRec
   type AbsGlobalEnvRec = DefaultGlobalEnvRec.Elem
 
-  val AbsEnvRec: DefaultEnvRec.type = DefaultEnvRec
+  lazy val AbsEnvRec: DefaultEnvRec.type = DefaultEnvRec
   type AbsEnvRec = DefaultEnvRec.Elem
 
-  val AbsLexEnv: DefaultLexEnv.type = DefaultLexEnv
+  lazy val AbsLexEnv: DefaultLexEnv.type = DefaultLexEnv
   type AbsLexEnv = DefaultLexEnv.Elem
 
-  val AbsContext: DefaultContext.type = DefaultContext
+  lazy val AbsContext: DefaultContext.type = DefaultContext
   type AbsContext = DefaultContext.Elem
 
   // object
-  val AbsObj: CKeyObject.type = CKeyObject
+  lazy val AbsObj: CKeyObject.type = CKeyObject
   type AbsObj = CKeyObject.Elem
 
   // heap
-  val AbsHeap: DefaultHeap.type = DefaultHeap
+  lazy val AbsHeap: DefaultHeap.type = DefaultHeap
   type AbsHeap = DefaultHeap.Elem
 
   // state
-  val AbsState: DefaultState.type = DefaultState
+  lazy val AbsState: DefaultState.type = DefaultState
   type AbsState = DefaultState.Elem
 
   private def get[T](name: String, opt: Option[T]): T = opt match {
@@ -216,52 +226,6 @@ package object domain {
     case None => throw NotYetDefined(name)
   }
 
-  ////////////////////////////////////////////////////////////////
-  // load from JSON for general structures
-  ////////////////////////////////////////////////////////////////
-  // for string
-  def json2str(v: JsValue): String = v match {
-    case JsString(str) => str
-    case _ => throw StringParseError(v)
-  }
-
-  // for integer
-  def json2int(v: JsValue): Int = v match {
-    case JsNumber(n) => n.toInt
-    case _ => throw IntParseError(v)
-  }
-
-  // for map structure
-  def json2map[K, V](
-    v: JsValue,
-    kFromJson: JsValue => K,
-    vFromJson: JsValue => V
-  ): Map[K, V] = v match {
-    case JsArray(vec) => vec.foldLeft[Map[K, V]](HashMap()) {
-      case (m, JsArray(Vector(k, v))) => m + (kFromJson(k) -> vFromJson(v))
-      case _ => throw MapParseError(v)
-    }
-    case _ => throw MapParseError(v)
-  }
-
-  // for set structure
-  def json2set[X](
-    v: JsValue,
-    fromJson: JsValue => X
-  ): Set[X] = v match {
-    case JsArray(vec) => vec.foldLeft[Set[X]](HashSet()) {
-      case (set, x) => set + fromJson(x)
-    }
-    case _ => throw SetParseError(v)
-  }
-
-  // for pair structure
-  def json2pair[L, R](
-    v: JsValue,
-    lFromJson: JsValue => L,
-    rFromJson: JsValue => R
-  ): (L, R) = v match {
-    case JsArray(Vector(l, r)) => (lFromJson(l), rFromJson(r))
-    case _ => throw PairParseError(v)
-  }
+  type Map[K, V] = HashMap[K, V]
+  val Map = HashMap
 }

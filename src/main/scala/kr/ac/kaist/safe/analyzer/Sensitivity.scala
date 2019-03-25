@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -13,15 +13,20 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.util.SimpleParser
 
 // analysis sensitivity
 sealed trait Sensitivity {
   val initTP: TracePartition
 
-  def *(that: Sensitivity): Sensitivity =
-    if (this.isInsensitive) that
-    else if (that.isInsensitive) this
-    else ProductSensitivity(this, that)
+  def *(that: Sensitivity): Sensitivity = {
+    (this.isInsensitive, that.isInsensitive) match {
+      case (true, true) => Insensitive
+      case (false, true) => this
+      case (true, false) => that
+      case (false, false) => ProductSensitivity(this, that)
+    }
+  }
 
   def isInsensitive: Boolean
 }
@@ -32,8 +37,38 @@ trait TracePartition {
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[TracePartition]
+
+  def toStringList: List[String]
+}
+
+// trace partition parser
+trait TracePartitionParser extends CFGBlockParser {
+  // no sensitivity
+  lazy val empty = "Empty" ^^^ EmptyTP
+
+  // product sensitivity
+  def product(lparser: Parser[TracePartition], rparser: Parser[TracePartition]) = {
+    "(" ~> (lparser <~ "|") ~ rparser <~ ")" ^^ { case ltp ~ rtp => ProductTP(ltp, rtp) }
+  }
+
+  // k-CFA
+  lazy val cfa = (nat <~ "-CFA(") ~ repsep(getTypedCFGBlock[Call], ",") <~ ")" ^^ {
+    case depth ~ calls => CallSiteContext(calls, depth)
+  }
+
+  // LSA
+  lazy val loopIter = getTypedCFGBlock[LoopHead] ~ ("(" ~> nat <~ ")") ^^ {
+    case head ~ iter => LoopIter(head, iter)
+  }
+  lazy val lsa = ("LSA[i:" ~> nat <~ ",j:") ~ nat ~ ("](" ~> repsep(loopIter, ",") <~ ")") ^^ {
+    case maxDepth ~ maxIter ~ iterList => LoopContext(iterList, maxIter, maxDepth)
+  }
+
+  // trace partition
+  lazy val tp: Parser[TracePartition] = empty | cfa | lsa | product(tp, tp)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,9 +79,18 @@ case object EmptyTP extends TracePartition {
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[EmptyTP.type] = List(EmptyTP)
+
   override def toString: String = s"Empty"
+
+  def toStringList: List[String] = Nil
+}
+
+case object Insensitive extends Sensitivity {
+  val initTP: TracePartition = EmptyTP
+  def isInsensitive: Boolean = true
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,13 +104,17 @@ case class ProductTP(
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[ProductTP] =
-    ltp.next(from, to, edgeType, sem).foldLeft(List[ProductTP]()) {
+    ltp.next(from, to, edgeType, sem, st).foldLeft(List[ProductTP]()) {
       case (list, l) =>
-        rtp.next(from, to, edgeType, sem).map(ProductTP(l, _)) ++ list
+        rtp.next(from, to, edgeType, sem, st).map(ProductTP(l, _)) ++ list
     }
-  override def toString: String = s"$ltp x $rtp"
+
+  override def toString: String = s"($ltp|$rtp)"
+
+  def toStringList: List[String] = ltp.toStringList ++ rtp.toStringList
 }
 
 case class ProductSensitivity(
@@ -85,18 +133,26 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[CallSiteContext] = List((from, to, edgeType) match {
     case (call: Call, _: Entry, CFGEdgeCall) =>
       CallSiteContext((call :: callsiteList).take(depth), depth)
     case _ => this
   })
-  override def toString: String = callsiteList match {
-    case Nil => "NoCall"
-    case _ => callsiteList
-      .map(call => s"${call.func.id}:${call.id}")
-      .mkString("Call[", ", ", "]")
-  }
+
+  override def toString: String = callsiteList
+    .map(call => s"${call.func.id}:${call.id}")
+    .mkString(s"$depth-CFA(", ",", ")")
+
+  def toStringList: List[String] = callsiteList.reverse.map(call => {
+    val func = call.func
+    val fname = func.simpleName
+    val fid = func.id
+    val bid = call.id
+    val span = call.span
+    s"Call[$bid] of function[$fid] $fname @ $span"
+  })
 }
 
 case class CallSiteSensitivity(depth: Int) extends Sensitivity {
@@ -121,7 +177,8 @@ case class LoopContext(
     from: CFGBlock,
     to: CFGBlock,
     edgeType: CFGEdgeType,
-    sem: Semantics
+    sem: Semantics,
+    st: AbsState
   ): List[LoopContext] = (from, to, edgeType) match {
     // function start
     case (entry: Entry, _, CFGEdgeNormal) =>
@@ -133,7 +190,11 @@ case class LoopContext(
       iterList match {
         case Nil => List(this)
         case LoopIter(head, iter) :: rest =>
-          val newCtxt = copy(iterList = LoopIter(head, math.min(iter + 1, maxIter)) :: rest)
+          val (condV, _) = sem.V(head.cond, st)
+          val newIter =
+            if (TypeConversionHelper.ToBoolean(condV).isTop) iter
+            else iter + 1
+          val newCtxt = copy(iterList = LoopIter(head, math.min(newIter, maxIter)) :: rest)
           head.outBlocks.foreach(sem.addOutCtxt(_, newCtxt))
           List(newCtxt)
       }
@@ -168,12 +229,20 @@ case class LoopContext(
     }.toList
   }
 
-  override def toString: String = iterList match {
-    case Nil => "NoLoop"
-    case _ => iterList
-      .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter/$maxIter)" }
-      .mkString("Loop[", ", ", "]")
-  }
+  override def toString: String = iterList
+    .map { case LoopIter(head, iter) => s"${head.func.id}:${head.id}($iter)" }
+    .mkString(s"LSA[i:$maxDepth,j:$maxIter](", ",", ")")
+
+  def toStringList: List[String] = iterList.reverse.map(loop => {
+    val head = loop.head
+    val iter = loop.iter
+    val bid = head.id
+    val func = head.func
+    val fid = func.id
+    val fname = func.simpleName
+    val span = head.span
+    s"LoopHead[$bid] ($iter/$maxIter) function[$fid] $fname @ $span"
+  })
 }
 
 case class LoopSensitivity(maxIter: Int, maxDepth: Int) extends Sensitivity {

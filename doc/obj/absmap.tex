@@ -1,0 +1,273 @@
+\subsection{Definition of Abstract Map}
+For any concrete map $\CMap$,
+if abstract key $\AKey$ and abstract value $\AVal$ is defined,
+and there exists a sound relation $\wsf{isRelated}$ 
+that abstracts \emph{may equal} of two abstract key valaues,
+we can define a abstract map $\AMap$.\\
+
+$\begin{array}{l}
+\poset(\CMap) \xrightarrow{\alpha_{m}}
+\AMap \xrightarrow{\gamma_{m}} \poset(\CMap) \vspace{1mm} \\
+\poset(\CKey) \xrightarrow{\alpha_{k}} 
+\AKey \xrightarrow{\gamma_{k}} \poset(\CKey) \\
+\poset(\CVal) \xrightarrow{\alpha_{v}} 
+\AVal \xrightarrow{\gamma_{v}} \poset(\CVal) \vspace{1mm} \\
+\wsf{isRelated} \in \AKey \times \AKey \rightarrow \textbf{Boolean} \\
+\end{array}$\\\\
+Formal definition of $\alpha_m$ and $\gamma_m$ are at section \ref{sec:galois}.\\
+Our definition of abstract map consist of 2 parts:
+\begin{enumerate}
+\item $\Map$ part which is a partial map from $\AKey$ to $\AVal$, and
+\item $\Defset$ part which is a set of definitely existing key values.
+The size of $\Defset$ may be infinite, 
+for example, bottom of $\AMap$ has the whole $\CKey$ as its $\Defset$.
+\end{enumerate}
+$\begin{array}{l}
+\hat{m},\ \langle \emph{map},\ \emph{defset} \rangle
+\in \AMap = (\AKey \rightarrowtail \AVal)
+\times \poset(\CKey)\\
+\quad \Map(\langle \emph{map},\ \emph{defset} \rangle) = 
+\emph{map} \in \AKey \rightarrowtail \AVal \\
+\quad \Defset(\langle \emph{map},\ \emph{defset} \rangle) = 
+\emph{defset} \in \poset(\CKey) \\
+\quad \Dom(\langle \emph{map},\ \emph{defset} \rangle) = 
+\{ \hat{k} \mid \emph{map} 
+\textrm{ has a mapped value for key } \hat{k} \} \in \poset(\AKey) \\
+\end{array}$
+
+\subsubsection{Partial Order and Join}
+$\begin{array}{rl}
+\hat{m}_1 \po_m \hat{m}_2 = & 
+\forall \hat{k}_1 \in \Dom(\hat{m}_1) \cdot 
+\exists \hat{k}_2 \in \Dom(\hat{m}_2) :
+\hat{k}_1 \po_k \hat{k}_2
+\land \Map(\hat{m}_1)(\hat{k}_1) \po_v \Map(\hat{m}_2)(\hat{k}_2) \\
+& \land\ \Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1) \\
+\end{array}$\\\\
+$\begin{array}{l}
+\hat{m}_1 \sqcup_m \hat{m}_2 =
+\langle \emph{map}_1 \cup \emph{map}_2 \cup \emph{map}_{\cap},\
+\Defset(\hat{m}_1) \cap \Defset(\hat{m}_2) \rangle \\
+\quad \begin{array}{rl} \textrm{where} 
+& \emph{map}_1 = \left \{~ [ \hat{k} \mapsto \Map(\hat{m}_1)(\hat{k}) ] ~\mid~
+\hat{k} \in \Dom(\hat{m}_1) 
+\setminus \Dom(\hat{m}_2) ~\right \} \\
+& \emph{map}_2 = \left \{~ [ \hat{k} \mapsto \Map(\hat{m}_2)(\hat{k}) ] ~\mid~
+\hat{k} \in \Dom(\hat{m}_2)
+\setminus \Dom(\hat{m}_1) ~\right \} \\
+& \emph{map}_{\cap} = \left \{~ [ \hat{k} \mapsto 
+\Map(\hat{m}_1)(\hat{k}) \sqcup_v \Map(\hat{m}_2)(\hat{k}) ] ~\mid~
+\hat{k} \in \Dom(\hat{m}_1) 
+\cap \Dom(\hat{m}_2) ~\right \} \\
+\end{array} \\
+\end{array}$
+
+\subsubsection{Abstraction and Concretization} \label{sec:galois}
+The abstract map $\AMap$ has Golois connection with concrete map $\CMap$.
+\begin{center}
+\textbf{Theorem }
+$\forall \emph{mset} \in \poset(\CMap), ~ 
+\forall \hat{m} \in \AMap, ~
+\alpha_m(\emph{mset}) \po_m \hat{m}
+\Longleftrightarrow
+\emph{mset} \subseteq \gamma_m(\hat{m})$
+\end{center}
+$\gamma_m$ and $\alpha_m$ are defined as follow: \\
+
+$\begin{array}{l}
+\forall \emph{mset} \in \poset(\CMap) \cdot \\ 
+\left \{
+\begin{array}{l}
+\alpha_m(\varnothing) = \bot_m \\
+\quad \textrm{where } \bot_m = \langle \varnothing,\ \textbf{String} \rangle \\
+\alpha_m(\emph{mset}) =
+\langle \emph{map},\ \bigcap \left \{ \Dom(m) \mid m \in \emph{mset} \right \} \rangle \\
+\quad \begin{array}{ll}\textrm{where} 
+& \emph{map} = \left \{
+[ \hat{k} \mapsto \alpha_{v}( \{ m(k') \mid m \in \emph{mset} 
+\land k' \in \Dom(m) \land \alpha_k(\{k'\}) = \hat{k} \} ) ]
+\mid \hat{k} \in \emph{S}  \right \} \\
+& \emph{S} = \left \{ 
+\alpha_k(\{k\}) \mid m \in \emph{mset} \land k \in \Dom(m) \right \}\\
+\end{array}\\
+\end{array} \right. \\\\
+
+\forall \hat{m} \in \AMap \cdot \\
+\quad \gamma_{m}(\hat{m}) = \bigcup \left \{ \emph{mset} ~\mid~
+\alpha_{m}(\emph{mset}) \po_m \hat{m} \right \} \\
+\end{array}$\\\\\\
+\textbf{Monotonicity of $\alpha_m$}
+\begin{center}
+$\forall \emph{mset}_1, \emph{mset}_2 \in \poset(\CMap), ~
+\emph{mset}_1 \subseteq \emph{mset}_2
+\Rightarrow
+\alpha_m(\emph{mset}_1) \po_m \alpha_m(\emph{mset}_2)$
+\end{center}
+\textbf{Proof } 
+$\forall \emph{mset}_1, \emph{mset}_2 \in \poset{\CMap},~ 
+\emph{mset}_1 \subseteq \emph{mset}_2, ~$
+\begin{itemize}
+\item \textbf{If} $\emph{mset}_1 = \varnothing$,
+since $\alpha_m(\emph{mset}_1) = \bot_m$,
+$\alpha_m(\emph{mset}_1) \po_m \alpha_m(\emph{mese}_2)$.
+\item \textbf{If} $\emph{mset}_2 = \varnothing$,
+$\emph{mset}_1$ must be $\varnothing$ by $\emph{mset}_1 \subseteq \emph{mset}_2$.
+Then $\alpha_m(\emph{mset}_1) = \bot_m \po_m \alpha_m(\emph{mset}_2)$.
+\item\textbf{If} $\emph{mset}_1 \neq \varnothing$, and $\emph{mset}_2 \neq \varnothing$, \\
+By definition of $\alpha_m$ and $\po_m$, we need to prove that
+\begin{enumerate}[label=({\arabic*})]
+\item $\forall \hat{k}_1 \in \emph{S}_1 \cdot \exists \hat{k}_2 \in \emph{S}_2:
+\hat{k}_1 \po_k \hat{k}_2 \land \emph{map}_1(\hat{k}_1) \po_v \emph{map}_2(\hat{k}_2) ~ $
+where \\
+$\begin{array}{l}
+\quad \emph{map}_1 = \left \{[ \hat{k}_1 \mapsto \alpha_{v}( \{ m_1(k_1') \mid m_1 \in \emph{mset}_1
+\land k_1' \in \Dom(m_1) \land \alpha_k(\{k_1'\}) = \hat{k}_1 \} ) ]
+\mid \hat{k}_1 \in \emph{S}_1  \right \}\\
+\land~ \emph{map}_2 = \left \{[ \hat{k}_2 \mapsto \alpha_{v}( \{ m_2(k_2') \mid m_2 \in \emph{mset}_2
+\land k_2' \in \Dom(m_2) \land \alpha_k(\{k_2'\}) = \hat{k}_2 \} ) ]
+\mid \hat{k}_2 \in \emph{S}_2  \right \}\\
+\land~ \emph{S}_1 = \{ \alpha_k(\{ k_1 \}) \mid m_1 \in \emph{mset}_1 \land k_1 \in \Dom(m_1) \} \\
+\land~ \emph{S}_2 = \{ \alpha_k(\{ k_2 \}) \mid m_2 \in \emph{mset}_2 \land k_2 \in \Dom(m_2) \} \\
+\end{array}$
+\item $\bigcap\{ \Dom(m_2) \mid m_2 \in \emph{mset}_2\} \subseteq 
+\bigcap\{ \Dom(m_1) \mid m_1 \in \emph{mset}_1\}$
+\end{enumerate}
+Prove (1). 
+\begin{enumerate}[label={\arabic*})]
+\item For arbitrary $\hat{k} \in \AKey$, $\alpha_v(\emph{vset}_1) \po_v \alpha_v(\emph{vset}_2)$ where \\
+$\begin{array}{l}
+\quad \emph{vset}_1 = \{m_1(k_1') \mid 
+m_1 \in \emph{mset}_1 \land k_1' \in \Dom(m_1) \land \alpha_k(\{k_1'\}) = \hat{k} \} \\
+\land ~ \emph{vset}_2 = \{m_2(k_2') \mid 
+m_2 \in \emph{mset}_2 \land k_2' \in \Dom(m_2) \land \alpha_k(\{k_2'\}) = \hat{k} \} \\
+\end{array}$\\
+If there is no $k_1' \in \Dom(m_1) \land m_1 \in \emph{mset}_1$ such that $\alpha_k(\{k_1'\}) = \hat{k}$,
+then $\emph{vset}_1 = \varnothing \subseteq \emph{vset}_2$.\\
+If $m_1 \in \emph{mset}_1$ then $m_1 \in \emph{mset}_2$ as $\emph{mset}_1 \subseteq \emph{mset}_2$.
+Therefore if there exists $k_1' \in \Dom(m_1) \land m_1 \in \emph{mset}_1$ 
+such that $\alpha_k(\{k_1'\}) = \hat{k}$,
+then $\emph{vset}_1 \subseteq \emph{vset}_2$.\\
+By monotonicity of $\alpha_v$, $\alpha_v(\emph{vset}_1) \po_v \alpha_v(\emph{vset}_2)$.
+\item $\{ \alpha_k(\{ k_1 \}) \mid m_1 \in \emph{mset}_1 \land k_1 \in \Dom(m_1) \}
+\subseteq \{ \alpha_k(\{ k_2 \}) \mid m_2 \in \emph{mset}_2 \land k_2 \in \Dom(m_2) \}$ \\
+as $\emph{mset}_1 \subseteq \emph{mset}_2$.
+\end{enumerate}
+By 1) and 2), $\forall \hat{k} \in \emph{S}_1, 
+\exists \hat{k} \in \emph{S}_2: \hat{k} \po_k \hat{k}
+\land \emph{map}_1(\hat{k}) \po_v \emph{map}_2(\hat{k})$ \vspace{1mm}\\
+Prove (2). It is obvious since $\emph{mset}_1 \subseteq \emph{mset}_2$. \vspace{1mm}\\
+Thus $\alpha_m(\emph{mset}_1) \po_m \alpha_m(\emph{mset}_2)$.
+\end{itemize}
+\textbf{Join morphism of $\alpha_m$}
+\begin{center}
+$\forall \emph{msetset} \in \poset(\poset(\CMap)), ~
+\alpha_m(\bigcup\emph{msetset})
+=\bigsqcup_m\{ \alpha_m(\emph{mset}) \mid \emph{mset} \in \emph{msetset}\}$
+\end{center}
+\textbf{Proof } $\forall \emph{msetset} \in \poset(\poset(\CMap))$
+\begin{itemize}
+\item \textbf{If } $\bigcup \emph{msetset} = \varnothing$, 
+Then
+\begin{enumerate}[label={\arabic*)}]
+\item $\alpha_m(\bigcup \emph{msetset}) = \bot_m$.
+\item $\forall \emph{mset} \in \emph{msetset},~ \emph{mset} = \varnothing$.\\
+Thus $\bigsqcup_m\{\alpha_m(\emph{mset}) \mid \emph{mset} \in \emph{msetset}\}
+= \bigsqcup_m \{ \bot_m \mid \emph{mset} \in \emph{msetset} \}
+= \bot_m$.
+\end{enumerate}
+Therefore, 
+$\alpha_m(\bigcup \emph{msetset}) = \bot_m
+= \bigsqcup_m\{\alpha_m(\emph{mset}) \mid \emph{mset} \in \emph{msetset}\} $.
+\item \textbf{If }
+$\bigcup\emph{msetset} \neq \varnothing$, 
+let $\hat{m}_l = \alpha_m(\bigcup \emph{msetset})$
+and $\hat{m}_r = \bigsqcup_m\{ \alpha_m(\emph{mset}) \mid \emph{mset} \in \emph{msetset} \}$.
+Then we need to prove $\Map(\hat{m}_l) = \Map(\hat{m}_r) 
+\land \Defset(\hat{m}_l) = \Defset(\hat{m}_r)$. \vspace{1mm} \\
+Prove $\Map(\hat{m}_l) = \Map(\hat{m}_r)$.
+\begin{enumerate}[label={\arabic*)}]
+\item $\Dom(\hat{m}_l) = \Dom(\hat{m}_r)$. \vspace{1mm} \\
+$\Dom(\hat{m}_l) = \{ \alpha_k(\{k\}) \mid m \in \bigcup\emph{msetset} \land k \in \Dom(m) \}$
+by definition of $\alpha_m$.\\
+For arbitrary $\hat{m}_1, \hat{m}_2 \in \AMap$, 
+$\Dom(\hat{m}_1 \sqcup_m \hat{m}_2) = \Dom(\hat{m}_1) \cup \Dom(\hat{m}_2)$
+by definition of $\sqcup_m$.
+Thus $\Dom(\hat{m}_r) = \bigcup \{ \Dom(\alpha_m(\emph{mset})) \mid \emph{mset} \in \emph{msetset} \}$, and \\ 
+$\Dom(\hat{m}_r ) = \{ \alpha_k(\{k\}) 
+\mid k \in \Dom(m) \land m \in \emph{mset} \land \emph{mset} \in \emph{msetset} \}$
+by definition of $\alpha_m$. \vspace{1mm} \\
+Therefore $\Dom(\hat{m}_l) = \Dom(\hat{m}_r)$.
+\item $\forall \hat{k} \in \Dom(\hat{m}_l) \cdot \Map(\hat{m}_l)(\hat{k}) = \Map(\hat{m}_r)(\hat{k})$.\\
+$\begin{array}{ll}
+& \Map(\hat{m}_l)(\hat{k}) \\
+= & \alpha_v(\{ m(k') \mid m \in \bigcup \emph{msetset} \land k' \in \Dom(m) \land \alpha_k(\{k'\}) = \hat{k} \})
+\textrm{ by definition of } \alpha_m.\\
+= & \bigsqcup_v\{ \alpha_v(\{ m(k') \mid m \in \emph{mset} \land k' \in \Dom(m) \land \alpha_k(\{k'\}) = \hat{k} \})
+\mid \emph{mset} \in \emph{msetset} \} \\
+& \textrm{ by Join morphism of } \alpha_v.\\
+\end{array}$ \vspace{1mm} \\
+$\forall \hat{k} \in \Dom(\hat{m}_l) \cdot \hat{k} \in \Dom(\hat{m}_r)$ by 1). \vspace{1mm}\\
+$\begin{array}{ll}
+& \Map(\hat{m}_r)(\hat{k}) \\
+= & \bigsqcup_v\{ \Map(\hat{m})(\hat{k}') 
+\mid \hat{k}' = \hat{k} \land \hat{k}' \in \Dom(\hat{m}) 
+\land \hat{m} = \alpha_m(\emph{mset}) \land \emph{mset} \in \emph{msetset} \} \\
+& \textrm{ by definition of } \sqcup_m.\\
+= & \bigsqcup_v \left \{ \emph{map}(\hat{k})
+\middle| \begin{array}{l} 
+\emph{map} = \left \{ \left[ \hat{k} \mapsto \alpha_v \left(
+\left \{ m(k') \middle| \begin{array}{l} 
+m \in \emph{mset}\\
+\land k' \in \Dom(m)\\
+\land \alpha_k(\{k'\}) = \hat{k}\end{array} \right \}
+\right) \right] \middle| \hat{k} \in \emph{S} \right \} \\
+~ \land \hat{k}' = \hat{k} \land \hat{k}' \in \emph{S} \\
+~ \land \emph{S} = \{ \alpha_k(\{k\}) \mid k \in \Dom(m) \land m \in \emph{mset} \}
+\land \emph{mset} \in \emph{msetset}\\
+\end{array} \right \} \\
+& \textrm{ by definition of } \alpha_m.\\
+= & \bigsqcup_v \{ \alpha_v(\{ m(k') \mid k' \in \Dom(m) \land \alpha_k(\{ k' \}) = \hat{k} 
+\land m \in \emph{mset} \}) \mid \emph{mset} \in \emph{msetset}\}\\
+\end{array}$ \vspace{1mm}\\
+Therefore $\forall \hat{k} \in \Dom(\hat{m}_l) = \Dom(\hat{m}_r) \cdot 
+\Map(\hat{m}_l)(\hat{k}) = \Map(\hat{m}_r)(\hat{k})$.
+\end{enumerate}
+By 1) and 2), $\Map(\hat{m}_l) = \Map(\hat{m}_r)$. \vspace{2mm} \\
+Prove $\Defset(\hat{m}_l) = \Defset(\hat{m}_r)$. \vspace{1mm} \\
+$\Defset(\hat{m}_l) = \bigcap \left \{ \Dom(m) \mid m \in 
+\bigcup \emph{msetset} \right \}$ and \\
+$\Defset(\hat{m}_r) = \bigcap \left \{ \bigcap \{ \Dom(m) \mid m \in \emph{mset} \} \mid
+\emph{mset} \in \emph{msetset} \right \}$ by definition of $\alpha_m$ and $\sqcup_m$. \vspace{1mm} \\
+We can simply write it again as follow: \vspace{1mm} \\
+$\bigcap \left \{ \Dom(m) \mid m \in \bigcup \emph{msetset} \right \} \\
+= \bigcap \{ \Dom(m) \mid m \in \emph{mset} \land \emph{mset} \in \emph{msetset} \} \\
+= \bigcap \left \{ \bigcap \{ \Dom(m) \mid m \in \emph{mset} \} \mid \emph{mset} \in \emph{msetset} \right \}$
+\vspace{1mm} \\
+Thus $\Defset(\hat{m}_l) = \Defset(\hat{m}_r)$. \vspace{1mm} \\
+To sum up, $\hat{m}_l = \hat{m}_r$. $i.e.$, 
+$\alpha_m(\bigcup \emph{msetset} )
+=\bigsqcup_m\{ \alpha_m(\emph{mset}) \mid \emph{mset} \in \emph{msetset}\}$.
+\end{itemize}
+\textbf{Proof of Theorem }
+$\forall \emph{mset} \in \poset(\CMap), ~ 
+\forall \hat{m} \in \AMap, ~$
+\begin{enumerate}[label={(\arabic*)}]
+\item
+$\alpha_m(\emph{mset}) \po_m \hat{m}
+\Rightarrow
+\emph{mset} \subseteq \gamma_m(\hat{m})$ \\
+It is obvious by the definition of $\gamma_m$. \hfill $\square$
+\item
+$\emph{mset} \subseteq \gamma_m(\hat{m})
+\Rightarrow
+\alpha_m(\emph{mset}) \po_m \hat{m}$ \\
+$\emph{mset} \subseteq \gamma_m(\hat{m})
+\Rightarrow \alpha_m(\emph{mset}) \po_m \alpha_m(\gamma_m(\hat{m}))$
+by \textbf{Monotonicity of $\alpha_m$}.\\
+$\alpha_m(\gamma_m(\hat{m})) = 
+\alpha_m(\bigcup\{ \emph{mset}' \mid \alpha_m(\emph{mset}') \po_m \hat{m}\}) = 
+\bigsqcup_m\{\alpha_m(\emph{mset}') \mid \alpha_m(\emph{mset}') \po_m \hat{m} \}$
+by the definition of $\gamma_m$ and \textbf{Join morphism of $\alpha_m$}. \\
+$\bigsqcup_m\{\alpha_m(\emph{mset}') \mid \alpha_m(\emph{mset}') \po_m \hat{m} \}
+\po_m \hat{m}$, therefore $\alpha_m(\emph{mset}) \po_m \hat{m}$. \hfill $\square$
+\end{enumerate}

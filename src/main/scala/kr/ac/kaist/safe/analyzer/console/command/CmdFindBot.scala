@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -29,7 +29,7 @@ case object CmdFindBot extends Command("find-bot", "Find the instruction whose r
           val (_, _, result) = insts.foldLeft((st, AbsState.Bot, true)) {
             case ((oldSt, oldExcSt, true), inst) => {
               val (st, excSt) = inst match {
-                case (i: CFGNormalInst) => c.sem.I(i, oldSt, oldExcSt)
+                case (i: CFGNormalInst) => c.sem.I(cp, i, oldSt, oldExcSt)
                 case (i: CFGCallInst) => c.sem.CI(cp, i, oldSt, oldExcSt)
               }
               if (st.isBottom) {

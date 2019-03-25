@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,15 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ ContextAssertionError, AbsContextParseError }
+import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar }
 
 // default declarative environment record abstract domain
 object DefaultDecEnvRec extends DecEnvRecDomain {
-  private val EmptyMap: EnvMap = HashMap()
+  private val EmptyMap: EnvMap = Map()
 
   case object Bot extends Elem
   case class LBindMap(map: EnvMap) extends Elem
@@ -36,28 +35,10 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     case true => UBindMap(m)
   }
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊥") => Bot
-    case JsObject(m) => m.get("map")
-      .map(json2map(
-        _,
-        json2str,
-        json2pair(_, AbsBinding.fromJson, AbsAbsent.fromJson)
-      )) match {
-        case Some(map) => m.get("kind") match {
-          case Some(JsString("lower")) => LBindMap(map)
-          case Some(JsString("upper")) => UBindMap(map)
-          case _ => throw AbsContextParseError(v)
-        }
-        case None => throw AbsContextParseError(v)
-      }
-    case _ => throw AbsContextParseError(v)
-  }
-
   abstract class Elem extends ElemTrait {
     def gamma: ConSet[DecEnvRec] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[DecEnvRec] = ConMany() // TODO more precise
+    def getSingle: ConSingle[DecEnvRec] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val right = that
@@ -115,7 +96,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
         case (UBindMap(_), _) => right ⊔ this
         case (LBindMap(lmap), _) => {
           val nameSet = (right match {
-            case Bot => HashSet() // XXX: not fisible
+            case Bot => Set() // XXX: not fisible
             case LBindMap(rmap) => rmap.keySet
             case UBindMap(rmap) => rmap.keySet
           }) ++ lmap.keySet
@@ -328,11 +309,11 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem = {
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
-          val newV = bind.value.subsLoc(locR, locO)
+          val newV = bind.value.subsLoc(from, to)
           val newBind = bind.copy(value = newV)
           m + (key -> (newBind, abs))
         }
@@ -344,11 +325,11 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
-    // weak substitute locR by locO
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem = {
+    // weak substitute from by to
+    def weakSubsLoc(from: Loc, to: Loc): Elem = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
-          val newV = bind.value.weakSubsLoc(locR, locO)
+          val newV = bind.value.weakSubsLoc(from, to)
           val newBind = bind.copy(value = newV)
           m + (key -> (newBind, abs))
         }
@@ -357,6 +338,22 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
         case Bot => Bot
         case LBindMap(map) => LBindMap(subs(map))
         case UBindMap(map) => UBindMap(subs(map))
+      }
+    }
+
+    // remove locations
+    def remove(locs: Set[Loc]): Elem = {
+      def rm(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
+        case (m, (key, (bind, abs))) => {
+          val newV = bind.value.remove(locs)
+          val newBind = bind.copy(value = newV)
+          m + (key -> (newBind, abs))
+        }
+      }
+      this match {
+        case Bot => Bot
+        case LBindMap(map) => LBindMap(rm(map))
+        case UBindMap(map) => UBindMap(rm(map))
       }
     }
 
@@ -392,20 +389,5 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     // delete
     def -(name: String): Elem =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
-
-    def toJson: JsValue = this match {
-      case Bot => JsString("⊥")
-      case LBindMap(m) => JsObject(
-        ("kind", JsString("lower")),
-        ("map", envMapToJson(m))
-      )
-      case UBindMap(m) => JsObject(
-        ("kind", JsString("upper")),
-        ("map", envMapToJson(m))
-      )
-    }
-    private def envMapToJson(m: EnvMap): JsArray = JsArray(m.toSeq.map {
-      case (s, (b, a)) => JsArray(JsString(s), JsArray(b.toJson, a.toJson))
-    }: _*)
   }
 }

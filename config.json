@@ -9,11 +9,11 @@
   },
   "heapBuilder": {
     "maxStrSetSize": 10,
-    "aaddrType": "recency",
-    "callsiteSensitivity": 10,
-    "loopIter": 10,
+    "recency": false,
+    "heap-clone": false,
+    "callsiteSensitivity": 100,
+    "loopIter": 20,
     "loopDepth": 10,
-    "snapshot": "",
-    "jsModel": false
+    "snapshot": ""
   }
 }

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,10 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ FIdTopGammaError, AbsFIdParseError }
+import kr.ac.kaist.safe.errors.error.FIdTopGammaError
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
-
-import spray.json._
 
 // default function id abstract domain
 case object DefaultFId extends FIdDomain {
@@ -31,11 +29,6 @@ case object DefaultFId extends FIdDomain {
   def apply(fid: FunctionId): Elem = FIdSet(fid)
   def apply(fidset: Set[FunctionId]): Elem = FIdSet(fidset)
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case _ => FIdSet(json2set(v, json2int(_)))
-  }
-
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[FId] = this match {
       case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
@@ -43,9 +36,9 @@ case object DefaultFId extends FIdDomain {
     }
 
     def getSingle: ConSingle[FId] = this match {
-      case FIdSet(set) if set.size == 0 => ConZero()
+      case FIdSet(set) if set.size == 0 => ConZero
       case FIdSet(set) if set.size == 1 => ConOne(FId(set.head))
-      case _ => ConMany()
+      case _ => ConMany
     }
 
     override def toString: String = this match {
@@ -109,11 +102,6 @@ case object DefaultFId extends FIdDomain {
     def -(fid: FunctionId): Elem = this match {
       case Top => Top
       case FIdSet(set) => FIdSet(set - fid)
-    }
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case FIdSet(set) => JsArray(set.toSeq.map(JsNumber(_)): _*)
     }
   }
 }

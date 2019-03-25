@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,37 +14,16 @@ package kr.ac.kaist.safe.analyzer.domain
 ////////////////////////////////////////////////////////////////////////////////
 // concrete single domain
 ////////////////////////////////////////////////////////////////////////////////
-sealed abstract class ConSingle[T] {
-
+sealed abstract class ConSingle[+T] {
   override def toString: String = this match {
-    case ConZero() => "[]"
-    case ConOne(t) => "[$t]"
-    case ConMany() => "[< more than 2 values >]"
-  }
-
-  def <=(that: ConSingle[T]): Boolean = (this, that) match {
-    case (ConZero(), _) | (_, ConMany()) => true
-    case (ConOne(t), ConOne(u)) if t == u => true
-    case _ => false
-  }
-
-  def +(that: ConSingle[T]): ConSingle[T] = (this, that) match {
-    case (ConZero(), _) => that
-    case (_, ConZero()) => this
-    case (ConOne(t), ConOne(u)) if t == u => this
-    case _ => ConMany[T]()
-  }
-
-  def ⊓(that: ConSingle[T]): ConSingle[T] = (this, that) match {
-    case (ConMany(), _) => that
-    case (_, ConMany()) => this
-    case (ConOne(t), ConOne(u)) if t == u => this
-    case _ => ConZero[T]()
+    case ConZero => "[]"
+    case ConOne(t) => s"[$t]"
+    case ConMany => "[< more than 2 values >]"
   }
 }
-case class ConZero[T]() extends ConSingle[T]
+case object ConZero extends ConSingle[Nothing]
 case class ConOne[T](value: T) extends ConSingle[T]
-case class ConMany[T]() extends ConSingle[T]
+case object ConMany extends ConSingle[Nothing]
 
 ////////////////////////////////////////////////////////////////////////////////
 // concrete finite set domain

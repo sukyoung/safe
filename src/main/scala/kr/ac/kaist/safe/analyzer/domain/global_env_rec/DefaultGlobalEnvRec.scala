@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,11 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsGlobalEnvRecParseError
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import scala.collection.immutable.HashMap
-import spray.json._
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 
 // default global environment abstract domain
 object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
@@ -24,12 +21,6 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
 
   def alpha(g: GlobalEnvRec): Elem = Top
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case JsString("⊥") => Bot
-    case _ => throw AbsGlobalEnvRecParseError(v)
-  }
-
   abstract class Elem extends ElemTrait {
     def gamma: ConSet[GlobalEnvRec] = this match {
       case Bot => ConFin()
@@ -37,7 +28,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     }
 
     def getSingle: ConSingle[GlobalEnvRec] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case Top => ConOne(GlobalEnvRec)
     }
 
@@ -99,7 +90,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
             true,
             heap
           )
-          (this, heap.update(BuiltinGlobal.loc, newObj), excSet)
+          (this, heap.update(GLOBAL_LOC, newObj), excSet)
         } else { (Bot, AbsHeap.Bot, ExcSetEmpty) }
     }
 
@@ -120,7 +111,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
         val (newObj, excSet) = bindings.Put(AbsStr(name), v, strict, heap)
         (
           this,
-          heap.update(BuiltinGlobal.loc, newObj),
+          heap.update(GLOBAL_LOC, newObj),
           excSet
         )
     }
@@ -189,14 +180,8 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
         AbsUndef.Top
     }
 
-    private val GLOBAL_LOC: Loc = BuiltinGlobal.loc
     private def getGlobalObj(heap: AbsHeap): AbsObj =
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case Bot => JsString("⊥")
-    }
   }
 }

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -60,7 +60,7 @@ case class GetProp(
   }
 }
 
-// Member ::= set Property ( Id ) { SourceElement* }
+// Member ::= set Property ( Id ) { Stmt* }
 case class SetProp(
     info: ASTNodeInfo,
     prop: Property,

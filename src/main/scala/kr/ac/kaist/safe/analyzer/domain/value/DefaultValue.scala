@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,43 +11,35 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.errors.error.AbsValueParseError
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
-import spray.json._
 
 // default value abstract domain
 object DefaultValue extends ValueDomain {
-  lazy val Bot: Elem = Elem(AbsPValue.Bot, AbsLoc.Bot)
-  lazy val Top: Elem = Elem(AbsPValue.Top, AbsLoc.Top)
+  lazy val Bot: Elem = Elem(AbsPValue.Bot, LocSet.Bot)
+  lazy val Top: Elem = Elem(AbsPValue.Top, LocSet.Top)
 
   def alpha(value: Value): Elem = value match {
     case (pvalue: PValue) => apply(AbsPValue(pvalue))
-    case (loc: Loc) => apply(AbsLoc(loc))
+    case (loc: Loc) => apply(LocSet(loc))
     case StringT => apply(AbsStr.Top)
     case NumberT => apply(AbsNum.Top)
     case BoolT => apply(AbsBool.Top)
   }
 
   def apply(pvalue: AbsPValue): Elem = Bot.copy(pvalue = pvalue)
-  def apply(locset: AbsLoc): Elem = Bot.copy(locset = locset)
-  def apply(pvalue: AbsPValue, locset: AbsLoc): Elem = Elem(pvalue, locset)
+  def apply(locset: LocSet): Elem = Bot.copy(locset = locset)
+  def apply(pvalue: AbsPValue, locset: LocSet): Elem = Elem(pvalue, locset)
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("pvalue").map(AbsPValue.fromJson _),
-      m.get("locset").map(AbsLoc.fromJson _)
-    ) match {
-        case (Some(p), Some(l)) => Elem(p, l)
-        case _ => throw AbsValueParseError(v)
-      }
-    case _ => throw AbsValueParseError(v)
-  }
-
-  case class Elem(pvalue: AbsPValue, locset: AbsLoc) extends ElemTrait {
+  case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
+    def getSingle: ConSingle[Value] = (pvalue.getSingle, locset.getSingle) match {
+      case (ConZero, ConZero) => ConZero
+      case (ConOne(v), ConZero) => ConOne(v)
+      case (ConZero, ConOne(v)) => ConOne(v)
+      case _ => ConMany
+    }
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)
@@ -88,11 +80,14 @@ object DefaultValue extends ValueDomain {
       }
     }
 
-    def subsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(this.pvalue, this.locset.subsLoc(locR, locO))
+    def subsLoc(from: Loc, to: Loc): Elem =
+      Elem(this.pvalue, this.locset.subsLoc(from, to))
 
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(this.pvalue, this.locset.weakSubsLoc(locR, locO))
+    def weakSubsLoc(from: Loc, to: Loc): Elem =
+      Elem(this.pvalue, this.locset.weakSubsLoc(from, to))
+
+    def remove(locs: Set[Loc]): Elem =
+      Elem(this.pvalue, this.locset.remove(locs))
 
     def typeCount: Int = {
       if (this.locset.isBottom)
@@ -101,28 +96,23 @@ object DefaultValue extends ValueDomain {
         pvalue.typeCount + 1
     }
 
-    def getThis(h: AbsHeap): AbsLoc = {
+    def getThis(h: AbsHeap): LocSet = {
       val locSet1 = (pvalue.nullval.isBottom, pvalue.undefval.isBottom) match {
-        case (true, true) => AbsLoc.Bot
-        case _ => AbsLoc(BuiltinGlobal.loc)
+        case (true, true) => LocSet.Bot
+        case _ => LocSet(GLOBAL_LOC)
       }
 
       val foundDeclEnvRecord = locset.exists(loc => !h.isObject(loc))
 
       val locSet2 =
-        if (foundDeclEnvRecord) AbsLoc(BuiltinGlobal.loc)
-        else AbsLoc.Bot
-      val locSet3 = locset.foldLeft(AbsLoc.Bot)((tmpLocSet, loc) => {
+        if (foundDeclEnvRecord) LocSet(GLOBAL_LOC)
+        else LocSet.Bot
+      val locSet3 = locset.foldLeft(LocSet.Bot)((tmpLocSet, loc) => {
         if (h.isObject(loc)) tmpLocSet + loc
         else tmpLocSet
       })
 
       locSet1 ⊔ locSet2 ⊔ locSet3
     }
-
-    def toJson: JsValue = JsObject(
-      ("pvalue", pvalue.toJson),
-      ("locset", locset.toJson)
-    )
   }
 }

@@ -1,0 +1,367 @@
+\subsection{Helper methods}
+There are 4 helper methods to handle our abstract map:\\
+
+$\begin{array}{rl}
+\wsf{contains} & \in \AMap \times \AKey \rightarrow \wbf{Boolean} \\
+\wsf{lookup} & \in \AMap \times \AKey \rightarrow \AVal \times \wbf{Boolean} \\
+\wsf{update} & \in \AMap \times \AKey \times \AVal \rightarrow \AMap \\
+\wsf{delete} & \in \AMap \times \AKey \rightarrow \AMap \\
+\end{array}$\\\\
+
+\textbf{Monotonicity } ??\\
+
+\textbf{Soundness }
+We proved the soundness of those methods at section \ref{sec:soundness}.\\
+
+\textbf{Termination }
+We call a abstract map \emph{infinite} if $\Dom$ of the abstract map is infinite,
+and \emph{finite} otherwise.
+Even though the definition of $\AMap$ does not guarantee a abstract map to be finite,
+the inputs of the helper methods will never be infinite during the analysis.
+Because every abstract map created by alpha function during the analysis is finite
+as the program code is finite, and if the input abstract map is finite, 
+the resulted abstract map of helper methods is also finite by the definition of the methods.
+So we assume that every abstract map used as inputs of helper method are finite.
+Thus the helper methods always terminates.\\
+
+\subsubsection{contains}
+$\wsf{contains}$ is used to check whether the given abstract key
+has a mapping in given abstract map.\\
+
+$\begin{array}{l}
+\wsf{contains} \in \AMap \times \AKey \rightarrow \wbf{Boolean} \\\\
+\wsf{contains}(\bot_m,\ \hat{k}) = \bot_b \\
+\wsf{contains}(\hat{m},\ \bot_k) = \bot_b \\
+\wsf{contains}(\hat{m},\ \hat{k}) = \hat{b} \\
+\quad \begin{array}{ll} \textrm{where }
+& \hat{b} = \left \{ \begin{array}{ll}
+\top_b & \textrm{if } \emph{domIn?} \land \gamma_k(\hat{k}) \not\subseteq \Defset(\hat{m}) \\
+\hat{\texttt{true}} & \textrm{if } \emph{domIn?} \land \gamma_k(\hat{k}) \subseteq \Defset(\hat{m}) \\
+\hat{\texttt{false}} & \textrm{if } \neg \emph{domIn?} \\
+\end{array} \right.\\
+& \emph{domIn?} = \exists \hat{k}' \in \Dom(\hat{m}) \cdot
+\wsf{isRelated}(\hat{k},\ \hat{k}')\\
+\end{array}\\
+\end{array}$
+
+\subsubsection{lookup}
+$\wsf{lookup}$ gets the abstract map and abstract key,
+and returns the abstract value mapped to the keys related to given abstract key.
+The abstract boolean value returned with the abstract value indicates
+whether the returned value is definite or not.\\
+
+$\begin{array}{l}
+\wsf{lookup} \in \AMap \times \AKey \rightarrow \AVal \times \wbf{Boolean} \\\\
+
+\wsf{lookup}(\bot_m,\ \hat{k}) = (\bot_v,\ \bot_b) \\
+\wsf{lookup}(\hat{m},\ \bot_{k}) = (\bot_v,\ \bot_b) \\
+
+\wsf{lookup}(\hat{m},\ \hat{k}) = (\emph{local},\ \hat{b}) \\
+\quad \begin{array}{rl} \textrm{where}
+& \emph{local} = \bigsqcup_v \left \{ 
+\Map(\hat{m})(\hat{k}') \mid \hat{k}' \in \emph{S} \right \} \vspace{1mm}\\
+& \hat{b} = \left \{ \begin{array}{ll}
+\top_b & \textrm{if } \emph{S} \neq \varnothing \land 
+\gamma_k(\hat{k}) \not\subseteq \Defset(\hat{m}) \\
+\hat{\texttt{true}} & \textrm{if } \emph{S} \neq \varnothing \land 
+\gamma_k(\hat{k}) \subseteq \Defset(\hat{m}) \\
+\hat{\texttt{false}} & \textrm{if } \emph{S} = \varnothing \\
+\end{array} \right. \vspace{1mm} \\
+& \emph{S} = \{ \hat{k}' \mid \hat{k}' \in \Dom(\hat{m})
+\land \wsf{isRelated}(\hat{k},\ \hat{k}') \}\\
+\end{array} \\
+\end{array}$
+
+\subsubsection{update}
+$\wsf{update}$ calculate updated abstract map of given map with given key and value.
+If the given abstract key is \emph{exact}, ignore existing mapped value to the key.
+Otherwise, join the existing mapped value with the new value.
+It is important to determine whether the given key is \emph{exact} or not,
+in order to the result of the $\wsf{update}$ methods be precise.\\
+
+$\begin{array}{l}
+\wsf{update} \in \AMap \times \AKey \times \AVal \rightarrow \AMap \\\\
+
+\wsf{update}(\bot_m,\ \hat{k},\ \hat{v}) = \bot_m \\
+\wsf{update}(\hat{m},\ \bot_k,\ \hat{v}) = \bot_m \\
+\wsf{update}(\hat{m},\ \hat{k},\ \bot_{v}) = \hat{m} \\
+
+\wsf{update}(\hat{m},\ \hat{k},\ \hat{v}) = \langle \emph{map},\ \emph{defset} \rangle \vspace{1mm}\\
+\quad \begin{array}{rl} \textrm{where}
+& \emph{map} = \left \{ \begin{array}{ll}
+\Map(\hat{m}) \ast [ \hat{k} \mapsto \hat{v} ]
+& \textrm{if } \hat{k} \not\in \Dom(\hat{m}) \\
+
+(\Map(\hat{m}) - \hat{k}) \ast [ \hat{k} \mapsto \hat{v}]
+& \textrm{if } \emph{exact?} \land \hat{k}\in \Dom(\hat{m}) \\
+
+(\Map(\hat{m}) - \hat{k})
+\ast [ \hat{k} \mapsto \hat{v} \sqcup_v \Map(\hat{m})(\hat{k}) ]
+& \textrm{if } \neg \emph{exact?} \land \hat{k}\in \Dom(\hat{m}) \\
+\end{array} \right. \vspace{1mm}\\
+
+& \emph{defset} = \left \{ \begin{array}{ll}
+\Defset(\hat{m}) \cup \gamma_k(\hat{k}) & \textrm{if} ~ \emph{exact?} \\
+\Defset(\hat{m}) & \textrm{otherwise}\\
+\end{array} \right. \vspace{1mm}\\
+
+& \emph{exact?} = \mid \gamma_k(\hat{k}) \mid = 1 \\
+\end{array} \\
+\end{array} $
+
+\subsubsection{delete}
+For given abstract map and abstract key, 
+$\wsf{delete}$ returns the new abstract map 
+which have no value mapped to the given key.
+Similar to $\wsf{update}$ method, 
+if the given key is not \emph{exact},
+$\wsf{delete}$ cannot change the input map.
+Thus it is important to determine \emph{exact}ness of the given key.\\
+
+$\begin{array}{l}
+\wsf{delete} \in \AMap \times \AKey \rightarrow \AMap \\\\
+
+\wsf{delete}(\bot_m,\ \hat{k}) = \bot_m \\
+\wsf{delete}(\hat{m},\ \bot_k) = \bot_m \\
+
+\wsf{delete}(\hat{m},\ \hat{k}) =
+\langle \emph{map},\ \Defset(\hat{m}) \setminus \gamma_k(\hat{k}) \rangle \vspace{1mm}\\
+\quad \begin{array}{rl} \textrm{where}
+& \emph{map} = \left \{ \begin{array}{ll}
+(\Map(\hat{m}) - \hat{k})
+& \textrm{if } \emph{exact?} \land \hat{k} \in \Dom(\hat{m}) \\
+\Map(\hat{m})
+& \textrm{otherwise} \\
+\end{array} \right. \vspace{1mm}\\
+
+& \emph{exact?} = \mid \gamma_k(\hat{k}) \mid = 1 \\
+\end{array} \\
+\end{array}$
+
+\subsection{Soundness} \label{sec:soundness}
+\newtheorem{thm}{Theorem}
+\begin{thm} \normalfont
+(\textit{Soundness of} $\wsf{contains}$)
+$\forall m_1 \in \CMap, k_1 \in \CKey :$\\
+If $\exists \hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$
+and $\exists \hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
+then $\textsf{contains}(m_1,\ k_1) \in \gamma_b(\wsf{contains}(\hat{m}_2,\ \hat{k}_2))$.
+\end{thm}
+\textbf{Proof } $\forall m_1 \in \CMap, k_1 \in \CKey$, 
+let $\hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$ 
+and $\hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$.\\
+Let $\hat{m}_1 = \alpha_m(\{ m_1 \})$ and $\hat{k}_1 = \alpha_k(\{ k_1 \})$,
+then $\hat{m}_1 \po_m \hat{m}_2$ and $\hat{k}_1 \po_k \hat{k}_2$.
+\begin{itemize}
+\item If $\textsf{contains}(m_1, k_1) = \texttt{true}$, then $k_1 \in \Dom(m_1)$.\\
+$\Dom(\hat{m}_1)  = \{ \alpha_k(\{k\}) \mid k \in \Dom(m_1) \}$
+by definition of $\alpha_m$, thus $\hat{k}_1 \in \Dom(\hat{m}_1)$.\\
+Also, $\exists \hat{k} \in \Dom(\hat{m}_2) 
+\cdot \hat{k}_1 \po_k \hat{k} \land \Map(\hat{m}_1)(\hat{k}_1) \po_v \Map(\hat{m}_2)(\hat{k})$,
+by definition of $\po_m$.\\
+$k_1 \in \gamma_k(\hat{k}_1) \subseteq \gamma_k(\hat{k})$ by monotonicity of $\gamma_k$.\\ 
+$\wsf{isRelated}(\hat{k}_2, \hat{k})$ must be \texttt{true},
+since $k_1 \in \gamma_k(\hat{k}) \land k_1 \in \gamma_k(\hat{k}_2)$. \\
+Therefore $\wsf{contains}(\hat{m}_2, \hat{k}_2)$ should be either $\top_b$ or $\hat{\texttt{true}}$.\\
+Thus $\textsf{contains}(m_1, k_1) \in \gamma_b(\wsf{contains}(\hat{m}_2, \hat{k}_2))$.
+\item If $\textsf{contains}(m_1, k_1) = \texttt{false}$, then $k_1 \not\in \Dom(m_1)$.\\
+$\Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1)$ by definition of $\po_m$,
+and $\Defset(\hat{m}_1) = \Dom(m_1)$ by definition of $\alpha_m$.\\
+$k_1 \not\in \Defset(\hat{m}_2)$ because $k_1 \not\in \Dom(m_1) = \Defset(\hat{m}_1)$. \\
+$\gamma_k(\hat{k}_2) \not\subseteq \Defset(\hat{m}_2)$, since
+$k_1 \not\in \Defset(\hat{m}_2)$ but $k_1 \in \gamma_k(\hat{k}_2)$.\\
+Therefore $\wsf{contains}(\hat{m}_2, \hat{k}_2)$ should be either $\top_b$ or $\hat{\texttt{false}}$.\\
+Thus $\textsf{contains}(m_1, k_1) \in \gamma_b(\wsf{contains}(\hat{m}_2, \hat{k}_2))$.
+\end{itemize}
+
+
+\begin{thm} \normalfont
+(\textit{Soundness of} $\wsf{lookup}$)
+$\forall m_1 \in \CMap, k_1 \in \CKey :$\\
+If $\exists \hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$,
+$\exists \hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
+and $(\hat{v}, \hat{b}) = \wsf{lookup}(\hat{m}_2,\ \hat{k}_2)$ 
+for $\hat{v} \in \AVal, \hat{b} \in \wbf{Boolean}$,
+then $\textsf{lookup}(m_1,\ k_1) \in \gamma_v(\hat{v}) \cup \gamma_b(\hat{b})$.
+\end{thm}
+\textbf{Proof } $\forall m_1 \in \CMap, k_1 \in \CKey$, 
+let $\hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$,
+$\hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
+and $(\hat{v},\ \hat{b}) = \wsf{lookup}(\hat{m}_2,\ \hat{k}_2)$.\\
+Let $\hat{m}_1 = \alpha_m(\{ m_1 \})$ and $\hat{k}_1 = \alpha_k(\{ k_1 \})$,
+then $\hat{m}_1 \po_m \hat{m}_2$ and $\hat{k}_1 \po_k \hat{k}_2$.
+\begin{itemize}
+\item If $\textsf{lookup}(m_1, k_1) = m_1(k_1) \in \CVal$, then $k_1 \in \Dom(m_1)$.\\
+$\hat{v} = \bigsqcup_v \emph{V}$
+where $\emph{V} = \{ \Map(\hat{m}_2)(\hat{k}) \mid \hat{k} \in \emph{S} \}$
+and $\emph{S} = \{ \hat{k} \mid \hat{k} \in \Dom(\hat{m}_2) \land \wsf{isRelated}(\hat{k}, \hat{k}_2) \}$
+by definition of $\wsf{lookup}$. \vspace{1mm} \\
+$\Dom(\hat{m}_1)  = \{ \alpha_k(\{k\}) \mid k \in \Dom(m_1) \}$
+by definition of $\alpha_m$, thus $\hat{k}_1 \in \Dom(\hat{m}_1)$.\\
+Also, $\exists \hat{k} \in \Dom(\hat{m}_2) 
+\cdot \hat{k}_1 \po_k \hat{k} \land \Map(\hat{m}_1)(\hat{k}_1) \po_v \Map(\hat{m}_2)(\hat{k})$,
+by definition of $\po_m$.\\
+$k_1 \in \gamma_k(\hat{k}_1) \subseteq \gamma_k(\hat{k})$ by monotonicity of $\gamma_k$.\\ 
+$\wsf{isRelated}(\hat{k}_2, \hat{k})$ must be \texttt{true},
+since $k_1 \in \gamma_k(\hat{k}) \land k_1 \in \gamma_k(\hat{k}_2)$,
+thus $\hat{k} \in \emph{S} $.\\
+It means $\Map(\hat{m}_2)(\hat{k}) \in \emph{V}$,
+so that $\Map(\hat{m}_2)(\hat{k}) \po_v \hat{v}$. \vspace{1mm} \\
+$m_1(k_1) \in \gamma_v (\Map(\hat{m}_1)(\hat{k}_1))$ by definition of $\alpha_m$.\\
+$m_1(k_1) \in \gamma_v (\Map(\hat{m}_1)(\hat{k}_1))
+\subseteq \gamma_v (\Map(\hat{m}_2)(\hat{k})) \subseteq \gamma_v (\hat{v})$,
+by monotonicity of $\gamma_v$.\\
+Therefore, $\textsf{lookup}(m_1, k_1) \in \gamma_v(\hat{v}) \cup \gamma_b(\hat{b})$.
+\item If $\textsf{lookup}(m_1, k_1) = \texttt{false}$, then $k_1 \not\in \Dom(m_1)$.\\
+$\Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1)$ by definition of $\po_m$,
+and $\Defset(\hat{m}_1) = \Dom(m_1)$ by definition of $\alpha_m$.\\
+$k_1 \not\in \Defset(\hat{m}_2)$ because $k_1 \not\in \Dom(m_1) = \Defset(\hat{m}_1)$. \\
+$\gamma_k(\hat{k}_2) \not\subseteq \Defset(\hat{m}_2)$, since
+$k_1 \not\in \Defset(\hat{m}_2)$ but $k_1 \in \gamma_k(\hat{k}_2)$.\\
+Then $\hat{b}$ should be either $\top_b$ or $\hat{\texttt{false}}$,
+so that $\texttt{false} \in \gamma_b(\hat{b})$. \\
+Thus $\textsf{lookup}(m_1, k_1) \in \gamma_v(\hat{v}) \cup \gamma_b(\hat{b})$.
+\end{itemize}
+
+
+\begin{thm} \normalfont
+(\textit{Soundness of} $\wsf{update}$) 
+$\forall m_1 \in \CMap, k_1 \in \CKey, v_1 \in \CVal :$\\
+If $\exists \hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$,
+$\exists \hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
+and $\exists \hat{v}_2 \in \AVal \cdot v_1 \in \gamma_v(\hat{v}_2)$,
+then $\textsf{update}(m_1,\ k_1,\ v_1) \in \gamma_m(\wsf{update}(\hat{m}_2,\ \hat{k}_2,\ \hat{v}_2))$.
+\end{thm}
+\textbf{Proof } $\forall m_1 \in \CMap, k_1 \in \CKey$, 
+let $\hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$,
+$\hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
+and $\hat{v}_2 \in \AVal \cdot v_1 \in \gamma_v(\hat{v}_2)$.\\
+Let $\hat{m}_1 = \alpha_m(\{ m_1 \})$,
+$\hat{k}_1 = \alpha_k(\{ k_1 \})$,
+$\hat{v}_1 = \alpha_v(\{ v_1 \})$,
+then $\hat{m}_1 \po_m \hat{m}_2$,
+$\hat{k}_1 \po_k \hat{k}_2$,
+and $\hat{v}_1 \po_v \hat{v}_2$.\\
+For $\hat{m}_2' = \wsf{update}(\hat{m}_2, \hat{k}_2, \hat{v}_2)$,
+and $\emph{mset} = \{ \textsf{update}(m_1, k_1, v_1) \}$, \\
+if $\alpha_m(\emph{mset}) \po_m \hat{m}_2'$
+then $\textsf{update}(m_1, k_1, v_1) \in \gamma_m(\hat{m}_2')$
+by definition of $\gamma_m$.\\
+To show $\alpha_m(\emph{mset}) \po_m \hat{m}_2'$, we need to prove 2 things:
+\begin{enumerate}[label=({\arabic*})]
+\item $\forall \hat{k} \in \Map(\alpha_m(\emph{mset})) \cdot
+\exists \hat{k}' \in \Dom(\hat{m}_2'):
+\hat{k} \po_k \hat{k}' \land \Map(\alpha_m(\emph{mset}))(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k}')$
+\item $\Defset(\hat{m}_2') \subseteq \Defset(\alpha_m(\emph{mset}))$
+\end{enumerate}
+\begin{itemize}
+\item If $k_1 \not\in \Dom(m_1)$, 
+then $\emph{mset} = \{ m_1 \cup \{[k_1 \mapsto v_1]\} \}$.\\
+$\alpha_m(\emph{mset}) = 
+\langle \{ [\alpha_k(\{ k \}) \mapsto \alpha_v(\{ m_1(k) \} )] \mid k \in \Dom(m_1) \}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\
+\Dom(m_1) \cup \{ k_1 \} \rangle$\\
+$= \langle \{ [ \hat{k} \mapsto \Map(\hat{m}_1)(\hat{k}) ] \mid \hat{k} \in \Dom(\hat{m}_1) \}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\
+\Dom(m_1) \cup \{ k_1 \} \rangle$
+by definition of $\alpha_m$.
+
+Prove (1). \\
+$\forall \hat{k} \in \Dom(\hat{m}_1) \cdot \exists \hat{k}' \in \Dom(\hat{m}_2):
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2)(\hat{k}')$
+since $\hat{m}_1 \po_m \hat{m}_2$.
+
+$\Dom(\alpha_m(\emph{mset})) = \Dom(\hat{m}_1) \cup \{ \hat{k}_1 \} $ 
+by definition of $\alpha_m$. For same reason, \\
+$\forall \hat{k} \in \Dom(\hat{m}_1) \cdot
+\Map(\alpha_m(\emph{mset}))(\hat{k}) = \Map(\hat{m}_1)(\hat{k})$,
+and $\Map(\alpha_m(\emph{mset}))(\hat{k}_1) = \hat{v}_1$.
+
+Also, $\Dom(\hat{m}_2') = \Dom(\hat{m}_2) \cup \{ \hat{k}_2 \}$
+by definition of $\wsf{update}$. For same reason, \\
+$\forall \hat{k} \in (\Dom(\hat{m}_2) \setminus \{ \hat{k}_2 \}) \cdot
+\Map(\hat{m}_2)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k})$,
+and $\hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.
+
+For $\hat{k}_1$, $\exists \hat{k}_2 \in \Dom(\hat{m}_2')$
+such that $\hat{k}_1 \po_k \hat{k}_2 \land 
+\Map(\alpha_m(\emph{mset}))(\hat{k}_1) \po_v \hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.\\
+For $\hat{k} \in \Dom(\hat{m}_1)$,
+there exists $\hat{k}' \in \Dom(\hat{m}_2') \cdot 
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k}')$.
+
+Prove (2).\\
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid = 1$, then $\gamma_k(\hat{k}_2) = \{ k_1 \}$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2) \cup \gamma_k(\hat{k}_2)
+= \Defset(\hat{m}_2) \cup \{ k_1 \}$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1)$ as $\hat{m}_1 \po_m \hat{m}_2$.\\
+Also, $\Defset(\hat{m}_1) = \Dom(m_1)$ by definition of $\alpha_m$.\\
+Therefore, $\Defset(\hat{m}_2') = 
+\Defset(\hat{m}_2) \cup \gamma_k(\hat{k}_2) \subseteq \Dom(m_1) \cup \{ k_1 \}
+= \Defset(\alpha_m(\emph{mset}))$.
+
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid > 1$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2)$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Dom(m_1)$,
+thus $\Defset(\hat{m}_2) \subseteq \Dom(m_1) \cup \{ k_1 \}
+= \Defset(\alpha_m(\emph{mset}))$.
+Therefore $\Defset(\hat{m}_2') \subseteq \Defset(\alpha_m(\emph{mset}))$.
+
+\item If $k_1 \in \Dom(m_1)$, 
+then $\emph{mset} = \{ (m_1 \setminus \{ [ k_1 \mapsto m_1(k_1)] \}) \cup \{ [k_1 \mapsto v_1]\} \}$.\\
+$\alpha_m(\emph{mset}) = 
+\langle \{ [\alpha_k(\{ k \}) \mapsto \alpha_v(\{ m_1(k) \} )] \mid 
+k \in (\Dom(m_1) \setminus \{ k_1 \})\}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\ \Dom(m_1) \rangle$\\
+$= \langle \{ [ \hat{k} \mapsto \Map(\hat{m}_1)(\hat{k}) ] \mid 
+\hat{k} \in (\Dom(\hat{m}_1) \setminus \{ \hat{k}_1 \}) \}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\ \Dom(m_1) \rangle$
+by definition of $\alpha_m$.
+
+Prove (1). \\
+$\forall \hat{k} \in \Dom(\hat{m}_1) \cdot \exists \hat{k}' \in \Dom(\hat{m}_2):
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2)(\hat{k}')$
+since $\hat{m}_1 \po_m \hat{m}_2$.
+
+$\Dom(\alpha_m(\emph{mset})) = \Dom(\hat{m}_1)$ 
+by definition of $\alpha_m$. For same reason, \\
+$\forall \hat{k} \in (\Dom(\hat{m}_1) \setminus \{ \hat{k}_1 \}) \cdot
+\Map(\alpha_m(\emph{mset}))(\hat{k}) = \Map(\hat{m}_1)(\hat{k})$,
+and $\Map(\alpha_m(\emph{mset}))(\hat{k}_1) = \hat{v}_1$.
+
+Also, $\Dom(\hat{m}_2') = \Dom(\hat{m}_2) \cup \{ \hat{k}_2 \}$
+by definition of $\wsf{update}$. For same reason, \\
+$\forall \hat{k} \in (\Dom(\hat{m}_2) \setminus \{ \hat{k}_2 \}) \cdot
+\Map(\hat{m}_2)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k})$,
+and $\hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.
+
+For $\hat{k}_1$, $\exists \hat{k}_2 \in \Dom(\hat{m}_2')$
+such that $\hat{k}_1 \po_k \hat{k}_2 \land 
+\Map(\alpha_m(\emph{mset}))(\hat{k}_1) \po_v \hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.\\
+For $\hat{k} \in \Dom(\hat{m}_1)$,
+there exists $\hat{k}' \in \Dom(\hat{m}_2') \cdot 
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k}')$.
+
+Prove (2).\\
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid = 1$, then $\gamma_k(\hat{k}_2) = \{ k_1 \}$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2) \cup \gamma_k(\hat{k}_2)
+= \Defset(\hat{m}_2) \cup \{ k_1 \}$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1)$ as $\hat{m}_1 \po_m \hat{m}_2$.\\
+Also, $\Defset(\hat{m}_1) = \Dom(m_1)$ by definition of $\alpha_m$.\\
+Moreover, $\Dom(m_1) \cup \{ k_1 \} = \Dom(m_1)$ as $k_1 \in \Dom(m_1)$ \\
+Therefore $\Defset(\hat{m}_2') \subseteq \Dom(m_1) = \Defset(\alpha_m(\emph{mset}))$.
+
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid > 1$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2)$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Dom(m_1) = \Defset(\alpha_m(\emph{mset}))$.
+Therefore $\Defset(\hat{m}_2') \subseteq \Defset(\alpha_m(\emph{mset}))$.
+\end{itemize}
+
+
+\begin{thm} \normalfont
+(\textit{Soundness of} $\wsf{delete}$) 
+$\forall m \in \CMap, k \in \CKey :$\\
+If $\exists \hat{m} \in \AMap \cdot m \in \gamma_m(\hat{m})$
+and $\exists \hat{k} \in \AKey \cdot k \in \gamma_k(\hat{k})$,
+then $\textsf{delete}(m,\ k) \in \gamma_m(\wsf{delete}(\hat{m},\ \hat{k}))$.
+\end{thm}

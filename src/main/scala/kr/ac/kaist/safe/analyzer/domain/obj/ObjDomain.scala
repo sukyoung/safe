@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -20,7 +20,7 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   def newObject: Elem
   def newObject(loc: Loc): Elem
-  def newObject(locSet: AbsLoc): Elem
+  def newObject(locSet: LocSet): Elem
 
   def newArgObject(absLength: AbsNum = AbsNum(0)): Elem
 
@@ -28,9 +28,9 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   def newFunctionObject(fid: FunctionId, env: AbsValue, l: Loc, n: AbsNum): Elem
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], n: AbsNum): Elem
+    topt: Option[Loc], n: AbsNum): Elem
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
+    topt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNum): Elem
 
   def newBooleanObj(absB: AbsBool): Elem
@@ -41,9 +41,9 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   def newErrorObj(errorName: String, protoLoc: Loc): Elem
 
-  def defaultValue(locSet: AbsLoc): AbsPValue
-  def defaultValue(locSet: AbsLoc, preferredType: String): AbsPValue
-  def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue
+  def defaultValue(locSet: LocSet): AbsPValue
+  def defaultValue(locSet: LocSet, preferredType: String): AbsPValue
+  def defaultValue(locSet: LocSet, h: AbsHeap, preferredType: String): AbsPValue
 
   // 8.10.4 FromPropertyDescriptor ( Desc )
   def FromPropertyDescriptor(h: AbsHeap, desc: AbsDesc): (Elem, Set[Exception])
@@ -53,10 +53,11 @@ trait ObjDomain extends AbsDomain[Obj] {
 
   // abstract object element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
-    /* substitute locR by locO */
-    def oldify(loc: Loc): Elem
-    def subsLoc(locR: Recency, locO: Recency): Elem
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+    /* substitute from by to */
+    def subsLoc(from: Loc, to: Loc): Elem
+    def weakSubsLoc(from: Loc, to: Loc): Elem
+    def alloc(loc: Loc): Elem
+    def remove(locs: Set[Loc]): Elem
 
     def apply(str: String): AbsDataProp
     def apply(astr: AbsStr): AbsDataProp
@@ -65,9 +66,8 @@ trait ObjDomain extends AbsDomain[Obj] {
     def isEmpty: Boolean
 
     // absent value is set to AbsentBot because it is strong update.
-    def update(str: String, dp: AbsDataProp): Elem
-    def weakUpdate(astr: AbsStr, dp: AbsDataProp): Elem
     def update(in: IName, iv: AbsIValue): Elem
+    def update(astr: AbsStr, dp: AbsDataProp): Elem
 
     def contains(str: String): AbsBool
     def contains(astr: AbsStr): AbsBool
@@ -76,7 +76,7 @@ trait ObjDomain extends AbsDomain[Obj] {
     // def getOwnPropertyNames: Set[String]
     def abstractKeySet: ConSet[AbsStr]
     def abstractKeySet(filter: (AbsStr, AbsDataProp) => Boolean): ConSet[AbsStr]
-    def collectKeySet(prefix: String): ConSet[String]
+    def collectKeySet: ConSet[String]
     def keySetPair(heap: AbsHeap): (List[String], AbsStr)
     def isDefinite(str: AbsStr): Boolean
 

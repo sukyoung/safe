@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,55 +11,42 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsHeapParseError
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashMap
-import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.{ CFGId, GlobalVar }
 
 // default heap abstract domain
 object DefaultHeap extends HeapDomain {
+  private val EmptyMap: Map[Loc, AbsObj] = Map()
+
   case object Top extends Elem
   case object Bot extends Elem
-  case class HeapMap(map: Map[Loc, AbsObj]) extends Elem
+  val Empty: Elem = HeapMap(Map(), LocSet.Bot, LocSet.Bot)
+  case class HeapMap(map: Map[Loc, AbsObj], merged: LocSet, changed: LocSet) extends Elem
 
   def alpha(heap: Heap): Elem = {
-    val map = heap.map.foldLeft[Map[Loc, AbsObj]](HashMap()) {
+    val map = heap.map.foldLeft(EmptyMap) {
       case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
-    HeapMap(map)
+    HeapMap(map, LocSet.Bot, LocSet.Bot)
   }
 
-  def apply(map: Map[Loc, AbsObj]): Elem = HeapMap(map)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case JsString("⊥") => Bot
-    case _ => HeapMap(json2map(v, Loc.fromJson, AbsObj.fromJson))
-  }
+  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem = HeapMap(Map(map.toSeq: _*), merged, LocSet.Bot)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[Heap] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Heap] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) | (Bot, _) => true
       case (Top, _) | (_, Bot) => false
-      case (left: HeapMap, right: HeapMap) =>
-        (if (left.map eq right.map) true
-        else if (left.map.size > right.map.size) false
-        else if (left.map.isEmpty) true
-        else if (right.map.isEmpty) false
-        else if (!(left.map.keySet subsetOf right.map.keySet)) false
-        else right.map.forall((kv) => {
-          val (l, obj) = kv
-          left.map.get(l) match {
-            case Some(leftObj) => leftObj ⊑ obj
-            case None => false
-          }
-        }))
+      case (left: HeapMap, right: HeapMap) => {
+        val mapB = left.map.compareWithPartialOrder(right.map)(_ ⊑ _)
+        val mergedB = left.merged ⊑ right.merged
+        mapB && mergedB
+      }
     }
 
     def ⊔(that: Elem): Elem = (this, that) match {
@@ -67,26 +54,10 @@ object DefaultHeap extends HeapDomain {
       case (left, Bot) => left
       case (Bot, right) => right
       case (left: HeapMap, right: HeapMap) =>
-        val newMap =
-          if (left.map eq right.map) left.map
-          else if (left.isBottom) right.map
-          else if (right.isBottom) left.map
-          else {
-            val joinKeySet = left.map.keySet ++ right.map.keySet
-            joinKeySet.foldLeft(HashMap[Loc, AbsObj]())((m, key) => {
-              val joinObj = (left.map.get(key), right.map.get(key)) match {
-                case (Some(obj1), Some(obj2)) => Some(obj1 ⊔ obj2)
-                case (Some(obj1), None) => Some(obj1)
-                case (None, Some(obj2)) => Some(obj2)
-                case (None, None) => None
-              }
-              joinObj match {
-                case Some(obj) => m.updated(key, obj)
-                case None => m
-              }
-            })
-          }
-        HeapMap(newMap)
+        val newMap = left.map.unionWithIdem(right.map)(_ ⊔ _)
+        val newMerged = left.merged ⊔ right.merged
+        val newChanged = left.changed ⊔ right.changed
+        HeapMap(newMap, newMerged, newChanged)
     }
 
     def ⊓(that: Elem): Elem = (this, that) match {
@@ -94,51 +65,36 @@ object DefaultHeap extends HeapDomain {
       case (Top, right) => right
       case (Bot, _) | (_, Bot) => Bot
       case (left: HeapMap, right: HeapMap) =>
-        val newMap: Map[Loc, AbsObj] =
-          if (left.map eq right.map) left.map
-          else if (left.map.isEmpty) HashMap()
-          else if (right.map.isEmpty) HashMap()
-          else {
-            right.map.foldLeft(left.map)(
-              (m, kv) => kv match {
-                case (k, v) => m.get(k) match {
-                  case None => m - k
-                  case Some(vv) => m + (k -> (v ⊓ vv))
-                }
-              }
-            )
-          }
-        HeapMap(newMap)
+        val newMap = left.map.intersectWithIdem(right.map)(_ ⊓ _)
+        val newMerged = left.merged ⊓ right.merged
+        val newChanged = left.changed ⊓ right.changed
+        HeapMap(newMap, newMerged, newChanged)
     }
 
     private def buildString(filter: Loc => Boolean): String = this match {
       case Top => "Top"
       case Bot => "⊥Heap"
-      case heap @ HeapMap(map) =>
+      case heap @ HeapMap(map, _, _) =>
         val s = new StringBuilder
-        val sortedSeq =
-          map.toSeq.filter { case (loc, _) => filter(loc) }
-            .sortBy { case (loc, _) => loc }
-        sortedSeq.map {
-          case (loc, obj) => s.append(toStringLoc(loc, obj, isConcrete(loc))).append(LINE_SEP)
-        }
+        val sortedSeq = map.keySet.toSeq.filter(filter).sorted
+        sortedSeq.foreach(loc => s.append(toStringLoc(loc)).append(LINE_SEP))
         s.toString
     }
 
     override def toString: String = {
-      buildString(loc => loc.isUser || loc == BuiltinGlobal.loc)
+      buildString(loc => loc.isUser || loc == GLOBAL_LOC)
     }
 
     def get(loc: Loc): AbsObj = this match {
       case Top => AbsObj.Top
       case Bot => AbsObj.Bot
-      case HeapMap(map) => map.get(loc) match {
+      case HeapMap(map, _, _) => map.get(loc) match {
         case Some(obj) => obj
         case None => AbsObj.Bot
       }
     }
 
-    def get(locSet: AbsLoc): AbsObj = locSet.foldLeft(AbsObj.Bot) {
+    def get(locSet: LocSet): AbsObj = locSet.foldLeft(AbsObj.Bot) {
       case (obj, loc) => obj ⊔ get(loc)
     }
 
@@ -150,59 +106,76 @@ object DefaultHeap extends HeapDomain {
     def weakUpdate(loc: Loc, obj: AbsObj): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map) => HeapMap(weakUpdated(map, loc, obj))
+      case HeapMap(map, merged, changed) => HeapMap(weakUpdated(map, loc, obj), merged, changed + loc)
     }
 
     def update(loc: Loc, obj: AbsObj): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map) =>
+      case HeapMap(map, merged, changed) =>
         if (isConcrete(loc)) {
           if (obj.isBottom) Bot
-          else HeapMap(map.updated(loc, obj))
+          else HeapMap(map.updated(loc, obj), merged, changed + loc)
         } else {
           if (obj.isBottom) get(loc).fold[Elem](Bot) { _ => this }
-          else HeapMap(weakUpdated(map, loc, obj))
+          else HeapMap(weakUpdated(map, loc, obj), merged, changed + loc)
         }
     }
 
-    def remove(loc: Loc): Elem = this match {
+    def subsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map) => HeapMap(map - loc)
-    }
-
-    def subsLoc(locR: Recency, locO: Recency): Elem = this match {
-      case Top => Top
-      case Bot => Bot
-      case HeapMap(map) =>
-        val newMap = map.foldLeft(Map[Loc, AbsObj]())((m, kv) => {
-          val (l, obj) = kv
-          m + (l -> obj.subsLoc(locR, locO))
-        })
-        HeapMap(newMap)
-    }
-
-    def oldify(loc: Loc): Elem = loc match {
-      case locR @ Recency(subLoc, Recent) => this match {
-        case Top => Top
-        case Bot => Bot
-        case heap @ HeapMap(map) => {
-          val locO = Recency(subLoc, Old)
-          if (heap domIn locR) {
-            update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
-          } else {
-            subsLoc(locR, locO)
+      case HeapMap(map, merged, changed) => {
+        val (newMap, newMerged) = (map.get(from) match {
+          case Some(fromObj) => {
+            val (newObj, newMerged) = map.get(to) match {
+              case Some(toObj) => (fromObj ⊔ toObj, merged + to)
+              case None => (fromObj, merged)
+            }
+            (map - from + (to -> newObj), newMerged)
           }
-        }
+          case None => (map, merged)
+        })
+        HeapMap(
+          newMap.map { case (k, v) => k -> v.subsLoc(from, to) },
+          newMerged.subsLoc(from, to),
+          changed + from + to
+        )
       }
-      case _ => this
+    }
+
+    def remove(locs: Set[Loc]): Elem = this match {
+      case Top => Top
+      case Bot => Bot
+      case HeapMap(map, merged, changed) => HeapMap(
+        (map -- locs).map { case (k, v) => k -> v.remove(locs) },
+        merged.remove(locs),
+        changed ⊔ LocSet(locs)
+      )
+    }
+
+    def alloc(loc: Loc): Elem = this match {
+      case Top => Top
+      case Bot => Bot
+      case HeapMap(map, merged, changed) => {
+        val newMerged =
+          if (map contains loc) merged + loc
+          else merged
+        val newChanged = changed + loc
+        HeapMap(map, newMerged, newChanged)
+      }
+    }
+
+    def getLocSet: LocSet = this match {
+      case Top => LocSet.Top
+      case Bot => LocSet.Bot
+      case HeapMap(map, _, _) => LocSet(map.keySet)
     }
 
     def domIn(loc: Loc): Boolean = this match {
       case Top => true
       case Bot => false
-      case HeapMap(map) => map.contains(loc)
+      case HeapMap(map, _, _) => map.contains(loc)
     }
 
     def toStringAll: String = {
@@ -211,7 +184,7 @@ object DefaultHeap extends HeapDomain {
 
     private def toStringLoc(loc: Loc, obj: AbsObj, con: Boolean): String = {
       val s = new StringBuilder
-      val keyStr = loc.toString + " -> "
+      val keyStr = loc.toString + (if (con) " -> " else " => ")
       s.append(keyStr)
       Useful.indentation(s, obj.toString, keyStr.length)
       s.toString
@@ -220,7 +193,7 @@ object DefaultHeap extends HeapDomain {
     def toStringLoc(loc: Loc): Option[String] = this match {
       case Top => Some(toStringLoc(loc, AbsObj.Top, false))
       case Bot => None
-      case HeapMap(map) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
+      case HeapMap(map, _, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
     }
 
     ////////////////////////////////////////////////////////////////
@@ -267,7 +240,7 @@ object DefaultHeap extends HeapDomain {
     def isObject(loc: Loc): Boolean = !get(loc).isBottom
 
     def canPutVar(x: String): AbsBool = {
-      val globalLoc = BuiltinGlobal.loc
+      val globalLoc = GLOBAL_LOC
       val globalObj = get(globalLoc)
       val domIn = globalObj contains x
       val b1 =
@@ -283,7 +256,7 @@ object DefaultHeap extends HeapDomain {
     // Proto
     ////////////////////////////////////////////////////////////////
     def proto(loc: Loc, absStr: AbsStr): AbsValue = {
-      var visited = AbsLoc.Bot
+      var visited = LocSet.Bot
       val valueBot = AbsValue.Bot
       def visit(currentLoc: Loc): AbsValue = {
         if (visited.contains(currentLoc)) valueBot
@@ -314,25 +287,25 @@ object DefaultHeap extends HeapDomain {
       visit(loc)
     }
 
-    def protoBase(loc: Loc, absStr: AbsStr): AbsLoc = {
-      var visited = AbsLoc.Bot
-      def visit(l: Loc): AbsLoc = {
-        if (visited.contains(l)) AbsLoc.Bot
+    def protoBase(loc: Loc, absStr: AbsStr): LocSet = {
+      var visited = LocSet.Bot
+      def visit(l: Loc): LocSet = {
+        if (visited.contains(l)) LocSet.Bot
         else {
           visited += l
           val obj = this.get(l)
           val isElemIn = (obj contains absStr)
           val locSet1 =
-            if (AbsBool.True ⊑ isElemIn) AbsLoc(l)
-            else AbsLoc.Bot
+            if (AbsBool.True ⊑ isElemIn) LocSet(l)
+            else LocSet.Bot
           val locSet2 =
             if (AbsBool.False ⊑ isElemIn) {
               val protoLocSet = obj(IPrototype).value.locset
-              protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
+              protoLocSet.foldLeft(LocSet.Bot)((res, protoLoc) => {
                 res ⊔ visit(protoLoc)
               })
             } else {
-              AbsLoc.Bot
+              LocSet.Bot
             }
           locSet1 ⊔ locSet2
         }
@@ -364,24 +337,44 @@ object DefaultHeap extends HeapDomain {
     def getMap: Option[Map[Loc, AbsObj]] = this match {
       case Top => None
       case Bot => None
-      case HeapMap(map) => Some(map)
+      case HeapMap(map, _, _) => Some(map)
     }
 
     ////////////////////////////////////////////////////////////////
-    // location concrete check
+    // location status check
     ////////////////////////////////////////////////////////////////
-    def isConcrete(loc: Loc): Boolean = loc match {
-      case Recency(_, Recent) => true
-      case l if Loc.predConSet contains l => true
-      case _ => false
+    def isConcrete(loc: Loc): Boolean = this match {
+      case Top => false
+      case Bot => true
+      case HeapMap(_, merged, _) => !(merged contains loc)
     }
 
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case Bot => JsString("⊥")
-      case HeapMap(m) => JsArray(m.toSeq.map {
-        case (k, v) => JsArray(k.toJson, v.toJson)
-      }: _*)
+    def isChanged(loc: Loc): Boolean = this match {
+      case Top => true
+      case Bot => false
+      case HeapMap(_, _, changed) => changed contains loc
+    }
+
+    // delete changed info
+    def cleanChanged: Elem = this match {
+      case HeapMap(map, merged, _) => HeapMap(map, merged, LocSet.Bot)
+      case _ => this
+    }
+
+    // applied changed information
+    def <<(that: Elem): Elem = (this, that) match {
+      case (left: HeapMap, right: HeapMap) => {
+        val newMap = right.changed.foldLeft(left.map) {
+          case (map, loc) => right.map.get(loc) match {
+            case Some(obj) => map + (loc -> obj)
+            case None => map - loc
+          }
+        }
+        val newMerged = right.merged
+        val newChanged = left.changed ⊔ right.changed
+        HeapMap(newMap, newMerged, newChanged)
+      }
+      case _ => that
     }
   }
 }

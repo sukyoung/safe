@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.cfg.CFGId
 
 // declarative environment record abstract domain
 trait DecEnvRecDomain extends AbsDomain[DecEnvRec] {
@@ -67,10 +68,13 @@ trait DecEnvRecDomain extends AbsDomain[DecEnvRec] {
       v: AbsValue
     ): Elem
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem
 
-    // weak substitute locR by locO
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem
+    // weak substitute from by to
+    def weakSubsLoc(from: Loc, to: Loc): Elem
+
+    // remove locations
+    def remove(locs: Set[Loc]): Elem
   }
 }

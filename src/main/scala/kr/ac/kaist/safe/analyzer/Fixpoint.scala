@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Interactive
 import kr.ac.kaist.safe.nodes.cfg._
-import scala.collection.immutable.HashSet
 
 class Fixpoint(
     semantics: Semantics,
@@ -22,19 +21,26 @@ class Fixpoint(
 ) {
   def worklist: Worklist = semantics.worklist
 
-  def compute(initIters: Int = 0): Int = {
+  def compute(initIters: Int = 0): (Int, Double) = {
+    // set the start time.
+    val startTime = System.nanoTime
+
     var iters = initIters
     while (!worklist.isEmpty) {
       iters += 1
-      computeOneStep()
+      computeOneStep
     }
     consoleOpt.foreach(_.runFinished)
-    iters
+
+    // calculate duration
+    val duration = (System.nanoTime - startTime) / 1e9
+
+    (iters, duration)
   }
 
-  var cpSet: Set[CFGBlock] = HashSet()
+  var cpSet: Set[CFGBlock] = Set()
 
-  def computeOneStep(): Unit = {
+  def computeOneStep: Unit = {
     consoleOpt.foreach(_.runFixpoint)
     val cp = worklist.pop
     val st = semantics.getState(cp)
@@ -49,7 +55,7 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeNormal) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        cp.next(block, CFGEdgeNormal, semantics).foreach(succCP => {
+        cp.next(block, CFGEdgeNormal, semantics, nextSt).foreach(succCP => {
           val oldSt = semantics.getState(succCP)
           if (!(nextSt ⊑ oldSt)) {
             val newSt = oldSt ⊔ nextSt
@@ -70,7 +76,7 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeExc) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        cp.next(block, CFGEdgeExc, semantics).foreach(excSuccCP => {
+        cp.next(block, CFGEdgeExc, semantics, nextExcSt).foreach(excSuccCP => {
           val oldExcSt = semantics.getState(excSuccCP)
           if (!(nextExcSt ⊑ oldExcSt)) {
             val newExcSet = oldExcSt ⊔ nextExcSt

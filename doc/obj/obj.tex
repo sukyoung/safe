@@ -1,0 +1,41 @@
+\documentclass[a4paper]{article}
+
+\usepackage{kotex}
+\usepackage{url}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage[scale=0.75,hmarginratio=1:1,vmarginratio=2:3,a4paper]{geometry}
+
+\lstset{numbers=left}
+
+\begin{document}
+
+\newcommand{\poset}{\raisebox{.15\baselineskip}{\Large\ensuremath{\wp}}}
+\newcommand{\AObj}{\widehat{\textbf{Object}}}
+\newcommand{\ADesc}{\widehat{\textbf{Descriptor}}}
+\newcommand{\AMap}{\widehat{\textbf{Map}}}
+\newcommand{\AKey}{\widehat{\textbf{Key}}}
+\newcommand{\AVal}{\widehat{\textbf{Value}}}
+\newcommand{\CObj}{\textbf{Object}}
+\newcommand{\CDesc}{\textbf{Descriptor}}
+\newcommand{\CMap}{\CKey \rightarrowtail \CVal}
+\newcommand{\CKey}{\textbf{Key}}
+\newcommand{\CVal}{\textbf{Value}}
+\newcommand{\wsf}[1]{\widehat{\textsf{#1}}}
+\newcommand{\wbf}[1]{\widehat{\textbf{#1}}}
+\newcommand{\bsf}[1]{\textsf{\textbf{#1}}}
+\newcommand{\Map}{\bsf{map}}
+\newcommand{\Defset}{\bsf{defset}}
+\newcommand{\Dom}{\bsf{dom}}
+\newcommand{\po}{\sqsubseteq}
+
+\renewcommand\arraystretch{1.2}
+
+\section{Abstract Map}
+\input{conmap}
+\input{absmap}
+\input{map-helpers}
+
+\end{document}

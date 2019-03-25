@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -10,9 +10,6 @@
  */
 
 package kr.ac.kaist.safe.analyzer.domain
-
-import kr.ac.kaist.safe.errors.error.AbsNumParseError
-import spray.json._
 
 // default number abstract domain
 object DefaultNumber extends NumDomain {
@@ -37,21 +34,6 @@ object DefaultNumber extends NumDomain {
       else NUIntConst(num)
   }
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case JsString("⊥") => Bot
-    case JsString("+inf|-inf") => Inf
-    case JsString("+inf") => PosInf
-    case JsString("-inf") => NegInf
-    case JsString("NaN") => NaN
-    case JsString("uint") => UInt
-    case JsString("nuint") => NUInt
-    case JsString("-0") => NUIntConst(-0.0)
-    case JsArray(Vector(JsString("uint"), JsNumber(v))) => UIntConst(v.toLong)
-    case JsArray(Vector(JsString("nuint"), JsNumber(v))) => NUIntConst(v.toDouble)
-    case _ => throw AbsNumParseError(v)
-  }
-
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Num] = this match {
       case Bot => ConFin()
@@ -65,13 +47,13 @@ object DefaultNumber extends NumDomain {
     }
 
     def getSingle: ConSingle[Num] = this match {
-      case Bot => ConZero()
+      case Bot => ConZero
       case PosInf => ConOne(Double.PositiveInfinity)
       case NegInf => ConOne(Double.NegativeInfinity)
       case NaN => ConOne(Double.NaN)
       case UIntConst(v) => ConOne(v)
       case NUIntConst(v) => ConOne(v)
-      case Top | UInt | NUInt | Inf => ConMany()
+      case Top | UInt | NUInt | Inf => ConMany
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
@@ -582,7 +564,7 @@ object DefaultNumber extends NumDomain {
           | NegInf
           | UInt
           | UIntConst(_) => this
-        case NUIntConst(0) => NUIntConst(0)
+        case NUIntConst(0) => alpha(-0.0)
         case NUIntConst(n) => alpha(scala.math.round(n))
         case _ => Top
       }
@@ -689,7 +671,7 @@ object DefaultNumber extends NumDomain {
       case (NegInf, _) | (_, NegInf) => NegInf
       case (PosInf, _) | (_, PosInf) => PosInf
       // The sum of two negative zeroes is -0.
-      case (NUIntConst(0), NUIntConst(0)) => NUIntConst(0)
+      case (NUIntConst(0), NUIntConst(0)) => alpha(-0.0)
       // The sum of two positive zeroes, or of two zeroes of opposite sign, is +0.
       case (NUIntConst(0) | UIntConst(0), NUIntConst(0) | UIntConst(0)) => UIntConst(0)
       // The sum of a zero and a nonzero finite value is equal to the nonzero operand.
@@ -711,8 +693,8 @@ object DefaultNumber extends NumDomain {
       /* 11.5.1 first */
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.1 third */
-      case (PosInf | NegInf, UIntConst(0) | NUIntConst(0)) => NaN
-      case (UIntConst(0) | NUIntConst(0), PosInf | NegInf) => NaN
+      case (PosInf | NegInf | Inf, UIntConst(0) | NUIntConst(0)) => NaN
+      case (UIntConst(0) | NUIntConst(0), PosInf | NegInf | Inf) => NaN
       /* 11.5.1 fourth */
       case (PosInf, PosInf) => PosInf
       case (PosInf, NegInf) => NegInf
@@ -765,7 +747,7 @@ object DefaultNumber extends NumDomain {
       case (NUIntConst(n), NegInf) if n > 0 => alpha(-0.0)
       case (NUIntConst(_), NegInf) => alpha(0)
       /* 11.5.2  seventh */
-      case (UIntConst(0) | NUIntConst(0), UIntConst(0) | NUIntConst(0.0)) => NaN
+      case (UIntConst(0) | NUIntConst(0), UIntConst(0) | NUIntConst(0)) => NaN
       case (UIntConst(0), UIntConst(_)) => alpha(0)
       case (UIntConst(0), NUIntConst(n)) if n > 0 => alpha(0)
       case (UIntConst(0), NUIntConst(_)) => alpha(-0.0)
@@ -820,20 +802,6 @@ object DefaultNumber extends NumDomain {
       case NUIntConst(v) =>
         if (Math.floor(v) == v && !v.isInfinity) v.toLong.toString
         else v.toString
-    }
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case Bot => JsString("⊥")
-      case Inf => JsString("+inf|-inf")
-      case PosInf => JsString("+inf")
-      case NegInf => JsString("-inf")
-      case NaN => JsString("NaN")
-      case UInt => JsString("uint")
-      case NUInt => JsString("nuint")
-      case UIntConst(n) => JsArray(JsString("uint"), JsNumber(n))
-      case NUIntConst(n) if isNegZero(n) => JsString("-0")
-      case NUIntConst(n) => JsArray(JsString("nuint"), JsNumber(n))
     }
   }
 

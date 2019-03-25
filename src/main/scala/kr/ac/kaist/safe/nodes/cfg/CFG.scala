@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
-import scala.collection.immutable.HashSet
-import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import scala.collection.mutable.{ Map => MMap }
 import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Loc
@@ -40,7 +39,7 @@ case class CFG(
   def getUserBlocks: List[CFGBlock] = getBlocks(userFuncs)
 
   // function / block map from id
-  private val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
+  private val funMap: MMap[FunctionId, CFGFunction] = MMap()
   def getFunc(fid: FunctionId): Option[CFGFunction] = funMap.get(fid)
   def getBlock(fid: FunctionId, bid: BlockId): Option[CFGBlock] =
     funMap.get(fid).fold[Option[CFGBlock]](None) { _.getBlock(bid) }
@@ -63,11 +62,6 @@ case class CFG(
   ): CFGFunction = {
     val func: CFGFunction =
       new CFGFunction(ir, argumentsName, argVars, localVars, name, isUser)
-    addFunction(func)
-  }
-
-  // add function - used when create cfg from json
-  def addFunction(func: CFGFunction): CFGFunction = {
     func.id = getFId
     fidCount += 1
     funcs ::= func
@@ -115,19 +109,6 @@ case class CFG(
     val asite = UserAllocSite(userASiteSize)
     asite
   }
-
-  // predefined allocation site set
-  private var predASiteSet: Set[AllocSite] = HashSet(
-    PredAllocSite.GLOBAL_ENV,
-    PredAllocSite.PURE_LOCAL,
-    PredAllocSite.COLLAPSED
-  )
-  def getPredASiteSet: Set[AllocSite] = predASiteSet
-  def registerPredASite(asite: AllocSite): Unit = predASiteSet += asite
-
-  // get all locations
-  def getAllASiteSet: Set[AllocSite] =
-    (1 to userASiteSize).foldLeft(predASiteSet)(_ + UserAllocSite(_))
 
   // find block from a given string
   def findBlock(str: String): Try[CFGBlock] = {

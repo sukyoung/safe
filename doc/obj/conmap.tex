@@ -1,0 +1,30 @@
+\subsection{Definition of Concrete Map}
+For any type of $\CKey$ and $\CVal$,
+the concrete map is defined as a partial map of $\CKey$ to $\CVal$,
+$i.e., ~ \CMap$.\\
+There are 4 helper methods to handle a map:\\
+
+$\begin{array}{rl}
+\textsf{contains} & \in (\CMap) \times \CKey \rightarrow \textbf{Boolean} \\
+& \textsf{contains}(m, k) = k \in \Dom(m) \\
+\textsf{lookup} & \in (\CMap) \times \CKey \rightarrow \CVal \cup \{ \texttt{false} \}\\
+& \textsf{lookup}(m, k) = \left \{ \begin{array}{ll}
+m(k) & \textrm{if } k \in \Dom(m) \\
+\texttt{false} & \textrm{otherwise} \\
+\end{array} \right. \\
+\textsf{update} & \in (\CMap) \times \CKey \times \CVal \rightarrow (\CMap) \\
+& \textsf{update}(m, k, v) = \left \{ \begin{array}{ll}
+(m \setminus \{ [k \mapsto m(k)] \}) \cup \{ [k \mapsto v] \} & \textrm{if } k \in \Dom(m) \\
+m \cup \{ [k \mapsto v] \} & \textrm {otherwise} \\
+\end{array} \right.\\
+\textsf{delete} & \in (\CMap) \times \CKey \rightarrow (\CMap) \\
+& \textsf{delete}(m, k) = \left \{ \begin{array}{ll}
+(m \setminus \{ [k \mapsto m(k)] \}) & \textrm{if } k \in \Dom(m) \\
+m & \textrm{otherwise} \\
+\end{array} \right. \\
+\end{array}$\\\\
+$\Dom$ is a property of a $\CMap$:\\
+
+$\forall m \in \CMap:
+\Dom(m) = \{ k \in \CKey \mid 
+m \textrm{ has a mapped value for key } k \}$

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe
 
-import scala.collection.immutable.HashMap
 import scala.util.{ Try, Failure }
 import kr.ac.kaist.safe.errors.SafeException
 import kr.ac.kaist.safe.errors.error.{ NoCmdError, NoInputError }
@@ -72,14 +71,15 @@ object Safe {
   val commands: List[Command] = List(
     CmdParse,
     CmdASTRewrite,
-    CmdCompile,
+    CmdTranslate,
     CmdCFGBuild,
     CmdHeapBuild,
     CmdAnalyze,
-    CmdWeb,
-    CmdHelp
+    CmdBugDetect,
+    CmdHelp,
+    CmdWeb
   )
-  val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
+  val cmdMap = commands.foldLeft[Map[String, Command]](Map()) {
     case (map, cmd) => map + (cmd.name -> cmd)
   }
 
@@ -87,18 +87,18 @@ object Safe {
   var phases: List[Phase] = List(
     Parse,
     ASTRewrite,
-    Compile,
+    Translate,
     CFGBuild,
     HeapBuild,
     Analyze,
     BugDetect,
-    Web,
-    Help
+    Help,
+    Web
   )
 
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
-    ("json", StrOption((c, str) => ()),
+    ("config", StrOption((c, str) => ()),
       "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),

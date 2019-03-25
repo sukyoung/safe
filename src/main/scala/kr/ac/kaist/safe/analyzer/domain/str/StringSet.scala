@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,10 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ AbsStrParseError }
-import scala.collection.immutable.HashSet
 import scala.util.Try
-import spray.json._
 
 // string set domain with max set size
 case class StringSet(maxSetSize: Int) extends StrDomain {
@@ -40,13 +37,6 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     else Top
   }
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsString("⊤") => Top
-    case JsString("number") => Number
-    case JsString("other") => Other
-    case _ => StrSet(json2set(v, json2str))
-  }
-
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Str] = this match {
       case StrSet(set) => ConFin(set.map(Str(_)))
@@ -54,9 +44,9 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     }
 
     def getSingle: ConSingle[Str] = this match {
-      case StrSet(set) if set.size == 0 => ConZero()
+      case StrSet(set) if set.size == 0 => ConZero
       case StrSet(set) if set.size == 1 => ConOne(set.head)
-      case _ => ConMany()
+      case _ => ConMany
     }
 
     def isNum: AbsBool = this match {
@@ -158,11 +148,8 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
     def StrictEquals(that: Elem): AbsBool =
       (this.getSingle, that.getSingle) match {
         case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
-        case (ConZero(), _) | (_, ConZero()) => AbsBool.Bot
-        case _ => (this ⊑ that, that ⊑ this) match {
-          case (false, false) => AbsBool.False
-          case _ => AbsBool.Top
-        }
+        case (ConZero, _) | (_, ConZero) => AbsBool.Bot
+        case _ => AbsBool.Top
       }
 
     def <(that: Elem): AbsBool = (this, that) match {
@@ -199,7 +186,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
 
     def concat(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) if (maxSetSize == 0 || v1.size * v2.size <= maxSetSize) => {
-        val set = v1.foldLeft(HashSet[String]())((hs1, s1) =>
+        val set = v1.foldLeft(Set[String]())((hs1, s1) =>
           v2.foldLeft(hs1)((hs2, s2) => hs2 + (s1 + s2)))
         alpha(set)
       }
@@ -253,8 +240,8 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
         case Number => AbsBool.Top
         case Other => AbsBool.Top
         case StrSet(vs) => that.getSingle match {
-          case ConMany() => AbsBool.Top
-          case ConZero() => AbsBool.Bot
+          case ConMany => AbsBool.Top
+          case ConZero => AbsBool.Bot
           case ConOne(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
             result ⊔ AbsBool(v.contains(s))
           })
@@ -313,13 +300,6 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case Number => isNumber(str)
       case Other => !isNumber(str)
       case StrSet(v) => v contains str
-    }
-
-    def toJson: JsValue = this match {
-      case Top => JsString("⊤")
-      case Number => JsString("number")
-      case Other => JsString("other")
-      case StrSet(set) => JsArray(set.toSeq.map(JsString(_)): _*)
     }
   }
 

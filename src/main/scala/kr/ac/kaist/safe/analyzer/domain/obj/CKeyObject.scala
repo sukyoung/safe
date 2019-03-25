@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,68 +11,59 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
-import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with concrete keys
 ////////////////////////////////////////////////////////////////////////////////
 object CKeyObject extends ObjDomain {
+  val NMap = PMapDomain[String, DataProp, AbsDataProp.type](AbsDataProp)
+  type NMap = NMap.Elem
+  val NVOpt: NMap.AbsVOpt.type = NMap.AbsVOpt
+  type NVOpt = NVOpt.Elem
+  val IMap = PMapDomain[IName, IValue, AbsIValue.type](AbsIValue)
+  type IMap = IMap.Elem
+  val IVOpt: IMap.AbsVOpt.type = IMap.AbsVOpt
+  type IVOpt = IVOpt.Elem
+
   // bottom / top / empty object
-  lazy val Bot = Elem(AbsMap.Bot(AbsDataProp.Bot), AbsMap.Bot(AbsIValue.Bot))
-  lazy val Top = Elem(AbsMap.Top(AbsDataProp.Top), AbsMap.Top(AbsIValue.Top))
-  lazy val Empty = Elem(AbsMap.Empty(AbsDataProp.Bot), AbsMap.Empty(AbsIValue.Bot))
+  lazy val Bot = Elem(NMap.Bot, IMap.Bot)
+  lazy val Top = Elem(NMap.Top, IMap.Top)
+  lazy val Empty = Elem(NMap.Empty, IMap.Empty)
 
   // abstraction function
   def alpha(obj: Obj): Elem = Elem(
-    nmap = AbsMap(obj.nmap.foldLeft[Map[String, AbsOpt[AbsDataProp]]](HashMap()) {
-      case (map, (str, dp)) => map + (str -> AbsOpt(AbsDataProp(dp)))
-    }, AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)),
-    imap = AbsMap(obj.imap.foldLeft[Map[IName, AbsOpt[AbsIValue]]](HashMap()) {
-      case (map, (iname, iv)) => map + (iname -> AbsOpt(AbsIValue(iv)))
-    }, AbsOpt(AbsIValue.Bot, AbsAbsent.Top))
+    nmap = NMap(Map(obj.nmap.toSeq: _*)),
+    imap = IMap(Map(obj.imap.toSeq: _*))
   )
-
-  // from json value to abstract object
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("nmap").map(AbsMap.fromJson(json2str, AbsDataProp.fromJson)),
-      m.get("imap").map(AbsMap.fromJson(IName.fromJson, AbsIValue.fromJson))
-    ) match {
-        case (Some(n), Some(i)) => Elem(n, i)
-        case _ => throw AbsObjParseError(v)
-      }
-    case _ => throw AbsObjParseError(v)
-  }
 
   // abstract object element
   case class Elem(
-      nmap: AbsMap[String, AbsDataProp],
-      imap: AbsMap[IName, AbsIValue]
+      nmap: NMap,
+      imap: IMap
   ) extends ElemTrait {
     // concretization function
     def gamma: ConSet[Obj] = ConInf // TODO more precise
 
     // get single element
-    def getSingle: ConSingle[Obj] = ConMany() // TODO more precise
+    def getSingle: ConSingle[Obj] = ConMany // TODO more precise
 
     // partial order
     def ⊑(that: Elem): Boolean =
-      this.nmap.⊑(_ ⊑ _)(that.nmap) && this.imap.⊑(_ ⊑ _)(that.imap)
+      this.nmap ⊑ that.nmap && this.imap ⊑ that.imap
 
     // join
     def ⊔(that: Elem): Elem =
-      Elem(this.nmap.⊔(_ ⊔ _)(that.nmap), this.imap.⊔(_ ⊔ _)(that.imap))
+      Elem(this.nmap ⊔ that.nmap, this.imap ⊔ that.imap)
 
     // meet
     def ⊓(that: Elem): Elem =
-      Elem(this.nmap.⊓(_ ⊓ _)(that.nmap), this.imap.⊓(_ ⊓ _)(that.imap))
+      Elem(this.nmap ⊓ that.nmap, this.imap ⊓ that.imap)
 
     override def toString: String = {
       val s = new StringBuilder
@@ -88,52 +79,58 @@ object CKeyObject extends ObjDomain {
     ///////////////////////////////////////////////////////////////
     def isEmpty: Boolean = this == Empty
 
-    // oldify locations
-    def oldify(loc: Loc): Elem = loc match {
-      case locR @ Recency(subLoc, Recent) => subsLoc(locR, Recency(subLoc, Old))
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem = Elem(
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.subsLoc(from, to)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.subsLoc(from, to)) }
+    )
+
+    // weakly substitute from by to
+    def weakSubsLoc(from: Loc, to: Loc): Elem = Elem(
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.weakSubsLoc(from, to)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.weakSubsLoc(from, to)) }
+    )
+
+    // allocate location
+    def alloc(loc: Loc): Elem = loc match {
+      case locR @ Recency(l, Recent) =>
+        val locO = Recency(l, Old)
+        subsLoc(locR, locO)
       case _ => this
     }
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem = Elem(
-      nmap = nmap.mapCValues { dp => dp.copy(dp.value.subsLoc(locR, locO)) },
-      imap = imap.mapCValues { iv => iv.copy(iv.value.subsLoc(locR, locO)) }
-    )
-
-    // weakly substitute locR by locO
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem = Elem(
-      nmap = nmap.mapCValues { dp => dp.copy(dp.value.weakSubsLoc(locR, locO)) },
-      imap = imap.mapCValues { iv => iv.copy(iv.value.weakSubsLoc(locR, locO)) }
+    // remove locations
+    def remove(locs: Set[Loc]): Elem = Elem(
+      nmap = nmap.mapCValues { dp => dp.copy(dp.value.remove(locs)) },
+      imap = imap.mapCValues { iv => iv.copy(iv.value.remove(locs)) }
     )
 
     // lookup
-    private def lookup(astr: AbsStr): AbsOpt[AbsDataProp] = astr.gamma match {
+    private def lookup(astr: AbsStr): NVOpt = astr.gamma match {
       case ConInf => nmap.map.foldLeft(nmap.default) {
-        case (res, (str, value)) if astr.isRelated(str) => res.⊔(_ ⊔ _)(value)
+        case (res, (str, value)) if astr.isRelated(str) => res ⊔ value
         case (res, _) => res
       }
-      case ConFin(set) => set.foldLeft(AbsOpt.Bot(AbsDataProp.Bot)) {
-        case (res, key) => res.⊔(_ ⊔ _)(nmap(key))
+      case ConFin(set) => set.foldLeft(NVOpt.Bot) {
+        case (res, key) => res ⊔ nmap(key)
       }
     }
-    def apply(str: String): AbsDataProp = nmap(str).content
-    def apply(astr: AbsStr): AbsDataProp = lookup(astr).content
-    def apply(iname: IName): AbsIValue = imap(iname).content
+    def apply(str: String): AbsDataProp = nmap(str).value
+    def apply(astr: AbsStr): AbsDataProp = lookup(astr).value
+    def apply(iname: IName): AbsIValue = imap(iname).value
 
-    // strong update for normal properties
+    // update for normal properties
     def update(str: String, dp: AbsDataProp): Elem = {
       if (dp.isBottom) Bot
-      else copy(nmap = nmap.update(str, AbsOpt(dp, AbsAbsent.Bot)))
+      else copy(nmap = nmap.update(str, NVOpt(dp, AbsAbsent.Bot)))
     }
-
-    // weak update for normal properties
-    def weakUpdate(astr: AbsStr, dp: AbsDataProp): Elem = {
+    def update(astr: AbsStr, dp: AbsDataProp): Elem = {
       if (dp.isBottom) Bot
       else astr.gamma match {
         case ConInf => copy(nmap = nmap.mapCValues(_ ⊔ dp, (str, _) => astr.isRelated(str)))
-        case ConFin(set) if set.size == 1 => update(set.head, dp) // TODO it is unsound in some cases
+        case ConFin(set) if set.size == 1 => update(set.head, dp) // strong update
         case ConFin(set) => copy(nmap = set.foldLeft(nmap) {
-          case (map, str) => map.update(str, map(str).⊔(_ ⊔ _)(AbsOpt(dp, AbsAbsent.Bot)))
+          case (map, str) => map.update(str, map(str) ⊔ NVOpt(dp, AbsAbsent.Bot))
         })
       }
     }
@@ -141,18 +138,16 @@ object CKeyObject extends ObjDomain {
     // strong update for internal properties
     def update(iname: IName, iv: AbsIValue): Elem = {
       if (iv.isBottom) Bot
-      else copy(imap = imap.update(iname, AbsOpt(iv, AbsAbsent.Bot)))
+      else copy(imap = imap.update(iname, IVOpt(iv, AbsAbsent.Bot)))
     }
 
-    // strong delete
-    def delete(str: String): Elem = copy(nmap = nmap.update(str, AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)))
-
-    // weak delete
-    def weakDelete(astr: AbsStr): Elem = astr.gamma match {
-      case ConInf => copy(nmap = nmap.mapValues(_.⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)), (str, _) => astr.isRelated(str)))
-      case ConFin(set) if set.size == 1 => delete(set.head)
+    // delete
+    def delete(str: String): Elem = copy(nmap = nmap.update(str, NVOpt(AbsDataProp.Bot, AbsAbsent.Top)))
+    def delete(astr: AbsStr): Elem = astr.gamma match {
+      case ConInf => copy(nmap = nmap.mapValues(_ ⊔ NVOpt(AbsDataProp.Bot, AbsAbsent.Top), (str, _) => astr.isRelated(str)))
+      case ConFin(set) if set.size == 1 => delete(set.head) // strong update
       case ConFin(set) => copy(nmap = set.foldLeft(nmap) {
-        case (map, str) => map.update(str, map(str).⊔(_ ⊔ _)(AbsOpt(AbsDataProp.Bot, AbsAbsent.Top)))
+        case (map, str) => map.update(str, map(str) ⊔ NVOpt(AbsDataProp.Bot, AbsAbsent.Top))
       })
     }
 
@@ -176,22 +171,25 @@ object CKeyObject extends ObjDomain {
     // abstract key set with filtering
     def abstractKeySet(filter: (AbsStr, AbsDataProp) => Boolean): ConSet[AbsStr] = {
       val initial: Set[AbsStr] =
-        if (filter(AbsStr.Top, nmap.default.content)) HashSet(AbsStr.Top)
-        else HashSet()
+        if (filter(AbsStr.Top, nmap.default.value)) Set(AbsStr.Top)
+        else Set()
       ConFin(nmap.map.keySet.foldLeft(initial) {
         case (set, str) =>
           val astr = AbsStr(str)
-          if (filter(astr, nmap(str).content)) set + astr
+          if (filter(astr, nmap(str).value)) set + astr
           else set
       })
     }
 
     // collect key set with prefix
-    def collectKeySet(prefix: String): ConSet[String] = ConFin(nmap.map.keySet.filter(_ startsWith prefix))
+    def collectKeySet: ConSet[String] = {
+      if (nmap.default.isAbsent) ConFin(nmap.map.keySet)
+      else ConInf
+    }
 
     // key set pair
     def keySetPair(h: AbsHeap): (List[String], AbsStr) = {
-      var visited = HashSet[Loc]()
+      var visited = Set[Loc]()
       def visit(currObj: Elem): (Set[String], AbsStr) = {
         val pair = currObj.ownKeySetPair
         val proto = currObj(IPrototype)
@@ -209,15 +207,20 @@ object CKeyObject extends ObjDomain {
       val (strSet, astr) = visit(this)
       (strSet.toList.sortBy { _.toString }, astr) // TODO for-in order
     }
-    private def ownKeySetPair: (Set[String], AbsStr) = nmap.map.keySet.foldLeft((HashSet[String](), AbsStr.Bot)) {
-      case ((strSet, astr), key) => {
-        val AbsOpt(content, absent) = nmap(key)
-        val isEnum = content.enumerable
-        if (AT ⊑ isEnum) {
-          val isDef = absent.isBottom
-          if (isDef && (AbsBool.Top != isEnum)) (strSet + key, astr)
-          else (strSet, astr ⊔ AbsStr(key))
-        } else (strSet, astr)
+    private def ownKeySetPair: (Set[String], AbsStr) = {
+      val initial =
+        if (nmap.default.value.isBottom) AbsStr.Bot
+        else AbsStr.Top
+      nmap.map.keySet.foldLeft((Set[String](), initial)) {
+        case ((strSet, astr), key) => {
+          val NVOpt(value, absent) = nmap(key)
+          val isEnum = value.enumerable
+          if (AT ⊑ isEnum) {
+            val isDef = absent.isBottom
+            if (isDef && (AbsBool.Top != isEnum)) (strSet + key, astr)
+            else (strSet, astr ⊔ AbsStr(key))
+          } else (strSet, astr)
+        }
       }
     }
 
@@ -225,8 +228,8 @@ object CKeyObject extends ObjDomain {
       case ConInf => false
       case ConFin(set) => set.foldLeft(true) {
         case (res, str) =>
-          val AbsOpt(content, absent) = nmap(str)
-          res && !content.isBottom && absent.isBottom
+          val NVOpt(value, absent) = nmap(str)
+          res && !value.isBottom && absent.isBottom
       }
     }
 
@@ -235,7 +238,7 @@ object CKeyObject extends ObjDomain {
     ///////////////////////////////////////////////////////////////
     // Section 8.12.1 [[GetOwnProperty]](P)
     def GetOwnProperty(P: AbsStr): (AbsDesc, AbsUndef) = {
-      val AbsOpt(dp, absent) = lookup(P)
+      val NVOpt(dp, absent) = lookup(P)
       val undef =
         if (absent.isBottom) AbsUndef.Bot else AbsUndef.Top
       val desc = AbsDesc(
@@ -249,7 +252,7 @@ object CKeyObject extends ObjDomain {
 
     // Section 8.12.2 [[GetProperty]](P)
     def GetProperty(P: AbsStr, h: AbsHeap): (AbsDesc, AbsUndef) = {
-      var visited = HashSet[Loc]()
+      var visited = Set[Loc]()
       def visit(currObj: Elem): (AbsDesc, AbsUndef) = {
         val (desc, undef) = currObj.GetOwnProperty(P)
         val (parentDesc, parentUndef) =
@@ -277,7 +280,7 @@ object CKeyObject extends ObjDomain {
 
     // Section 8.12.3 [[Get]](P)
     def Get(astr: AbsStr, h: AbsHeap): AbsValue = {
-      var visited = HashSet[Loc]()
+      var visited = Set[Loc]()
       val valueBot = AbsValue.Bot
       def visit(currentObj: Elem): AbsValue = {
         val test = currentObj contains astr
@@ -346,7 +349,7 @@ object CKeyObject extends ObjDomain {
       val canPut = CanPut(P, h)
       val (falseObj: Elem, falseExcSet: Set[Exception]) =
         if (AbsBool.False ⊑ canPut) {
-          if (Throw) (Bot, HashSet(TypeError))
+          if (Throw) (Bot, Set(TypeError))
           else (this, ExcSetEmpty)
         } else (Bot, ExcSetEmpty)
       val (trueObj, trueExcSet) =
@@ -379,7 +382,7 @@ object CKeyObject extends ObjDomain {
 
     // Section 8.12.6 [[HasProperty]](P)
     def HasProperty(P: AbsStr, h: AbsHeap): AbsBool = {
-      var visited = AbsLoc.Bot
+      var visited = LocSet.Bot
       def visit(currObj: Elem): AbsBool = {
         val test = currObj contains P
         val b1 =
@@ -405,18 +408,19 @@ object CKeyObject extends ObjDomain {
     def Delete(astr: AbsStr, Throw: Boolean): (Elem, AbsBool, Set[Exception]) = {
       val BOT = (Bot, AbsBool.Bot, ExcSetEmpty)
       val (desc, undef) = GetOwnProperty(astr)
+      val deleted = delete(astr)
       val (undefO, undefB, undefE) =
         if (undef.isBottom) BOT
-        else (this, AT, ExcSetEmpty)
+        else (deleted, AT, ExcSetEmpty)
       val (descO, descB, descE) =
         if (desc.isBottom) BOT
         else {
           val (configurable, _) = desc.configurable
           val (confO, conB, confE) =
-            if (AT ⊑ configurable) (weakDelete(astr), AT, ExcSetEmpty)
+            if (AT ⊑ configurable) (deleted, AT, ExcSetEmpty)
             else BOT
           val (otherO, otherB, otherE: Set[Exception]) =
-            if (AF ⊑ configurable) if (Throw) (Bot, AbsBool.Bot, HashSet(TypeError)) else (this, AF, ExcSetEmpty)
+            if (AF ⊑ configurable) if (Throw) (Bot, AbsBool.Bot, Set(TypeError)) else (this, AF, ExcSetEmpty)
             else BOT
           (confO ⊔ otherO, conB ⊔ otherB, confE ++ otherE)
         }
@@ -481,7 +485,7 @@ object CKeyObject extends ObjDomain {
     def DefineOwnProperty(P: AbsStr, Desc: AbsDesc, Throw: Boolean = true, h: AbsHeap): (Elem, AbsBool, Set[Exception]) = {
       val obj = this
       val Reject =
-        if (Throw) (obj, AbsBool.Bot, HashSet(TypeError))
+        if (Throw) (obj, AbsBool.Bot, Set(TypeError))
         else (obj, AbsBool.False, ExcSetEmpty)
       val BotTriple = (Bot, AbsBool.Bot, ExcSetEmpty)
       // 1. Let current be the result of calling the [[GetOwnProperty]] internal method of O with property name P.
@@ -495,7 +499,7 @@ object CKeyObject extends ObjDomain {
           if (AbsBool.True ⊑ extensible) {
             // i. Create an own data property named P of object O whose [[Value]], [[Writable]],
             // [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
-            val changedObj = weakUpdate(P, AbsDataProp(Desc))
+            val changedObj = update(P, AbsDataProp(Desc))
             (changedObj, AbsBool.True, ExcSetEmpty)
           } else BotTriple
         val (obj2: Elem, b2, excSet2: Set[Exception]) =
@@ -540,7 +544,7 @@ object CKeyObject extends ObjDomain {
         } else BotTriple
 
       // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
-      val (obj7: Elem, b7, excSet7: Set[Exception]) =
+      val (obj7: Elem, b7, excSet3: Set[Exception]) =
         // a. If the [[Configurable]] field of current is false, then
         if (AbsBool.False ⊑ cc) {
           // i. Reject, if the [[Writable]] field of current is false and the [[Writable]] field of Desc is true.
@@ -555,33 +559,27 @@ object CKeyObject extends ObjDomain {
 
       // 12. For each attribute field of Desc that is present, set the correspondingly named attribute of the
       // property named P of object O to the value of the field.
-      val (obj3, b3, excSet3) =
+      val (obj3, b3, excSet4) =
         if (AbsBool.True ⊑ cc || AbsBool.True ⊑ cw) {
           var newDP = obj(P)
           if (!dv.isBottom) newDP = newDP.copy(value = dv)
           if (!dw.isBottom) newDP = newDP.copy(writable = dw)
           if (!de.isBottom) newDP = newDP.copy(enumerable = de)
           if (!dc.isBottom) newDP = newDP.copy(configurable = dc)
-          val changedObj = weakUpdate(P, newDP)
+          val changedObj = update(P, newDP)
           (changedObj, AbsBool.True, ExcSetEmpty)
         } else BotTriple
-
-      val excSet4 =
-        if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
-          AbsStr("length") ⊑ P &&
-          AbsBool.False ⊑ (TypeConversionHelper.ToNumber(dv) StrictEquals TypeConversionHelper.ToUint32(dv))) HashSet(RangeError)
-        else ExcSetEmpty
 
       val excSet5 =
         if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
           AbsStr("length") ⊑ P &&
-          AbsBool.False ⊑ obj(AbsStr.Number).configurable) HashSet(TypeError)
+          AbsBool.False ⊑ (TypeConversionHelper.ToNumber(dv) StrictEquals TypeConversionHelper.ToUint32(dv))) Set(RangeError)
         else ExcSetEmpty
 
       val excSet6 =
         if (AbsStr("Array") ⊑ obj(IClass).value.pvalue.strval &&
           AT ⊑ (P StrictEquals AbsStr.Number) &&
-          AbsBool.False ⊑ obj("length").writable) HashSet(TypeError)
+          AbsBool.False ⊑ obj("length").writable) Set(TypeError)
         else ExcSetEmpty
 
       // TODO: unsound. Should Reject if an array element could not be deleted, i.e., it's not configurable.
@@ -589,24 +587,19 @@ object CKeyObject extends ObjDomain {
 
       (
         obj1 ⊔ obj2 ⊔ obj3 ⊔ obj5 ⊔ obj6 ⊔ obj7, b1 ⊔ b2 ⊔ b3 ⊔ b5 ⊔ b6 ⊔ b7,
-        excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet5 ++ excSet6 ++ excSet7
+        excSet1 ++ excSet2 ++ excSet3 ++ excSet4 ++ excSet5 ++ excSet6
       )
     }
-
-    def toJson: JsValue = JsObject(
-      ("nmap", nmap.toJson(JsString(_), _.toJson)),
-      ("imap", imap.toJson(_.toJson, _.toJson))
-    )
   }
 
   ////////////////////////////////////////////////////////////////
   // new Object constructors
   ////////////////////////////////////////////////////////////////
-  def newObject: Elem = newObject(BuiltinObjectProto.loc)
+  def newObject: Elem = newObject(OBJ_PROTO_LOC)
 
-  def newObject(loc: Loc): Elem = newObject(AbsLoc(loc))
+  def newObject(loc: Loc): Elem = newObject(LocSet(loc))
 
-  def newObject(locSet: AbsLoc): Elem = {
+  def newObject(locSet: LocSet): Elem = {
     Empty
       .update(IClass, AbsIValue(AbsStr("Object")))
       .update(IPrototype, AbsIValue(locSet))
@@ -616,7 +609,7 @@ object CKeyObject extends ObjDomain {
   def newArgObject(absLength: AbsNum = AbsNum(0)): Elem = {
     Empty
       .update(IClass, AbsIValue(AbsStr("Arguments")))
-      .update(IPrototype, AbsIValue(BuiltinObjectProto.loc))
+      .update(IPrototype, AbsIValue(OBJ_PROTO_LOC))
       .update(IExtensible, AbsIValue(AT))
       .update("length", AbsDataProp(absLength, AT, AF, AT))
   }
@@ -624,7 +617,7 @@ object CKeyObject extends ObjDomain {
   def newArrayObject(absLength: AbsNum = AbsNum(0)): Elem = {
     Empty
       .update(IClass, AbsIValue(AbsStr("Array")))
-      .update(IPrototype, AbsIValue(BuiltinArrayProto.loc))
+      .update(IPrototype, AbsIValue(ARR_PROTO_LOC))
       .update(IExtensible, AbsIValue(AT))
       .update("length", AbsDataProp(absLength, AT, AF, AF))
   }
@@ -634,18 +627,18 @@ object CKeyObject extends ObjDomain {
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], n: AbsNum): Elem = {
+    topt: Option[Loc], n: AbsNum): Elem = {
     newFunctionObject(fidOpt, constructIdOpt, env,
-      locOpt, AT, AF, AF, n)
+      topt, AT, AF, AF, n)
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
-    locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
+    topt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNum): Elem = {
     val obj1 =
       Empty
         .update(IClass, AbsIValue(AbsStr("Function")))
-        .update(IPrototype, AbsIValue(BuiltinFunctionProto.loc))
+        .update(IPrototype, AbsIValue(FUNC_PROTO_LOC))
         .update(IExtensible, AbsIValue(AT))
         .update(IScope, AbsIValue(env))
         .update("length", AbsDataProp(absLength, AF, AF, AF))
@@ -658,7 +651,7 @@ object CKeyObject extends ObjDomain {
       case Some(cid) => obj2.update(IConstruct, AbsFId(cid))
       case None => obj2
     }
-    val obj4 = locOpt match {
+    val obj4 = topt match {
       case Some(loc) =>
         val prototypeVal = AbsValue(loc)
         obj3.update(IHasInstance, AbsIValue(AbsNull.Top))
@@ -669,19 +662,19 @@ object CKeyObject extends ObjDomain {
   }
 
   def newBooleanObj(absB: AbsBool): Elem = {
-    val newObj = newObject(BuiltinBooleanProto.loc)
+    val newObj = newObject(BOOL_PROTO_LOC)
     newObj.update(IClass, AbsIValue(AbsStr("Boolean")))
       .update(IPrimitiveValue, AbsIValue(absB))
   }
 
   def newNumberObj(absNum: AbsNum): Elem = {
-    val newObj = newObject(BuiltinNumberProto.loc)
+    val newObj = newObject(NUM_PROTO_LOC)
     newObj.update(IClass, AbsIValue(AbsStr("Number")))
       .update(IPrimitiveValue, AbsIValue(absNum))
   }
 
   def newStringObj(absStr: AbsStr): Elem = {
-    val newObj = newObject(BuiltinStringProto.loc)
+    val newObj = newObject(STR_PROTO_LOC)
 
     val newObj2 = newObj
       .update(IClass, AbsIValue(AbsStr("String")))
@@ -701,7 +694,7 @@ object CKeyObject extends ObjDomain {
         })
       case _ =>
         newObj2
-          .weakUpdate(AbsStr.Number, AbsDataProp(AbsValue(AbsStr.Top), AF, AT, AF))
+          .update(AbsStr.Number, AbsDataProp(AbsValue(AbsStr.Top), AF, AT, AF))
           .update("length", AbsDataProp(absStr.length, AF, AF, AF))
     }
   }
@@ -713,12 +706,12 @@ object CKeyObject extends ObjDomain {
       .update(IExtensible, AbsIValue(AbsBool.True))
   }
 
-  def defaultValue(locSet: AbsLoc): AbsPValue = {
+  def defaultValue(locSet: LocSet): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else AbsPValue.Top
   }
 
-  def defaultValue(locSet: AbsLoc, preferredType: String): AbsPValue = {
+  def defaultValue(locSet: LocSet, preferredType: String): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else {
       preferredType match {
@@ -729,7 +722,7 @@ object CKeyObject extends ObjDomain {
     }
   }
 
-  def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue = {
+  def defaultValue(locSet: LocSet, h: AbsHeap, preferredType: String): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else locSet.foldLeft(AbsPValue.Bot)((pv, loc) => h.get(loc).DefaultValue(preferredType, h))
   }

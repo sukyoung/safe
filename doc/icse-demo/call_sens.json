@@ -1,0 +1,12 @@
+{
+    "testMode": true,
+    "compiler": {
+        "out": "example.ir"
+    },
+    "analyzer": {
+        "html": "debugger",
+        "callsiteSensitivity": 1,
+        "snapshot": "chrome.json"
+    },
+    "file": ["wikipedia.org.htm"]
+}

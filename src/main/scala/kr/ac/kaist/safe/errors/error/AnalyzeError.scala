@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -55,7 +55,15 @@ case class ModelParseError(msg: String) extends AnalyzeError(
 )
 
 case object LocTopGammaError extends AnalyzeError(
-  "AbsLoc.Top.gamma is impossible"
+  "LocSet.Top.gamma is impossible"
+)
+
+case object SymTopGammaError extends AnalyzeError(
+  "SymSet.Top.gamma is impossible"
+)
+
+case class LocParseError(msg: String) extends AnalyzeError(
+  s"[LocParseError] $msg"
 )
 
 case class UserAllocSiteError(u: UserAllocSite) extends AnalyzeError({

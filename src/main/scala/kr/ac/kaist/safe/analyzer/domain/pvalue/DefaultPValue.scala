@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -10,10 +10,6 @@
  */
 
 package kr.ac.kaist.safe.analyzer.domain
-
-import kr.ac.kaist.safe.errors.error.AbsPValueParseError
-import scala.collection.immutable.HashSet
-import spray.json._
 
 // default primitive value abstract domain
 object DefaultPValue extends PValueDomain {
@@ -38,20 +34,6 @@ object DefaultPValue extends PValueDomain {
     strval: AbsStr
   ): Elem = Elem(undefval, nullval, boolval, numval, strval)
 
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("undefval").map(AbsUndef.fromJson _),
-      m.get("nullval").map(AbsNull.fromJson _),
-      m.get("boolval").map(AbsBool.fromJson _),
-      m.get("numval").map(AbsNum.fromJson _),
-      m.get("strval").map(AbsStr.fromJson _)
-    ) match {
-        case (Some(u), Some(l), Some(b), Some(n), Some(s)) => Elem(u, l, b, n, s)
-        case _ => throw AbsPValueParseError(v)
-      }
-    case _ => throw AbsPValueParseError(v)
-  }
-
   case class Elem(
       undefval: AbsUndef,
       nullval: AbsNull,
@@ -61,7 +43,21 @@ object DefaultPValue extends PValueDomain {
   ) extends ElemTrait {
     def gamma: ConSet[PValue] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
+    def getSingle: ConSingle[PValue] = (
+      undefval.getSingle,
+      nullval.getSingle,
+      boolval.getSingle,
+      numval.getSingle,
+      strval.getSingle
+    ) match {
+        case (ConZero, ConZero, ConZero, ConZero, ConZero) => ConZero
+        case (ConOne(v), ConZero, ConZero, ConZero, ConZero) => ConOne(v)
+        case (ConZero, ConOne(v), ConZero, ConZero, ConZero) => ConOne(v)
+        case (ConZero, ConZero, ConOne(v), ConZero, ConZero) => ConOne(v)
+        case (ConZero, ConZero, ConZero, ConOne(v), ConZero) => ConOne(v)
+        case (ConZero, ConZero, ConZero, ConZero, ConOne(v)) => ConOne(v)
+        case _ => ConMany
+      }
 
     /* partial order */
     def ⊑(that: Elem): Boolean = {
@@ -142,7 +138,7 @@ object DefaultPValue extends PValueDomain {
     }
 
     def toStringSet: Set[AbsStr] = {
-      var set = HashSet[AbsStr]()
+      var set = Set[AbsStr]()
 
       this.undefval.foldUnit(set += AbsStr("undefined"))
       this.nullval.foldUnit(set += AbsStr("null"))
@@ -165,13 +161,5 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum = this.numval,
       strval: AbsStr = this.strval
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
-
-    def toJson: JsValue = JsObject(
-      ("undefval", undefval.toJson),
-      ("nullval", nullval.toJson),
-      ("boolval", boolval.toJson),
-      ("numval", numval.toJson),
-      ("strval", strval.toJson)
-    )
   }
 }

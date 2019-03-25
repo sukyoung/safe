@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -10,8 +10,6 @@
  */
 
 package kr.ac.kaist.safe.analyzer.domain
-
-import scala.collection.immutable.HashSet
 
 // abstract domain for value V
 trait AbsDomain[V] extends Domain {
@@ -37,7 +35,7 @@ trait AbsDomain[V] extends Domain {
   def alpha[U, D <: AbsDomain[U]](
     f: (V, V) => U
   )(domain: D): (Elem, Elem) => domain.Elem = (l, r) => (l.gamma, r.gamma) match {
-    case (ConFin(lset), ConFin(rset)) => domain.alpha(lset.foldLeft(HashSet[U]()) {
+    case (ConFin(lset), ConFin(rset)) => domain.alpha(lset.foldLeft(Set[U]()) {
       case (set, l) => set ++ rset.map(f(l, _))
     })
     case _ => domain.Top

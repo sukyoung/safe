@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,11 +11,12 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.CallInfo
 import kr.ac.kaist.safe.nodes.cfg._
 
 // state abstract domain
 trait StateDomain extends AbsDomain[State] {
-  def apply(heap: AbsHeap, context: AbsContext): Elem
+  def apply(heap: AbsHeap, context: AbsContext, allocs: AllocLocSet): Elem
 
   // abstract state element
   type Elem <: ElemTrait
@@ -25,8 +26,15 @@ trait StateDomain extends AbsDomain[State] {
     val heap: AbsHeap
     val context: AbsContext
 
+    def remove(locs: Set[Loc]): Elem
+    def subsLoc(from: Loc, to: Loc): Elem
     def raiseException(excSet: Set[Exception]): Elem
     def oldify(loc: Loc): Elem
+    def alloc(loc: Loc): Elem
+    def afterCall(info: CallInfo): Elem
+    def setAllocLocSet(allocs: AllocLocSet): Elem
+    def allocs: AllocLocSet
+    def getLocSet: LocSet
 
     // Lookup
     def lookup(id: CFGId): (AbsValue, Set[Exception])
@@ -44,5 +52,11 @@ trait StateDomain extends AbsDomain[State] {
     // toString
     def toStringAll: String
     def toStringLoc(loc: Loc): Option[String]
+
+    // delete changed info
+    def cleanChanged: Elem
+
+    // applied changed information
+    def <<(that: Elem): Elem
   }
 }

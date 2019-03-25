@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -12,13 +12,14 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.cfg.CFGId
 
 // execution context abstract domain
 trait ContextDomain extends AbsDomain[Context] {
   val Empty: Elem
   def apply(
     map: Map[Loc, AbsLexEnv],
-    old: OldASiteSet,
+    merged: LocSet,
     thisBinding: AbsValue
   ): Elem
 
@@ -30,7 +31,7 @@ trait ContextDomain extends AbsDomain[Context] {
     // lookup
     def apply(loc: Loc): Option[AbsLexEnv]
     def apply(locSet: Set[Loc]): AbsLexEnv
-    def apply(locSet: AbsLoc): AbsLexEnv
+    def apply(locSet: LocSet): AbsLexEnv
     def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv
     def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T
 
@@ -38,23 +39,20 @@ trait ContextDomain extends AbsDomain[Context] {
     def weakUpdate(loc: Loc, env: AbsLexEnv): Elem
     def update(loc: Loc, env: AbsLexEnv): Elem
 
-    // remove location
-    def remove(loc: Loc): Elem
+    // substitute location
+    def subsLoc(from: Loc, to: Loc): Elem
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem
+    def remove(locs: Set[Loc]): Elem
 
-    def oldify(loc: Loc): Elem
+    def alloc(loc: Loc): Elem
+
+    def getLocSet: LocSet
 
     def domIn(loc: Loc): Boolean
-
-    def setOldASiteSet(old: OldASiteSet): Elem
 
     def setThisBinding(thisBinding: AbsValue): Elem
 
     def getMap: Map[Loc, AbsLexEnv]
-
-    def old: OldASiteSet
 
     def thisBinding: AbsValue
 
@@ -69,5 +67,14 @@ trait ContextDomain extends AbsDomain[Context] {
 
     // location concrete check
     def isConcrete(loc: Loc): Boolean
+
+    // location changed check
+    def isChanged(loc: Loc): Boolean
+
+    // delete changed info
+    def cleanChanged: Elem
+
+    // applied changed information
+    def <<(that: Elem): Elem
   }
 }

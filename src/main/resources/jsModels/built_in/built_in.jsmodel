@@ -1267,6 +1267,18 @@ Heap: {
     [[Call]]: fun(137),
     [[Construct]]: fun(138),
     [[HasInstance]]: null
+  },
+  #DefaultValue: {
+    [[Call]]: fun(139)
+  },
+  #ToPrimitive: {
+    [[Call]]: fun(140)
+  },
+  #ToString: {
+    [[Call]]: fun(141)
+  },
+  #ToNumber: {
+    [[Call]]: fun(142)
   }
 }
 
@@ -1769,28 +1781,17 @@ Function: {
       radix = @ToInteger(radix);
     }
     // If ToInteger(radix) is the Number 10 then this Number value is given as an argument to the ToString abstract operation; the resulting String value is returned.
+    var thisNumberValue = this;
+    if (@isObject(this)) thisNumberValue = @PrimitiveValue(this)
     if (radix === 10) {
-      return @ToString(this);
+      return @ToString(thisNumberValue);
     }
     // If ToInteger(radix) is not an integer between 2 and 36 inclusive throw a RangeError exception.
     else if (radix < 2 || radix > 36){
       throw new RangeError();
     }
     // If ToInteger(radix) is an integer from 2 to 36, but not 10, the result is a String representation of this Number value using the specified radix. Letters a-z are used for digits with values 10 through 35. The precise algorithm is implementation-dependent if the radix is not 10, however the algorithm should be a generalisation of that specified in 9.8.1.
-    else if (radix >= 2 && radix <= 36) {
-      var S = "";
-      var n = this;
-      var alpha = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
-      while (n > 0){
-        if(n%radix >= 10){
-          S = alpha[n%radix - 10] + S;
-        }else {
-          S = @ToString(n%radix) + S;
-        }
-        n = @floor(n / radix);
-      }
-      return S;
-    }
+    return @StrTop;
   }
   \\],
   41: [\\
@@ -1818,226 +1819,44 @@ Function: {
       throw new RangeError();
     }
     // 3. Let x be this Number value.
-    var x = this;
+    var thisNumberValue = this;
+    if (@isObject(this)) thisNumberValue = @PrimitiveValue(this)
+    var x = thisNumberValue
     // 4. If x is NaN, return the String "NaN".
     if (@SameValue(x,NaN)) {
       return "NaN";
     }
-    // 5. Let s be the empty String.
-    var s = "";
-    // 6. Ifx<0,then
-    if ( x < 0) {
-      // a. Let s be "-".
-      var s = "-";
-      // b. Letx=–x.
-      x = -x;
-    }
-    // 7. If x >= 10^21, then
-    if (x >= 10e+21) {
-      // a. Let m = ToString(x).
-      var m = @ToString(x);
-    }
-    // 8. Else, x < 10^21
-    else {
-      // a. Let n be an integer for which the exact mathematical value of n/10^f – x is as close to zero as possible. If there are two such n, pick the larger n.
-      var diff = Infinity;
-      var pre_diff = Infinity;
-      var n = 0;
-      do{
-        pre_diff = diff;
-        diff = @abs(n / (@pow(10,f)) - x);
-        n += 1;
-      }while(diff < pre_diff);
-      n -= 2;
-      // b. If n = 0, let m be the String "0". Otherwise, let m be the String consisting of the digits of the decimal representation of n (in order, with no leading zeroes).
-      if (n === 0) {
-        var m = "0";
-      }else {
-        var m = @ToString(n);
-      }
-      // c. If f!=0,then
-      if (f != 0) {
-        // i. Let k be the number of characters in m.
-        var k = m.length;
-        // ii. If k ≤ f, then
-        if ( k <= f) {
-          // 1. Let z be the String consisting of f+1–k occurrences of the character  ̳0‘.
-          var z = "";
-          for ( var i = 0; i < f + 1 - k; i++) {
-            z = z + "0";
-          }
-          // 2. Let m be the concatenation of Strings z and m.
-          var m = z + m;
-          // 3. Letk=f+1.
-          var k = f + 1;
-        }
-        // iii. Let a be the first k–f characters of m, and let b be the remaining f characters of m.
-        var a = m.slice(0,k-f);
-        var b = m.slice(k-f);
-        // iv. Let m be the concatenation of the three Strings a, ".", and b.
-        var m = a + "." + b;
-      }
-    }
-    // 9. Return the concatenation of the Strings s and m.
-    return s + m;
+    // TODO ...
+    return @StrTop;
   }
   \\],
   44: [\\
   function toExponential (fractionDigits) {
     // 1. Let x be this Number value.
-    var x = this;
+    var thisNumberValue = this;
+    if (@isObject(this)) thisNumberValue = @PrimitiveValue(this)
+    var x = thisNumberValue;
     // 2. Let f be ToInteger(fractionDigits).
     var f = @ToInteger(fractionDigits);
     // 3. If x is NaN, return the String "NaN".
     if (@SameValue(x,NaN)) {
       return "NaN"
     }
-    // 4. Let s be the empty String.
-    var s = "";
-    // 5. Ifx<0,then
-    if (x < 0) {
-      // a. Let s be "-".
-      var s = "-";
-      // b. Letx=–x.
-      x = -x;
-    }
-    // 6. Ifx=Infinity,then
-    if (@SameValue(x,Infinity)) {
-      // a. Return the concatenation of the Strings s and "Infinity".
-      return s + "Infinity";
-    }
+    // TODO ...
     // 7. If fractionDigits is not undefined and (f < 0 or f > 20), throw a RangeError exception.
     if ((!@SameValue(fractionDigits,undefined)) && (f < 0 || f > 20)) {
       throw new RangeError();
     }
-    // 8. Ifx=0,then
-    if (x === 0) {
-      // a. Letf=0.
-      var f = 0;
-      // b. Let m be the String consisting of f+1 occurrences of the character  ̳0‘.
-      m = "";
-      for (var i = 0; i < f+1; i++) {
-        m += "0";
-      }
-      // c. Lete=0.
-      var e = 0;
-    }
-    // 9. Else,x!=0
-    else {
-      // a. If fractionDigits is not undefined, then
-      if (!@SameValue(fractionDigits,undefined)) {
-        // i. Let e and n be integers such that 10f   n < 10f+1 and for which the exact mathematical value of n 10e–f –x is as close to zero as possible. If there are two such sets of e and n, pick the e and n for which n   10e–f is larger.
-        x_num = @ToString(x);
-        // Get e
-        if (x_num[0] === "0"){
-          var i = 2;
-          while (x_num[i] === "0") {
-            i += 1;
-          }
-          var e = -i + 1;
-        }
-        else {
-          var i = 0;
-          while (x_num[i] !== ".") {
-            i += 1;
-          }
-          e = i - 1;
-        }
-        // Get n
-        var diff = Infinity;
-        var pre_diff = Infinity;
-        var n = @pow(10,f);
-        do{
-          pre_diff = diff;
-          diff = @abs(n * (@pow(10,e-f)) - x);
-          n += 1;
-        }while((diff < pre_diff) && (n < @pow(10,f+1)));
-        n -= 2;
-      }
-      // b. Else, fractionDigits is undefined
-      else {
-        // i. Lete,n,andfbeintegerssuchthatf 0,10f  n<10f+1,thenumbervalueforn 10e–f is x,and f is as small as possible. Note that the decimal representation of n has f+1 digits, n is not divisible by 10, and the least significant digit of n is not necessarily uniquely determined by these criteria.
-        x_num = @ToString(x);
-        // Get f
-        if (x_num[0] === 0) {
-          var i = 2;
-          while (x_num[i] === "0") {
-            i += 1;
-          }
-          f = x_num.length - i - 1;
-        }else {
-          f = x_num.length - 2;
-        }
-        // Get e
-        if (x_num[0] === "0"){
-          var i = 2;
-          while (x_num[i] === "0") {
-            i += 1;
-          }
-          var e = -i + 1;
-        }
-        else {
-          var i = 0;
-          while (x_num[i] !== ".") {
-            i += 1;
-          }
-          e = i - 1;
-        }
-        // Get n
-        var diff = Infinity;
-        var pre_diff = Infinity;
-        var n = @pow(10,f);
-        do{
-          pre_diff = diff;
-          diff = @abs(n * (@pow(10,e-f)) - x);
-          n += 1;
-        }while((diff < pre_diff) && (n < @pow(10,f+1)));
-        n -= 2;
-      }
-      // c. Let m be the String consisting of the digits of the decimal representation of n (in order, with no leading zeroes).
-      var m = @ToString(n);
-    }
-    // 10. If f!=0,then
-    if (f != 0) {
-      // a. Let a be the first character of m, and let b be the remaining f characters of m.
-      var a = m.slice(0,1);
-      var b = m.slice(1);
-      // b. Let m be the concatenation of the three Strings a, ".", and b.
-      m = a + "." + b;
-    }
-    // 11. Ife=0,then
-    if (e === 0) {
-      // a. Letc="+".
-      var c = "+";
-      // b. Letd="0".
-      var d = 0;
-    }
-    // 12. Else
-    else {
-      // a. Ife>0,thenletc="+".
-      if (e > 0) {
-        var c = "+";
-      }
-      // b. Else,e≤0
-      else {
-        // i. Let c = "-".
-        c = "-";
-        // ii. Let e = –e.
-        e = -e;
-      }
-      // c. Let d be the String consisting of the digits of the decimal representation of e (in order, with no leading zeroes).
-      d = @ToString(e);
-    }
-    // 13. Let m be the concatenation of the four Strings m, "e", c, and d.
-    var m = m + "e" + c + d;
-    // 14. Return the concatenation of the Strings s and m.
-    return m;
+    // TODO ...
+    return @StrTop;
   }
   \\],
   45: [\\
   function toPrecision (precision) {
     // 1. Let x be this Number value.
-    var x = this;
+    var thisNumberValue = this;
+    if (@isObject(this)) thisNumberValue = @PrimitiveValue(this)
+    var x = thisNumberValue;
     // 2. If precision is undefined, return ToString(x).
     if (@SameValue(precision,undefined)) {
       return @ToString(x);
@@ -2048,117 +1867,13 @@ Function: {
     if (@SameValue(NaN,x)) {
       return "NaN";
     }
-    // 5. Let s be the empty String.
-    var s = "";
-    // 6. Ifx<0,then
-    if (x < 0) {
-      // a. Let s be "-".
-      var s = "-";
-      // b. Letx=–x.
-      x = -x;
-    }
-    // 7. Ifx=+Infinity ,then
-    if (@SameValue(x,Infinity)) {
-      // a. Return the concatenation of the Strings s and "Infinity".
-      return s + "Infinity";
-    }
+    // TODO ...
     // 8. If p < 1 or p > 21, throw a RangeError exception.
     if (p < 1 || p > 21) {
       throw new RangeError();
     }
-    // 9. Ifx=0,then
-    if (x === 0) {
-      // a. Let m be the String consisting of p occurrences of the character  ̳0‘.
-      var m = "";
-      for (var i = 0; i < p; i++) {
-        m += "0";
-      }
-      // b. Lete=0.
-      var e = 0
-    }
-    //10. Else x !=  0,
-    else {
-      //a. Let e and n be integers such that 10p–1   n < 10p and for which the exact mathematical value of n   10e–p+1 – x is as close to zero as possible. If there are two such sets of e and n, pick the e and n for which n   10e–p+1 is larger.
-      // Get e
-      if (x_num[0] === "0"){
-        var i = 2;
-        while (x_num[i] === "0") {
-          i += 1
-        }
-        var e = -i + 1;
-      }
-      else {
-        var i = 0;
-        while (x_num[i] !== ".") {
-          i += 1;
-        }
-        e = i - 1;
-      }
-      // Get n
-      var diff = Infinity;
-      var pre_diff = Infinity;
-      var n = @pow(10,p-1);
-      do{
-        pre_diff = diff;
-        diff = @abs(n * (@pow(10,e-p+1)) - x);
-        n += 1;
-      }while((diff < pre_diff) && (n < @pow(10,p)))
-      n -= 2;
-      // b. Let m be the String consisting of the digits of the decimal representation of n (in order, with no leading zeroes).
-      var m = @ToString(n);
-      // c. Ife < –6 or e>= p,then
-      if (e < -6 || e >= p) {
-        // i. Let a be the first character of m, and let b be the remaining p–1 characters of m.
-        var a = m[0];
-        var b = m.slice(1);
-        // ii. Let m be the concatenation of the three Strings a, ".", and b.
-        m = a + "." + b;
-        // iii. If e = 0, then
-        if (e === 0) {
-          // 1. Let c ="+"and d ="0".
-          var c = "+";
-          var d = "0";
-        }
-        //iv. Else e!= 0,
-        else {
-          // 1. Ife>0, then
-          if (e > 0) {
-            // a Let c = "+".
-            var c = "+";
-          }
-          // 2. Elsee<0,
-          else {
-            // a Let c = "-".
-            var c = "-";
-            // b Let e = –e.
-            e = -e;
-          }
-          // 3. Let d be the String consisting of the digits of the decimal representation of e (in order, with no leading zeroes).
-          var d = @ToString(e);
-        }
-      // v. Let m be the concatenation of the five Strings s, m, "e", c, and d.
-      var m = s + m + "e" + c + d;
-      }
-    }
-    // 11. If e = p–1, then return the concatenation of the Strings s and m.
-    if (e === p-1) {
-      return s + m;
-    }
-    // 12. If e>= 0,then
-    if (e >= 0) {
-      // a. Let m be the concatenation of the first e+1 characters of m, the character  ̳.‘, and the remaining p– (e+1) characters of m.
-      var m = m.slice(0,e+1) + "." + m.slice(e+1,p);
-    }
-    // 13. Else e < 0,
-    else {
-      // a. Let m be the concatenation of the String "0.", –(e+1) occurrences of the character  ̳0‘, and the String m.
-      var m = "0.";
-      for (var i = 0; i < -(e+1); i++) {
-        m += "0";
-      }
-    }
-    // 14. Return the concatenation of the Strings s and m.
-    return s + m;
+    // TODO
+    return @StrTop;
   }
   \\],
   46: [\\
@@ -2665,6 +2380,7 @@ Function: {
   \\],
   76: [\\
   function setUTCMilliseconds (ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let time be MakeTime(HourFromTime(t), MinFromTime(t), SecFromTime(t), ToNumber(ms)).
@@ -2744,10 +2460,11 @@ Function: {
     }else {
       var v = return_val;
     }
+    */
     // 4. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 5. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   77: [\\
@@ -2759,6 +2476,7 @@ Function: {
   \\],
   78: [\\
   function setUTCSeconds (set,ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let s be ToNumber(sec).
@@ -2838,10 +2556,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 6. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 7. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   79: [\\
@@ -2853,6 +2572,7 @@ Function: {
   \\],
   80: [\\
   function setUTCMinutes (min,sec,ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     //2. Let m be ToNumber(min).
@@ -2937,10 +2657,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 7. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     //8. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   81: [\\
@@ -2952,6 +2673,7 @@ Function: {
   \\],
   82: [\\
   function setUTCHours (hour,min,sec,ms) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let h be ToNumber(hour).
@@ -3038,10 +2760,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 8. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 9. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   83: [\\
@@ -3053,6 +2776,7 @@ Function: {
   \\],
   84: [\\
   function setUTCDate (date) {
+    /*
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let dt be ToNumber(date).
@@ -3392,21 +3116,23 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 5. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 6. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   85: [\\
   function setMonth (month,date) {
     // Need LocalTime(t);
-    @PrimitiveValue(this ,@NumTop);
+    @PrimitiveValue(this, @NumTop);
     return @NumTop;
   }
   \\],
   86: [\\
   function setUTCMonth (month,date) {
+    /* TODO
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. Let m be ToNumber(month).
@@ -3776,10 +3502,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 6. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 7. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   87: [\\
@@ -3791,6 +3518,7 @@ Function: {
   \\],
   88: [\\
   function setUTCFullYear (year,month,date) {
+    /* TODO
     // 1. Let t be this time value; but if this time value is NaN, let t be +0.
     var t = @PrimitiveValue(this);
     if (@SameValue(t,NaN)) {
@@ -4233,10 +3961,11 @@ Function: {
       return_val = @ToInteger(time);
     }
     var v = return_val;
+    */
     // 7. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this,v);
+    @PrimitiveValue(this, @NumTop);
     // 8. Return v.
-    return v;
+    return @NumTop;
   }
   \\],
   89: [\\
@@ -4269,6 +3998,7 @@ Function: {
   \\],
   93: [\\
   function Date () {
+    /* TODO
     if (arguments.length === 0) {
       var obj = {};
       @Prototype(obj, Date.prototype);
@@ -4292,7 +4022,7 @@ Function: {
       // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object to TimeClip(V) and return.
       var time = V;
       var return_val;
-      if (time === Infinity) {
+      if (!isFinite(time)) {
         return_val = NaN;
       }
       else if (@abs(time) > 8.64e+15) {
@@ -4611,6 +4341,13 @@ Function: {
       @PrimitiveValue(obj, return_val);
       return obj;
     }
+    */
+    var obj = {};
+    @Prototype(obj, Date.prototype);
+    @Class(obj, "Date");
+    @Extensible(obj, true);
+    @PrimitiveValue(obj, @NumTop);
+    return obj;
   }
   \\],
   94: [\\
@@ -4621,6 +4358,7 @@ Function: {
   \\],
   95: [\\
   function UTC (year,month,date,hours,minutes,seconds,ms) {
+    /* TODO
     // 1. Let y be ToNumber(year).
     var y = @ToNumber(year);
     // 2. Let m be ToNumber(month).
@@ -4920,6 +4658,8 @@ Function: {
       return_val = @ToInteger(time);
     }
     return return_val;
+    */
+    return @NumTop;
   }
   \\],
   96: [\\
@@ -4933,13 +4673,14 @@ Function: {
   }
   \\],
   98: [\\
-  function test () {
-    // TODO
-    return @BoolTop;
+  function test (str) {
+    return @regexTest(this, str);
   }
   \\],
   99: [\\
   function toString () {
+    // TODO
+    return @StrTop;
   }
   \\],
   100: [\\
@@ -4948,15 +4689,27 @@ Function: {
   }
   \\],
   101: [\\
-  function RegExp () {
+  function RegExp (source, flags) {
     var obj = {};
-    @Class(obj,"RegExp");
-    @Prototype(obj,RegExp.prototype);
-    obj.source = @StrTop;
-    obj.global = @BoolTop;
-    obj.ignoreCase = @BoolTop;
-    obj.multiline = @BoolTop;
-    obj.lastIndex = @NumTop;
+    @Class(obj, "RegExp");
+    @Prototype(obj, RegExp.prototype);
+    var desc = {
+      value: @BoolTop,
+      writable: false,
+      enumerable: false,
+      configurable: false
+    };
+    desc.value = @BoolTop;
+    @DefineOwnProperty(obj, "global", desc);
+    @DefineOwnProperty(obj, "ignoreCase", desc);
+    @DefineOwnProperty(obj, "multiline", desc);
+    desc.value = @NumTop;
+    @DefineOwnProperty(obj, "lastIndex", desc);
+    desc.value = source;
+    @DefineOwnProperty(obj, "source", desc);
+    if (flags === undefined) flags = '';
+    desc.value = flags;
+    @DefineOwnProperty(obj, "flags", desc);
     return obj;
   }
   \\],
@@ -5313,6 +5066,47 @@ Function: {
     }
     // 5. Return the result of calling the [[Construct]] internal method of target providing args as the arguments.
     return @Construct(target, this, args);
+  }
+  \\],
+  139: [\\
+  function DefaultValue (v, hint) {
+    if (hint === 'String') {
+      if (@IsCallable(v.toString)) {
+        var result = @Call(v.toString, v, []);
+        if (!@isObject(result)) return result;
+      }
+      if (@IsCallable(v.valueOf)) {
+        var result = @Call(v.valueOf, v, []);
+        if (!@isObject(result)) return result;
+      }
+    }
+    if (hint === 'Number') {
+      if (@IsCallable(v.valueOf)) {
+        var result = @Call(v.valueOf, v, []);
+        if (!@isObject(result)) return result;
+      }
+      if (@IsCallable(v.toString)) {
+        var result = @Call(v.toString, v, []);
+        if (!@isObject(result)) return result;
+      }
+    }
+    throw new TypeError();
+  }
+  \\],
+  140: [\\
+  function ToPrimitive (v, hint) {
+    if (@isObject(v)) return @getLoc('DefaultValue')(v, hint);
+    else return v;
+  }
+  \\],
+  141: [\\
+  function ToString (v) {
+    return @ToString(@getLoc('ToPrimitive')(v, 'String'));
+  }
+  \\],
+  142: [\\
+  function ToNumber (v) {
+    return @ToNumber(@getLoc('ToPrimitive')(v, 'number'));
   }
   \\]
 }

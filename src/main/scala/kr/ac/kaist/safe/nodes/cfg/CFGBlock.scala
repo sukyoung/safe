@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,13 +11,11 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
-import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.TracePartition
-import kr.ac.kaist.safe.analyzer.models.SemanticFun
-import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
+import scala.collection.mutable.{ Map => MMap }
+import scala.reflect.ClassTag
 
 sealed trait CFGBlock {
   val func: CFGFunction
@@ -36,10 +34,12 @@ sealed trait CFGBlock {
   def getIId: InstId = iidCount
 
   // edges incident with this cfg node
-  protected val succs: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
-  protected val preds: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
-  def getAllSucc: Map[CFGEdgeType, List[CFGBlock]] = succs.toMap
-  def getAllPred: Map[CFGEdgeType, List[CFGBlock]] = preds.toMap
+  protected val succs: MMap[CFGEdgeType, List[CFGBlock]] = MMap()
+  protected val preds: MMap[CFGEdgeType, List[CFGBlock]] = MMap()
+  def getAllSucc: Map[CFGEdgeType, List[CFGBlock]] =
+    succs.foldLeft(Map[CFGEdgeType, List[CFGBlock]]())(_ + _)
+  def getAllPred: Map[CFGEdgeType, List[CFGBlock]] =
+    preds.foldLeft(Map[CFGEdgeType, List[CFGBlock]]())(_ + _)
 
   def getSucc(edgeType: CFGEdgeType): List[CFGBlock] = succs.getOrElse(edgeType, Nil)
   def getPred(edgeType: CFGEdgeType): List[CFGBlock] = preds.getOrElse(edgeType, Nil)
@@ -96,6 +96,23 @@ object CFGBlock {
   implicit def ordering[B <: CFGBlock]: Ordering[B] = Ordering.by {
     case block => (block.func.id, block.id)
   }
+}
+
+// CFGBlock parser
+trait CFGBlockParser extends SimpleParser {
+  val cfg: CFG
+
+  // block
+  lazy val fid = num
+  lazy val entry = "entry" ^^^ -1
+  lazy val exit = "exit" ^^^ -2
+  lazy val exitExc = "exit-exc" ^^^ -3
+  lazy val bid = nat | entry | exit | exitExc
+  lazy val block = (fid <~ ":") ~ bid ^^ { case f ~ b => cfg.getBlock(f, b) }
+
+  // get typed CFGBlock
+  def getTypedCFGBlock[T](implicit tag: ClassTag[T]): Parser[T] =
+    block ^? { case Some(block: T) => block }
 }
 
 // entry, exit, exception exit
@@ -209,7 +226,7 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
 }
 
 // loop head
-case class LoopHead(func: CFGFunction, span: Span) extends CFGBlock {
+case class LoopHead(func: CFGFunction, cond: CFGExpr, span: Span) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
@@ -228,10 +245,4 @@ case class LoopHead(func: CFGFunction, span: Span) extends CFGBlock {
     s.append(getSuccsStr).append(LINE_SEP)
     s.toString
   }
-}
-
-case class ModelBlock(func: CFGFunction, sem: SemanticFun) extends CFGBlock {
-  val id: BlockId = func.getBId
-  override def toString: String = s"Model[$id]"
-  val span: Span = Span() // TODO set meaningful Span
 }

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.console.command
 import java.io.OutputStream
 
 import kr.ac.kaist.safe.analyzer.console._
+import kr.ac.kaist.safe.nodes.cfg.CFGFunction
 import kr.ac.kaist.safe.LINE_SEP
 
 abstract class Command(
@@ -24,6 +25,13 @@ abstract class Command(
 
   def run(c: Interactive, args: List[String]): Option[Target]
   val help: String = "usage: " + name
+
+  protected def printFunc(func: CFGFunction): Unit = {
+    val fid = func.id
+    val name = func.simpleName
+    val span = func.span
+    printResult(s"[$fid] $name @ $span")
+  }
 
   protected def grep(key: String, str: String): String = {
     str.split(LINE_SEP)
@@ -48,21 +56,25 @@ abstract class Command(
 
 object Command {
   val commands: List[Command] = List(
-    CmdHelp,
-    CmdNext,
-    CmdJump,
-    CmdPrint,
-    CmdPrintResult,
-    CmdRunInsts,
-    CmdMove,
-    CmdHome,
-    CmdRun,
     CmdBreak,
     CmdBreakList,
     CmdBreakRemove,
     CmdFindBot,
-    // TODO CmdDump,
-    CmdRestart
+    CmdFindExc,
+    CmdHelp,
+    CmdHome,
+    CmdJump,
+    CmdMove,
+    CmdNext,
+    CmdPrint,
+    CmdPrintResult,
+    CmdRestart,
+    CmdRun,
+    CmdRunInsts,
+    CmdShowIter,
+    CmdStopAlreadyVisited,
+    CmdStopExitExc,
+    CmdDebugMode
   )
   val cmdMap: Map[String, Command] = commands.foldLeft(
     Map[String, Command]()

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,70 +11,65 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.nodes.cfg.{ CFG, Call }
+import kr.ac.kaist.safe.util.PipeOps._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashSet
+import scala.util.parsing.combinator._
 import scala.util.{ Try, Success, Failure }
-import spray.json._
 
 // concrete location type
 abstract class Loc extends Value {
   def isUser: Boolean = this match {
     case Recency(loc, _) => loc.isUser
+    case TraceSensLoc(loc, _) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
   }
-
-  override def toString: String = this match {
-    case Recency(loc, _) => loc.toString
-    case u @ UserAllocSite(_) => throw UserAllocSiteError(u)
-    case p @ PredAllocSite(_) => p.toString
-  }
-
-  def toJson: JsValue
 }
-
 object Loc {
-  // predefined special concrete location
-  lazy val predConSet: Set[Loc] = HashSet(
-    PredAllocSite.GLOBAL_ENV,
-    PredAllocSite.PURE_LOCAL
-  )
-
-  def parse(str: String): Try[Loc] = {
-    val recency = "(R|O)(.+)".r
-    val userASite = "#([0-9]+)".r
-    val predASite = "#([0-9a-zA-Z-.<>]+)".r
-    str match {
-      // allocation site
-      case userASite(id) => Try(UserAllocSite(id.toInt))
-      case predASite(name) => Success(PredAllocSite(name))
-      // recency abstraction
-      case recency("R", str) => parse(str).map(Recency(_, Recent))
-      case recency("O", str) => parse(str).map(Recency(_, Old))
-      // otherwise
-      case str => Failure(NoLoc(str))
-    }
-  }
-
-  def apply(str: String): Loc = apply(PredAllocSite(str))
-  def apply(asite: AllocSite): Loc = AAddrType match {
-    case NormalAAddr => asite
-    case RecencyAAddr => Recency(asite, Recent)
+  def parse(str: String, cfgIn: CFG): Try[Loc] = (new LocParser { val cfg = cfgIn })(str)
+  def apply(str: String): Loc = apply(PredAllocSite(str), Sensitivity.initTP)
+  def apply(asite: AllocSite, tp: TracePartition): Loc = {
+    asite |>
+      condApply[Loc](HeapClone, TraceSensLoc(_, tp)) |>
+      condApply[Loc](RecencyMode, Recency(_, Recent))
   }
 
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
     case addrPart => addrPart.toString
   })
+}
 
-  def fromJson(v: JsValue): Loc = v match {
-    case JsObject(m) => (
-      m.get("loc").map(Loc.fromJson _),
-      m.get("recency").map(RecencyTag.fromJson _)
-    ) match {
-        case (Some(l), Some(r)) => Recency(l, r)
-        case _ => throw RecencyParseError(v)
-      }
-    case _ => AllocSite.fromJson(v)
+// location parser
+trait LocParser extends TracePartitionParser {
+  // allocation site abstraction
+  lazy val userASite = "#" ~> nat ^^ { id => UserAllocSite(id) }
+  lazy val predName = "[0-9a-zA-Z-.<>\\[\\]]+".r
+  lazy val predASite = "#" ~> predName ^^ { name => PredAllocSite(name) }
+  lazy val allocSite = userASite | predASite
+
+  // trace sensitive address abstraction
+  def heapClone(parser: Parser[Loc]): Parser[Loc] = {
+    (parser <~ ":Sens[") ~ tp <~ "]" ^^ {
+      case loc ~ tp => TraceSensLoc(loc, tp)
+    }
   }
+
+  // recency
+  lazy val recent = "R" ^^^ Recent
+  lazy val old = "O" ^^^ Old
+  lazy val recencyTag = recent | old
+  def recency(parser: Parser[Loc]): Parser[Loc] = recencyTag ~ parser ^^ {
+    case tag ~ loc => Recency(loc, tag)
+  }
+
+  // abstract location
+  lazy val loc = allocSite |>
+    condApply(HeapClone, heapClone) |>
+    condApply(RecencyMode, recency)
+
+  def apply(str: String): Try[Loc] =
+    Try(parse(loc, str).getOrElse(throw LocParseError(str)))
 }

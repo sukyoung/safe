@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,8 +14,17 @@ package kr.ac.kaist.safe.nodes.ast
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
 
-// SourceElement ::= Stmt
-trait Stmt extends SourceElement {
+// Program ::= Stmt*
+case class Stmts(
+    info: ASTNodeInfo,
+    body: List[Stmt],
+    strict: Boolean
+) extends ASTNode {
+  override def toString(indent: Int): String = ""
+}
+
+// Statements
+trait Stmt extends ASTNode {
   def getIndent(indent: Int): Int = indent + 1
 }
 
@@ -57,7 +66,7 @@ case class StmtUnit(
   }
 }
 
-// Stmt ::= function Id ( (Id,)* ) { SourceElement* }
+// Stmt ::= function Id ( (Id,)* ) { Stmt* }
 case class FunDecl(
     info: ASTNodeInfo,
     ftn: Functional,

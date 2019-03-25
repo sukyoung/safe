@@ -1,6 +1,6 @@
 /*
  * ****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -25,9 +25,9 @@ import kr.ac.kaist.safe._
 import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.analyzer.console.{ Interactive, WebConsole }
 import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
-import kr.ac.kaist.safe.compiler.Translator
-import kr.ac.kaist.safe.json.JsonImplicits._
-import kr.ac.kaist.safe.json.JsonUtil
+import kr.ac.kaist.safe.translator.Translator
+import kr.ac.kaist.safe.util.JsonImplicits._
+import kr.ac.kaist.safe.util.JsonUtil
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util._
@@ -112,7 +112,7 @@ object WebServer extends {
                 val heapBuildConfig = HeapBuild.defaultConfig
                 val testJSON = Useful.path("config.json")
                 parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
-                parser(List(s"-json=$testJSON"))
+                parser(List(s"-config=$testJSON"))
 
                 // AST
                 val (ast, _) = ASTRewrite.rewrite(pgm)

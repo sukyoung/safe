@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-// Program ::= SourceElement*
+// Program ::= Stmt*
 case class Program(
     info: ASTNodeInfo,
     body: TopLevel
@@ -27,6 +27,6 @@ case class Program(
   }
 }
 object Program {
-  def apply(info: ASTNodeInfo, ses: List[SourceElements]): Program =
+  def apply(info: ASTNodeInfo, ses: List[Stmts]): Program =
     Program(info, new TopLevel(info, Nil, Nil, ses))
 }

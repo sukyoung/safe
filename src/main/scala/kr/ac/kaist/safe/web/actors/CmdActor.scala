@@ -1,6 +1,6 @@
 /*
  * ****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.analyzer.{ ControlPoint, Fixpoint, TracePartition }
-import kr.ac.kaist.safe.json.JsonUtil
+import kr.ac.kaist.safe.util.JsonUtil
 import kr.ac.kaist.safe.nodes.cfg.{ BlockId, CFGCallInst, CFGNormalInst, FunctionId }
 import kr.ac.kaist.safe.web.domain.Actions
 import kr.ac.kaist.safe.web.domain.Protocol._
@@ -80,22 +80,18 @@ class CmdActor() extends Actor {
     val console: Interactive = fixpoint.consoleOpt.get
     val req = JsonUtil.fromJson[Run](cmd)
 
-    console.runCmd(req.cmd) match {
-      case CmdResultContinue(output) =>
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
-        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+    val output = console.runCmd(req.cmd) match {
+      case CmdResultContinue(output) => output
       case CmdResultBreak(output) =>
-        if (req.cmd == "run") {
-          fixpoint.compute()
-        } else {
-          fixpoint.computeOneStep()
-        }
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
-        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+        do { fixpoint.computeOneStep }
+        while (!console.worklist.isEmpty && !console.prepareToRunFixpoint)
+        output
       case CmdResultRestart =>
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
-        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+        console.prepareToRunFixpoint
+        ""
     }
+    val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
+    Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
   }
 
   def getBlockState(req: String, fixpoint: Fixpoint): BlockState = {
@@ -135,7 +131,7 @@ class CmdActor() extends Actor {
     breakable {
       for (inst <- insts) {
         val (s, e) = inst match {
-          case i: CFGNormalInst => c.sem.I(i, st, excSt)
+          case i: CFGNormalInst => c.sem.I(cp, i, st, excSt)
           case i: CFGCallInst => c.sem.CI(cp, i, st, excSt)
         }
         st = s; excSt = e

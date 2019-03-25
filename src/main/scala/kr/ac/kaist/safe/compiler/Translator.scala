@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.compiler
+package kr.ac.kaist.safe.translator
 
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
@@ -330,7 +330,7 @@ class Translator(program: Program) {
   }
 
   private def functional(name: Id, params: List[Id], fds: List[FunDecl],
-    vds: List[VarDecl], body: SourceElements, env: Env,
+    vds: List[VarDecl], body: Stmts, env: Env,
     fe: Option[IRId], isMember: Boolean): (IRId, List[IRId], List[IRStmt], List[IRFunDecl], List[IRVarStmt], List[IRStmt]) = {
     val oldIsLocal = isLocal
     val oldLocals = locals

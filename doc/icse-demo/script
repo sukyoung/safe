@@ -1,0 +1,80 @@
+Hi, we are the SAFE 2 team at KAIST.  We present our tool, SAFE 2, a
+playground for advanced research in JavaScript web applications.
+
+JavaScript has become the language for web applications, but they are
+often vulnerable to programmer errors.  So, various JavaScript
+analyzers are developed to detect such errors.  However, it is not
+easy to experiment with such analyzers, because analyzer developers
+want to configure existing analysis techniques easily, add new
+techniques easily, and debug their implementation easily.
+To help them easily experiment with analysis techniques, SAFE 2
+supports 3 main features: pluggability, extensibility, and
+debuggability.  Let's take a closer look at them one by one.
+
+The first one is pluggability.
+There are various analysis techniques in the world, such as abstract
+domains and analysis sensitivities.  Analyzer developers may want to
+select those techniques and to configure them freely.
+But, current analyzers support only fixed analysis techniques,
+or change them with recompilation of analyzers.
+However, SAFE 2 supports JSON format configuration of such techniques.
+So, we can easily change the techniques at run time.
+For example, we can analyze sample.js with the default option.
+Or, instead of using the default number domain, we can analyze it
+using a flat number domain without recompilation of SAFE 2.
+
+The second one is extensibility.
+SAFE 2 supports not only an easy way to configure existing techniques,
+but also a way to add new techniques or to extend existing techniques.
+SAFE 2 supports such an extensibility via phases and options.  By
+composing phases, it provides various commands such as parse, compile,
+and analyze.  Let’s take a closer look at the analyze command.  The
+analyze command consists of four phases.  Each phase can be configured
+by various options.  For example, the analyzer phase has options to
+select analysis techniques.  We can add a new technique by adding a
+new phase or a new option.  Let’s see how easily we can add new
+techniques with a new phase and a new option.
+
+First, we can add a bug detector described in this paper to SAFE 2 by
+adding a new phase.  We first add a new phase after the Analyze
+command because it uses the analysis results.  Simply adding basic
+information like name is enough to make a new phase.
+
+And then, we implement the technique by receiving
+the result of the previous phase, and that’s it!
+Now, we can detect two bugs in this simplified wikipedia.
+Actually, the second bug is a false alarm.
+We'd like to eliminate it.
+Luckily, we can eliminate it by applying the technique in this paper
+that utilizes dynamic information.
+We can use this technique by adding an option to the analyzer phase.
+Simply adding three pieces of basic information is enough to add a new
+option: name, type, and meaning.
+Moreover, three lines of code is enough to apply the technique
+because SAFE 2 provides APIs that parse, abstract, and join the
+dynamic information.  Let's analyze the same wikipedia once again.
+Now, with this new option, the bug detector does not report the false
+alarm any more.
+
+The last one is debuggability.
+SAFE 2 helps users easily test and debug analysis results with tests
+using Test262 and the HTML debugger.  Let's assume that we want to add
+a flat number domain to SAFE 2.  We can test this new abstract domain!
+Let's try it.  Our tests help researchers check the soundness and
+precision of their new analysis implementation.  Oh, there are 14
+failures.  What did we do wrong?  Let's debug the analysis with the
+new domain.  The HTML Debugger enables users to investigate analysis
+results from browsers interactively.  The debugger shows the control
+flow graph of the application.  Reachable nodes are in black and
+unreachable nodes are in gray.  Also, if you click a node, the
+instructions and the analysis result of the node appears at the left
+column.  Oh, the analysis result is wrong.  Let’s fix it.  And test it
+again.  This time, it passed all the tests and we’re done!
+
+We presented SAFE 2, a playground for analysis developers to easily
+experiment with their novel ideas.
+It allows users to select various analysis techniques at run time.
+Analyzer developers can add new techniques easily,
+and they can test and debug their implementation conveniently.
+SAFE 2 is open to the public, and we are more than happy
+to work with external collaborators.  Come and enjoy SAFE 2!

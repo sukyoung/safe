@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.parser
 
 import java.io._
 import java.nio.charset.Charset
-import scala.util.{ Try, Success, Failure }
+import scala.util.{ Random, Try, Success, Failure }
 import xtc.parser.{ Result, ParseError, SemanticValue }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
@@ -68,11 +68,12 @@ object Parser {
     result
   }
 
-  // Used by CoreTest
+  // Used by tests
   def stringToAST(str: String): Try[(Program, ExcLog)] = {
     val sr = new StringReader(str)
     val in = new BufferedReader(sr)
-    val pgm = resultToAST[Program](new JS(in, "stringParse"), _.JSmain(0))
+    val rand = Random.alphanumeric.take(16).mkString
+    val pgm = resultToAST[Program](new JS(in, s"stringParse_$rand"), _.JSmain(0))
     val result = pgm.map { case (e, log) => (DynamicRewriter(e), log) }
     in.close; sr.close
     result
@@ -89,7 +90,7 @@ object Parser {
           }
       }
     case files =>
-      files.foldLeft(Try((List[SourceElements](), new ExcLog))) {
+      files.foldLeft(Try((List[Stmts](), new ExcLog))) {
         case (res, f) => fileToStmts(f).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
         }
@@ -102,15 +103,15 @@ object Parser {
   }
 
   // Used by parser/JSFromHTML.scala
-  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(SourceElements, ExcLog)] = ss match {
+  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(Stmts, ExcLog)] = ss match {
     case List(script) =>
       scriptToStmts(script)
     case scripts =>
-      scripts.foldLeft(Try((List[SourceElement](), new ExcLog))) {
+      scripts.foldLeft(Try((List[Stmt](), new ExcLog))) {
         case (res, s) => scriptToStmts(s).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ ss.body, ex + ee)) }
         }
-      }.map { case (s, e) => (SourceElements(NU.MERGED_SOURCE_INFO, s, false), e) }
+      }.map { case (s, e) => (Stmts(NU.MERGED_SOURCE_INFO, s, false), e) }
   }
 
   private def resultToAST[T <: ASTNode](
@@ -135,7 +136,7 @@ object Parser {
     new Span(file, loc, loc)
   }
 
-  private def fileToStmts(f: String): Try[(SourceElements, ExcLog)] = {
+  private def fileToStmts(f: String): Try[(Stmts, ExcLog)] = {
     var fileName = new File(f).getCanonicalPath
     if (File.separatorChar == '\\') {
       // convert path string to linux style for windows
@@ -153,7 +154,7 @@ object Parser {
         pair
       }
       case HTMLFile => JSFromHTML.parseScripts(fileName)
-      case JSONFile | JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
+      case JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
     }
   }
 
@@ -162,15 +163,15 @@ object Parser {
     pgm.map { case (e, log) => (DynamicRewriter(e), log) }
   }
 
-  private def getInfoStmts(program: Program): Try[SourceElements] = {
+  private def getInfoStmts(program: Program): Try[Stmts] = {
     val info = program.info
     if (program.body.stmts.size == 1) {
       val ses = program.body.stmts.head
-      Try(SourceElements(info, (NoOp(info, "StartOfFile")) +: ses.body :+ (NoOp(info, "EndOfFile")), ses.strict))
+      Try(Stmts(info, (NoOp(info, "StartOfFile")) +: ses.body :+ (NoOp(info, "EndOfFile")), ses.strict))
     } else Failure(AlreadyMergedSourceError(info.span))
   }
 
-  private def scriptToStmts(script: (String, (Int, Int), String)): Try[(SourceElements, ExcLog)] = {
+  private def scriptToStmts(script: (String, (Int, Int), String)): Try[(Stmts, ExcLog)] = {
     val (fileName, (line, offset), code) = script
     val is = new ByteArrayInputStream(code.getBytes("UTF-8"))
     val ir = new InputStreamReader(is)

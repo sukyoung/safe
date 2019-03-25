@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,10 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.AbsEnvRecParseError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import spray.json._
 
 // default environment record abstract domain
 object DefaultEnvRec extends EnvRecDomain {
@@ -27,18 +25,9 @@ object DefaultEnvRec extends EnvRecDomain {
   }
 
   def apply(envRec: AbsDecEnvRec): Elem = Bot.copy(decEnvRec = envRec)
-  def apply(envRec: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = envRec)
-
-  def fromJson(v: JsValue): Elem = v match {
-    case JsObject(m) => (
-      m.get("decEnvRec").map(AbsDecEnvRec.fromJson _),
-      m.get("globalEnvRec").map(AbsGlobalEnvRec.fromJson _)
-    ) match {
-        case (Some(d), Some(g)) => Elem(d, g)
-        case _ => throw AbsEnvRecParseError(v)
-      }
-    case _ => throw AbsEnvRecParseError(v)
-  }
+  def apply(global: AbsGlobalEnvRec): Elem = Bot.copy(globalEnvRec = global)
+  def apply(envRec: AbsDecEnvRec, global: AbsGlobalEnvRec): Elem =
+    Elem(envRec, global)
 
   case class Elem(
       decEnvRec: AbsDecEnvRec,
@@ -46,7 +35,7 @@ object DefaultEnvRec extends EnvRecDomain {
   ) extends ElemTrait {
     def gamma: ConSet[EnvRec] = ConInf // TODO more precise
 
-    def getSingle: ConSingle[EnvRec] = ConMany() // TODO more precise
+    def getSingle: ConSingle[EnvRec] = ConMany // TODO more precise
 
     def ⊑(that: Elem): Boolean = {
       val right = that
@@ -126,15 +115,13 @@ object DefaultEnvRec extends EnvRecDomain {
     def ImplicitThisValue(heap: AbsHeap): AbsValue =
       decEnvRec.ImplicitThisValue ⊔ globalEnvRec.ImplicitThisValue(heap)
 
-    def subsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(decEnvRec.subsLoc(locR, locO), globalEnvRec)
+    def subsLoc(from: Loc, to: Loc): Elem =
+      Elem(decEnvRec.subsLoc(from, to), globalEnvRec)
 
-    def weakSubsLoc(locR: Recency, locO: Recency): Elem =
-      Elem(decEnvRec.weakSubsLoc(locR, locO), globalEnvRec)
+    def weakSubsLoc(from: Loc, to: Loc): Elem =
+      Elem(decEnvRec.weakSubsLoc(from, to), globalEnvRec)
 
-    def toJson: JsValue = JsObject(
-      ("decEnvRec", decEnvRec.toJson),
-      ("globalEnvRec", globalEnvRec.toJson)
-    )
+    def remove(locs: Set[Loc]): Elem =
+      Elem(decEnvRec.remove(locs), globalEnvRec)
   }
 }

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -12,10 +12,13 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.cfg.CFGId
 
 // heap abstract domain
 trait HeapDomain extends AbsDomain[Heap] {
-  def apply(map: Map[Loc, AbsObj]): Elem
+  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem
+
+  val Empty: Elem
 
   // abstract heap element
   type Elem <: ElemTrait
@@ -24,18 +27,21 @@ trait HeapDomain extends AbsDomain[Heap] {
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     // lookup
     def get(loc: Loc): AbsObj
-    def get(locSet: AbsLoc): AbsObj
+    def get(locSet: LocSet): AbsObj
 
     // heap update
     def weakUpdate(loc: Loc, obj: AbsObj): Elem
     def update(loc: Loc, obj: AbsObj): Elem
 
-    // remove location
-    def remove(loc: Loc): Elem
+    // substitute from by to
+    def subsLoc(from: Loc, to: Loc): Elem
 
-    // substitute locR by locO
-    def subsLoc(locR: Recency, locO: Recency): Elem
-    def oldify(loc: Loc): Elem
+    def remove(locs: Set[Loc]): Elem
+
+    def alloc(loc: Loc): Elem
+
+    def getLocSet: LocSet
+
     def domIn(loc: Loc): Boolean
 
     // toString
@@ -50,7 +56,7 @@ trait HeapDomain extends AbsDomain[Heap] {
     def canPutVar(x: String): AbsBool
 
     // proto
-    def protoBase(loc: Loc, absStr: AbsStr): AbsLoc
+    def protoBase(loc: Loc, absStr: AbsStr): LocSet
 
     // store
     def propStore(loc: Loc, absStr: AbsStr, value: AbsValue): Elem
@@ -63,5 +69,14 @@ trait HeapDomain extends AbsDomain[Heap] {
 
     // location concrete check
     def isConcrete(loc: Loc): Boolean
+
+    // location changed check
+    def isChanged(loc: Loc): Boolean
+
+    // delete changed info
+    def cleanChanged: Elem
+
+    // applied changed information
+    def <<(that: Elem): Elem
   }
 }

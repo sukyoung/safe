@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -327,7 +327,7 @@ case class Parenthesized(
   }
 }
 
-// LHS ::= function Id? ( (Id,)* ) { SourceElement }
+// LHS ::= function Id? ( (Id,)* ) { Stmt }
 case class FunExpr(
     info: ASTNodeInfo,
     ftn: Functional

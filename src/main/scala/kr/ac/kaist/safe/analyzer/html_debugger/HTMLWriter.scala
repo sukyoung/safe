@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -13,13 +13,11 @@ package kr.ac.kaist.safe.analyzer.html_debugger
 
 import java.io.{ File, FileWriter }
 
-import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
+import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, Worklist }
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.web.domain._
 import kr.ac.kaist.safe.{ LINE_SEP, SEP }
 import org.apache.commons.io.FileUtils
@@ -30,7 +28,10 @@ object HTMLWriter {
   val FUNC_LABEL_EDGE = ", width: 1, style: 'dashed', arrow: 'none', label:''"
   val NORMAL_EDGE = ", width: 2, style: 'solid', arrow: 'triangle', label:''"
   val UNREACHABLE_COLOR = "#CCCCCC"
+  val CUR_COLOR = "#3498DB"
+  val WORKLIST_COLOR = "#BBBBBB"
   val REACHABLE_COLOR = "black"
+  val NORMAL_BC = "white"
 
   def getId(block: CFGBlock): String =
     s"${block.func.id}:${block.id}"
@@ -47,19 +48,7 @@ object HTMLWriter {
   }
 
   private def isReachable(block: CFGBlock, sem: Semantics): Boolean = sem.getState(block).exists {
-    case (tp, oldSt) => block.getInsts.lastOption match {
-      case None => true
-      case Some(inst) => {
-        val st = inst match {
-          case inst: CFGAssert => {
-            val (st, _) = sem.I(inst, oldSt, AbsState.Bot)
-            st
-          }
-          case _ => oldSt
-        }
-        !st.isBottom
-      }
-    }
+    case (tp, st) => !st.isBottom
   }
 
   def connectEdge(from: CFGBlock, succs: Set[CFGBlock], edgeStyle: String = NORMAL_EDGE, sem: Semantics): String = {
@@ -78,9 +67,13 @@ object HTMLWriter {
   def drawBlock(block: CFGBlock, wlOpt: Option[Worklist], sem: Semantics): String = {
     val id = getId(block)
     val label = getLabel(block)
-    val inWL = wlOpt match {
-      case Some(worklist) => worklist has block
-      case None => false
+    val bc = wlOpt match {
+      case Some(worklist) => worklist.getWorklist.headOption match {
+        case Some(head) if head.cp.block == block => CUR_COLOR
+        case _ if worklist has block => WORKLIST_COLOR
+        case _ => NORMAL_BC
+      }
+      case None => NORMAL_BC
     }
     val color =
       if (!isReachable(block, sem)) UNREACHABLE_COLOR
@@ -90,10 +83,10 @@ object HTMLWriter {
         val func = entry.func
         val id = func.id
         val label = func.toString
-        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', inWL: false, bc: 'white'} },""" + LINE_SEP
+        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', bc: 'white'} },""" + LINE_SEP
       case _ => ""
     }) +
-      s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
+      s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', bc: '$bc'} },""" + LINE_SEP
   }
 
   def drawEdge(block: CFGBlock, sem: Semantics): String = {
@@ -176,11 +169,13 @@ object HTMLWriter {
           .foreach {
             case (loc, obj) =>
               val parent = loc match {
-                case BuiltinGlobal.loc => "heap"
+                case GLOBAL_LOC => "heap"
                 case l if !l.isUser => "predLoc"
                 case _ => "heap"
               }
-              sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
+              val concrete = if (h isConcrete loc) "C" else "M"
+              val changed = if (h isChanged loc) "*" else " "
+              sb.append(s"{ value: {value: '$changed [$concrete] $loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
               obj.toString.split(LINE_SEP).foreach(prop => {
                 val propStr = prop.replaceAll("\'", "\\\\\'")
                 sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
@@ -195,7 +190,9 @@ object HTMLWriter {
       .sortBy { case (loc, _) => loc }
       .foreach {
         case (loc, obj) =>
-          sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
+          val concrete = if (ctx isConcrete loc) "C" else "M"
+          val changed = if (ctx isChanged loc) "*" else " "
+          sb.append(s"{ value: {value: '$changed [$concrete] $loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
           obj.toString.split(LINE_SEP).foreach(prop => {
             val propStr = prop.replaceAll("\'", "\\\\\'")
             sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
@@ -204,14 +201,12 @@ object HTMLWriter {
 
     val thisBinding = ctx.thisBinding
     sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
-    // old allocation site set
-    val old = ctx.old
-    val mayOld = old.mayOld.mkString(", ")
-    val mustOld =
-      if (old.mustOld == null) "bottom"
-      else old.mustOld.mkString(", ")
-    sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
-    sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
+    // allocated location set
+    val allocs = st.allocs
+    val mayAlloc = allocs.mayAlloc
+    val mustAlloc = allocs.mustAlloc
+    sb.append(s"{ value: {value: 'mayAlloc: [$mayAlloc]'} },").append(LINE_SEP)
+    sb.append(s"{ value: {value: 'mustAlloc: [$mustAlloc]'} },").append(LINE_SEP)
     sb.append(s"],").append(LINE_SEP)
 
     sb.toString
@@ -290,7 +285,7 @@ object HTMLWriter {
         <script>
           var safe_DB = ${renderGraphStates(cfg, sem, wlOpt)};
         </script>
-        <script src="assets/js/core.js" type="text/javascript"></script>
+        <script src="assets/js/html_core.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="cy"></div>

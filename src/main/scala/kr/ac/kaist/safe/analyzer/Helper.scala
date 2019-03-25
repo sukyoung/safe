@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016-2017, KAIST.
+ * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.util._
 
@@ -51,7 +50,7 @@ object Helper {
                 val (tmpHeap, _) = hj.delete(l, AbsStr(i.toString))
                 tmpHeap
               })
-            case (ConZero(), _) | (_, ConZero()) => AbsHeap.Bot
+            case (ConZero, _) | (_, ConZero) => AbsHeap.Bot
             case _ =>
               val (tmpHeap, _) = hi.delete(l, AbsStr.Number)
               tmpHeap
@@ -67,7 +66,7 @@ object Helper {
           AbsHeap.Bot
 
       val lenExcSet1 =
-        if (afalse ⊑ (nValue StrictEquals nNewLen)) HashSet[Exception](RangeError)
+        if (afalse ⊑ (nValue StrictEquals nNewLen)) Set[Exception](RangeError)
         else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {
@@ -105,7 +104,7 @@ object Helper {
       AbsHeap.Bot
   }
 
-  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsStr, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
+  def storeHelp(objLocSet: LocSet, idxAbsStr: AbsStr, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
       (afalse ⊑ heap.isArray(l)) && atrue ⊑ heap.get(l).CanPut(idxAbsStr, heap))
@@ -144,7 +143,7 @@ object Helper {
   }
 
   def inherit(h: AbsHeap, loc1: Loc, loc2: Loc): AbsValue = {
-    var visited = AbsLoc.Bot
+    var visited = LocSet.Bot
     val locVal2 = AbsValue(loc2)
     val boolBotVal = AbsValue(AbsPValue.Bot)
     val boolTrueVal = AbsValue(true)
@@ -311,7 +310,7 @@ object Helper {
       if (!left.locset.isBottom && !right.locset.isBottom) {
         val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
-          case (_, _, ConZero()) => afalse
+          case (_, _, ConZero) => afalse
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
           case _ => AbsBool.Top
         }
@@ -452,7 +451,7 @@ object Helper {
       if (!left.locset.isBottom && !right.locset.isBottom) {
         val intersect = left.locset ⊓ right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
-          case (_, _, ConZero()) => afalse
+          case (_, _, ConZero) => afalse
           case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
           case _ => AbsBool.Top
         }

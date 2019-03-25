@@ -1,0 +1,5 @@
+The following versions do not support "react.js" and "react-dom.js" as single files.
+- v15.5.1
+- v15.5.2
+- v15.5.3
+- v15.5.4
