@@ -603,18 +603,18 @@ Function: {
     }
     do {
       var newn = 0;
-      for (var i = 1; i< n; i++) {
+      for (var i = 1; i < n; i++) {
         var result = comparefn(a[i-1],a[i]);
         // a[i-1] > a[i]
         if (result === 1) {
-          var temp = a[-1];
+          var temp = a[i-1];
           a[i-1] = a[i];
           a[i] = temp;
           newn = i;
         }
       }
       n = newn;
-    }while (n != 0);
+    } while (n != 0);
     return a;
   }
   \\],
