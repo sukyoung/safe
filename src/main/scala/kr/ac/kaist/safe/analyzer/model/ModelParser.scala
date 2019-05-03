@@ -155,7 +155,7 @@ trait ModelParser extends JavaTokenParsers with RegexParsers {
     }
 
   // JavaScript function
-  val jsFun: Parser[(String, CFGFunction)] = """[\\""" ~> """[^\\]*""".r <~ """\\]""" ^^ {
+  val jsFun: Parser[List[(String, CFGFunction)]] = """[\\""" ~> """[^\\]*""".r <~ """\\]""" ^^ {
     case fun => JSParser.stringToAST(fun) match {
       case Succ((pgm, log)) => {
         if (log.hasError) println(log)
@@ -171,10 +171,17 @@ trait ModelParser extends JavaTokenParsers with RegexParsers {
 
         // cfg build
         val cfgBuildConfig = CFGBuildConfig()
-        var funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
-        var func = funCFG.getFunc(1).get
+        val funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
 
-        Succ((fun, func))
+        // add fun cfgs
+        val funcs = funCFG.getUserFuncs
+        val result = funcs.filter(_.id != 0).foldLeft(List[(String, CFGFunction)]()) {
+          case (lst, func) =>
+            // TODO: map func to corresponding fun substring
+            (fun, func) :: lst
+        }
+
+        Succ(result)
       }
       case Fail(e) => {
         println(ModelParseError(e.toString))
@@ -188,27 +195,37 @@ trait ModelParser extends JavaTokenParsers with RegexParsers {
       case lst => {
         var fidMap = Map[Int, Int]()
         var size = 0
+        var maxFid = if (lst.isEmpty) 0 else lst.map { case (mid ~ _) => mid }.max
         val result = lst.foldLeft(List[(String, CFGFunction)]()) {
-          case (funcs, mid ~ ((body, func))) => {
-            size += 1
-            fidMap += (mid -> size)
-            func.id = -mid
-            // allocation site mutation
-            // TODO is predefined allocation site good? how about incremental user allocation site?
-            def mutate(asite: AllocSite): PredAllocSite = asite match {
-              case UserAllocSite(id) =>
-                PredAllocSite(s"-$mid[$id]")
-              case pred: PredAllocSite => pred
+          case (funcMap, mid ~ funcs) => {
+            (0 until funcs.size).foldLeft(funcMap) {
+              case (funcMap, i) =>
+                val (body, func) = funcs(i)
+                val mid1 = if (i == 0) mid else { maxFid += 1; maxFid }
+                size += 1
+                fidMap += (mid1 -> size)
+                func.id = -mid1
+                // allocation site mutation
+                // TODO is predefined allocation site good? how about incremental user allocation site?
+                def mutate(asite: AllocSite): PredAllocSite = asite match {
+                  case UserAllocSite(id) =>
+                    PredAllocSite(s"-$mid1$id")
+                  case pred: PredAllocSite => pred
+                }
+                func.getAllBlocks.foreach(_.getInsts.foreach {
+                  case i: CFGAlloc => i.asite = mutate(i.asite)
+                  case i: CFGAllocArray => i.asite = mutate(i.asite)
+                  case i: CFGAllocArg => i.asite = mutate(i.asite)
+                  case i: CFGCallInst => i.asite = mutate(i.asite)
+                  case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
+                  case i: CFGFunExpr =>
+                    i.asite1 = mutate(i.asite1)
+                    i.asite2 = mutate(i.asite2)
+                    i.asite3Opt = i.asite3Opt.map(mutate(_))
+                  case _ =>
+                })
+                (body, func) :: funcMap
             }
-            func.getAllBlocks.foreach(_.getInsts.foreach {
-              case i: CFGAlloc => i.asite = mutate(i.asite)
-              case i: CFGAllocArray => i.asite = mutate(i.asite)
-              case i: CFGAllocArg => i.asite = mutate(i.asite)
-              case i: CFGCallInst => i.asite = mutate(i.asite)
-              case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
-              case _ =>
-            })
-            (body, func) :: funcs
           }
         }
         (result, fidMap)
