@@ -424,6 +424,7 @@ class DefaultCFGBuilder(
           case INTERNAL_GET_OWN_PROP => (Some(newASite), lmap)
           case INTERNAL_GET_OWN_PROP_NAMES => (Some(newASite), lmap)
           case INTERNAL_SPLIT => (Some(newASite), lmap)
+          case INTERNAL_GET_OWN_ENUM_PROP_NAMES => (Some(newASite), lmap)
           case INTERNAL_TO_OBJ => (Some(newASite), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case INTERNAL_ITER_INIT => (Some(newASite), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
