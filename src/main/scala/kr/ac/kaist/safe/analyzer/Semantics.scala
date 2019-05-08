@@ -835,9 +835,6 @@ case class Semantics(
           }
         }
       }
-      case (NodeUtil.INTERNAL_GET_OWN_ENUM_PROP_NAMES, List(expr), Some(aNew)) => {
-        ???
-      }
       case (NodeUtil.INTERNAL_STR_OBJ, List(expr), Some(aNew)) => {
         val (v, excSet) = V(expr, st)
         val str = TypeConversionHelper.ToString(v)

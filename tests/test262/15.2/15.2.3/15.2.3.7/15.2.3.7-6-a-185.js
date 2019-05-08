@@ -1,5 +1,4 @@
-  // TODO: [[DefineOwnProperty]] for Array objects (15.4.5.1)
-  function testcase()
+  function testcase() 
   {
     var arr = [1, 2, 3, ];
     Object.defineProperty(arr, "length", {

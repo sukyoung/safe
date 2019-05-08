@@ -181,15 +181,9 @@ object CKeyObject extends ObjDomain {
       })
     }
 
-    // collect key set
+    // collect key set with prefix
     def collectKeySet: ConSet[String] = {
       if (nmap.default.isAbsent) ConFin(nmap.map.keySet)
-      else ConInf
-    }
-
-    // collect key set with filter
-    def collectKeySet(filter: (String, AbsDataProp) => Boolean): ConSet[String] = {
-      if (nmap.default.isAbsent) ConFin(nmap.map.keySet.filter(str => filter(str, nmap(str).value)))
       else ConInf
     }
 
