@@ -26,7 +26,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
        $name heap(-all) ({keyword})
        $name context ({keyword})
        $name block ({fid}:{bid})
-       $name loc {LocName} ({keyword})
+       $name loc {LocName}
        $name fid {keyword}
        $name function ({fid})
        $name worklist
@@ -111,12 +111,12 @@ case object CmdPrint extends Command("print", "Print out various information.") 
   }
 
   def printLoc(c: Interactive, args: List[String]): Unit = args match {
-    case locStr :: args if args.length <= 1 =>
+    case locStr :: Nil =>
       Loc.parse(locStr, c.cfg) match {
         case Success(loc) =>
           val state = c.sem.getState(c.getCurCP)
           val heap = state.heap
-          state.heap.toStringLoc(loc) match {
+          heap.toStringLoc(loc) match {
             case Some(res) => printResult(res)
             case None => state.context.toStringLoc(loc) match {
               case Some(res) => printResult(res)
