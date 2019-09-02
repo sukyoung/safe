@@ -50,7 +50,7 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
 
     // Report errors.
     val excLog = sem.excLog
-    if (excLog.hasError) {
+    if (!safeConfig.testMode && excLog.hasError) {
       println(cfg.fileName + ":")
       println(excLog)
     }

@@ -1,5 +1,4 @@
 {
-  "testMode": true,
   "silent": true,
   "analyzer": {
     "console": false,
@@ -10,9 +9,9 @@
   "heapBuilder": {
     "maxStrSetSize": 10,
     "recency": false,
-    "heap-clone": false,
-    "callsiteSensitivity": 100,
-    "loopIter": 20,
+    "heap-clone": true,
+    "callsiteSensitivity": 20,
+    "loopIter": 100,
     "loopDepth": 10,
     "snapshot": ""
   }

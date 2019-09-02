@@ -110,7 +110,7 @@ object WebServer extends {
                 val testSafeConfig: SafeConfig = SafeConfig(CmdBase, Nil)
                 val parser = new ArgParser(CmdBase, testSafeConfig)
                 val heapBuildConfig = HeapBuild.defaultConfig
-                val testJSON = Useful.path("config.json")
+                val testJSON = CONFIG_FILE
                 parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
                 parser(List(s"-config=$testJSON"))
 

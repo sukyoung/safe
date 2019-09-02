@@ -33,6 +33,9 @@ package object safe {
   // Base project directory root
   val CUR_DIR = System.getProperty("user.dir")
 
+  // Configuration file
+  val CONFIG_FILE = BASE_DIR + SEP + "config.json"
+
   // Predefined variables
   val PRED_VARS = List(
     // 4.2 Language Overview

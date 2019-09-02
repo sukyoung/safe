@@ -24,7 +24,7 @@ object Safe {
   def main(tokens: Array[String]): Unit = {
     (tokens.toList match {
       case str :: args => cmdMap.get(str) match {
-        case Some(cmd) => cmd(args, false)
+        case Some(cmd) => cmd(s"-config=$CONFIG_FILE" :: args, false)
         case None => Failure(NoCmdError(str))
       }
       case Nil => Failure(NoInputError)
