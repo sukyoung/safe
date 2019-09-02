@@ -508,9 +508,7 @@ case class Semantics(
       }
       case (NodeUtil.INTERNAL_NOT_YET_IMPLEMENTED, List(expr), None) => {
         val (v, excSet) = V(expr, st);
-        println(s"[NotYetImplemented] $v")
-        println(s"* Sensitivity: ")
-        cp.tracePartition.toStringList.foreach(println)
+        excLog.signal(SemanticsNotYetImplementedError(v, cp))
         (st, excSt)
       }
       case (NodeUtil.INTERNAL_CHAR_CODE, List(expr), None) => {
@@ -1422,7 +1420,7 @@ case class Semantics(
         (st1, excSt ⊔ newExcSt)
       }
       case _ =>
-        excLog.signal(SemanticsNotYetImplementedError(ir))
+        excLog.signal(IRSemanticsNotYetImplementedError(ir))
         (AbsState.Bot, AbsState.Bot)
     }
   }
@@ -1633,7 +1631,7 @@ case class Semantics(
     case CFGInternalValue(ir, name) => getInternalValue(name) match {
       case Some(value) => (value, ExcSetEmpty)
       case None =>
-        excLog.signal(SemanticsNotYetImplementedError(ir))
+        excLog.signal(IRSemanticsNotYetImplementedError(ir))
         (AbsValue.Bot, ExcSetEmpty)
     }
     case CFGVal(ejsVal) =>

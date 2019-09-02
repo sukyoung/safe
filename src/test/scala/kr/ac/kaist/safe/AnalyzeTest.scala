@@ -27,7 +27,7 @@ abstract class AnalyzeTest extends SafeTest {
   // analysis configuration
   val heapBuildConfig = HeapBuild.defaultConfig
   val analyzeConfig = Analyze.defaultConfig
-  val configFile = BASE_DIR + SEP + "config.json"
+  val configFile = CONFIG_FILE
 
   // check prefix of abstract strings
   def prefixCheck(prefix: String): (AbsStr, AbsDataProp) => Boolean = {
