@@ -13,7 +13,7 @@ Older versions are still available at the SAFE1.0 branch.
 
 For more information, please check out `our user manual`_.
 
-.. _our user manual: https://github.com/kaist-plrg/safe/blob/master/doc/manual.pdf
+.. _our user manual: https://github.com/sukyoung/safe/blob/master/doc/manual.pdf
 
 Requirements
 ============
@@ -59,7 +59,7 @@ Changes from SAFE 1.0
 * Several components from SAFE 1.0 may not be integrated into SAFE 2.0.  Such components include interpreter, concolic testing, clone detector, clone refactoring, TypeScript support, Web API misuse detector, and several abstract domains like the string automata domain.
 
 .. _Test262: https://github.com/tc39/test262
-.. _an HTML-based debugger for its analyzer: https://github.com/kaist-plrg/safe/blob/master/doc/htmldebugger.png
+.. _an HTML-based debugger for its analyzer: https://github.com/sukyoung/safe/blob/master/doc/htmldebugger.png
 
 SAFE 2.0 Roadmap
 ============
