@@ -28,7 +28,7 @@ lazy val root = (project in file(".")).
       val xtcFile = new File("./lib/xtc.jar")
       if (!xtcFile.exists) {
         // TODO exception handling: not downloaded
-        IO.download(new URL("http://central.maven.org/maven2/xtc/rats/2.4.0/rats-2.4.0.jar"), xtcFile)
+        IO.download(new URL("https://repo1.maven.org/maven2/xtc/rats/2.4.0/rats-2.4.0.jar"), xtcFile)
       }
 
       // webix
