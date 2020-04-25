@@ -315,10 +315,14 @@ class Disambiguator(program: Program) {
         result
       case RegularExpression(info, body, flags) => {
         val regexp = "RegExp"
+        val escapeQuote = (str: String) => str.foldLeft("") {
+          case (res, '"') => res + "\\\""
+          case (res, c) => res + c
+        }
         New(info, FunApp(info, VarRef(info, Id(info, regexp, Some(regexp), false)),
           List(
-            StringLiteral(info, "\"", body, true),
-            StringLiteral(info, "\"", flags, false)
+            StringLiteral(info, "\"", escapeQuote(body), true),
+            StringLiteral(info, "\"", escapeQuote(flags), false)
           )))
       }
       case _ =>
