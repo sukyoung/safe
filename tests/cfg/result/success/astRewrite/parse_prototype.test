@@ -20,7 +20,7 @@
     if (! Object.isString(string))
       return [];
     string = string.strip();
-    return string ? string.split(new RegExp("\s+", "")) : [];
+    return string ? string.split(new RegExp("\\s+", "")) : [];
   }
   function $H(object) 
   {
@@ -120,7 +120,7 @@
       })()
     },
     ScriptFragment : '<script[^>]*>([\\S\\s]*?)<\/script>',
-    JSONFilter : new RegExp("^\/\*-secure-([\s\S]*)\*\/\s*$", ""),
+    JSONFilter : new RegExp("^\\/\\*-secure-([\\s\\S]*)\\*\\/\\s*$", ""),
     emptyFunction : (function () 
     {
       
@@ -610,8 +610,8 @@
     {
       var names;
       
-          names = this.toString().match(new RegExp("^[\s\(]*function[^(]*\(([^)]*)\)", ""))[1].replace(new RegExp("\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\/", "g"), 
-      '').replace(new RegExp("\s+", "g"), '').split(',');
+          names = this.toString().match(new RegExp("^[\\s\\(]*function[^(]*\\(([^)]*)\\)", ""))[1].replace(new RegExp("\\/\\/.*?[\\r\\n]|\\/\\*(?:.|[\\r\\n])*?\\*\\/", "g"), 
+      '').replace(new RegExp("\\s+", "g"), '').split(',');
       return names.length == 1 && ! names[0] ? [] : names;
     }
     function bind(context) 
@@ -752,7 +752,7 @@
   RegExp.prototype.match = RegExp.prototype.test;
   RegExp.escape = (function (str) 
   {
-    return String(str).replace(new RegExp("([.*+?^=!:${}()|[\]\/\\])", "g"), '\\$1');
+    return String(str).replace(new RegExp("([.*+?^=!:${}()|[\\]\\/\\\\])", "g"), '\\$1');
   });
   PeriodicalExecuter = Class.create({
     initialize : (function (callback, frequency) 
@@ -877,11 +877,12 @@
     }
     function strip() 
     {
-      return this.replace(new RegExp("^\s+", ""), '').replace(new RegExp("\s+$", ""), '');
+      return this.replace(new RegExp("^\\s+", ""), '').replace(new RegExp("\\s+$", ""), '');
     }
     function stripTags() 
     {
-      return this.replace(new RegExp("<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?>|<\/\w+>", "gi"), 
+      return this.replace(new RegExp("<\\w+(\\s+(\"[^\"]*\"|'[^']*'|[^>])+)?>|<\\/\\w+>", 
+      "gi"), 
       '');
     }
     function stripScripts() 
@@ -978,7 +979,7 @@
     }
     function underscore() 
     {
-      return this.replace(new RegExp("::", "g"), '/').replace(new RegExp("([A-Z]+)([A-Z][a-z])", "g"), '$1_$2').replace(new RegExp("([a-z\d])([A-Z])", "g"), '$1_$2').replace(new RegExp("-", "g"), '_').toLowerCase();
+      return this.replace(new RegExp("::", "g"), '/').replace(new RegExp("([A-Z]+)([A-Z][a-z])", "g"), '$1_$2').replace(new RegExp("([a-z\\d])([A-Z])", "g"), '$1_$2').replace(new RegExp("-", "g"), '_').toLowerCase();
     }
     function dasherize() 
     {
@@ -988,7 +989,7 @@
     {
       var escapedString;
       
-          escapedString = this.replace(new RegExp("[\x00-\x1f\\]", "g"), (function (character) 
+          escapedString = this.replace(new RegExp("[\\x00-\\x1f\\\\]", "g"), (function (character) 
       {
         if (character in String.specialChar)
         {
@@ -997,7 +998,7 @@
         return '\\u00' + character.charCodeAt().toPaddedString(2, 16);
       }));
       if (useDoubleQuotes)
-        return '"' + escapedString.replace(new RegExp(""", "g"), '\\"') + '"';
+        return '"' + escapedString.replace(new RegExp("\"", "g"), '\\"') + '"';
       return "'" + escapedString.replace(new RegExp("'", "g"), '\\\'') + "'";
     }
     function unfilterJSON(filter) 
@@ -1011,13 +1012,13 @@
           str = this;
       if (str.blank())
         return false;
-      str = str.replace(new RegExp("\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})", "g"), 
+      str = str.replace(new RegExp("\\\\(?:[\"\\\\\\/bfnrt]|u[0-9a-fA-F]{4})", "g"), 
       '@');
-      str = str.replace(new RegExp(""[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?", 
+      str = str.replace(new RegExp("\"[^\"\\\\\\n\\r]*\"|true|false|null|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?", 
       "g"), 
       ']');
-      str = str.replace(new RegExp("(?:^|:|,)(?:\s*\[)+", "g"), '');
-      return (new RegExp("^[\],:{}\s]*$", "")).test(str);
+      str = str.replace(new RegExp("(?:^|:|,)(?:\\s*\\[)+", "g"), '');
+      return (new RegExp("^[\\],:{}\\s]*$", "")).test(str);
     }
     function evalJSON(sanitize) 
     {
@@ -1026,7 +1027,7 @@
       
           {
         json = this.unfilterJSON();
-        cx = new RegExp("[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]", 
+        cx = new RegExp("[\\u0000\\u00ad\\u0600-\\u0604\\u070f\\u17b4\\u17b5\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufeff\\ufff0-\\uffff]", 
         "g");
       }
       if (cx.test(json))
@@ -1072,7 +1073,7 @@
     }
     function blank() 
     {
-      return new RegExp("^\s*$", "").test(this);
+      return new RegExp("^\\s*$", "").test(this);
     }
     function interpolate(object, pattern) 
     {
@@ -1140,14 +1141,14 @@
         {
           ctx = object;
           expr = match[3];
-          pattern = new RegExp("^([^.[]+|\[((?:.*?[^\\])?)\])(\.|\[|$)", "");
+          pattern = new RegExp("^([^.[]+|\\[((?:.*?[^\\\\])?)\\])(\\.|\\[|$)", "");
         }
         match = pattern.exec(expr);
         if (match == null)
           return before;
         while (match != null)
         {
-          comp = match[1].startsWith('[') ? match[2].replace(new RegExp("\\\\]", "g"), ']') : match[1];
+          comp = match[1].startsWith('[') ? match[2].replace(new RegExp("\\\\\\\\]", "g"), ']') : match[1];
           ctx = ctx[comp];
           if (null == ctx || '' == match[3])
             break;
@@ -1158,7 +1159,7 @@
       }));
     })
   });
-  Template.Pattern = new RegExp("(^|.|\r|\n)(#\{(.*?)\})", "");
+  Template.Pattern = new RegExp("(^|.|\\r|\\n)(#\\{(.*?)\\})", "");
   $break = {
     
   };
@@ -2054,7 +2055,7 @@
       if (this.method == 'post')
       {
         headers['Content-type'] = this.options.contentType + (this.options.encoding ? '; charset=' + this.options.encoding : '');
-        if (this.transport.overrideMimeType && (navigator.userAgent.match(new RegExp("Gecko\/(\d{4})", "")) || [0, 2005, ])[1] < 2005)
+        if (this.transport.overrideMimeType && (navigator.userAgent.match(new RegExp("Gecko\\/(\\d{4})", "")) || [0, 2005, ])[1] < 2005)
           headers['Connection'] = 'close';
       }
       if (typeof this.options.requestHeaders == 'object')
@@ -2114,7 +2115,7 @@
 {          this.dispatchException(e);}
 
         contentType = response.getHeader('Content-type');
-        if (this.options.evalJS == 'force' || (this.options.evalJS && this.isSameOrigin() && contentType && contentType.match(new RegExp("^\s*(text|application)\/(x-)?(java|ecma)script(;.*)?\s*$", 
+        if (this.options.evalJS == 'force' || (this.options.evalJS && this.isSameOrigin() && contentType && contentType.match(new RegExp("^\\s*(text|application)\\/(x-)?(java|ecma)script(;.*)?\\s*$", 
         "i"))))
           this.evalResponse();
       }
@@ -2133,7 +2134,7 @@
     {
       var m;
       
-          m = this.url.match(new RegExp("^\s*https?:\/\/[^\/]*", ""));
+          m = this.url.match(new RegExp("^\\s*https?:\\/\\/[^\\/]*", ""));
       return ! m || (m[0] == '#{protocol}//#{domain}#{port}'.interpolate({
         protocol : location.protocol,
         domain : document.domain,
@@ -2976,7 +2977,7 @@
       while (node)
       {
         nextNode = node.nextSibling;
-        if (node.nodeType == 3 && ! new RegExp("\S", "").test(node.nodeValue))
+        if (node.nodeType == 3 && ! new RegExp("\\S", "").test(node.nodeValue))
           element.removeChild(node);
         node = nextNode;
       }
@@ -3039,7 +3040,7 @@
       if (Object.isString(styles))
       {
         element.style.cssText += ';' + styles;
-        return styles.include('opacity') ? element.setOpacity(styles.match(new RegExp("opacity:\s*(\d?\.?\d*)", ""))[1]) : element;
+        return styles.include('opacity') ? element.setOpacity(styles.match(new RegExp("opacity:\\s*(\\d?\\.?\\d*)", ""))[1]) : element;
       }
       for (property in styles)
         if (property == 'opacity')
@@ -3224,7 +3225,7 @@
           value = element.currentStyle[style];
         if (style == 'opacity')
         {
-          if (value = (element.getStyle('filter') || '').match(new RegExp("alpha\(opacity=(.*)\)", "")))
+          if (value = (element.getStyle('filter') || '').match(new RegExp("alpha\\(opacity=(.*)\\)", "")))
             if (value[1])
               return parseFloat(value[1]) / 100;
           return 1.0;
@@ -3241,7 +3242,7 @@
       {
         function stripAlpha(filter) 
         {
-          return filter.replace(new RegExp("alpha\([^\)]*\)", "gi"), '');
+          return filter.replace(new RegExp("alpha\\([^\\)]*\\)", "gi"), '');
         }
               var currentStyle;
         var filter;
@@ -3464,7 +3465,7 @@
       }
     }
     else
-      if (Prototype.Browser.Gecko && new RegExp("rv:1\.8\.0", "").test(navigator.userAgent))
+      if (Prototype.Browser.Gecko && new RegExp("rv:1\\.8\\.0", "").test(navigator.userAgent))
       {
         Element.Methods.setOpacity = (function (element, value) 
         {
@@ -4074,7 +4075,7 @@
     {
       var match;
       
-          match = pctString.match(new RegExp("^(\d+)%?$", "i"));
+          match = pctString.match(new RegExp("^(\\d+)%?$", "i"));
       if (! match)
         return null;
       return (Number(match[1]) / 100);
@@ -4102,7 +4103,7 @@
       {
         return null;
       }
-      if ((new RegExp("^(?:-)?\d+(\.\d+)?(px)?$", "i")).test(value))
+      if ((new RegExp("^(?:-)?\\d+(\\.\\d+)?(px)?$", "i")).test(value))
       {
         return window.parseFloat(value);
       }
@@ -4110,7 +4111,7 @@
         isPercentage = value.include('%');
         isViewport = (context === document.viewport);
       }
-      if (new RegExp("\d", "").test(value) && element && element.runtimeStyle && ! (isPercentage && isViewport))
+      if (new RegExp("\\d", "").test(value) && element && element.runtimeStyle && ! (isPercentage && isViewport))
       {
         {
           style = element.style.left;
@@ -5211,7 +5212,7 @@
     var posProcess;
     
       {
-      chunker = new RegExp("((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)", 
+      chunker = new RegExp("((?:\\((?:\\([^()]+\\)|[^()]+)+\\)|\\[(?:\\[[^[\\]]*\\]|['\"][^'\"]*['\"]|[^[\\]'\"]+)+\\]|\\\\.|[^ >+~,(\\[\\\\]+)+|[>+~])(\\s*,\\s*)?((?:.|\\r|\\n)*)", 
       "g");
       done = 0;
       toString = Object.prototype.toString;
@@ -5445,7 +5446,7 @@
             match.splice(1, 1);
             if (left.substr(left.length - 1) !== "\\")
             {
-              match[1] = (match[1] || "").replace(new RegExp("\\", "g"), "");
+              match[1] = (match[1] || "").replace(new RegExp("\\\\", "g"), "");
               set = Expr.find[type](match, context, isXML);
               if (set != null)
               {
@@ -5575,17 +5576,18 @@
     Expr = Sizzle.selectors = {
       order : ["ID", "NAME", "TAG", ],
       match : {
-        ID : new RegExp("#((?:[\w\u00c0-\uFFFF-]|\\.)+)", ""),
-        CLASS : new RegExp("\.((?:[\w\u00c0-\uFFFF-]|\\.)+)", ""),
-        NAME : new RegExp("\[name=['"]*((?:[\w\u00c0-\uFFFF-]|\\.)+)['"]*\]", ""),
-        ATTR : new RegExp("\[\s*((?:[\w\u00c0-\uFFFF-]|\\.)+)\s*(?:(\S?=)\s*(['"]*)(.*?)\3|)\s*\]", 
+        ID : new RegExp("#((?:[\\w\\u00c0-\\uFFFF-]|\\\\.)+)", ""),
+        CLASS : new RegExp("\\.((?:[\\w\\u00c0-\\uFFFF-]|\\\\.)+)", ""),
+        NAME : new RegExp("\\[name=['\"]*((?:[\\w\\u00c0-\\uFFFF-]|\\\\.)+)['\"]*\\]", 
         ""),
-        TAG : new RegExp("^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)", ""),
-        CHILD : new RegExp(":(only|nth|last|first)-child(?:\((even|odd|[\dn+-]*)\))?", 
+        ATTR : new RegExp("\\[\\s*((?:[\\w\\u00c0-\\uFFFF-]|\\\\.)+)\\s*(?:(\\S?=)\\s*(['\"]*)(.*?)\\3|)\\s*\\]", 
         ""),
-        POS : new RegExp(":(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^-]|$)", 
+        TAG : new RegExp("^((?:[\\w\\u00c0-\\uFFFF\\*-]|\\\\.)+)", ""),
+        CHILD : new RegExp(":(only|nth|last|first)-child(?:\\((even|odd|[\\dn+-]*)\\))?", 
         ""),
-        PSEUDO : new RegExp(":((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?", 
+        POS : new RegExp(":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\))?(?=[^-]|$)", 
+        ""),
+        PSEUDO : new RegExp(":((?:[\\w\\u00c0-\\uFFFF-]|\\\\.)+)(?:\\((['\"]*)((?:\\([^\\)]+\\)|[^\\2\\(\\)]*)+)\\2\\))?", 
         "")
       },
       leftMatch : {
@@ -5613,7 +5615,7 @@
           
                   {
             isPartStr = typeof part === "string";
-            isTag = isPartStr && ! new RegExp("\W", "").test(part);
+            isTag = isPartStr && ! new RegExp("\\W", "").test(part);
             isPartStrNotTag = isPartStr && ! isTag;
           }
           if (isTag && ! isXML)
@@ -5651,7 +5653,7 @@
           var parent;
           
                   isPartStr = typeof part === "string";
-          if (isPartStr && ! new RegExp("\W", "").test(part))
+          if (isPartStr && ! new RegExp("\\W", "").test(part))
           {
             part = isXML ? part : part.toUpperCase();
             {
@@ -5700,7 +5702,7 @@
             doneName = done++;
             checkFn = dirCheck;
           }
-          if (! new RegExp("\W", "").test(part))
+          if (! new RegExp("\\W", "").test(part))
           {
             nodeCheck = part = isXML ? part : part.toUpperCase();
             checkFn = dirNodeCheck;
@@ -5717,7 +5719,7 @@
             doneName = done++;
             checkFn = dirCheck;
           }
-          if (typeof part === "string" && ! new RegExp("\W", "").test(part))
+          if (typeof part === "string" && ! new RegExp("\\W", "").test(part))
           {
             nodeCheck = part = isXML ? part : part.toUpperCase();
             checkFn = dirNodeCheck;
@@ -5777,7 +5779,7 @@
           var i;
           var elem;
           
-                  match = " " + match[1].replace(new RegExp("\\", "g"), "") + " ";
+                  match = " " + match[1].replace(new RegExp("\\\\", "g"), "") + " ";
           if (isXML)
           {
             return match;
@@ -5805,7 +5807,7 @@
         }),
         ID : (function (match) 
         {
-          return match[1].replace(new RegExp("\\", "g"), "");
+          return match[1].replace(new RegExp("\\\\", "g"), "");
         }),
         TAG : (function (match, curLoop) 
         {
@@ -5826,7 +5828,7 @@
           
                   if (match[1] == "nth")
           {
-            test = new RegExp("(-?)(\d*)n((?:\+|-)?\d*)", "").exec(match[2] == "even" && "2n" || match[2] == "odd" && "2n+1" || ! new RegExp("\D", "").test(match[2]) && "0n+" + match[2] || match[2]);
+            test = new RegExp("(-?)(\\d*)n((?:\\+|-)?\\d*)", "").exec(match[2] == "even" && "2n" || match[2] == "odd" && "2n+1" || ! new RegExp("\\D", "").test(match[2]) && "0n+" + match[2] || match[2]);
             match[2] = (test[1] + (test[2] || 1)) - 0;
             match[3] = test[3] - 0;
           }
@@ -5837,7 +5839,7 @@
         {
           var name;
           
-                  name = match[1].replace(new RegExp("\\", "g"), "");
+                  name = match[1].replace(new RegExp("\\\\", "g"), "");
           if (! isXML && Expr.attrMap[name])
           {
             match[1] = Expr.attrMap[name];
@@ -5854,7 +5856,7 @@
           
                   if (match[1] === "not")
           {
-            if ((chunker.exec(match[3]) || "").length > 1 || new RegExp("^\w", "").test(match[3]))
+            if ((chunker.exec(match[3]) || "").length > 1 || new RegExp("^\\w", "").test(match[3]))
             {
               match[3] = Sizzle(match[3], null, null, curLoop);
             }
@@ -5913,7 +5915,7 @@
         }),
         header : (function (elem) 
         {
-          return new RegExp("h\d", "i").test(elem.nodeName);
+          return new RegExp("h\\d", "i").test(elem.nodeName);
         }),
         text : (function (elem) 
         {
@@ -6154,8 +6156,8 @@
     origPOS = Expr.match.POS;
     for (type in Expr.match)
     {
-      Expr.match[type] = new RegExp(Expr.match[type].source + new RegExp("(?![^\[]*\])(?![^\(]*\))", "").source);
-      Expr.leftMatch[type] = new RegExp(new RegExp("(^(?:.|\r|\n)*?)", "").source + Expr.match[type].source);
+      Expr.match[type] = new RegExp(Expr.match[type].source + new RegExp("(?![^\\[]*\\])(?![^\\(]*\\))", "").source);
+      Expr.leftMatch[type] = new RegExp(new RegExp("(^(?:.|\\r|\\n)*?)", "").source + Expr.match[type].source);
     }
     makeArray = (function (array, results) 
     {
@@ -7715,7 +7717,7 @@
         var cond;
         
               className = className.toString().strip();
-        cond = new RegExp("\s", "").test(className) ? $w(className).map(iter).join('') : iter(className);
+        cond = new RegExp("\\s", "").test(className) ? $w(className).map(iter).join('') : iter(className);
         return cond ? document._getElementsByXPath('.//*' + cond, element) : [];
       }) : (function (element, className) 
       {
@@ -7729,7 +7731,7 @@
               className = className.toString().strip();
         {
           elements = [];
-          classNames = (new RegExp("\s", "").test(className) ? $w(className) : null);
+          classNames = (new RegExp("\\s", "").test(className) ? $w(className) : null);
         }
         if (! classNames && ! className)
           return elements;
@@ -7761,7 +7763,7 @@
     }),
     _each : (function (iterator) 
     {
-      this.element.className.split(new RegExp("\s+", "")).select((function (name) 
+      this.element.className.split(new RegExp("\\s+", "")).select((function (name) 
       {
         return name.length > 0;
       }))._each(iterator);
@@ -7874,4 +7876,3 @@
       })
     });
   })();
-  

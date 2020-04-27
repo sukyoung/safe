@@ -269,7 +269,7 @@
         vi : 1,
         zh_CN : 1,
         zh_TW : 1
-      }[c.google_conversion_language] ? c.google_conversion_language + ".html" : "en_US.html") + "?cid=" + r(c.google_conversion_id)) + '" target="_blank">' + d(b, 135, 27) + "</a>" : 1 < c.google_conversion_snippets || 3 == c.google_conversion_format ? "317150501" == e ? d(b, 1, 1) + ('<script src="' + b.replace(new RegExp("(&|\?)fmt=3(&|$)", ""), "$1fmt=4&adtest=on$2") + '">\x3c/script>') : d(b, 1, 1) : '<iframe name="google_conversion_frame" width="' + (2 == c.google_conversion_format ? 200 : 300) + '" height="' + (2 == c.google_conversion_format ? 26 : 13) + '" src="' + b + '" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no">' + d(b.replace(new RegExp("\?random=", ""), "?frame=0&random="), 
+      }[c.google_conversion_language] ? c.google_conversion_language + ".html" : "en_US.html") + "?cid=" + r(c.google_conversion_id)) + '" target="_blank">' + d(b, 135, 27) + "</a>" : 1 < c.google_conversion_snippets || 3 == c.google_conversion_format ? "317150501" == e ? d(b, 1, 1) + ('<script src="' + b.replace(new RegExp("(&|\\?)fmt=3(&|$)", ""), "$1fmt=4&adtest=on$2") + '">\x3c/script>') : d(b, 1, 1) : '<iframe name="google_conversion_frame" width="' + (2 == c.google_conversion_format ? 200 : 300) + '" height="' + (2 == c.google_conversion_format ? 26 : 13) + '" src="' + b + '" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no">' + d(b.replace(new RegExp("\\?random=", ""), "?frame=0&random="), 
       1, 
       1) + "</iframe>";
     }
@@ -383,7 +383,7 @@
     q = "google_conversion_id google_conversion_format google_conversion_type google_conversion_order_id google_conversion_language google_conversion_value google_conversion_domain google_conversion_label google_conversion_color google_disable_viewthrough google_remarketing_only google_remarketing_for_search google_conversion_items google_custom_params google_conversion_date google_conversion_time google_conversion_js_version onload_callback opt_image_generator google_is_call google_conversion_page_url".split(" ");
     E = window;
     if (E)
-      if (null != new RegExp("[\?&;]google_debug", "").exec(document.URL))
+      if (null != new RegExp("[\\?&;]google_debug", "").exec(document.URL))
       {
         {
           J = E;
@@ -426,4 +426,3 @@
         }
       }
   })();
-  

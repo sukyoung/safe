@@ -1,4 +1,3 @@
   var patt;
   
-  patt = new RegExp("\/", "");
-  
+  patt = new RegExp("\\/", "");
