@@ -16,7 +16,8 @@ import kr.ac.kaist.safe.util._
 // environment record abstract domain
 trait EnvRecDomain extends AbsDomain[EnvRec] {
   def apply(envRec: AbsDecEnvRec): Elem
-  def apply(envRec: AbsGlobalEnvRec): Elem
+  def apply(global: AbsGlobalEnvRec): Elem
+  def apply(envRec: AbsDecEnvRec, global: AbsGlobalEnvRec): Elem
 
   // abstract environment record element
   type Elem <: ElemTrait

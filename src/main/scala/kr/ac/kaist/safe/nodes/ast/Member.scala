@@ -60,7 +60,7 @@ case class GetProp(
   }
 }
 
-// Member ::= set Property ( Id ) { SourceElement* }
+// Member ::= set Property ( Id ) { Stmt* }
 case class SetProp(
     info: ASTNodeInfo,
     prop: Property,

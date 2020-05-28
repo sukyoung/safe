@@ -1,5 +1,4 @@
 {
-  "testMode": true,
   "silent": true,
   "analyzer": {
     "console": false,
@@ -11,7 +10,6 @@
     "maxStrSetSize": 10,
     "recency": false,
     "heap-clone": true,
-    "acs": 0,
     "callsiteSensitivity": 20,
     "loopIter": 100,
     "loopDepth": 10,

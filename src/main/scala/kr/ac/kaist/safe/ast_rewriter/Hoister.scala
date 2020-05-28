@@ -138,11 +138,6 @@ class Hoister(program: Program) {
         join(walk(info), walk(body))
     }
 
-    override def walk(node: SourceElement): Unit = node match {
-      case s: Stmt =>
-        walk(s)
-    }
-
     override def walk(node: VarDecl): Unit = node match {
       case VarDecl(info, name, expr, isStrict) =>
         join(walk(info) :: walk(name) :: walkOpt(expr): _*)
@@ -383,8 +378,8 @@ class Hoister(program: Program) {
         currentBlock = oldVB
     }
 
-    override def walk(node: SourceElements): Unit = node match {
-      case SourceElements(_, stmts, strict) =>
+    override def walk(node: Stmts): Unit = node match {
+      case Stmts(_, stmts, strict) =>
         stmts.foreach(walk)
     }
 
@@ -485,7 +480,7 @@ class Hoister(program: Program) {
   }
 
   // introduce a new block
-  private def newBlock(stmts: List[SourceElement]): Unit = {
+  private def newBlock(stmts: List[Stmt]): Unit = {
     val oldVB = currentBlock
     currentBlock = new VarBlock(oldVB)
     oldVB.blocks ++= List[LocalBlock](currentBlock)
@@ -515,7 +510,7 @@ class Hoister(program: Program) {
       ds.exists(d => fd2Str(d).equals(fd2Str(fd)))
     private def isVdInFd(vd: VarDecl, ds: List[FunDecl]): Boolean =
       ds.exists(d => fd2Str(d).equals(vd2Str(vd)))
-    private def hoist(body: List[SourceElement], params: List[Id], strict: Boolean): (List[FunDecl], List[VarDecl], List[SourceElement]) = {
+    private def hoist(body: List[Stmt], params: List[Id], strict: Boolean): (List[FunDecl], List[VarDecl], List[Stmt]) = {
       val (vdss, fdss, varss) = body.map(s => new HoistWalker(s).doit).unzip3
       // hoisted variable declarations
       val vds = vdss.flatten
@@ -551,11 +546,11 @@ class Hoister(program: Program) {
           program.foldLeft((
             List[FunDecl](),
             List[VarDecl](),
-            List[SourceElements]()
+            List[Stmts]()
           )) {
             case ((f, v, s), ses) => {
               val (fs, vs, ss) = hoist(ses.body, Nil, ses.strict)
-              (f ++ fs, v ++ vs, s ++ List(SourceElements(ses.info, ss, ses.strict)))
+              (f ++ fs, v ++ vs, s ++ List(Stmts(ses.info, ss, ses.strict)))
             }
           }
         Program(info, TopLevel(i, fds, vds, newProgram))
@@ -564,31 +559,31 @@ class Hoister(program: Program) {
     }
 
     override def walk(node: FunDecl): FunDecl = node match {
-      case FunDecl(info, Functional(j, Nil, Nil, SourceElements(i, body, str), name, params, bodyS), strict) =>
+      case FunDecl(info, Functional(j, Nil, Nil, Stmts(i, body, str), name, params, bodyS), strict) =>
         val (fds, vds, newBody) = hoist(body, params, strict)
-        FunDecl(info, Functional(j, fds, vds, SourceElements(i, newBody, str), name, params, bodyS), strict)
+        FunDecl(info, Functional(j, fds, vds, Stmts(i, newBody, str), name, params, bodyS), strict)
       case (fd: FunDecl) =>
         excLog.signal(BeforeHoisterError("Function declarations", fd)); fd
     }
 
     override def walk(node: LHS): LHS = node match {
-      case FunExpr(info, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
+      case FunExpr(info, Functional(j, Nil, Nil, Stmts(i, body, strict), name, params, bodyS)) =>
         val (fds, vds, newBody) = hoist(body, params, strict)
-        FunExpr(info, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
+        FunExpr(info, Functional(j, fds, vds, Stmts(i, newBody, strict), name, params, bodyS))
       case (fe: FunExpr) =>
         excLog.signal(BeforeHoisterError("Function expressions", fe)); fe
       case _ => super.walk(node)
     }
 
     override def walk(node: Member): Member = node match {
-      case GetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
+      case GetProp(info, prop, Functional(j, Nil, Nil, Stmts(i, body, strict), name, params, bodyS)) =>
         val (fds, vds, newBody) = hoist(body, params, strict)
-        GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
+        GetProp(info, prop, Functional(j, fds, vds, Stmts(i, newBody, strict), name, params, bodyS))
       case (gp: GetProp) =>
         excLog.signal(BeforeHoisterError("Function expressions", gp)); gp
-      case SetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
+      case SetProp(info, prop, Functional(j, Nil, Nil, Stmts(i, body, strict), name, params, bodyS)) =>
         val (fds, vds, newBody) = hoist(body, params, strict)
-        SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
+        SetProp(info, prop, Functional(j, fds, vds, Stmts(i, newBody, strict), name, params, bodyS))
       case (sp: SetProp) =>
         excLog.signal(BeforeHoisterError("Function expressions", sp)); sp
       case _ => super.walk(node)

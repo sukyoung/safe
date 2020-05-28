@@ -58,13 +58,6 @@ webix.ready(function(){
             conn.cmd('run')
           },
         },
-        { view: 'icon', icon: 'bars',
-          click: function() {
-            if( $$('options').config.hidden) {
-              $$('options').show();
-            } else $$('options').hide();
-          }
-        },
       ]},
       { view: 'accordion', id: 'accord', type: 'wide', collapsed: true, cols:[
         { id: 'side-bar', header: 'Instructions & State', width: 500, minWidth: 320, body: side },
@@ -74,38 +67,6 @@ webix.ready(function(){
       ]},
       // TODO { template: 'search engine', height: 30},
     ]
-  });
-
-  webix.ui({
-    view: "sidemenu",
-    id: "options",
-    width: 200,
-    position: "right",
-    state:function(state){
-      var toolbarHeight = $$('toolbar').$height;
-      state.top = toolbarHeight;
-      state.height -= toolbarHeight;
-    },
-    body:{
-      view: 'form',
-      scroll: false,
-      elements:[
-        {view: 'toggle', name: 'worklist', offLabel: 'Worklist: off', onLabel: 'Worklist: on',
-          click: function() {
-            var blocks = cy.nodes()
-            if (this.config.value) {
-              blocks.data('bc', 'white')
-            } else {
-              blocks.filter(function() { return this.data('inWL'); }).data('bc', '#3498DB');
-            }
-          }
-        },
-      ],
-      select:true,
-      type:{
-        height: 40
-      }
-    }
   });
 
   webix.ui.fullScreen();

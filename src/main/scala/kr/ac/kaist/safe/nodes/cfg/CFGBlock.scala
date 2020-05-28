@@ -12,11 +12,9 @@
 package kr.ac.kaist.safe.nodes.cfg
 
 import kr.ac.kaist.safe.analyzer.TracePartition
-import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
-import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import scala.collection.mutable.{ Map => MMap }
 import scala.reflect.ClassTag
 
 sealed trait CFGBlock {
@@ -36,10 +34,12 @@ sealed trait CFGBlock {
   def getIId: InstId = iidCount
 
   // edges incident with this cfg node
-  protected val succs: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
-  protected val preds: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
-  def getAllSucc: Map[CFGEdgeType, List[CFGBlock]] = succs.toMap
-  def getAllPred: Map[CFGEdgeType, List[CFGBlock]] = preds.toMap
+  protected val succs: MMap[CFGEdgeType, List[CFGBlock]] = MMap()
+  protected val preds: MMap[CFGEdgeType, List[CFGBlock]] = MMap()
+  def getAllSucc: Map[CFGEdgeType, List[CFGBlock]] =
+    succs.foldLeft(Map[CFGEdgeType, List[CFGBlock]]())(_ + _)
+  def getAllPred: Map[CFGEdgeType, List[CFGBlock]] =
+    preds.foldLeft(Map[CFGEdgeType, List[CFGBlock]]())(_ + _)
 
   def getSucc(edgeType: CFGEdgeType): List[CFGBlock] = succs.getOrElse(edgeType, Nil)
   def getPred(edgeType: CFGEdgeType): List[CFGBlock] = preds.getOrElse(edgeType, Nil)

@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
-
 // abstract domain for value V
 trait AbsDomain[V] extends Domain {
   // concrete value type
@@ -37,7 +35,7 @@ trait AbsDomain[V] extends Domain {
   def alpha[U, D <: AbsDomain[U]](
     f: (V, V) => U
   )(domain: D): (Elem, Elem) => domain.Elem = (l, r) => (l.gamma, r.gamma) match {
-    case (ConFin(lset), ConFin(rset)) => domain.alpha(lset.foldLeft(HashSet[U]()) {
+    case (ConFin(lset), ConFin(rset)) => domain.alpha(lset.foldLeft(Set[U]()) {
       case (set, l) => set ++ rset.map(f(l, _))
     })
     case _ => domain.Top

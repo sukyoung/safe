@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
-import scala.collection.immutable.HashSet
-import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import scala.collection.mutable.{ Map => MMap }
 import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Loc
@@ -40,7 +39,7 @@ case class CFG(
   def getUserBlocks: List[CFGBlock] = getBlocks(userFuncs)
 
   // function / block map from id
-  private val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
+  private val funMap: MMap[FunctionId, CFGFunction] = MMap()
   def getFunc(fid: FunctionId): Option[CFGFunction] = funMap.get(fid)
   def getBlock(fid: FunctionId, bid: BlockId): Option[CFGBlock] =
     funMap.get(fid).fold[Option[CFGBlock]](None) { _.getBlock(bid) }

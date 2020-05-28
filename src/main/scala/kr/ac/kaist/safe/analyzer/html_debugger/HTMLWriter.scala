@@ -13,13 +13,11 @@ package kr.ac.kaist.safe.analyzer.html_debugger
 
 import java.io.{ File, FileWriter }
 
-import kr.ac.kaist.safe.analyzer.domain.AbsState
-import kr.ac.kaist.safe.analyzer.{ Semantics, Worklist }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
+import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, Worklist }
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.web.domain._
 import kr.ac.kaist.safe.{ LINE_SEP, SEP }
 import org.apache.commons.io.FileUtils
@@ -30,7 +28,10 @@ object HTMLWriter {
   val FUNC_LABEL_EDGE = ", width: 1, style: 'dashed', arrow: 'none', label:''"
   val NORMAL_EDGE = ", width: 2, style: 'solid', arrow: 'triangle', label:''"
   val UNREACHABLE_COLOR = "#CCCCCC"
+  val CUR_COLOR = "#3498DB"
+  val WORKLIST_COLOR = "#BBBBBB"
   val REACHABLE_COLOR = "black"
+  val NORMAL_BC = "white"
 
   def getId(block: CFGBlock): String =
     s"${block.func.id}:${block.id}"
@@ -66,9 +67,13 @@ object HTMLWriter {
   def drawBlock(block: CFGBlock, wlOpt: Option[Worklist], sem: Semantics): String = {
     val id = getId(block)
     val label = getLabel(block)
-    val inWL = wlOpt match {
-      case Some(worklist) => worklist has block
-      case None => false
+    val bc = wlOpt match {
+      case Some(worklist) => worklist.getWorklist.headOption match {
+        case Some(head) if head.cp.block == block => CUR_COLOR
+        case _ if worklist has block => WORKLIST_COLOR
+        case _ => NORMAL_BC
+      }
+      case None => NORMAL_BC
     }
     val color =
       if (!isReachable(block, sem)) UNREACHABLE_COLOR
@@ -78,10 +83,10 @@ object HTMLWriter {
         val func = entry.func
         val id = func.id
         val label = func.toString
-        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', inWL: false, bc: 'white'} },""" + LINE_SEP
+        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', bc: 'white'} },""" + LINE_SEP
       case _ => ""
     }) +
-      s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
+      s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', bc: '$bc'} },""" + LINE_SEP
   }
 
   def drawEdge(block: CFGBlock, sem: Semantics): String = {
@@ -169,7 +174,8 @@ object HTMLWriter {
                 case _ => "heap"
               }
               val concrete = if (h isConcrete loc) "C" else "M"
-              sb.append(s"{ value: {value: '[$concrete] $loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
+              val changed = if (h isChanged loc) "*" else " "
+              sb.append(s"{ value: {value: '$changed [$concrete] $loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
               obj.toString.split(LINE_SEP).foreach(prop => {
                 val propStr = prop.replaceAll("\'", "\\\\\'")
                 sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
@@ -185,7 +191,8 @@ object HTMLWriter {
       .foreach {
         case (loc, obj) =>
           val concrete = if (ctx isConcrete loc) "C" else "M"
-          sb.append(s"{ value: {value: '[$concrete] $loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
+          val changed = if (ctx isChanged loc) "*" else " "
+          sb.append(s"{ value: {value: '$changed [$concrete] $loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
           obj.toString.split(LINE_SEP).foreach(prop => {
             val propStr = prop.replaceAll("\'", "\\\\\'")
             sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)

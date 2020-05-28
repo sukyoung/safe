@@ -80,22 +80,18 @@ class CmdActor() extends Actor {
     val console: Interactive = fixpoint.consoleOpt.get
     val req = JsonUtil.fromJson[Run](cmd)
 
-    console.runCmd(req.cmd) match {
-      case CmdResultContinue(output) =>
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
-        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+    val output = console.runCmd(req.cmd) match {
+      case CmdResultContinue(output) => output
       case CmdResultBreak(output) =>
-        if (req.cmd == "run") {
-          fixpoint.compute()
-        } else {
-          fixpoint.computeOneStep()
-        }
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
-        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
+        do { fixpoint.computeOneStep }
+        while (!console.worklist.isEmpty && !console.prepareToRunFixpoint)
+        output
       case CmdResultRestart =>
-        val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
-        Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, "", state, fixpoint.worklist.isEmpty)
+        console.prepareToRunFixpoint
+        ""
     }
+    val state = HTMLWriter.renderGraphStates(console.cfg, console.sem, Some(console.worklist), simplified = true)
+    Result(Actions.CMD, req.cmd, console.getPrompt, console.getIter, output, state, fixpoint.worklist.isEmpty)
   }
 
   def getBlockState(req: String, fixpoint: Fixpoint): BlockState = {

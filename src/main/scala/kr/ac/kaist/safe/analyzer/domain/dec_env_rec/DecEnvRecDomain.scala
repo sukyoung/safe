@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.cfg.CFGId
 
 // declarative environment record abstract domain
 trait DecEnvRecDomain extends AbsDomain[DecEnvRec] {

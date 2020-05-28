@@ -1,4 +1,3 @@
   var patt;
   
-  patt = new RegExp("\a", "");
-  
+  patt = new RegExp("\\a", "");

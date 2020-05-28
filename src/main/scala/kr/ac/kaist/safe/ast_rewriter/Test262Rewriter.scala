@@ -77,7 +77,7 @@ class Test262Rewriter(program: Program) extends ASTWalker {
         FunApp(_,
           Dot(_, VarRef(_, Id(_, "assert", _, _)), Id(_, "throws", _, _)),
           List(VarRef(info1, Id(_, exn, _, _)),
-            FunExpr(info2, Functional(_, _, _, SourceElements(_, List(body), _), _, _, _)))), _) =>
+            FunExpr(info2, Functional(_, _, _, Stmts(_, List(body), _), _, _, _)))), _) =>
         val stmt1 = VarStmt(info, List(VarDecl(info, resultId(info), None, false)))
         val stmt2 = Try(info2, List(body.asInstanceOf[Stmt]), Some(Catch(info2, exnId(info2), List(handle(info2)))), None)
         val stmt3 = VarStmt(info1, List(VarDecl(info, expectId(info), Some(errLoc(info1, exn)), false)))

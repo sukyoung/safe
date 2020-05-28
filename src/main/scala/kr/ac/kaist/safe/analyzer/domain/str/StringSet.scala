@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
 import scala.util.Try
 
 // string set domain with max set size
@@ -187,7 +186,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
 
     def concat(that: Elem): Elem = (this, that) match {
       case (StrSet(v1), StrSet(v2)) if (maxSetSize == 0 || v1.size * v2.size <= maxSetSize) => {
-        val set = v1.foldLeft(HashSet[String]())((hs1, s1) =>
+        val set = v1.foldLeft(Set[String]())((hs1, s1) =>
           v2.foldLeft(hs1)((hs2, s2) => hs2 + (s1 + s2)))
         alpha(set)
       }

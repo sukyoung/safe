@@ -24,7 +24,7 @@ import scala.collection.JavaConverters._
 import scala.io.Codec
 import scala.util.Try
 import kr.ac.kaist.safe.errors.ExcLog
-import kr.ac.kaist.safe.nodes.ast.SourceElements
+import kr.ac.kaist.safe.nodes.ast.Stmts
 import kr.ac.kaist.safe.util.NodeUtil._
 
 object JSFromHTML {
@@ -39,7 +39,7 @@ object JSFromHTML {
   /*
    * Parse all code in the <script> tags, and return an AST
    */
-  def parseScripts(fileName: String): Try[(SourceElements, ExcLog)] = {
+  def parseScripts(fileName: String): Try[(Stmts, ExcLog)] = {
     val file = new File(fileName)
     val filePath = file.getParent
     val source: Source = new Source(file)
@@ -81,7 +81,7 @@ object JSFromHTML {
     val codeContents3: List[(String, (Int, Int), String)] = {
       val evt = INTERNAL_EVENT_FUNC
       val ss = ("#event#loop", bogus,
-        s"while($INTERNAL_BOOL_TOP) { $INTERNAL_CALL($evt.func, $evt.elem, []); }")
+        s"while($INTERNAL_BOOL_TOP) { $INTERNAL_CALL($evt.func, $evt.elem, [{type: $evt.type}]); }")
       codeContents2 :+ ss
     }
 

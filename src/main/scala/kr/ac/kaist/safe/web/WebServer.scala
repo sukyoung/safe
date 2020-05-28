@@ -25,7 +25,7 @@ import kr.ac.kaist.safe._
 import kr.ac.kaist.safe.analyzer.Fixpoint
 import kr.ac.kaist.safe.analyzer.console.{ Interactive, WebConsole }
 import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
-import kr.ac.kaist.safe.compiler.Translator
+import kr.ac.kaist.safe.translator.Translator
 import kr.ac.kaist.safe.util.JsonImplicits._
 import kr.ac.kaist.safe.util.JsonUtil
 import kr.ac.kaist.safe.parser.Parser
@@ -110,7 +110,7 @@ object WebServer extends {
                 val testSafeConfig: SafeConfig = SafeConfig(CmdBase, Nil)
                 val parser = new ArgParser(CmdBase, testSafeConfig)
                 val heapBuildConfig = HeapBuild.defaultConfig
-                val testJSON = Useful.path("config.json")
+                val testJSON = CONFIG_FILE
                 parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
                 parser(List(s"-config=$testJSON"))
 

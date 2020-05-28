@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.HashSet
 
 case class AllocLocSet(mayAlloc: LocSet, mustAlloc: LocSet) {
   /* partial order */

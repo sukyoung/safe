@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe
 
-import scala.collection.immutable.HashMap
 import scala.util.{ Try, Failure }
 import kr.ac.kaist.safe.errors.SafeException
 import kr.ac.kaist.safe.errors.error.{ NoCmdError, NoInputError }
@@ -25,6 +24,7 @@ object Safe {
   def main(tokens: Array[String]): Unit = {
     (tokens.toList match {
       case str :: args => cmdMap.get(str) match {
+        case Some(CmdAnalyze) => CmdAnalyze(s"-config=$CONFIG_FILE" :: args, false)
         case Some(cmd) => cmd(args, false)
         case None => Failure(NoCmdError(str))
       }
@@ -72,7 +72,7 @@ object Safe {
   val commands: List[Command] = List(
     CmdParse,
     CmdASTRewrite,
-    CmdCompile,
+    CmdTranslate,
     CmdCFGBuild,
     CmdHeapBuild,
     CmdAnalyze,
@@ -80,7 +80,7 @@ object Safe {
     CmdHelp,
     CmdWeb
   )
-  val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
+  val cmdMap = commands.foldLeft[Map[String, Command]](Map()) {
     case (map, cmd) => map + (cmd.name -> cmd)
   }
 
@@ -88,7 +88,7 @@ object Safe {
   var phases: List[Phase] = List(
     Parse,
     ASTRewrite,
-    Compile,
+    Translate,
     CFGBuild,
     HeapBuild,
     Analyze,

@@ -19,16 +19,17 @@ import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.LINE_SEP
 import java.io.BufferedWriter
 import java.io.IOException
-import scala.collection.immutable.HashSet
 
 object NodeUtil {
+  // hash map
+  type Map[K, V] = HashMap[K, V]
+
   ////////////////////////////////////////////////////////////////
   // local mutable (TODO have to handle)
   ////////////////////////////////////////////////////////////////
-
   var iid = 0
   var nodesPrintId = 0
-  var nodesPrintIdEnv: Map[String, String] = HashMap()
+  var nodesPrintIdEnv: Map[String, String] = Map()
   var keepComments = false
   private var comment: Option[Comment] = None
 
@@ -58,6 +59,7 @@ object NodeUtil {
   // internal API call
   // Helpers
   val INTERNAL_PRINT = internalAPIName("Print")
+  val INTERNAL_NOT_YET_IMPLEMENTED = internalAPIName("NotYetImplemented")
   val INTERNAL_CHAR_CODE = internalAPIName("CharCode")
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
@@ -142,8 +144,10 @@ object NodeUtil {
   val INTERNAL_LOG = internalAPIName("log")
   // 15.8.2.11 max ( [ value1 [ , value2 [ , ... ] ] ] )
   val INTERNAL_MAX = internalAPIName("max")
+  val INTERNAL_MAX2 = internalAPIName("max2")
   // 15.8.2.12 min ( [ value1 [ , value2 [ , ... ] ] ] )
   val INTERNAL_MIN = internalAPIName("min")
+  val INTERNAL_MIN2 = internalAPIName("min2")
   // 15.8.2.13 pow (x, y)
   val INTERNAL_POW = internalAPIName("pow")
   // 15.8.2.15 round (x)
@@ -154,6 +158,8 @@ object NodeUtil {
   val INTERNAL_SQRT = internalAPIName("sqrt")
   // 15.8.2.18 tan (x)
   val INTERNAL_TAN = internalAPIName("tan")
+  // 15.10.6.3 RegExp.prototype.test(string)
+  val INTERNAL_REGEX_TEST = internalAPIName("regexTest")
   // Other helpers
   val INTERNAL_IS_OBJ = internalAPIName("isObject")
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
@@ -162,8 +168,9 @@ object NodeUtil {
   val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val INTERNAL_GET_LOC = internalAPIName("getLoc")
   val INTERNAL_HAS_CONST = internalAPIName("HasConstruct")
-  val internalCallSet: Set[String] = HashSet(
+  val internalCallSet: Set[String] = Set(
     INTERNAL_PRINT,
+    INTERNAL_NOT_YET_IMPLEMENTED,
     INTERNAL_CHAR_CODE,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
@@ -206,12 +213,15 @@ object NodeUtil {
     INTERNAL_FLOOR,
     INTERNAL_LOG,
     INTERNAL_MAX,
+    INTERNAL_MAX2,
     INTERNAL_MIN,
+    INTERNAL_MIN2,
     INTERNAL_POW,
     INTERNAL_ROUND,
     INTERNAL_SIN,
     INTERNAL_SQRT,
     INTERNAL_TAN,
+    INTERNAL_REGEX_TEST,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
     INTERNAL_ITER_HAS_NEXT,
@@ -249,7 +259,7 @@ object NodeUtil {
   val INTERNAL_ERR_PROTO = internalAPIName("ErrProto")
   val INTERNAL_OBJ_CONST = internalAPIName("ObjConst")
   val INTERNAL_ARRAY_CONST = internalAPIName("ArrayConst")
-  val internalValueSet: Set[String] = HashSet(
+  val internalValueSet: Set[String] = Set(
     INTERNAL_TOP,
     INTERNAL_BOT,
     INTERNAL_UINT,
@@ -278,7 +288,7 @@ object NodeUtil {
 
   // internal API variable
   val INTERNAL_EVENT_FUNC = internalAPIName("EventFunc")
-  val internalVarSet: Set[String] = HashSet(
+  val internalVarSet: Set[String] = Set(
     INTERNAL_EVENT_FUNC
   )
   def isInternalVar(id: String): Boolean = internalVarSet.contains(id)
@@ -385,7 +395,7 @@ object NodeUtil {
 
   def initNodesPrint: Unit = {
     nodesPrintId = 0
-    nodesPrintIdEnv = HashMap()
+    nodesPrintIdEnv = Map()
   }
 
   def getNodesE(uniq: String): String = nodesPrintIdEnv.get(uniq) match {
@@ -448,7 +458,7 @@ object NodeUtil {
   ////////////////////////////////////////////////////////////////
 
   /*  make sure it is parenthesized */
-  def prBody(body: List[SourceElement]): String =
+  def prBody(body: List[Stmt]): String =
     join(0, body, LINE_SEP, new StringBuilder("")).toString
 
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
@@ -504,7 +514,7 @@ object NodeUtil {
   }
 
   def prFtn(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl],
-    body: List[SourceElement]): Unit = {
+    body: List[Stmt]): Unit = {
     fds match {
       case Nil =>
       case _ =>
@@ -524,10 +534,10 @@ object NodeUtil {
     s.append(getIndent(indent + 1)).append(join(indent + 1, body, LINE_SEP + getIndent(indent + 1), new StringBuilder("")))
   }
 
-  def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], body: SourceElements): Unit =
+  def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], body: Stmts): Unit =
     prUseStrictDirective(s, indent, fds, vds, List(body))
 
-  def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], stmts: List[SourceElements]): Unit =
+  def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], stmts: List[Stmts]): Unit =
     fds.find(fd => fd.strict) match {
       case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(LINE_SEP)
       case None => vds.find(vd => vd.strict) match {
@@ -544,7 +554,7 @@ object NodeUtil {
     var offset = 0
     def addLines(node: Program, l: Int, o: Int): Program = {
       line = l; offset = o
-      map = new HashMap[String, Span]
+      map = new Map[String, Span]
       walk(node)
     }
 
@@ -559,7 +569,7 @@ object NodeUtil {
       } else (node, node.info.span)
     }
 
-    var map = new HashMap[String, Span]
+    var map = new Map[String, Span]
     override def walk(i: ASTNodeInfo): ASTNodeInfo = {
       val span = i.span
       val key = span.toString
@@ -620,17 +630,17 @@ object NodeUtil {
     var offset = 0
     def addLines(node: Expr, l: Int, o: Int): Expr = {
       line = l; offset = o
-      map = new HashMap[String, Span]
+      map = new Map[String, Span]
       walk(node)
     }
     def addLines(node: LHS, l: Int, o: Int): LHS = {
       line = l; offset = o
-      map = new HashMap[String, Span]
+      map = new Map[String, Span]
       walk(node)
     }
     def addLines(node: FunExpr, l: Int, o: Int): FunExpr = {
       line = l; offset = o
-      map = new HashMap[String, Span]
+      map = new Map[String, Span]
       walk(node)
     }
     var map = Map[String, Span]()
@@ -659,7 +669,7 @@ object NodeUtil {
   object SimplifyWalker extends ASTWalker {
     var repeat = false
 
-    def simplify(stmts: List[SourceElement]): List[Stmt] = {
+    def simplify(stmts: List[Stmt]): List[Stmt] = {
       repeat = false
       val simplified = simpl(stmts.map(_.asInstanceOf[Stmt]))
       val result = if (repeat) simplify(simplified) else simplified
@@ -700,8 +710,8 @@ object NodeUtil {
       case Program(info, TopLevel(i, fds, vds, program)) =>
         Program(info, TopLevel(i, fds.map(walk), vds,
           program.map(ss => ss match {
-            case SourceElements(i, s, f) =>
-              SourceElements(i, simplify(s.map(walk)), f)
+            case Stmts(i, s, f) =>
+              Stmts(i, simplify(s.map(walk)), f)
           })))
     }
 
@@ -719,9 +729,9 @@ object NodeUtil {
     }
 
     override def walk(node: Functional): Functional = node match {
-      case Functional(i, fds, vds, SourceElements(info, body, strict), name, params, bodyS) =>
+      case Functional(i, fds, vds, Stmts(info, body, strict), name, params, bodyS) =>
         Functional(i, fds.map(walk), vds,
-          SourceElements(info, simplify(body.map(walk)), strict),
+          Stmts(info, simplify(body.map(walk)), strict),
           name, params, bodyS)
     }
   }

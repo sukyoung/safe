@@ -11,12 +11,13 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
-import jline.console.ConsoleReader
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.{ CFGCallInst, CFGNormalInst }
+import org.jline.reader.LineReaderBuilder
+import org.jline.terminal._
 
 // run instructions
 case object CmdRunInsts extends Command("run_insts", "Run instruction by instruction.") {
@@ -27,7 +28,11 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
         val st = c.sem.getState(cp)
         val block = cp.block
         val insts = block.getInsts.reverse
-        val reader = new ConsoleReader()
+        val builder: TerminalBuilder = TerminalBuilder.builder();
+        val terminal: Terminal = builder.build();
+        val reader = LineReaderBuilder.builder()
+          .terminal(terminal)
+          .build()
         printResult(insts match {
           case Nil => "* no instructions"
           case _ => c.getCurCP.block.toString(0)
@@ -37,14 +42,13 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
         val (resSt, resExcSt, _) = insts.foldLeft((st, AbsState.Bot, true)) {
           case ((oldSt, oldExcSt, true), inst) =>
             printResult("\n")
-            reader.setPrompt(
-              s"inst: [${inst.id}] $inst" + LINE_SEP +
-                s"('s': state / 'q': stop / 'n','': next)" + LINE_SEP +
-                s"> "
-            )
             var line = ""
             while ({
-              line = reader.readLine
+              line = reader.readLine(
+                s"inst: [${inst.id}] $inst" + LINE_SEP +
+                  s"('s': state / 'q': stop / 'n','': next)" + LINE_SEP +
+                  s"> "
+              )
               val keep = line match {
                 case "s" => {
                   printResult("*** state ***")

@@ -660,7 +660,7 @@ transient Member PropAssign =
        ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
        yyValue = new GetProp(info, a1,
                              new Functional(info, nilFds, nilVds,
-                                            new SourceElements(info, toList(a2._1()), a2._3()),
+                                            new Stmts(info, toList(a2._1()), a2._3()),
                                             a1.toId(), nilIds, a2._2()));
      }
    / <Setter> set w a1:PropName w openparen w a2:Id w closeparen w a3:FunctionBody
@@ -668,7 +668,7 @@ transient Member PropAssign =
        ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
        yyValue = new SetProp(info, a1,
                              new Functional(info, nilFds, nilVds,
-                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            new Stmts(info, toList(a3._1()), a3._3()),
                                             a1.toId(), toList(list(a2)), a3._2()));
      }
    / <Prop> a1:PropName w colon w a2:Assignment

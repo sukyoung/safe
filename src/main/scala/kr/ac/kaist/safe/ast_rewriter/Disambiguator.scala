@@ -232,7 +232,7 @@ class Disambiguator(program: Program) {
   // walker for disambiguating ASTNode
   private object DisambWalker extends ASTWalker {
     def functional(i: ASTNodeInfo, span: Span, name: Id, params: List[Id], fds: List[FunDecl],
-      vds: List[VarDecl], body: SourceElements, bodyS: String): Functional = {
+      vds: List[VarDecl], body: Stmts, bodyS: String): Functional = {
       val oldToplevel = toplevel
       toplevel = false
       labEnv = EMPTY_LAB_ENV
@@ -253,8 +253,8 @@ class Disambiguator(program: Program) {
       val oldInFunctionBody = inFunctionBody
       inFunctionBody = true
       val newBody = body match {
-        case SourceElements(i, stmts, strict) =>
-          SourceElements(i, stmts.map(walk), strict)
+        case Stmts(i, stmts, strict) =>
+          Stmts(i, stmts.map(walk), strict)
       }
       inFunctionBody = oldInFunctionBody
       toplevel = oldToplevel
@@ -275,9 +275,9 @@ class Disambiguator(program: Program) {
         Program(info, TopLevel(it, newFds, newVds, body.map(walk)))
     }
 
-    override def walk(node: SourceElements): SourceElements = node match {
-      case SourceElements(info, stmts, strict) =>
-        SourceElements(info, stmts.map(walk), strict)
+    override def walk(node: Stmts): Stmts = node match {
+      case Stmts(info, stmts, strict) =>
+        Stmts(info, stmts.map(walk), strict)
     }
 
     override def walk(node: FunDecl): FunDecl = node match {

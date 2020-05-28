@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
-import scala.collection.immutable.HashMap
 
 case class Worklist(cfg: CFG) {
   def init(entryCP: ControlPoint): Unit = {
@@ -38,7 +37,7 @@ case class Worklist(cfg: CFG) {
       if (b1.func.id == b2.func.id) compareBlockType(b1, b2)
       else b1.func.id < b2.func.id
     })
-    val (orderMap, _) = cfgBlockList.foldLeft((HashMap[CFGBlock, Int](), 0)) {
+    val (orderMap, _) = cfgBlockList.foldLeft((Map[CFGBlock, Int](), 0)) {
       case ((tmpMap, tmpOrder), block) =>
         (tmpMap + (block -> tmpOrder), tmpOrder + 1)
     }

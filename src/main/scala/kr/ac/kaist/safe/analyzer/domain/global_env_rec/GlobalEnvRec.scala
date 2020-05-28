@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import scala.collection.immutable.HashMap
 
 // XXX: we only support object environment record for global object
 //      because other object environments with 'with' statments

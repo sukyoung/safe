@@ -25,7 +25,7 @@ case class TopLevel(
     info: ASTNodeInfo,
     fds: List[FunDecl],
     vds: List[VarDecl],
-    stmts: List[SourceElements]
+    stmts: List[Stmts]
 ) extends ScopeBody {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -43,7 +43,7 @@ case class Functional(
     info: ASTNodeInfo,
     fds: List[FunDecl],
     vds: List[VarDecl],
-    stmts: SourceElements,
+    stmts: Stmts,
     name: Id,
     params: List[Id],
     body: String

@@ -16,4 +16,6 @@ package object util {
     if (cond) f(input)
     else input
   }
+
+  val Map = HashMap
 }

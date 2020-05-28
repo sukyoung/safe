@@ -22,22 +22,22 @@ import Keyword;
 import Spacing;
 
 /*
- * Program ::= w SourceElements? w EndOfFile
+ * Program ::= w Stmts? w EndOfFile
  */
 public Program File =
-     initParser a1:UseStrictDirectives? w a2:TopLevelSourceElements? closeParser
+     initParser a1:UseStrictDirectives? w a2:TopLevelStmts? closeParser
      { Span span = createSpan(yyStart,yyCount);
        ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
-       scala.collection.immutable.List<SourceElement> ses;
+       scala.collection.immutable.List<Stmt> ses;
        if (a2 == null) ses = nilSes;
        else ses = toList(a2);
        HashMap<String, Span> map = new HashMap<String, Span>();
        if (a1 == null)
            yyValue = new Program(info, new TopLevel(info, nilFds, nilVds,
-                                                    toList(list(new SourceElements(info, ses, false)))));
+                                                    toList(list(new Stmts(info, ses, false)))));
        else
            yyValue = new Program(info, new TopLevel(info, nilFds, nilVds,
-                                                    toList(list(new SourceElements(info, ses, true)))));
+                                                    toList(list(new Stmts(info, ses, true)))));
      };
 void initParser = w { initParser(); };
 void closeParser = w EndOfFile
@@ -61,28 +61,28 @@ private String UseStrictDirective =
    ;
 
 /*
- * SourceElements ::= SourceElement (w SourceElement)*
+ * Stmts ::= Stmt (w Stmt)*
  */
-private List<SourceElement> TopLevelSourceElements =
-     a1:SourceElement a2s:(w SourceElement)*
+private List<Stmt> TopLevelStmts =
+     a1:Stmt a2s:(w Stmt)*
      { // Disable recording comments for now for the end of file
        NodeUtil.setKeepComments(false);
        yyValue = cons(a1, a2s.list());
      };
 
 /*
- * SourceElements ::= SourceElement (w SourceElement)*
+ * Stmts ::= Stmt (w Stmt)*
  */
-private List<SourceElement> SourceElements =
-     a1:SourceElement a2s:(w SourceElement)*
+private List<Stmt> Stmts =
+     a1:Stmt a2s:(w Stmt)*
      { yyValue = cons(a1, a2s.list()); };
 
 /*
- * SourceElement ::=
+ * Stmt ::=
  *   FunctionDeclaration
  * | Statement
  */
-private SourceElement SourceElement =
+private Stmt Stmt =
      FunctionDeclaration
    / Statement ;
 
@@ -98,7 +98,7 @@ FunDecl FunctionDeclaration =
        else ids = toList(a2);
        yyValue = new FunDecl(info,
                              new Functional(info, nilFds, nilVds,
-                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            new Stmts(info, toList(a3._1()), a3._3()),
                                             a1, ids, a3._2()), false);
      };
 
@@ -112,27 +112,27 @@ public List<Id> Params =
      { yyValue = list(a1); };
 
 /*
- * FunctionBody ::= { w SourceElement* w }
+ * FunctionBody ::= { w Stmt* w }
  */
-public Tuple3<List<SourceElement>, String, Boolean> FunctionBody =
+public Tuple3<List<Stmt>, String, Boolean> FunctionBody =
      opencurly w a1:UseStrictDirectives? w closecurly
      { if (a1 == null)
-         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
+         yyValue = new Tuple3<List<Stmt>, String, Boolean>(
                        nilJSes,
                        "{}",
                        Boolean.valueOf(false));
        else
-         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
+         yyValue = new Tuple3<List<Stmt>, String, Boolean>(
                        nilJSes,
                        "{ 'use strict'; }",
                        Boolean.valueOf(true));
      }
-   / opencurly w a1:UseStrictDirectives? w a2:SourceElements w closecurly
+   / opencurly w a1:UseStrictDirectives? w a2:Stmts w closecurly
      { String str = NodeUtil.prBody(toList(a2));
        if (a1 == null)
-         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
+         yyValue = new Tuple3<List<Stmt>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
        else
-         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
+         yyValue = new Tuple3<List<Stmt>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
      };
 
 /*
@@ -148,6 +148,6 @@ public LHS FunctionExpr =
        else ids = toList(a2);
        yyValue = new FunExpr(info,
                              new Functional(info, nilFds, nilVds,
-                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            new Stmts(info, toList(a3._1()), a3._3()),
                                             f, ids, a3._2()));
      };

@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.util
 // Rename Success and Failure to avoid name conflicts with ParseResult
 import scala.util.{ Try, Success => Succ, Failure => Fail }
 import scala.util.parsing.combinator._
-import scala.collection.immutable.HashSet
 import scala.io.Source
 import kr.ac.kaist.safe.{ Safe, Command, SafeConfig }
 import kr.ac.kaist.safe.phase.{ PhaseOption, Config }
@@ -26,7 +25,7 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
   private val success: Try[Unit] = Succ(())
   var ruleList: List[Parser[Try[Unit]]] = Nil
 
-  var optNameSet: Set[String] = HashSet()
+  var optNameSet: Set[String] = Set()
 
   addRule(safeConfig, "", Safe.options)
 

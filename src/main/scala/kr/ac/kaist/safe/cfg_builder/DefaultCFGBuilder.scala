@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.cfg_builder
 
-import scala.collection.immutable.{ HashMap, HashSet }
 import kr.ac.kaist.safe.{ SafeConfig, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
@@ -53,7 +52,7 @@ class DefaultCFGBuilder(
   // JavaScript Label Map
   private trait JSLabel {
     def of(lmap: LabelMap): Set[CFGBlock] =
-      lmap.getOrElse(this, HashSet())
+      lmap.getOrElse(this, Set())
   }
   private case object RetLabel extends JSLabel
   private case object ThrowLabel extends JSLabel
@@ -75,9 +74,9 @@ class DefaultCFGBuilder(
   // initialize global variables
   private def init: (CFG, ExcLog) = {
     val cvResult = new CapturedVariableCollector(ir, safeConfig, config)
-    catchVarMap = HashSet()
+    catchVarMap = Set()
     captured = cvResult.result
-    cfgIdMap = HashMap()
+    cfgIdMap = Map()
     uniqueNameCounter = 0
     ir match {
       case IRRoot(_, fds, vds, _) =>
@@ -98,7 +97,7 @@ class DefaultCFGBuilder(
       cfg.addEdge(globalFunc.entry, startBlock)
 
       translateFunDecls(fds, globalFunc, startBlock)
-      val (blocks: List[CFGBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), HashMap())
+      val (blocks: List[CFGBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), Map())
 
       cfg.addEdge(blocks, globalFunc.exit)
       cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, CFGEdgeExc)
@@ -131,8 +130,6 @@ class DefaultCFGBuilder(
    * collects variable names from sequence of IRLoad, "name" := arguments[n] */
   private def namesOfArgs(loads: List[IRStmt]): List[CFGId] = {
     // When arguments may not be a list of IRExprStmts
-    // because of using compiler.IRSimplifier
-    // to move IRBin, IRUn, and IRLoad out of IRExpr
     flatten(loads).foldLeft(List[CFGId]())((args, load) => load match {
       case IRExprStmt(_, lhs, _, _) => lhs match {
         case IRUserId(_, _, _, _, _) => id2cfgId(lhs) :: args
@@ -163,7 +160,7 @@ class DefaultCFGBuilder(
       cfg.addEdge(newFunc.entry, startBlock)
 
       translateFunDecls(fds, newFunc, startBlock)
-      val (blocks: List[CFGBlock], lmap: LabelMap) = translateStmts(body, newFunc, List(startBlock), HashMap())
+      val (blocks: List[CFGBlock], lmap: LabelMap) = translateStmts(body, newFunc, List(startBlock), Map())
 
       cfg.addEdge(blocks, newFunc.exit)
       cfg.addEdge(RetLabel of lmap toList, newFunc.exit)
@@ -183,7 +180,6 @@ class DefaultCFGBuilder(
 
   /* fd rule : IRFunDecl x CFGFunction x NormalBlock -> Unit */
   private def translateFunDecl(fd: IRFunDecl, func: CFGFunction, block: NormalBlock): Unit = {
-    // println ("[Func] %s".format(fd))
     fd match {
       case IRFunDecl(_, functional) =>
         val func: CFGFunction = translateFunctional(functional)
@@ -255,7 +251,7 @@ class DefaultCFGBuilder(
             addOutBlocks(catchBlock)
 
             /* try body */
-            val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
+            val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), Map())
 
             cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, CFGEdgeExc)
             cfg.addEdge(ThrowEndLabel of trylmap toList, catchBlock)
@@ -285,7 +281,7 @@ class DefaultCFGBuilder(
             val finBlock: NormalBlock = func.createBlock(FinallyLabel, currentLoop)
 
             /* try body */
-            val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
+            val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), Map())
 
             /* finally body */
             val (finbs: List[CFGBlock], finlmap: LabelMap) = translateStmt(finb, func, List(finBlock), lmap)
@@ -326,7 +322,7 @@ class DefaultCFGBuilder(
             val finBlock: NormalBlock = func.createBlock(FinallyLabel, currentLoop)
 
             /* try body */
-            val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
+            val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), Map())
 
             cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, CFGEdgeExc)
             cfg.addEdge(ThrowEndLabel of trylmap toList, catchBlock)
@@ -390,7 +386,7 @@ class DefaultCFGBuilder(
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRBreak(_, label) =>
         val key: String = label.uniqueName
-        val bs: Set[CFGBlock] = lmap.getOrElse(NamedLabel(key), HashSet()) ++ blocks.toSet
+        val bs: Set[CFGBlock] = lmap.getOrElse(NamedLabel(key), Set()) ++ blocks.toSet
         (Nil, lmap.updated(NamedLabel(key), bs))
       /* PEI : internal @Construct */
       case IRInternalCall(_, lhs, NodeUtil.INTERNAL_CONSTRUCT, fun :: thisId :: args :: Nil) =>
@@ -642,7 +638,7 @@ class DefaultCFGBuilder(
       /* PEI : id lookup */
       case IRUn(_, op, expr) =>
         CFGUn(expr, op.kind, ir2cfgExpr(expr))
-      case id: IRId => CFGVarRef(id, id2cfgId(id))
+      case id: IRId => id2cfgExpr(id)
       case IRThis(_) => CFGThis(expr)
       case IRInternalValue(_, n) => CFGInternalValue(expr, n)
       case IRVal(v) => CFGVal(v)
@@ -677,7 +673,14 @@ class DefaultCFGBuilder(
   }
 
   // IR id to CFG expr
-  private def id2cfgExpr(id: IRId): CFGExpr = CFGVarRef(id, id2cfgId(id))
+  private def id2cfgExpr(id: IRId): CFGExpr = {
+    val cfgId = id2cfgId(id)
+    cfgId.kind match {
+      case GlobalVar | CapturedVar => currentFunc.addOuterVar(cfgId)
+      case _ => ()
+    }
+    CFGVarRef(id, cfgId)
+  }
 
   // IR id list to CFG id list
   private def idList2cfgIdList(id: List[IRId]): List[CFGId] = id.map(id2cfgId)

@@ -34,7 +34,12 @@ object DefaultValue extends ValueDomain {
   case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
     def gamma: ConSet[Value] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[Value] = ConMany // TODO more precisely
+    def getSingle: ConSingle[Value] = (pvalue.getSingle, locset.getSingle) match {
+      case (ConZero, ConZero) => ConZero
+      case (ConOne(v), ConZero) => ConOne(v)
+      case (ConZero, ConOne(v)) => ConOne(v)
+      case _ => ConMany
+    }
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)

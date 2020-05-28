@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.util._
 
@@ -67,7 +66,7 @@ object Helper {
           AbsHeap.Bot
 
       val lenExcSet1 =
-        if (afalse ⊑ (nValue StrictEquals nNewLen)) HashSet[Exception](RangeError)
+        if (afalse ⊑ (nValue StrictEquals nNewLen)) Set[Exception](RangeError)
         else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {

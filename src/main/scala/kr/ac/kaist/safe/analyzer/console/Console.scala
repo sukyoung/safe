@@ -13,13 +13,14 @@ package kr.ac.kaist.safe.analyzer.console
 
 import java.io.PrintWriter
 
-import jline.console.ConsoleReader
-import jline.console.completer._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.console.command._
-import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, TracePartition, Worklist }
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.HeapBuildConfig
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.impl.completer.StringsCompleter
+import org.jline.terminal._
 
 import scala.collection.JavaConverters._
 
@@ -32,12 +33,20 @@ class Console(
   ////////////////////////////////////////////////////////////////
   // private variables
   ////////////////////////////////////////////////////////////////
-
-  private val reader = new ConsoleReader()
-  private val out: PrintWriter = new PrintWriter(reader.getOutput)
+  private val builder: TerminalBuilder = TerminalBuilder.builder();
+  private val terminal: Terminal = builder.build();
+  private val cmds = Command.commands.map(_.name).asJavaCollection
+  private val completer = new StringsCompleter(cmds)
+  private val reader = LineReaderBuilder.builder()
+    .terminal(terminal)
+    .completer(completer)
+    .build()
+  private var prompt: String = ""
 
   iter = iter0
-  init()
+  runCmd("help") match {
+    case o: CmdResult => println(o)
+  }
 
   ////////////////////////////////////////////////////////////////
   // API
@@ -45,13 +54,19 @@ class Console(
 
   override def runFixpoint(): Unit = {
     val prepare = prepareToRunFixpoint
-    val alreadyVisited = stopAlreadyVisited && (visited contains cur)
-    val exitExc = stopExitExc && (getResult match {
-      case (_, exc) => !exc.isBottom
-    })
-    if (prepare || alreadyVisited || exitExc) {
+    lazy val (st, excSt) = getResult
+    val alreadyVisited = (debugMode || stopAlreadyVisited) && (visited contains cur)
+    val exitExc = (debugMode || stopExitExc) && (!excSt.isBottom)
+    val oneSideBot = debugMode && (
+      (st.heap.isBottom && !st.context.isBottom) ||
+      (st.context.isBottom && !st.heap.isBottom) ||
+      (excSt.heap.isBottom && !excSt.context.isBottom) ||
+      (excSt.context.isBottom && !excSt.heap.isBottom)
+    )
+    if (prepare || alreadyVisited || exitExc || oneSideBot) {
       if (alreadyVisited) println("[STOP] already visited CFGBlock.")
       if (exitExc) println("[STOP] it creates exceptions.")
+      if (oneSideBot) println("[STOP] it create one side bottom.")
       if (showIter && startTime != beforeTime) {
         val duration = System.currentTimeMillis - startTime
         println(s"total: $duration ms")
@@ -59,7 +74,7 @@ class Console(
       setPrompt()
       while ({
         println
-        val line = reader.readLine
+        val line = reader.readLine(prompt)
         startTime = System.currentTimeMillis
         beforeTime = System.currentTimeMillis
         val loop = runCmd(line) match {
@@ -74,7 +89,6 @@ class Console(
             setPrompt()
             true
         }
-        out.flush()
         loop
       }) {}
     } else if (showIter) {
@@ -142,27 +156,14 @@ class Console(
     val fid = block.func.id
     val span = block.span
     val tp = cur.tracePartition
-    s"<$fname[$fid]: $block, $tp> @${span.toString} $LINE_SEP Iter[$iter] > "
+    val tpStr = if (tp == EmptyTP) "" else s", $tp"
+    s"<$fname[$fid]: $block$tpStr> @$span $LINE_SEP Iter[$iter] > "
   }
 
   ////////////////////////////////////////////////////////////////
   // private helper
   ////////////////////////////////////////////////////////////////
-
-  private def init(): Unit = {
-    val cmds = Command.commands.map(_.name).asJavaCollection
-    reader.addCompleter(new StringsCompleter(cmds))
-    // TODO extend aggregator for sub-command
-    // reader.addCompleter(new AggregateCompleter(
-    //   new ArgumentCompleter(new StringsCompleter("asdf"), new StringsCompleter("sdf"), new NullCompleter()),
-    //   new ArgumentCompleter(new StringsCompleter("wer"), new NullCompleter())
-    // ))
-    runCmd("help") match {
-      case o: CmdResult => println(o)
-    }
-  }
-
-  private def setPrompt(prompt: String = getPrompt): Unit = {
-    reader.setPrompt(prompt)
+  private def setPrompt(input: String = getPrompt): Unit = {
+    prompt = input
   }
 }

@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashMap
-
 // concrete object type
 case class Obj(nmap: Map[String, DataProp], imap: Map[IName, IValue]) {
   def +(other: Obj): Obj = {
@@ -54,7 +52,7 @@ object IName {
     IBoundThis,
     IBoundArgs
   )
-  def makeMap[V](value: V): Map[IName, V] = all.foldLeft(HashMap[IName, V]()) {
+  def makeMap[V](value: V): Map[IName, V] = all.foldLeft(Map[IName, V]()) {
     case (map, iname) => map + (iname -> value)
   }
 }

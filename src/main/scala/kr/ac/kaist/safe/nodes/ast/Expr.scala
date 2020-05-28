@@ -223,7 +223,8 @@ case class StringLiteral(
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
     s.append(quote)
-    NU.ppAST(s, escaped)
+    if (isRE) s.append(NU.pp(escaped.replaceAll("\\\\", "\\\\\\\\")))
+    else NU.ppAST(s, escaped)
     s.append(quote)
     s.toString
   }
@@ -327,7 +328,7 @@ case class Parenthesized(
   }
 }
 
-// LHS ::= function Id? ( (Id,)* ) { SourceElement }
+// LHS ::= function Id? ( (Id,)* ) { Stmt }
 case class FunExpr(
     info: ASTNodeInfo,
     ftn: Functional

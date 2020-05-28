@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.HashSet
-
 // binding abstract domain
 trait BindingDomain extends AbsDomain[Binding] {
   def apply(

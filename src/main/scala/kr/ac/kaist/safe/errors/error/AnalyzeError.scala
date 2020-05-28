@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.errors.error
 
+import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.domain.AbsValue
+import kr.ac.kaist.safe.analyzer.ControlPoint
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util.UserAllocSite
 
@@ -37,11 +40,17 @@ case class UndefinedFunctionCallError(ir: IRNode) extends AnalyzeIRNodeError({
   "CFGConstruct/CFGCall tried to call undefined function"
 }, ir)
 
-case class SemanticsNotYetImplementedError(ir: IRNode) extends AnalyzeIRNodeError({
+case class IRSemanticsNotYetImplementedError(ir: IRNode) extends AnalyzeIRNodeError({
   "Semantics for this node is not implemented yet"
 }, ir)
 
 // other errors
+case class SemanticsNotYetImplementedError(v: AbsValue, cp: ControlPoint) extends AnalyzeError({
+  s"[NotYetImplemented] $v" + LINE_SEP +
+    s"* Sensitivity: " + LINE_SEP +
+    cp.tracePartition.toStringList.mkString(LINE_SEP)
+})
+
 case class ContextAssertionError(funName: String, msg: String) extends AnalyzeError(
   s"[Assert:$funName]: $msg"
 )
@@ -50,12 +59,16 @@ case class HeapParseError(msg: String) extends AnalyzeError(
   s"[HeapParseError]: $msg"
 )
 
-case class JSModelParseError(msg: String) extends AnalyzeError(
-  s"[JSModelParseError]: $msg"
+case class ModelParseError(msg: String) extends AnalyzeError(
+  s"[ModelParseError]: $msg"
 )
 
 case object LocTopGammaError extends AnalyzeError(
   "LocSet.Top.gamma is impossible"
+)
+
+case object SymTopGammaError extends AnalyzeError(
+  "SymSet.Top.gamma is impossible"
 )
 
 case class LocParseError(msg: String) extends AnalyzeError(
@@ -81,5 +94,5 @@ case class NoFuncIdError(fid: Int) extends AnalyzeError({
 case object IllFormedBlockStr extends AnalyzeError("")
 
 case class NotYetDefined(name: String) extends AnalyzeError(
-  "[NotYetDefined] $name"
+  s"[NotYetDefined] $name"
 )

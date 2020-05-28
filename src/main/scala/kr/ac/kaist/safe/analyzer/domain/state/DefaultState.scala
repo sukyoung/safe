@@ -11,11 +11,12 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.CallInfo
+import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.util.PipeOps._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap }
 
 // default state abstract domain
 object DefaultState extends StateDomain {
@@ -99,28 +100,13 @@ object DefaultState extends StateDomain {
       Elem(newHeap, newCtxt, newAllocs)
     }
 
-    def afterCall(call: Call, locSet: LocSet): Elem = {
-      val allocs = this.allocs.mayAlloc ⊔ this.allocs.mustAlloc
-      val oldified = allocs.foldLeft(locSet) {
-        case (set, locR @ Recency(l, Recent)) =>
-          val locO = Recency(l, Old)
-          set.subsLoc(locR, locO)
-        case (set, _) => set
-      }
-      val pruned = (getLocSet.gamma, (oldified ⊔ allocs).gamma) match {
-        case (ConFin(given), ConFin(wanted)) => remove(given -- wanted)
-        case _ => this
-      }
-      allocs.foldLeft(pruned) {
-        case (st, loc) => loc.getACS match {
-          case Some(from @ AllocCallSite(l, cs)) => {
-            val to = AllocCallSite(l, (call :: cs).take(ACS))
-            st.subsLoc(from, to)
-          }
-          case None => st
-        }
-      }
-    }
+    def afterCall(info: CallInfo): Elem = this.prunedChanged(info.state)
+
+    // pruning based on changed locations
+    private def prunedChanged(callerSt: Elem): Elem = callerSt << this
+
+    def <<(that: Elem): Elem =
+      Elem(this.heap << that.heap, this.context << that.context, that.allocs)
 
     def setAllocLocSet(allocs: AllocLocSet): Elem = copy(allocs = allocs)
 
@@ -257,5 +243,8 @@ object DefaultState extends StateDomain {
         "** allocated location set **" + LINE_SEP +
         allocs.toString
     }
+
+    def cleanChanged: Elem =
+      Elem(heap.cleanChanged, context.cleanChanged, allocs)
   }
 }

@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.{ HashMap => Map }
 
 // partial map abstract domain
 case class PMapDomain[K, V, VD <: AbsDomain[V]](

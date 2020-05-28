@@ -17,7 +17,7 @@ package kr.ac.kaist.safe.analyzer.domain
 sealed abstract class ConSingle[+T] {
   override def toString: String = this match {
     case ConZero => "[]"
-    case ConOne(t) => "[$t]"
+    case ConOne(t) => s"[$t]"
     case ConMany => "[< more than 2 values >]"
   }
 }

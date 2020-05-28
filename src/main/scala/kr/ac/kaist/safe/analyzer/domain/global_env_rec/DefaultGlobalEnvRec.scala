@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
-import scala.collection.immutable.HashMap
 
 // default global environment abstract domain
 object DefaultGlobalEnvRec extends GlobalEnvRecDomain {

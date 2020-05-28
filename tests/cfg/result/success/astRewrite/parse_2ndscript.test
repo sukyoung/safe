@@ -127,7 +127,7 @@
     {
       var b;
       
-          b = N && ! a.href.match(new RegExp(".*\/accounts\/ClearSID[?]", "")) && encodeURIComponent(N());
+          b = N && ! a.href.match(new RegExp(".*\\/accounts\\/ClearSID[?]", "")) && encodeURIComponent(N());
       b && (a.href = a.href.replace(new RegExp("([?&]continue=)[^&]*", ""), "$1" + b));
     }
     function La(a) 
@@ -2721,7 +2721,7 @@
       f = e.i;
       {
         g = f.c("1", 0);
-        h = new RegExp("\bgbmt\b", "");
+        h = new RegExp("\\bgbmt\\b", "");
         k = (function (a) 
         {
           var b;
@@ -2750,10 +2750,10 @@
           }
           b = a.href;
           {
-            c = window.location.href.match(new RegExp(".*?:\/\/[^\/]*", ""))[0];
+            c = window.location.href.match(new RegExp(".*?:\\/\\/[^\\/]*", ""))[0];
             c = RegExp("^" + c + "/search\\?");
           }
-          if ((b = c.test(b)) && ! new RegExp("(^|\\?|&)ei=", "").test(a.href))
+          if ((b = c.test(b)) && ! new RegExp("(^|\\\\?|&)ei=", "").test(a.href))
             if ((b = window.google) && b.kEXPI)
               a.href += "&ei=" + b.kEI;
         });
@@ -2797,4 +2797,3 @@
   (window['gbar'] = window['gbar'] || {
     
   })._CONFIG = [[[0, "www.gstatic.com", "og.og.en_US.L-7sWZRn8Fk.O", "com", "ko", "1", 0, ["2", "2", ".36.40.65.70.", "r_qf.", "17259,3700092", "1372717546", "1372341082", ], "37102", "ykHWUcqSK8uplQXv-YCQDQ", 0, 0, "og.og.-krlms5hen2wq.L.I10.O", "AItRSTPeWOYRYdxy8ogBqCfqYf5-akG9rw", "AItRSTOKDekUfXFpeHxxOmZEwGEHPBXNFg", ], null, 0, ["m;/_/scs/abc-static/_/js/k=gapi.gapi.en.aBqw11eoBzM.O/m=__features__/am=EA/rt=j/d=1/rs=AItRSTMkiisOVRW5P7l3Ig59NtxV0JdMMA", "https://apis.google.com", "", "", "", "", "", 1, "es_plusone_gc_20130619.0_p0", ], ["1", "gci_91f30755d6a6b787dcc2a4062e6e9824.js", "googleapis.client:plusone", "", "ko", ], null, null, null, ["0.01", "com", "1", [["", "", "", ], "", "w", ["", "", "", ], ], [["", "", "", ], "", ["", "", "", ], 0, 0, ], ], null, [0, 0, 0, 0, "", ], [1, "0.001", "1.0", ], [1, "0.1", ], [], [], [], [["", ], ["", ], ], ], ];
-  

@@ -38,6 +38,13 @@ object Useful {
   def fileNameToFileWriter(fileName: String): FileWriter =
     new FileWriter(fileName)
 
+  def writeWithFileName(fileName: String)(doit: BufferedWriter => Unit): Unit = {
+    val (fw, writer) = fileNameToWriters(fileName)
+    doit(writer)
+    writer.close
+    fw.close
+  }
+
   def indentation(s: StringBuilder, str: String, indent: Int): Unit = {
     str.split(LINE_SEP) match {
       case Array(str, rest @ _*) => {

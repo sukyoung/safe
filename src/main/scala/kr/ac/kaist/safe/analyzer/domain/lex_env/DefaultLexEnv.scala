@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
-import scala.collection.immutable.{ HashSet, HashMap }
 
 // default lexical environment abstract domain
 object DefaultLexEnv extends LexEnvDomain {
@@ -177,7 +176,7 @@ object DefaultLexEnv extends LexEnvDomain {
     var visited = LocSet.Bot
     var newH = st.heap
     var newCtx = st.context
-    var ctxUpdatePairSet = HashSet[(Loc, Elem)]()
+    var ctxUpdatePairSet = Set[(Loc, Elem)]()
     var excSet = ExcSetEmpty
     def visit(loc: Loc): Unit = if (!visited.contains(loc)) {
       visited += loc
@@ -226,7 +225,7 @@ object DefaultLexEnv extends LexEnvDomain {
     Elem(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
 
   def newPureLocal(outer: LocSet): Elem = {
-    val envRec = AbsDecEnvRec(HashMap(
+    val envRec = AbsDecEnvRec(Map(
       "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
       "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
       "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)
