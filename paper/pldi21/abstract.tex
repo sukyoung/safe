@@ -1,0 +1,10 @@
+\begin{abstract}
+Static analyses based on abstract interpretation can be integrated into developer workflow and help developers to find bugs.
+However, the dynamic features of JavaScript degrade the scalability and precision of the pure static bug detection.
+Combining static and dynamic analyses is one of the breakthroughs in JavaScript bug detection.
+Existing combined analyses have clear boundaries that apply which analysis to which part.
+Such boundaries are intuitive but limit chances to optimize transitions between two analyses.
+We formally present dynamic shortcuts, a more flexible compound of static and dynamic analyses.
+We implement a proof of concept bug detector by extending the existing JavaScript static analyzer for a subset of ECMAScript 5.1.
+Our experimental results show that adding dynamic shortcuts indeed speeds up the detection and provides more precise bug reports.
+\end{abstract}
