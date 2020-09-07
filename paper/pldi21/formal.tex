@@ -1,3 +1,70 @@
 \section{Formalization}
 
-\todo
+In this section, we formally define the dynamic shortcut over the abstract
+interpretation.
+
+\subsection{Notation}
+\[
+  \begin{array}{ll@{~}c@{~}l}
+    \text{Programs} & \prog &::=& (\lab: \inst)^*\\
+    \text{Labels} & \lab &\in& \labset\\
+    \text{Instructions} & \inst &::=& x = \expr \mid \kwif \; \expr \; \lab \;
+    \lab \mid \cdots\\
+    \text{Expressions} & \expr &::=& \const \mid x \mid \lambda x. \lab \mid \op(\expr, \cdots, \expr)
+    \mid \cdots\\
+  \end{array}
+\]
+
+
+\subsection{Concrete Semantics}
+
+We represent the semantics of a program $\prog$ as a state transition system
+$(\stset, \trans, \istset)$.  A state $\st \in \stset$ represents a status of the
+program $\prog$ and $\istset$ denotes the initial state set.  The transition
+relation $\trans \subseteq \stset \times \stset$ describes how states are
+transformed to other states.
+
+A \textit{collecting semantics} $\sem{\prog} = \{ \st \in \stset \mid \ist \in
+\istset \wedge \ist \trans^* \st \}$ consists of reachable states from initial
+states of the program $\prog$.  We could calculate it using the \textit{transfer
+function} $\transfer: \dom \rightarrow \dom$ as follows:
+\[
+  \begin{array}{r@{~}c@{~}l}
+    \sem{\prog} &=& \underset{n \rightarrow \infty}{\lim}{\transfer^n(\ielem)}\\
+    \transfer(\elem) &=& \elem \join \step(\elem)\\
+  \end{array}
+\]
+The \textit{concrete domain} $\dom = \powerset{\stset}$ is a complete lattice
+with $\cup$, $\cap$, and $\subseteq$ as its join($\join$), meet($\meet$), and
+partial order($\order$) operators.  The initial states are $\ielem = \istset$.
+The \textit{one-step execution} $\step: \dom \rightarrow \dom$ transforms states
+using the transition relation $\trans$: $\step(\elem) = \{ \st' \mid \st \in
+\elem \wedge \st \trans \st' \}$.
+
+
+\subsection{Abstract Interpretation}
+The abstract interpretation over-approximate the transfer $\transfer$ to the
+\textit{abstract transfer function} $\abstransfer: \absdom \rightarrow \absdom$
+to get the \textit{abstract semantics} $\abssem{\prog}$ in finite iterations as
+follows:
+\[
+    \abssem{\prog} = \underset{n \rightarrow
+    \infty}{\lim}{(\abstransfer)^n(\iabselem)}\\
+\]
+We define a \textit{state abstraction} $\dom \galois{\alpha}{\gamma} \absdom$ as
+a Galois connection between the concrete domain $\dom$ and an abstract domain
+$\absdom$ with a \textit{concretization function} $\gamma$ and a
+\textit{abstraction function} $\alpha$.  The initial abstract state $\iabselem
+\in \absdom$ represents an abstraction of the initial state set; $\ielem
+\subseteq \gamma(\iabselem)$.  The abstract transfer function $\abstransfer:
+\absdom \rightarrow \absdom$ is defined as $\abstransfer(\abselem) = \abselem
+\join \absstep(\abselem)$ with an \textit{abstract one-step execution}
+$\absstep: \abselem \rightarrow \abselem$.  For the sound state abstraction, the
+join operator and the abstract one-step execution should satisfy the following
+conditions:
+\begin{itemize}
+  \item $\forall \abselem_0, \abselem_1 \in \absdom. \; \gamma(\abselem_0) \cup
+    \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join \abselem_1)$
+  \item $\forall \abselem \in \absdom. \; \absstep \circ \gamma(\abselem) \subseteq
+    \gamma \circ \absstep(\abselem)$
+\end{itemize}

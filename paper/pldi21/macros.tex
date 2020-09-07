@@ -1,3 +1,69 @@
-% colors
+% Basic
+\newcommand{\powerset}[1]{\mathcal{P}(#1)}
+\newcommand{\imbox}[1]{\mbox{\small \textit{#1}}}
+\newcommand{\name}[1]{\textsf{#1}}
 \newcommand{\inred}[1]{{\color{red}{#1}}}
 \newcommand{\todo}{\inred{TODO}}
+\newcommand{\abs}[1]{{#1}^{\#}}
+
+% Tool
+\newcommand{\tool}{\inred{TOOL}}
+
+% Keywords
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\kwif}{\code{if}}
+
+% Programs
+\newcommand{\prog}{p}
+
+% Labels
+\newcommand{\labset}{\mathbb{L}}
+\newcommand{\lab}{l}
+
+% Constants
+\newcommand{\const}{c}
+
+% Operations
+\newcommand{\op}{\name{op}}
+
+% Instructions
+\newcommand{\inst}{i}
+
+% Expressions
+\newcommand{\expr}{e}
+
+% States
+\newcommand{\stset}{\mathbb{S}}
+\newcommand{\st}{\sigma}
+\newcommand{\istset}{\stset_\iota}
+\newcommand{\ist}{\st_\iota}
+
+% Transition Relations
+\newcommand{\trans}{\leadsto}
+
+% Complete Lattice
+\newcommand{\join}{\sqcup}
+\newcommand{\meet}{\sqcap}
+\newcommand{\bigjoin}{\bigsqcup}
+\newcommand{\bigmeet}{\bigsqcap}
+\newcommand{\order}{\sqsubseteq}
+
+% Concrete Domains
+\newcommand{\dom}{\mathbb{D}}
+\newcommand{\elem}{d}
+\newcommand{\ielem}{\elem_\iota}
+
+% Abstract Domains
+\newcommand{\absdom}{\abs{\dom}}
+\newcommand{\abselem}{\abs{\elem}}
+\newcommand{\iabselem}{\abs{\elem}_\iota}
+
+% Concrete Semantics
+\newcommand{\sem}[1]{[\![{#1}]\!]}
+\newcommand{\transfer}{F}
+\newcommand{\step}{\name{step}}
+
+% Abstract Semantics
+\newcommand{\abssem}[1]{\abs{\sem{#1}}}
+\newcommand{\abstransfer}{\abs{\transfer}}
+\newcommand{\absstep}{\abs{\step}}
