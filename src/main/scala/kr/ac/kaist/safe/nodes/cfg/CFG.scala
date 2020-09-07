@@ -23,6 +23,7 @@ case class CFG(
     ir: IRNode,
     globalVars: List[CFGId]
 ) extends CFGNode {
+  type CCFG = Map[FunctionId, Map[BlockId, (Map[CFGEdgeType, List[BlockId]], String)]]
   // cfg id
   val id: Int = CFG.getId
 
@@ -98,6 +99,13 @@ case class CFG(
       case func => s.append(func.toString(indent)).append(LINE_SEP)
     }
     s.toString
+  }
+
+  // toString
+  def toCode(): CCFG = {
+    funcs.reverseIterator.foldLeft[CCFG](Map())({
+      case (acc, func) => acc + (func.id -> func.toCode)
+    })
   }
 
   // user defined allocation site size

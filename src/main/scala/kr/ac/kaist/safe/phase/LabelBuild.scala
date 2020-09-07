@@ -17,52 +17,44 @@ import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.nodes.ast.Program
 import spray.json._
 import DefaultJsonProtocol._
 
 // CFGBuild phase
-case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
-  val name: String = "cfgBuilder"
+case object LabelBuild extends PhaseObj[CCFG, LabelBuildConfig, String] {
+  val name: String = "labelBuilder"
   val help: String =
-    "Builds a control flow graph for JavaScript source files."
+    "Builds a labeled program."
   def apply(
-    ir: IRRoot,
+    ccfg: CCFG,
     safeConfig: SafeConfig,
-    config: CFGBuildConfig
-  ): Try[CFG] = {
-    // Build CFG from IR.
-    val cbResult = new DefaultCFGBuilder(ir, safeConfig, config)
-    val cfg = cbResult.cfg
-    val excLog = cbResult.excLog
-
-    // Report errors.
-    if (excLog.hasError) {
-      println(cfg.relFileName + ":")
-      println(excLog)
-    }
-
+    config: LabelBuildConfig
+  ): Try[String] = {
+    val s: StringBuilder = new StringBuilder
     // Pretty print to file.
     config.outFile.map(out => {
       val (fw, writer) = Useful.fileNameToWriters(out)
-      writer.write(cfg.toString(0))
+      writer.write(s.toString)
       writer.close
       fw.close
-      println("Dumped CFG to " + out)
+      println("Dumped the labeled program to " + out)
     })
-    Success(cfg)
+
+    Success(s.toString)
   }
 
-  def defaultConfig: CFGBuildConfig = CFGBuildConfig()
-  val options: List[PhaseOption[CFGBuildConfig]] = List(
+  def defaultConfig: LabelBuildConfig = LabelBuildConfig()
+  val options: List[PhaseOption[LabelBuildConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
-      "messages during CFG building are muted."),
+      "messages during label building are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the resulting CFG will be written to the outfile.")
+      "the resulting prorgam will be written to the outfile.")
   )
 }
 
-// CFGBuild phase config
-case class CFGBuildConfig(
+// LabelBuild phase config
+case class LabelBuildConfig(
   var silent: Boolean = false,
   var outFile: Option[String] = None
 ) extends Config

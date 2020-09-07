@@ -121,6 +121,13 @@ case class CFGFunction(
     s.toString
   }
 
+  def toCode(): Map[BlockId, (Map[CFGEdgeType, List[BlockId]], String)] = {
+    blocks.reverseIterator.foldLeft[Map[BlockId, (Map[CFGEdgeType, List[BlockId]], String)]](Map())({
+      case (acc, block) =>
+        acc + (block.id -> block.toCode)
+    })
+  }
+
   def simpleName: String = {
     val arr = name.split(NodeUtil.INTERNAL_SYMBOL)
     if (arr.head.isEmpty) arr.tail.head

@@ -21,48 +21,40 @@ import spray.json._
 import DefaultJsonProtocol._
 
 // CFGBuild phase
-case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
-  val name: String = "cfgBuilder"
+case object CCFGBuild extends PhaseObj[CFG, CCFGBuildConfig, CCFG] {
+  val name: String = "ccfgBuilder"
   val help: String =
-    "Builds a control flow graph for JavaScript source files."
+    "Builds a control flow graph with JavaScript codes."
   def apply(
-    ir: IRRoot,
+    cfg: CFG,
     safeConfig: SafeConfig,
-    config: CFGBuildConfig
-  ): Try[CFG] = {
-    // Build CFG from IR.
-    val cbResult = new DefaultCFGBuilder(ir, safeConfig, config)
-    val cfg = cbResult.cfg
-    val excLog = cbResult.excLog
-
-    // Report errors.
-    if (excLog.hasError) {
-      println(cfg.relFileName + ":")
-      println(excLog)
-    }
-
+    config: CCFGBuildConfig
+  ): Try[CCFG] = {
+    val ccfg = cfg.toCode
     // Pretty print to file.
     config.outFile.map(out => {
       val (fw, writer) = Useful.fileNameToWriters(out)
-      writer.write(cfg.toString(0))
+      writer.write(cfg.toCode.toString)
+      //writer.write(ccfg.toJson.prettyPrint)
       writer.close
       fw.close
-      println("Dumped CFG to " + out)
+      println("Dumped CCFG to " + out)
     })
-    Success(cfg)
+
+    Success(ccfg)
   }
 
-  def defaultConfig: CFGBuildConfig = CFGBuildConfig()
-  val options: List[PhaseOption[CFGBuildConfig]] = List(
+  def defaultConfig: CCFGBuildConfig = CCFGBuildConfig()
+  val options: List[PhaseOption[CCFGBuildConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
-      "messages during CFG building are muted."),
+      "messages during CCFG building are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the resulting CFG will be written to the outfile.")
+      "the resulting CCFG will be written to the outfile.")
   )
 }
 
-// CFGBuild phase config
-case class CFGBuildConfig(
+// CCFGBuild phase config
+case class CCFGBuildConfig(
   var silent: Boolean = false,
   var outFile: Option[String] = None
 ) extends Config
