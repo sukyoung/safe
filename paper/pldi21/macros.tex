@@ -1,10 +1,12 @@
 % Basic
+\DeclareMathAlphabet{\mathpzc}{T1}{pzc}{m}{it}
 \newcommand{\powerset}[1]{\mathcal{P}(#1)}
 \newcommand{\imbox}[1]{\mbox{\small \textit{#1}}}
 \newcommand{\name}[1]{\textsf{#1}}
 \newcommand{\inred}[1]{{\color{red}{#1}}}
 \newcommand{\todo}{\inred{TODO}}
 \newcommand{\abs}[1]{{#1}^{\#}}
+\newcommand{\finmap}{{\xrightarrow[]{\text{fin}}}}
 
 % Tool
 \newcommand{\tool}{\inred{TOOL}}
@@ -13,23 +15,13 @@
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\kwif}{\code{if}}
 
-% Programs
+% Notations
 \newcommand{\prog}{p}
-
-% Labels
-\newcommand{\labset}{\mathbb{L}}
-\newcommand{\lab}{l}
-
-% Constants
+\newcommand{\labset}{\mathcal{L}}
+\newcommand{\lab}{\mathpzc{l}}
 \newcommand{\const}{c}
-
-% Operations
 \newcommand{\op}{\name{op}}
-
-% Instructions
 \newcommand{\inst}{i}
-
-% Expressions
 \newcommand{\expr}{e}
 
 % States
@@ -37,6 +29,12 @@
 \newcommand{\st}{\sigma}
 \newcommand{\istset}{\stset_\iota}
 \newcommand{\ist}{\st_\iota}
+
+% Environments
+\newcommand{\memset}{\mathbb{M}}
+\newcommand{\absmemset}{\abs{\memset}}
+\newcommand{\mem}{m}
+\newcommand{\absmem}{\abs{\mem}}
 
 % Transition Relations
 \newcommand{\trans}{\leadsto}
@@ -67,3 +65,35 @@
 \newcommand{\abssem}[1]{\abs{\sem{#1}}}
 \newcommand{\abstransfer}{\abs{\transfer}}
 \newcommand{\absstep}{\abs{\step}}
+
+% Abstract Sensitivity
+\newcommand{\viewmap}{\delta}
+\newcommand{\sabsdom}{\absdom_\viewmap}
+\newcommand{\sabselem}{\abselem_\viewmap}
+\newcommand{\viewset}{\Pi}
+\newcommand{\view}{\pi}
+\newcommand{\sabsstep}{\absstep_\viewmap}
+\newcommand{\viewtrans}[2]{\abssem{#1 \rightarrow #2}}
+
+% Flow Sensitivity
+\newcommand{\fs}{\name{FS}}
+\newcommand{\fsviewmap}{\viewmap^\fs}
+
+% Locations
+\newcommand{\locset}{\mathbb{L}}
+\newcommand{\loc}{l}
+\newcommand{\abslocset}{\abs\locset}
+\newcommand{\absloc}{\abs\loc}
+
+% Values
+\newcommand{\valset}{\mathbb{V}}
+\newcommand{\val}{v}
+\newcommand{\absvalset}{\abs{\valset}}
+\newcommand{\absval}{\abs{\val}}
+
+% Abstract Counting
+\newcommand{\abscount}[1]{\abs{\lVert#1\rVert}}
+\newcommand{\abscountset}{\abs{\mathbb{N}}}
+\newcommand{\abszero}{\abs{0}}
+\newcommand{\absone}{\abs{1}}
+\newcommand{\absmany}{\abs{\geq\!\!2}}

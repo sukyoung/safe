@@ -3,24 +3,17 @@
 In this section, we formally define the dynamic shortcut over the abstract
 interpretation.
 
-\subsection{Notation}
-\[
-  \begin{array}{ll@{~}c@{~}l}
-    \text{Programs} & \prog &::=& (\lab: \inst)^*\\
-    \text{Labels} & \lab &\in& \labset\\
-    \text{Instructions} & \inst &::=& x = \expr \mid \kwif \; \expr \; \lab \;
-    \lab \mid \cdots\\
-    \text{Expressions} & \expr &::=& \const \mid x \mid \lambda x. \lab \mid \op(\expr, \cdots, \expr)
-    \mid \cdots\\
-  \end{array}
-\]
-
 
 \subsection{Concrete Semantics}
-
-We represent the semantics of a program $\prog$ as a state transition system
-$(\stset, \trans, \istset)$.  A state $\st \in \stset$ represents a status of the
-program $\prog$ and $\istset$ denotes the initial state set.  The transition
+\[
+  \prog ::= (\lab: \inst)^*\\
+\]
+A program $\prog$ is a sequence of labelled instructions.  We represent the
+semantics of a program $\prog$ as a state transition system $(\stset, \trans,
+\istset)$.  A state $\st \in \stset = \labset \times \memset$ is a pair of a
+label and a memory and represents a status of the program $\prog$.  A memory
+$\mem \in \memset = \locset \finmap \valset$ is a finite mapping from locations
+to values. A program starts with an initial state in $\istset$.  The transition
 relation $\trans \subseteq \stset \times \stset$ describes how states are
 transformed to other states.
 
@@ -29,10 +22,9 @@ A \textit{collecting semantics} $\sem{\prog} = \{ \st \in \stset \mid \ist \in
 states of the program $\prog$.  We could calculate it using the \textit{transfer
 function} $\transfer: \dom \rightarrow \dom$ as follows:
 \[
-  \begin{array}{r@{~}c@{~}l}
-    \sem{\prog} &=& \underset{n \rightarrow \infty}{\lim}{\transfer^n(\ielem)}\\
-    \transfer(\elem) &=& \elem \join \step(\elem)\\
-  \end{array}
+  \sem{\prog} = \underset{n \rightarrow \infty}{\lim}{\transfer^n(\ielem)}\\
+  \qquad
+  \transfer(\elem) = \elem \join \step(\elem)\\
 \]
 The \textit{concrete domain} $\dom = \powerset{\stset}$ is a complete lattice
 with $\cup$, $\cap$, and $\subseteq$ as its join($\join$), meet($\meet$), and
@@ -59,7 +51,7 @@ $\absdom$ with a \textit{concretization function} $\gamma$ and a
 \subseteq \gamma(\iabselem)$.  The abstract transfer function $\abstransfer:
 \absdom \rightarrow \absdom$ is defined as $\abstransfer(\abselem) = \abselem
 \join \absstep(\abselem)$ with an \textit{abstract one-step execution}
-$\absstep: \abselem \rightarrow \abselem$.  For the sound state abstraction, the
+$\absstep: \absdom \rightarrow \absdom$.  For the sound state abstraction, the
 join operator and the abstract one-step execution should satisfy the following
 conditions:
 \begin{itemize}
@@ -68,3 +60,72 @@ conditions:
   \item $\forall \abselem \in \absdom. \; \absstep \circ \gamma(\abselem) \subseteq
     \gamma \circ \absstep(\abselem)$
 \end{itemize}
+
+
+\subsection{Analysis Sensitivity}
+
+Abstract interpretation is often defined with \textit{analysis sensitivity} to
+increase the precision of static analysis.  A sensitive abstract domain
+$\sabsdom: \viewset \rightarrow \absdom$ is defined with a \textit{view
+abstraction} $\viewmap: \viewset \rightarrow \dom$ that provides multiple points
+of views for reachable states during static analysis.  It maps a finite number
+of views $\viewset$ to sets of states $\dom$. Each view $\view \in \viewset$
+represents a set of states $\viewmap(\view)$.
+A \textit{sensitive state abstraction} $\dom
+\galois{\alpha_\viewmap}{\gamma_\viewmap} \sabsdom$ is a Galois connection between
+the concrete domain $\dom$ and the sensitive abstract domain $\sabsdom$ with the
+following concretization function:
+\[
+  \gamma_\viewmap(\abselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
+  \; \st \in \viewmap(\view) \Rightarrow \st \in \gamma \circ \sabselem(\view) \}
+\]
+
+With analysis sensitivities, the abstract one-step execution $\sabsstep:
+\sabsdom \rightarrow \sabsdom$ is defined as follows:
+\[
+  \sabsstep(\sabselem) = \lambda \view \in \viewset. \; \underset{\view' \in
+  \viewset}{\bigjoin}{\viewtrans{\view'}{\view} \circ \sabselem(\view')}
+\]
+where $\viewtrans{\view'}{\view}: \absdom \rightarrow \absdom$ is the abstract
+semantics of a \textit{view transition} from a view $\view'$ to another view
+$\view$.  It should satsify the following condition for the soundness of the
+analysis:
+\[
+  \forall \abselem \in \absdom. \; \step(\gamma(\abselem) \cap \viewmap(\view'))
+  \cap \viewmap(\view) \subseteq \gamma \circ
+  \viewtrans{\view'}{\view}(\abselem)
+\]
+
+One of the most widely-used sensitivity techniques is \textit{flow sensitivity}
+using a flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$.
+It discriminates states using their labels as follows:
+\[
+  \forall \lab \in \labset. \; \fsviewmap(\lab) = \{ \st \in \stset \mid \st =
+  (\lab, \_) \}
+\]
+
+
+\subsection{Abstract Counting}
+
+We define a \textit{memory abstraction} $\powerset{\memset}
+\galois{\alpha_\memset}{\gamma_\memset} \absmemset$ as a Galois connection
+between sets of concrete memories and abstract memories.  An abstract memory
+$\absmem \in \absmemset: \abslocset \finmap \absvalset$ is a finite mapping from
+abstract locations to abstract values.  The \textit{strong update} in memory
+abstraction is important to increase the precision of static analysis.  For
+sound analysis, a memory update for a specific abstract location should join old
+abstract values with new abstract values, which calls a \textit{weak update}.
+It degrades the analysis precision because of the sprious values.  To overcome
+such degradation, researchers proposed the abstract
+counting~\cite{abstract-gc-counting, revisit-recency} to track how many times an
+abstract location has been allocated and to apply strong updates to singleton
+abstract locations.
+
+We extended abstract states with an abstract counting operator $\abscount{-}:
+\abslocset \rightarrow \abscountset = \{ \abszero, \absone, \absmany \}$, which
+is a function that takes an abstract location and returns its abstract count;
+$\abszero$ denotes that it have never been allocated, $\absone$ once, and
+$\absmany$ more than equals to twice.
+
+
+\subsection{On-Demand Access Aanlysis}

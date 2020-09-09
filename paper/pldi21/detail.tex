@@ -1,3 +1,28 @@
 \section{Application: JavaScript}
 
 \todo
+
+% \subsection{Core Language}
+% \[
+%   \begin{array}{ll@{~}c@{~}l}
+%     \text{Programs} & \prog &::=& (\lab: \inst)^*\\
+%     \text{Labels} & \lab &\in& \labset\\
+%     \text{Instructions} & \inst &::=& x = \expr \mid \kwif \; \expr \; \lab \;
+%     \lab\\
+%     \text{Expressions} & \expr &::=& \const \mid x \mid \op(\expr, \cdots,
+%     \expr)\\
+%   \end{array}
+% \]
+% 
+% In a core language, we define a program as a sequence of labelled instructions
+% and instructions are variable assignments and branches.  An expression is a
+% constant $\const$, a variable $x$, and $n$-ary operations.  We define states
+% $\stset = \labset \times \memset$ as pairs of labels and memories mapping from
+% variables to values.  We define the transition relation $\trans$ between states
+% as follows:
+% 
+% \begin{prooftree}
+%   \AxiomC{$\prog = \cdots, \lab: x = \expr, \lab': \inst, \cdots$}
+%   \AxiomC{$\sem{e}(\mem) = v$}
+%   \BinaryInfC{$(\lab, \mem) \trans (\lab', \mem[x \mapsto v])$}
+% \end{prooftree}
