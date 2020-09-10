@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.phase
 
 import scala.util.{ Success, Try }
 import kr.ac.kaist.safe.SafeConfig
-import kr.ac.kaist.safe.ast_rewriter.{ Disambiguator, Hoister, WithRewriter }
+import kr.ac.kaist.safe.ast_rewriter.{ BlockIdInstrumentor }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.util._
@@ -52,7 +52,10 @@ case object BlockIdInstrument extends PhaseObj[Program, BlockIdInstrumentConfig,
   }
 
   def rewrite(pgm: Program): (Program, ExcLog) = {
-    (pgm, new ExcLog)
+    val inst = new BlockIdInstrumentor(pgm)
+    var program = inst.result
+    var excLog = inst.excLog
+    (program, excLog)
   }
 
   def defaultConfig: BlockIdInstrumentConfig = BlockIdInstrumentConfig()

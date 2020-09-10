@@ -26,6 +26,32 @@ case class Stmts(
 // Statements
 trait Stmt extends ASTNode {
   def getIndent(indent: Int): Int = indent + 1
+  def copyStmt(info: ASTNodeInfo): Stmt = this match {
+    case st: NoOp => st.copy(info = info)
+    case st: StmtUnit => st.copy(info = info)
+    case st: FunDecl => st.copy(info = info)
+    case st: ABlock => st.copy(info = info)
+    case st: VarStmt => st.copy(info = info)
+    case st: EmptyStmt => st.copy(info = info)
+    case st: ExprStmt => st.copy(info = info)
+    case st: If => st.copy(info = info)
+    case st: DoWhile => st.copy(info = info)
+    case st: While => st.copy(info = info)
+    case st: For => st.copy(info = info)
+    case st: ForIn => st.copy(info = info)
+    case st: ForVar => st.copy(info = info)
+    case st: ForVarIn => st.copy(info = info)
+    case st: Continue => st.copy(info = info)
+    case st: Break => st.copy(info = info)
+    case st: Return =>
+      st.copy(info = info)
+    case st: With => st.copy(info = info)
+    case st: Switch => st.copy(info = info)
+    case st: LabelStmt => st.copy(info = info)
+    case st: Throw => st.copy(info = info)
+    case st: Try => st.copy(info = info)
+    case st: Debugger => st.copy(info = info)
+  }
 }
 
 /**

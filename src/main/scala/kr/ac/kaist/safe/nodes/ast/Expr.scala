@@ -26,6 +26,32 @@ trait Expr extends ASTNode {
     case Parenthesized(info, body) => body
     case _ => this
   }
+
+  def copyExpr(info: ASTNodeInfo): Expr = this match {
+    case expr: ExprList => expr.copy(info = info)
+    case expr: Cond => expr.copy(info = info)
+    case expr: InfixOpApp => expr.copy(info = info)
+    case expr: PrefixOpApp => expr.copy(info = info)
+    case expr: UnaryAssignOpApp => expr.copy(info = info)
+    case expr: AssignOpApp => expr.copy(info = info)
+    case expr: This => expr.copy(info = info)
+    case expr: Null => expr.copy(info = info)
+    case expr: Bool => expr.copy(info = info)
+    case expr: DoubleLiteral => expr.copy(info = info)
+    case expr: IntLiteral => expr.copy(info = info)
+    case expr: StringLiteral => expr.copy(info = info)
+    case expr: RegularExpression => expr.copy(info = info)
+    case expr: VarRef => expr.copy(info = info)
+    case expr: ArrayExpr => expr.copy(info = info)
+    case expr: ArrayNumberExpr => expr.copy(info = info)
+    case expr: ObjectExpr => expr.copy(info = info)
+    case expr: Parenthesized => expr.copy(info = info)
+    case expr: FunExpr => expr.copy(info = info)
+    case expr: Bracket => expr.copy(info = info)
+    case expr: Dot => expr.copy(info = info)
+    case expr: New => expr.copy(info = info)
+    case expr: FunApp => expr.copy(info = info)
+  }
 }
 
 // Expr ::= Expr, Expr
