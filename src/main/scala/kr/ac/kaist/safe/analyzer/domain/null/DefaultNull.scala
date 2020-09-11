@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default null abstract domain
 object DefaultNull extends NullDomain {
   case object Top extends Elem
@@ -32,6 +34,11 @@ object DefaultNull extends NullDomain {
     override def toString: String = this match {
       case Bot => "⊥(null)"
       case Top => "Top(null)"
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case Top => JsString("⊤")
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {

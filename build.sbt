@@ -86,7 +86,9 @@ libraryDependencies ++= Seq(
   "io.spray" %% "spray-json" % "1.3.2",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.2",
   "com.fasterxml.jackson.module" % "jackson-module-scala_2.12" % "2.9.1",
-  "org.jline" % "jline" % "3.10.0"
+  "org.jline" % "jline" % "3.10.0",
+  "org.graalvm.js" % "js" % "20.1.0",
+  "org.graalvm.js" % "js-scriptengine" % "20.1.0"
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")

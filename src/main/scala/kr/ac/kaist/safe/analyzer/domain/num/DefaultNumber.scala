@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default number abstract domain
 object DefaultNumber extends NumDomain {
   case object Top extends Elem
@@ -205,6 +207,20 @@ object DefaultNumber extends NumDomain {
         val str = getStr(sLong)
         str.substring(0, 1) + '.' + str.substring(1) + 'e' + getSign(n) + math.abs(n - 1).toString
       }
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case NaN => JsString("NaN")
+      case PosInf => JsString("+∞")
+      case NegInf => JsString("-∞")
+      case Inf => JsString("∞")
+      case NUIntConst(0) => JsString("-0")
+      case UIntConst(n) => JsNumber(n)
+      case NUIntConst(n) => JsNumber(n)
+      case UInt => JsString("UInt")
+      case NUInt => JsString("NUInt")
+      case Top => JsString("⊤")
     }
 
     // 9.8.1 ToString Applied to the Number Type

@@ -14,6 +14,8 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
+import spray.json._
+
 // default internal value abstract domain
 object DefaultIValue extends IValueDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsFId.Bot)
@@ -42,6 +44,11 @@ object DefaultIValue extends IValueDomain {
         list.mkString(", ")
       }
     }
+
+    def toJSON: JsValue = JsObject(
+      "value" -> this.value.toJSON,
+      "fidset" -> this.fidset.toJSON
+    )
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)

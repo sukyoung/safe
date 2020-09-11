@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.util.Try
 
+import spray.json._
+
 // string set domain with max set size
 case class StringSet(maxSetSize: Int) extends StrDomain {
   case object Top extends Elem
@@ -64,6 +66,13 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case Number => "Number"
       case Other => "Other"
       case StrSet(set) => set.map("\"" + _ + "\"").mkString(", ")
+    }
+
+    def toJSON: JsValue = this match {
+      case StrSet(set) => JsArray(set.toVector.map(s => JsString(s.toString)))
+      case Top => JsString("⊤")
+      case Number => JsString("Number")
+      case Other => JsString("Other")
     }
 
     def ToBoolean: AbsBool = this match {

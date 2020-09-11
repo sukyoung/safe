@@ -14,6 +14,8 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+
 // default value abstract domain
 object DefaultValue extends ValueDomain {
   lazy val Bot: Elem = Elem(AbsPValue.Bot, LocSet.Bot)
@@ -79,6 +81,11 @@ object DefaultValue extends ValueDomain {
         case (false, false) => s"$pvalStr, $locSetStr"
       }
     }
+
+    def toJSON: JsValue = JsObject(
+      "pvalue" -> this.pvalue.toJSON,
+      "locset" -> this.locset.toJSON
+    )
 
     def subsLoc(from: Loc, to: Loc): Elem =
       Elem(this.pvalue, this.locset.subsLoc(from, to))

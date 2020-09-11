@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default data property abstract domain
 object DefaultDataProp extends DataPropDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
@@ -98,6 +100,13 @@ object DefaultDataProp extends DataPropDomain {
         s"[$wch$ech$cch] $value"
       }
     }
+
+    def toJSON: JsValue = JsObject(
+      "value" -> this.value.toJSON,
+      "writable" -> this.writable.toJSON,
+      "enumerable" -> this.writable.toJSON,
+      "configurable" -> this.writable.toJSON
+    )
 
     def copy(
       value: AbsValue,

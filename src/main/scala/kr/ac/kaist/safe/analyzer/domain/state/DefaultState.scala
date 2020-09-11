@@ -18,6 +18,8 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.PipeOps._
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+
 // default state abstract domain
 object DefaultState extends StateDomain {
   lazy val Bot: Elem = Elem(AbsHeap.Bot, AbsContext.Bot, AllocLocSet.Bot)
@@ -231,6 +233,14 @@ object DefaultState extends StateDomain {
     def toStringLoc(loc: Loc): Option[String] = heap.toStringLoc(loc) match {
       case None => context.toStringLoc(loc)
       case some => some
+    }
+
+    def toJSON: JsValue = {
+      JsObject(
+        "heap" -> this.heap.toJSON,
+        "context" -> JsString("⊥"),
+        "allocs" -> JsString("⊥")
+      )
     }
 
     private def toString(all: Boolean): String = {

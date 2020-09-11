@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // null abstract domain
 trait NullDomain extends AbsDomain[Null] {
   // abstract null element
@@ -19,5 +21,6 @@ trait NullDomain extends AbsDomain[Null] {
   // abstract null element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     def StrictEquals(that: Elem): AbsBool
+    def toJSON: JsValue
   }
 }

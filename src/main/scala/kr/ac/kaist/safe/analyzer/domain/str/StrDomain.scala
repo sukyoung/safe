@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // string abstract domain
 trait StrDomain extends AbsDomain[Str] {
   // abstraction from all number string
@@ -46,5 +48,6 @@ trait StrDomain extends AbsDomain[Str] {
 
     def ToNumber: AbsNum
     def ToBoolean: AbsBool
+    def toJSON: JsValue
   }
 }

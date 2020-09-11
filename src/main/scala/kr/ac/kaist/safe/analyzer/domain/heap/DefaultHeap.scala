@@ -16,6 +16,8 @@ import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg.{ CFGId, GlobalVar }
 
+import spray.json._
+
 // default heap abstract domain
 object DefaultHeap extends HeapDomain {
   private val EmptyMap: Map[Loc, AbsObj] = Map()
@@ -83,6 +85,18 @@ object DefaultHeap extends HeapDomain {
 
     override def toString: String = {
       buildString(loc => loc.isUser || loc == GLOBAL_LOC)
+    }
+
+    def toJSON: JsValue = this match {
+      case Top => JsString("⊤")
+      case Bot => JsString("⊥")
+      case HeapMap(m, merged, changed) => JsObject(
+        "map" -> JsObject(m.map {
+          case (k, v) => k.toString -> v.toJSON
+        }),
+        "merged" -> JsString("⊥"),
+        "changed" -> JsString("⊥")
+      )
     }
 
     def get(loc: Loc): AbsObj = this match {

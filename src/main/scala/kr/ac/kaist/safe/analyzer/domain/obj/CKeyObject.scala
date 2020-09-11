@@ -18,6 +18,8 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with concrete keys
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +75,33 @@ object CKeyObject extends ObjDomain {
         .append(nmap)
       s.toString
     }
+
+    def toJSON: JsValue = JsObject(
+      "nmap" -> JsObject(
+        "map" -> JsObject(nmap.map.map {
+          case (k, v) => k -> JsObject(
+            "value" -> v.value.toJSON,
+            "absent" -> JsString(v.absent.toString)
+          )
+        }),
+        "default" -> JsObject(
+          "value" -> nmap.default.value.toJSON,
+          "absent" -> JsString(nmap.default.absent.toString)
+        )
+      ),
+      "imap" -> JsObject(
+        "map" -> JsObject(imap.map.map {
+          case (k, v) => k.toString -> JsObject(
+            "value" -> v.value.toJSON,
+            "absent" -> JsString(v.absent.toString)
+          )
+        }),
+        "default" -> JsObject(
+          "value" -> imap.default.value.toJSON,
+          "absent" -> JsString(imap.default.absent.toString)
+        )
+      )
+    )
 
     ////////////////////////////////////////////////////////////////
     // Additional untility functions

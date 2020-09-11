@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default undefined abstract domain
 object DefaultUndef extends UndefDomain {
   case object Top extends Elem
@@ -32,6 +34,11 @@ object DefaultUndef extends UndefDomain {
     override def toString: String = this match {
       case Bot => "⊥(undefined)"
       case Top => "Top(undefined)"
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case Top => JsString("⊤")
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {

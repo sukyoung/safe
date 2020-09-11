@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // number abstract domain
 trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
   def Inf: Elem = alpha(Num.PosInf, Num.NegInf)
@@ -137,5 +139,6 @@ trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
     def sin: Elem
     def sqrt: Elem
     def tan: Elem
+    def toJSON: JsValue
   }
 }

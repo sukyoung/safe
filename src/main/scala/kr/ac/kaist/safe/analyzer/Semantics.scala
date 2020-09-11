@@ -203,6 +203,10 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
+          if (cp.block.func.id > 0) {
+            println(cp)
+            println(newSt.toJSON.prettyPrint)
+          }
           (newSt, AbsState.Bot)
         }
         case (call: Call) =>

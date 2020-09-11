@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default boolean abstract domain
 object DefaultBool extends BoolDomain {
   case object Bot extends Elem
@@ -40,6 +42,13 @@ object DefaultBool extends BoolDomain {
       case True => "true"
       case False => "false"
       case Top => "Top(boolean)"
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case True => JsBoolean(true)
+      case False => JsBoolean(false)
+      case Top => JsString("⊤")
     }
 
     def ToString: AbsStr = this match {

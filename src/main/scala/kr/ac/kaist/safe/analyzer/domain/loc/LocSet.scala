@@ -15,6 +15,8 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
 
+import spray.json._
+
 // location set
 object LocSet extends AbsDomain[Loc] {
   case object Top extends Elem
@@ -48,6 +50,11 @@ object LocSet extends AbsDomain[Loc] {
       case Top => "Top(location)"
       case LSet(set) if set.size == 0 => "⊥(location)"
       case LSet(set) => set.mkString(", ")
+    }
+
+    def toJSON: JsValue = this match {
+      case Top => JsString("⊤")
+      case LSet(set) => JsArray(set.toVector.map(l => JsString(l.toString)))
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
