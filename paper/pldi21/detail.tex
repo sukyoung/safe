@@ -1,28 +1,232 @@
 \section{Application: JavaScript}
 
-\todo
+In this section, we introduce the core language of JavaScript that supports
+first-class functions, open objects, and first-class property names, and define
+combined analysis of the core language.
 
-% \subsection{Core Language}
-% \[
-%   \begin{array}{ll@{~}c@{~}l}
-%     \text{Programs} & \prog &::=& (\lab: \inst)^*\\
-%     \text{Labels} & \lab &\in& \labset\\
-%     \text{Instructions} & \inst &::=& x = \expr \mid \kwif \; \expr \; \lab \;
-%     \lab\\
-%     \text{Expressions} & \expr &::=& \const \mid x \mid \op(\expr, \cdots,
-%     \expr)\\
-%   \end{array}
-% \]
-% 
-% In a core language, we define a program as a sequence of labelled instructions
-% and instructions are variable assignments and branches.  An expression is a
-% constant $\const$, a variable $x$, and $n$-ary operations.  We define states
-% $\stset = \labset \times \memset$ as pairs of labels and memories mapping from
-% variables to values.  We define the transition relation $\trans$ between states
-% as follows:
-% 
-% \begin{prooftree}
-%   \AxiomC{$\prog = \cdots, \lab: x = \expr, \lab': \inst, \cdots$}
-%   \AxiomC{$\sem{e}(\mem) = v$}
-%   \BinaryInfC{$(\lab, \mem) \trans (\lab', \mem[x \mapsto v])$}
-% \end{prooftree}
+\subsection{Core Language of JavaScript}
+
+\begin{figure*}[t]
+  \centering
+
+  \fbox{$\st \trans \st$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \expr\\
+      \referrule{\st}{\refer}{\loc}\\
+      \exprrule{\st}{\expr}{\val}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxtstack, \addr)
+      \trans
+      (\labnext(\lab), \mem[\loc \mapsto \val], \ctxtstack, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \kwobj\\
+      \referrule{\st}{\refer}{\loc}\\
+      \addr' = \text{(a fresh object address)}
+    }
+    {
+      \st = (\lab, \mem, \ctxtstack, \addr)
+      \trans
+      (\labnext(\lab), \mem[\loc \mapsto \addr'], \ctxtstack, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \expr_f ( \expr_a )\\
+      \referrule{\st}{\refer}{\loc}\\
+      \exprrule{\st}{\expr_f}{\fval{x}{\lab_b}}\\
+      \exprrule{\st}{\expr_a}{\val_a}\\
+      \addr' = \text{(a fresh environment address)}
+    }
+    {
+      \st = (\lab, \mem, \ctxtstack, \addr)
+      \trans
+      (\lab_b, \mem[(\addr', x) \mapsto \val_a], (\addr, \labnext(\lab), \loc)
+      :: \ctxtstack, \addr')
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwret \; \expr\\
+      \exprrule{\st}{\expr}{\val}\\
+    }
+    {
+      \st = (\lab, \mem, (\addr', \lab', \loc) :: \ctxtstack, \addr)
+      \trans
+      (\lab', \mem[\loc \mapsto \val], \ctxtstack, \addr')
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \exprrule{\st}{\expr}{\kwtrue}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxtstack, \addr)
+      \trans
+      (\lab', \mem, \ctxtstack, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \exprrule{\st}{\expr}{\kwfalse}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxtstack, \addr)
+      \trans
+      (\labnext(\lab), \mem, \ctxtstack, \addr)
+    }
+  \end{mathpar}
+
+  \fbox{$\referrule{\st}{\refer}{\loc}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \referrule{\st = (\lab, \mem, \ctxtstack, \addr)}{x}{(\addr, x)}\\
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprrule{\st}{\expr_0}{\addr_0}\\
+      \exprrule{\st}{\expr_1}{\val_1}\\
+      \val_1 \in \strset\\
+    }
+    {
+      \referrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\expr_0 [ \expr_1
+      ]}{(\addr_0, \val_1)}
+    }
+  \end{mathpar}
+
+  \fbox{$\exprrule{\st}{\expr}{\val}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\pval}{\pval}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxtstack,
+      \addr)}{\fval{x}{\lab'}}{\fval{x}{\lab'}}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \referrule{\st}{\refer}{\loc}\\
+      \loc \in \mem\\
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\refer}{\mem(\loc)}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \referrule{\st}{\refer}{\loc}\\
+      \loc \not\in \mem\\
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\refer}{\kwundef}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprrule{\st}{\expr_1}{\val_1}\\
+      \cdots\\
+      \exprrule{\st}{\expr_n}{\val_n}\\
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}
+      {\op(\expr_1, \cdots, \expr_n)}{\op(\val_1, \cdots, \val_n)}
+    }
+  \end{mathpar}
+
+  \caption{The transition relation for the core language of JavaScript}
+  \label{fig:core-trans-rel}
+\end{figure*}
+
+\[
+  \begin{array}{ll@{~}c@{~}l}
+    \text{Programs} & \prog &::=& (\lab: \inst)^*\\
+
+    \text{Labels} & \lab &\in& \labset\\
+
+    \text{Instructions} & \inst &::=&
+    \refer = \expr \mid
+    \refer = \kwobj \mid
+    \refer = \expr ( \expr ) \mid
+    \kwret \; \expr \mid
+    \kwif \; \expr \; \lab\\
+
+    \text{References} & \refer &::=&
+    x \mid
+    \expr [ \expr ]\\
+
+    \text{Expressions} & \expr &::=&
+    \pval \mid
+    \lambda x. \; \lab \mid
+    \refer \mid
+    \op(\expr^*)\\
+  \end{array}
+\]
+
+A program $\prog$ is a sequence of labelled instructions. An instruction $\inst$
+is an expression assignment, an object creation, a function call, a return
+instruction, or a branch.  An expression $\expr$ is a primitive, a lambda
+function, a reference, or an operation between other expressions.  A reference
+$\refer$ is a variable or a property access of an object.
+
+\[
+  \begin{array}{lr@{~}c@{~}l@{~}c@{~}l}
+    \text{States} & \st &\in& \stset &=& \labset \times \memset \times
+    \ctxtset^* \times \eaddrset\\
+    \text{Memories} & \mem &\in& \memset &=& \locset \rightarrow \valset\\
+    \text{Contexts} & \ctxt &\in& \ctxtset &=& \eaddrset \times \labset \times
+    \locset\\
+    \text{Locations} & \loc &\in& \locset &=& (\eaddrset \times \varset) \uplus
+    (\oaddrset \times \strset)\\
+    \text{Values} & \val &\in& \valset &=& \pvalset \uplus \oaddrset \uplus
+    \fvalset\\
+    \text{Primitives} & \pval &\in& \pvalset &=& \strset \uplus \cdots\\
+    \text{Addresses} & \addr &\in& \addrset &=& \eaddrset \uplus \oaddrset\\
+    \text{Functions} & \fval{x}{\lab} &\in& \fvalset &=& \varset \times
+    \labset\\
+  \end{array}
+\]
+
+States $\stset$ consist of labels $\labset$, memories $\memset$, context stacks
+$\ctxtset^*$, and environment addresses.  A memory $\mem \in \memset$ is a
+mapping from locations to values.  Context stacks is sequences of contexts
+$\ctxtset$ and a context $\ctxt \in \ctxtset$ is a tuple of an environment
+address, a return label, and a left-hand side location.  A location $\loc \in
+\locset$ is a variable or an object property; a variable location consists of an
+environment address and its name, and an object property location consists of an
+object address and a string value.  A value $\val \in \valset$ is a primitive,
+an address, or a function value.  An address $\addr \in \addrset$ is an
+environment address or an object address.  A function value
+$\fval{x}{\lab}{\addr} \in \fvalset$ consists a parameter and a body label.  In
+the core language, the closed scoping is used for functions for brevity thus
+only parameters and local variables are accessible in the function body.
+
+We formulate the concrete semantics of the core language as described in
+Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
+states is defined with the semantics of references and expressions using two
+different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
+\fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The special value
+$\kwundef$ denotes an undefined value and it is produced when the program access
+an unknown location.
+
+
+\subsection{Abstract Semantics}
+
+\todo

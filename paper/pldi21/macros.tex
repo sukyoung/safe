@@ -14,15 +14,21 @@
 % Keywords
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\kwif}{\code{if}}
+\newcommand{\kwret}{\code{ret}}
+\newcommand{\kwobj}{\code{\{\}}}
+\newcommand{\kwtrue}{\code{true}}
+\newcommand{\kwfalse}{\code{false}}
+\newcommand{\kwundef}{\code{undef}}
 
 % Notations
-\newcommand{\prog}{p}
+\newcommand{\prog}{P}
 \newcommand{\labset}{\mathcal{L}}
 \newcommand{\lab}{\mathpzc{l}}
-\newcommand{\const}{c}
+\newcommand{\labnext}{\name{next}}
 \newcommand{\op}{\name{op}}
 \newcommand{\inst}{i}
 \newcommand{\expr}{e}
+\newcommand{\refer}{r}
 
 % States
 \newcommand{\stset}{\mathbb{S}}
@@ -30,11 +36,17 @@
 \newcommand{\istset}{\stset_\iota}
 \newcommand{\ist}{\st_\iota}
 
-% Environments
+% Memories
 \newcommand{\memset}{\mathbb{M}}
 \newcommand{\absmemset}{\abs{\memset}}
 \newcommand{\mem}{m}
 \newcommand{\absmem}{\abs{\mem}}
+
+% Contexts
+\newcommand{\ctxtset}{\mathbb{C}}
+\newcommand{\absctxtset}{\abs{\ctxtset}}
+\newcommand{\ctxt}{c}
+\newcommand{\ctxtstack}{\overline{c}}
 
 % Transition Relations
 \newcommand{\trans}{\leadsto}
@@ -85,11 +97,26 @@
 \newcommand{\abslocset}{\abs\locset}
 \newcommand{\absloc}{\abs\loc}
 
+% Variables
+\newcommand{\varset}{\mathbb{X}}
+
 % Values
 \newcommand{\valset}{\mathbb{V}}
 \newcommand{\val}{v}
+\newcommand{\pvalset}{\valset_\name{p}}
+\newcommand{\pval}{\val_\name{p}}
+\newcommand{\fvalset}{\mathbb{F}}
+\newcommand{\fval}[2]{\lambda #1. #2}
+\newcommand{\strset}{\valset_\name{str}}
+\newcommand{\str}{\val_\name{str}}
 \newcommand{\absvalset}{\abs{\valset}}
 \newcommand{\absval}{\abs{\val}}
+
+% Addresses
+\newcommand{\addrset}{\mathbb{A}}
+\newcommand{\eaddrset}{\addrset_\name{env}}
+\newcommand{\oaddrset}{\addrset_\name{obj}}
+\newcommand{\addr}{a}
 
 % Abstract Counting
 \newcommand{\abscount}[1]{\abs{\lVert#1\rVert}}
@@ -107,3 +134,7 @@
 \newcommand{\symbtrans}{\trans_\symbset}
 \newcommand{\excst}{\bot_\st}
 \newcommand{\converter}{T}
+
+% Rules
+\newcommand{\referrule}[3]{#1 \vdash #2 \rightarrow #3}
+\newcommand{\exprrule}[3]{#1 \vDash #2 \Rightarrow #3}
