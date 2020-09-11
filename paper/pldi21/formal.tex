@@ -114,18 +114,66 @@ $\absmem \in \absmemset: \abslocset \finmap \absvalset$ is a finite mapping from
 abstract locations to abstract values.  The \textit{strong update} in memory
 abstraction is important to increase the precision of static analysis.  For
 sound analysis, a memory update for a specific abstract location should join old
-abstract values with new abstract values, which calls a \textit{weak update}.
+abstract values with new abstract values, called as a \textit{weak update}.
 It degrades the analysis precision because of the sprious values.  To overcome
 such degradation, researchers proposed the abstract
 counting~\cite{abstract-gc-counting, revisit-recency} to track how many times an
 abstract location has been allocated and to apply strong updates to singleton
 abstract locations.
 
-We extended abstract states with an abstract counting operator $\abscount{-}:
+We extend abstract states with an abstract counting operator $\abscount{-}:
 \abslocset \rightarrow \abscountset = \{ \abszero, \absone, \absmany \}$, which
 is a function that takes an abstract location and returns its abstract count;
 $\abszero$ denotes that it have never been allocated, $\absone$ once, and
-$\absmany$ more than equals to twice.
+$\absmany$ more than or equals to twice.
 
 
-\subsection{On-Demand Access Aanlysis}
+\subsection{Lazy Concrete Interpretation}
+
+We define a \textit{lazy concrete interpretation} by extending the transition
+relation $\trans$ as a symbolic transition relation $\symbtrans$ on abstract
+states. First, we extends the concrete states $\stset$ to \textit{symbolic
+states} $\symbstset = (\labset \times \symbmemset) \cup \{ \excst \}$ with
+symbolic memories $\symbmemset$ consisting of symbolic values $\symb \in
+\symbset$ and a special exception state $\excst$. Each symbolic value denotes an
+abstract value cannot be concretized to a singleton value.  A symbolic state
+\textit{alwyas} has a symbolic transition relation with a single symbolic state.
+When a symbolic state has a non-determinism or accesses symbolic values, it has
+the relation with the exception state: $\symbst \symbtrans \excst$.  Thus, the lazy
+concrete interpretation does not care about the non-deterministic semantics or
+symbolic values.
+
+We define a Galois connection $\symbstset
+\galois{\alpha_\symbset}{\gamma_\symbset} \absdom$ to freely convert an abstract
+state to the corresponding symbolic state and vice versa.  In the concretization
+function $\gamma_\symbset$, if an abstract value $\absval$ represents a
+singleton value, the function transforms the abstract value to the
+corresponding concrete value.  Otherwise, it keeps the abstract value as a
+symbolic value in the result symbolic state.
+
+
+\subsection{Combined Analysis}
+
+We define the \textit{combined analysis} of the abstract interpretation and the
+lazy concrete interpretation by extending the view transition as follows:
+\[
+  \viewtrans{\view'}{\view}_\symbset(\abselem) = \left\{
+    \begin{array}{ll}
+      \abselem_0 & \text{if} \; \symbst' \symbtrans \excst\\
+      \alpha_\symbset(\symbst) & \text{if} \; \symbst' \symbtrans \symbst
+      \wedge\\
+      & \phantom{\text{if}} \; \gamma \circ \alpha_\symbset(\symbst)
+      \cap \viewmap(\view) \neq \varnothing\\ \bot & \text{otherwise}\\
+    \end{array}
+  \right.
+\]
+where $\symbst' = \gamma_\symbset \circ \abselem(\view')$ and $\abselem_0 =
+\viewtrans{\view'}{\view}(\abselem)$.  The combined analysis first tries to
+convert the current abstract state $\abselem(\view')$ to the corresponding
+symbolic state $\symbst'$ and performs the lazy concrete evaluation.  When the
+evaluation produces the exception state $\excst$, it utilizes the abstract
+interpretation instead of the lazy concrete interpretation.  Otherwise, the lazy
+concrete interpretation successfully produces a new symbolic state $\symbst$.
+If the symbolic state $\symbst$ is related to the target view $\view$, the
+result is the corresponding abstract state $\alpha_\symbset(\symbst)$ of the
+symbolic state $\symbst$. Otherwise, the result becomes the bottom $\bot$.
