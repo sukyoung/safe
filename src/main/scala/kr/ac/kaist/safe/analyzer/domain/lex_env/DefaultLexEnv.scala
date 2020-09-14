@@ -15,6 +15,8 @@ import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 
+import spray.json._
+
 // default lexical environment abstract domain
 object DefaultLexEnv extends LexEnvDomain {
   lazy val Bot = Elem(AbsEnvRec.Bot, LocSet.Bot, AbsAbsent.Bot)
@@ -74,6 +76,12 @@ object DefaultLexEnv extends LexEnvDomain {
       s.append("* Outer: ").append(lst.mkString(", "))
       s.toString
     }
+
+    def toJSON: JsValue = JsObject(
+      "record" -> this.record.toJSON,
+      "outer" -> this.outer.toJSON,
+      "nullOuter" -> JsString(this.nullOuter.toString)
+    )
 
     def copy(
       record: AbsEnvRec = this.record,

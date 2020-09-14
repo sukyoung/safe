@@ -238,7 +238,7 @@ object DefaultState extends StateDomain {
     def toJSON: JsValue = {
       JsObject(
         "heap" -> this.heap.toJSON,
-        "context" -> JsString("⊥"),
+        "context" -> this.context.toJSON,
         "allocs" -> JsString("⊥")
       )
     }

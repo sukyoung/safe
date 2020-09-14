@@ -14,6 +14,8 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+
 // default environment record abstract domain
 object DefaultEnvRec extends EnvRecDomain {
   lazy val Bot: Elem = Elem(AbsDecEnvRec.Bot, AbsGlobalEnvRec.Bot)
@@ -65,6 +67,13 @@ object DefaultEnvRec extends EnvRecDomain {
       if (!decEnvRec.isBottom) lst ::= decEnvRec.toString
       if (decEnvRec.isBottom && globalEnvRec.isBottom) lst ::= "⊥(environment)"
       lst.mkString(LINE_SEP)
+    }
+
+    def toJSON: JsValue = {
+      JsObject(
+        "decEnvRec" -> this.decEnvRec.toJSON,
+        "globalEnvRec" -> this.globalEnvRec.toJSON
+      )
     }
 
     // 10.2.1.2.1 HasBinding(N)

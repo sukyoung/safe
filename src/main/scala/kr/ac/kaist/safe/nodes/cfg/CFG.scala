@@ -19,6 +19,8 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
+import kr.ac.kaist.safe.nodes.ast.{ ASTNode, Program }
+
 case class CFG(
     ir: IRNode,
     globalVars: List[CFGId]
@@ -50,7 +52,10 @@ case class CFG(
 
   // global function
   lazy val globalFunc: CFGFunction =
-    createFunction("", Nil, globalVars, "top-level", ir, true)
+    createFunction("", Nil, globalVars, "top-level", ir, true, Some(ir.ast match {
+      case Program(info, body) => body
+      case _ => ir.ast
+    }))
 
   // create function
   def createFunction(
@@ -59,10 +64,11 @@ case class CFG(
     localVars: List[CFGId],
     name: String,
     ir: IRNode,
-    isUser: Boolean
+    isUser: Boolean,
+    ast: Option[ASTNode]
   ): CFGFunction = {
     val func: CFGFunction =
-      new CFGFunction(ir, argumentsName, argVars, localVars, name, isUser)
+      new CFGFunction(ir, argumentsName, argVars, localVars, name, isUser, ast)
     func.id = getFId
     fidCount += 1
     funcs ::= func

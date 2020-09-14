@@ -16,6 +16,8 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
 
+import spray.json._
+
 // default execution context abstract domain
 object DefaultContext extends ContextDomain {
   private val EmptyMap: Map[Loc, AbsLexEnv] = Map()
@@ -213,6 +215,19 @@ object DefaultContext extends ContextDomain {
 
     override def toString: String = {
       buildString(_ => true).toString
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case Top => JsString("⊤")
+      case CtxMap(map, merged, changed, thisBinding) => JsObject(
+        "map" -> JsObject(map.map {
+          case (k, v) => k.toString -> v.toJSON
+        }),
+        "merged" -> JsString("⊥"),
+        "changed" -> JsString("⊥"),
+        "thisBinding" -> thisBinding.toJSON
+      )
     }
 
     private def buildString(filter: Loc => Boolean): String = this match {

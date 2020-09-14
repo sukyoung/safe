@@ -205,7 +205,9 @@ case class Semantics(
           })
           if (cp.block.func.id > 0) {
             println(cp)
+            println(newSt)
             println(newSt.toJSON.prettyPrint)
+            println(cp.block.func.id)
           }
           (newSt, AbsState.Bot)
         }

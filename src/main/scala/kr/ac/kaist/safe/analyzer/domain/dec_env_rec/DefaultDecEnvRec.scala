@@ -16,6 +16,8 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar }
 
+import spray.json._
+
 // default declarative environment record abstract domain
 object DefaultDecEnvRec extends DecEnvRecDomain {
   private val EmptyMap: EnvMap = Map()
@@ -138,6 +140,22 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
           s.toString
         }
       }
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case LBindMap(map) => JsObject(map.map {
+        case (k, (binding, absent)) => k -> JsObject(
+          "binding" -> binding.toJSON,
+          "absent" -> JsString(absent.toString)
+        )
+      })
+      case UBindMap(map) => JsObject(map.map {
+        case (k, (binding, absent)) => k -> JsObject(
+          "binding" -> binding.toJSON,
+          "absent" -> JsString(absent.toString)
+        )
+      })
     }
 
     // 10.2.1.1.1 HasBinding(N)

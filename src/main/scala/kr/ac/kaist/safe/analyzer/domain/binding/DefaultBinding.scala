@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 // default binding abstract domain
 object DefaultBinding extends BindingDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsAbsent.Bot, AbsBool.Bot)
@@ -96,6 +98,12 @@ object DefaultBinding extends BindingDomain {
         }
       )
     }
+
+    def toJSON: JsValue = JsObject(
+      "value" -> this.value.toJSON,
+      "uninit" -> JsString(this.uninit.toString),
+      "mutable" -> this.mutable.toJSON
+    )
 
     def copy(
       value: AbsValue = this.value,

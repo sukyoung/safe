@@ -142,14 +142,14 @@ class DefaultCFGBuilder(
 
   /* translate IRFunctional */
   private def translateFunctional(functional: IRFunctional): CFGFunction = functional match {
-    case IRFunctional(_, _, name, params, args, fds, vds, body) =>
+    case IRFunctional(ast, _, name, params, args, fds, vds, body) =>
       val argVars: List[CFGId] = namesOfArgs(args)
       val localVars: List[CFGId] = (namesOfFunDecls(fds) ++ namesOfVars(vds)).filterNot(argVars.contains)
       // TODO: reorder to make argumentsName to the top
       val argumentsName: String = id2cfgId(params(1)).toString
       val nameStr: String = name.originalName
 
-      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, true)
+      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, true, Some(ast))
       val oldFunc: CFGFunction = currentFunc
       currentFunc = newFunc
 

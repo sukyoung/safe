@@ -14,6 +14,8 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 
+import spray.json._
+
 // default global environment abstract domain
 object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
   case object Bot extends Elem
@@ -50,6 +52,11 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     override def toString: String = this match {
       case Bot => "⊥(global environment record)"
       case Top => "Top(global environment record)"
+    }
+
+    def toJSON: JsValue = this match {
+      case Bot => JsString("⊥")
+      case Top => JsString("⊤")
     }
 
     // 10.2.1.2.1 HasBinding(N)
