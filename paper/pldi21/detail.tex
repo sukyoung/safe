@@ -230,3 +230,26 @@ an unknown location.
 \subsection{Abstract Semantics}
 
 \todo
+
+
+\subsection{Abstract Counting}
+
+We define a \textit{memory abstraction} $\powerset{\memset}
+\galois{\alpha_\memset}{\gamma_\memset} \absmemset$ as a Galois connection
+between sets of concrete memories and abstract memories.  An abstract memory
+$\absmem \in \absmemset: \abslocset \finmap \absvalset$ is a finite mapping from
+abstract locations to abstract values.  The \textit{strong update} in memory
+abstraction is important to increase the precision of static analysis.  For
+sound analysis, a memory update for a specific abstract location should join old
+abstract values with new abstract values, called as a \textit{weak update}.
+It degrades the analysis precision because of the sprious values.  To overcome
+such degradation, researchers proposed the abstract
+counting~\cite{abstract-gc-counting, revisit-recency} to track how many times an
+abstract location has been allocated and to apply strong updates to singleton
+abstract locations.
+
+We extend abstract states with an abstract counting operator $\abscount{-}:
+\abslocset \rightarrow \abscountset = \{ \abszero, \absone, \absmany \}$, which
+is a function that takes an abstract location and returns its abstract count;
+$\abszero$ denotes that it have never been allocated, $\absone$ once, and
+$\absmany$ more than or equals to twice.

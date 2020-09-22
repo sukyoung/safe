@@ -128,13 +128,28 @@
 % Lazy Concrete Interpretation
 \newcommand{\symb}{\omega}
 \newcommand{\symbset}{\Omega}
-\newcommand{\symbstset}{\stset_\symbset}
-\newcommand{\symbst}{\st_\symbset}
-\newcommand{\symbmemset}{\memset_\symbset}
-\newcommand{\symbtrans}{\trans_\symbset}
+\newcommand{\symbolic}[1]{{#1}_\symb}
+\newcommand{\symbstset}{\symbolic{\stset}}
+\newcommand{\symbst}{\symbolic{\st}}
+\newcommand{\symbmemset}{\symbolic{\memset}}
+\newcommand{\symbtrans}{\symbolic{\trans}}
 \newcommand{\excst}{\bot_\st}
-\newcommand{\converter}{T}
+
+% Combined Analysis
+\newcommand{\comb}[1]{\widetilde{#1}}
+\newcommand{\combdom}{\comb{\dom}}
+\newcommand{\combelem}{\comb{\elem}}
+\newcommand{\converter}{\tau}
+\newcommand{\saconverter}{\abs{\converter}}
+\newcommand{\asconverter}{\symbolic{\converter}}
+\newcommand{\combviewtrans}[2]{\sem{\comb{#1 \rightarrow #2}}}
 
 % Rules
 \newcommand{\referrule}[3]{#1 \vdash #2 \rightarrow #3}
 \newcommand{\exprrule}[3]{#1 \vDash #2 \Rightarrow #3}
+
+% Identity function
+\newcommand{\identity}{\name{id}}
+
+% Checker
+\newcommand{\checker}{\name{checker}}

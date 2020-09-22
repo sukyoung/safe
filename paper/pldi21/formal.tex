@@ -5,22 +5,31 @@ interpretation.
 
 
 \subsection{Concrete Semantics}
-\[
-  \prog ::= (\lab: \inst)^*\\
-\]
-A program $\prog$ is a sequence of labelled instructions.  We represent the
-semantics of a program $\prog$ as a state transition system $(\stset, \trans,
-\istset)$.  A state $\st \in \stset = \labset \times \memset$ is a pair of a
-label and a memory and represents a status of the program $\prog$.  A memory
-$\mem \in \memset = \locset \finmap \valset$ is a finite mapping from locations
-to values. A program starts with an initial state in $\istset$.  The transition
-relation $\trans \subseteq \stset \times \stset$ describes how states are
-transformed to other states.
 
-A \textit{collecting semantics} $\sem{\prog} = \{ \st \in \stset \mid \ist \in
-\istset \wedge \ist \trans^* \st \}$ consists of reachable states from initial
-states of the program $\prog$.  We could calculate it using the \textit{transfer
-function} $\transfer: \dom \rightarrow \dom$ as follows:
+% \[
+%   \prog ::= (\lab: \inst)^*\\
+% \]
+% A program $\prog$ is a sequence of labelled instructions.  We represent the
+% semantics of a program $\prog$ as a state transition system $(\stset, \trans,
+% \istset)$.  A state $\st \in \stset = \labset \times \memset$ is a pair of a
+% label and a memory and represents a status of the program $\prog$.  A memory
+% $\mem \in \memset = \locset \finmap \valset$ is a finite mapping from locations
+% to values. A program starts with an initial state in $\istset$.  The transition
+% relation $\trans \subseteq \stset \times \stset$ describes how states are
+% transformed to other states.  It is defined with the \textit{concrete semantics}
+% $\sem{\inst}: \stset \rightarrow \powerset{\stset}$ of instructions as follows:
+% \[
+%   \st \trans \st' \iff \st = (\lab, \_) \wedge \st' \in \sem{\prog(\lab)}(\st)
+% \]
+
+We define a program $\prog$ as a state transition system $(\stset, \trans,
+\istset)$.  A program starts with an initial state in $\istset$ and the
+transition relation $\trans \subseteq \stset \times \stset$ describes how states
+are transformed to other states.  A \textit{collecting semantics} $\sem{\prog} =
+\{ \st \in \stset \mid \ist \in \istset \wedge \ist \trans^* \st \}$ consists of
+reachable states from initial states of the program $\prog$.  We could calculate
+it using the \textit{transfer function} $\transfer: \dom \rightarrow \dom$ as
+follows:
 \[
   \sem{\prog} = \underset{n \rightarrow \infty}{\lim}{\transfer^n(\ielem)}\\
   \qquad
@@ -28,17 +37,17 @@ function} $\transfer: \dom \rightarrow \dom$ as follows:
 \]
 The \textit{concrete domain} $\dom = \powerset{\stset}$ is a complete lattice
 with $\cup$, $\cap$, and $\subseteq$ as its join($\join$), meet($\meet$), and
-partial order($\order$) operators.  The initial states are $\ielem = \istset$.
-The \textit{one-step execution} $\step: \dom \rightarrow \dom$ transforms states
-using the transition relation $\trans$: $\step(\elem) = \{ \st' \mid \st \in
-\elem \wedge \st \trans \st' \}$.
+partial order($\order$) operators.  The element $\ielem$ denotes the initial
+states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
+\dom$ transforms states using the transition relation $\trans$: $\step(\elem) =
+\{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
 
 
 \subsection{Abstract Interpretation}
-The abstract interpretation over-approximate the transfer $\transfer$ to the
-\textit{abstract transfer function} $\abstransfer: \absdom \rightarrow \absdom$
-to get the \textit{abstract semantics} $\abssem{\prog}$ in finite iterations as
-follows:
+The abstract interpretation~\cite{abs-interp-1977, abs-interp-1992}
+over-approximate the transfer $\transfer$ to the \textit{abstract transfer
+function} $\abstransfer: \absdom \rightarrow \absdom$ to get the
+\textit{abstract semantics} $\abssem{\prog}$ in finite iterations as follows:
 \[
     \abssem{\prog} = \underset{n \rightarrow
     \infty}{\lim}{(\abstransfer)^n(\iabselem)}\\
@@ -76,7 +85,7 @@ A \textit{sensitive state abstraction} $\dom
 the concrete domain $\dom$ and the sensitive abstract domain $\sabsdom$ with the
 following concretization function:
 \[
-  \gamma_\viewmap(\abselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
+  \gamma_\viewmap(\sabselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
   \; \st \in \viewmap(\view) \Rightarrow \st \in \gamma \circ \sabselem(\view) \}
 \]
 
@@ -96,84 +105,89 @@ analysis:
   \viewtrans{\view'}{\view}(\abselem)
 \]
 
-One of the most widely-used sensitivity techniques is \textit{flow sensitivity}
-using a flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$.
-It discriminates states using their labels as follows:
-\[
-  \forall \lab \in \labset. \; \fsviewmap(\lab) = \{ \st \in \stset \mid \st =
-  (\lab, \_) \}
-\]
-
-
-\subsection{Abstract Counting}
-
-We define a \textit{memory abstraction} $\powerset{\memset}
-\galois{\alpha_\memset}{\gamma_\memset} \absmemset$ as a Galois connection
-between sets of concrete memories and abstract memories.  An abstract memory
-$\absmem \in \absmemset: \abslocset \finmap \absvalset$ is a finite mapping from
-abstract locations to abstract values.  The \textit{strong update} in memory
-abstraction is important to increase the precision of static analysis.  For
-sound analysis, a memory update for a specific abstract location should join old
-abstract values with new abstract values, called as a \textit{weak update}.
-It degrades the analysis precision because of the sprious values.  To overcome
-such degradation, researchers proposed the abstract
-counting~\cite{abstract-gc-counting, revisit-recency} to track how many times an
-abstract location has been allocated and to apply strong updates to singleton
-abstract locations.
-
-We extend abstract states with an abstract counting operator $\abscount{-}:
-\abslocset \rightarrow \abscountset = \{ \abszero, \absone, \absmany \}$, which
-is a function that takes an abstract location and returns its abstract count;
-$\abszero$ denotes that it have never been allocated, $\absone$ once, and
-$\absmany$ more than or equals to twice.
+% One of the most widely-used sensitivity techniques is \textit{flow sensitivity}
+% using a flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$.
+% It discriminates states using their labels as follows:
+% \[
+%   \forall \lab \in \labset. \; \fsviewmap(\lab) = \{ \st \in \stset \mid \st =
+%   (\lab, \_) \}
+% \]
 
 
 \subsection{Lazy Concrete Interpretation}
 
 We define a \textit{lazy concrete interpretation} by extending the transition
-relation $\trans$ as a symbolic transition relation $\symbtrans$ on abstract
+relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
 states. First, we extends the concrete states $\stset$ to \textit{symbolic
-states} $\symbstset = (\labset \times \symbmemset) \cup \{ \excst \}$ with
-symbolic memories $\symbmemset$ consisting of symbolic values $\symb \in
-\symbset$ and a special exception state $\excst$. Each symbolic value denotes an
-abstract value cannot be concretized to a singleton value.  A symbolic state
-\textit{alwyas} has a symbolic transition relation with a single symbolic state.
-When a symbolic state has a non-determinism or accesses symbolic values, it has
-the relation with the exception state: $\symbst \symbtrans \excst$.  Thus, the lazy
-concrete interpretation does not care about the non-deterministic semantics or
-symbolic values.
+states} with symbolic values $\symbset$ that denote abstract values cannot be
+concretized to singleton values. A symbolic transition relation $\symbtrans
+\subseteq \symbstset \times (\symbstset \uplus \{ \excst \})$ is exactly same
+with the original transition relation $\trans$ except when the relation requires
+the exact value of symbolic values.  In this case, the symbolic state has the
+relation a special exception state $\excst$ to represent that it is impossible
+to interpret in a concrete way.  Thus, a symbolic state \textit{always} has a
+symbolic transition relation with a single symbolic state, and the lazy concrete
+interpret is linear execution until reaching the exception state.
 
-We define a Galois connection $\symbstset
-\galois{\alpha_\symbset}{\gamma_\symbset} \absdom$ to freely convert an abstract
-state to the corresponding symbolic state and vice versa.  In the concretization
-function $\gamma_\symbset$, if an abstract value $\absval$ represents a
-singleton value, the function transforms the abstract value to the
-corresponding concrete value.  Otherwise, it keeps the abstract value as a
-symbolic value in the result symbolic state.
+To freely convert a pair of view and an abstract state to the corresponding
+symbolic state and vice versa, we define two domain converters $\symbstset
+\galois{\saconverter}{\asconverter} (\viewset \times \absdom)$.  In the
+converter $\asconverter$ from abstract states to symbolic states, if an abstract
+value $\absval$ represents a singleton value, the function transforms the
+abstract value to the corresponding concrete value.  Otherwise, it converts the
+abstract value as a symbolic value in the result symbolic state.  Two converters
+convert given elements wihtout loss of information:
+\[
+  \saconverter \circ \asconverter = \asconverter \circ \saconverter = \identity
+\]
+where $\identity$ denotes the identity function.
 
 
 \subsection{Combined Analysis}
 
 We define the \textit{combined analysis} of the abstract interpretation and the
-lazy concrete interpretation by extending the view transition as follows:
+lazy concrete interpretation.  In the combined analysis, we use the powerset of
+symbolic states as the domain $\combdom = \powerset{\symbstset}$, and extend the
+view transition as follows:
 \[
-  \viewtrans{\view'}{\view}_\symbset(\abselem) = \left\{
+  \begin{array}{l}
+    \combviewtrans{\view}{\view'}(\combelem) =\\
+    \qquad \{
+      \symbst' \mid \symbst \in S \wedge
+      \symbst \symbtrans \symbst' \wedge
+      \saconverter(\symbst') = (\view', \_)
+    \}\\
+    \qquad \cup \left\{
     \begin{array}{ll}
-      \abselem_0 & \text{if} \; \symbst' \symbtrans \excst\\
-      \alpha_\symbset(\symbst) & \text{if} \; \symbst' \symbtrans \symbst
-      \wedge\\
-      & \phantom{\text{if}} \; \gamma \circ \alpha_\symbset(\symbst)
-      \cap \viewmap(\view) \neq \varnothing\\ \bot & \text{otherwise}\\
+      \{ \asconverter \circ \viewtrans{\view}{\view'}(\bigjoin D) \}
+      & \text{if} \; D \neq \varnothing\\
+      \varnothing & \text{otherwise}\\
     \end{array}
-  \right.
+    \right.
+  \end{array}
 \]
-where $\symbst' = \gamma_\symbset \circ \abselem(\view')$ and $\abselem_0 =
-\viewtrans{\view'}{\view}(\abselem)$.  The combined analysis first tries to
-convert the current abstract state $\abselem(\view')$ to the corresponding
-symbolic state $\symbst'$ and performs the lazy concrete evaluation.  When the
-evaluation produces the exception state $\excst$, it utilizes the abstract
-interpretation instead of the lazy concrete interpretation.  Otherwise, the lazy
-concrete interpretation successfully produces a new symbolic state $\symbst$.
-If the symbolic state $\symbst$ is related to the target view $\view$, the
-result is the corresponding abstract state $\alpha_\symbset(\symbst)$ of the
-symbolic state $\symbst$. Otherwise, the result becomes the bottom $\bot$.
+where $S = \combelem\mid_{\checker}$ and $D =
+\dot{\saconverter}(\combelem\mid_{\neg\checker})$.  The dot notation $\dot{f}$
+denotes the element-wise extended function of a function $f$.  We could
+configure when the lazy concrete interpretation or the abstract interpretation
+is performed based on the definition of the $\checker$ function and its negation
+$\neg\checker$.  It should satisfy the following condition for the soundness and
+the termination of the combined analysis:
+\[
+  \checker(\symbst) \Rightarrow \symbst \symbtrans^k \excst \wedge
+  1 \leq k \leq N
+\]
+where $N$ is the pre-defined maximum length of the lazy concrete interpretation.
+The combined analysis just performs one-step symbolic transition for each
+symbolic state that passes the filter $\checker$. On the other hand, it converts
+remaining symbolic states to the corresponding abstract states, merges them into
+a single abstract state, and performs the abstract one-step execution for the
+abstract state.
+
+% The abstract sensitivity should be defined with a view
+% abstraction $\viewmap: \viewset \rightarrow \dom$ more find-grained than the
+% flow sensitive view abstraction $\fsviewmap$:
+% \[
+%   \forall \view \in \viewset. \; \exists \lab \in \labset. \;
+%   \viewmap(\view) \subseteq \fsviewmap(\lab)
+% \]
