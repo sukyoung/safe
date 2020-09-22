@@ -7,6 +7,8 @@
 \newcommand{\todo}{\inred{TODO}}
 \newcommand{\abs}[1]{{#1}^{\#}}
 \newcommand{\finmap}{{\xrightarrow[]{\text{fin}}}}
+\newcommand{\mapstos}{\;\dot{\mapsto}\;}
+\newcommand{\Dom}{\name{Dom}}
 
 % Tool
 \newcommand{\tool}{\inred{TOOL}}
@@ -18,14 +20,15 @@
 \newcommand{\kwobj}{\code{\{\}}}
 \newcommand{\kwtrue}{\code{true}}
 \newcommand{\kwfalse}{\code{false}}
-\newcommand{\kwundef}{\code{undef}}
 
 % Notations
 \newcommand{\prog}{P}
 \newcommand{\labset}{\mathcal{L}}
 \newcommand{\lab}{\mathpzc{l}}
+\newcommand{\ilab}{\lab_\iota}
 \newcommand{\labnext}{\name{next}}
 \newcommand{\op}{\name{op}}
+\newcommand{\ops}{\dot{\name{op}}}
 \newcommand{\inst}{i}
 \newcommand{\expr}{e}
 \newcommand{\refer}{r}
@@ -46,6 +49,8 @@
 \newcommand{\ctxtset}{\mathbb{C}}
 \newcommand{\absctxtset}{\abs{\ctxtset}}
 \newcommand{\ctxt}{c}
+\newcommand{\absctxt}{\abs{\ctxt}}
+\newcommand{\eabsctxt}{\absctxt_\name{env}}
 \newcommand{\ctxtstack}{\overline{c}}
 
 % Transition Relations
@@ -117,9 +122,16 @@
 \newcommand{\eaddrset}{\addrset_\name{env}}
 \newcommand{\oaddrset}{\addrset_\name{obj}}
 \newcommand{\addr}{a}
+\newcommand{\tladdr}{\addr_{\name{top}}}
+\newcommand{\absaddrset}{\abs{\addrset}}
+\newcommand{\absaddr}{\abs{\addr}}
+\newcommand{\eabsaddr}{\absaddr_\name{env}}
+\newcommand{\rabsaddr}{\absaddr_\name{ret}}
+\newcommand{\oabsaddr}{\absaddr_\name{obj}}
 
 % Abstract Counting
-\newcommand{\abscount}[1]{\abs{\lVert#1\rVert}}
+\newcommand{\abscount}{\abs{n}}
+\newcommand{\inc}{\name{inc}}
 \newcommand{\abscountset}{\abs{\mathbb{N}}}
 \newcommand{\abszero}{\abs{0}}
 \newcommand{\absone}{\abs{1}}
@@ -145,8 +157,12 @@
 \newcommand{\combviewtrans}[2]{\sem{\comb{#1 \rightarrow #2}}}
 
 % Rules
-\newcommand{\referrule}[3]{#1 \vdash #2 \rightarrow #3}
-\newcommand{\exprrule}[3]{#1 \vDash #2 \Rightarrow #3}
+\newcommand{\referrule}[3]{#1 \vdash_\refer #2 \Rightarrow  #3}
+\newcommand{\exprrule}[3]{#1 \vdash_\expr #2 \Rightarrow #3}
+
+% Abstract Semantics
+\newcommand{\referabssem}[1]{\abssem{#1}_\refer}
+\newcommand{\exprabssem}[1]{\abssem{#1}_\expr}
 
 % Identity function
 \newcommand{\identity}{\name{id}}
