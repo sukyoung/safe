@@ -19,52 +19,28 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
-object CmpFunPrim extends BugChecker {
-
-  def cmpFunPrim(expr: CFGExpr, l: CFGExpr, r: CFGExpr): String = {
+object ConcatUndefStr extends BugChecker {
+  def concatUndefStr(expr: CFGExpr, l: CFGExpr, r: CFGExpr): String = {
     val span = expr.ir.span
-    s"$span\n    [Warning] Comparison between function and primitive value: $l and $r."
-  }
-
-  def isFun(v: AbsValue, h: AbsHeap): Boolean = {
-    // Check for each object location
-    v.locset.foreach(objLoc => {
-      if (h.get(objLoc)(ICall).fidset !⊑ AbsFId.Bot)
-        return true
-    })
-    false
-  }
-
-  def isPrim(v: AbsValue): Boolean = {
-    !v.pvalue.numval.isBottom ||
-      !v.pvalue.boolval.isBottom ||
-      !v.pvalue.strval.isBottom
+    s"$span\n    [Warning] Concatenation of undefined to string: $l and $r."
   }
 
   // Check expression-level rules: AbsentPropertyRead
   private def checkExpr(expr: CFGExpr, state: AbsState,
     semantics: Semantics): List[String] = expr match {
-    case CFGBin(_, l, op, r) => op match {
-      case EJSEq |
-        EJSNEq |
-        EJSSEq |
-        EJSSNEq |
-        EJSLt |
-        EJSGt |
-        EJSLte |
-        EJSGte => {
+    case CFGBin(_, l, EJSPos, r) => {
+      print("hello")
+      val (v, _) = semantics.V(expr, state)
+      val (lv, _) = semantics.V(l, state)
+      val (rv, _) = semantics.V(r, state)
 
-        val (lv, _) = semantics.V(l, state)
-        val (rv, _) = semantics.V(r, state)
-        val h = state.heap
+      def isStr(v: AbsValue) = !v.pvalue.strval.isBottom
+      def isUndef(v: AbsValue) = !v.pvalue.undefval.isBottom
 
-        if (isPrim(lv) && isFun(rv, h) || isFun(lv, h) && isPrim(rv))
-          List(cmpFunPrim(expr, l, r))
-        else
-          List()
-        //TODO: Message is printed twice. (both == and !==)
-      }
-      case _ => List()
+      if (isStr(v) && (isUndef(lv) || isUndef(rv)))
+        List(concatUndefStr(expr, l, r))
+      else
+        List()
     }
     case _ => List()
   }
