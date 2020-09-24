@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
-object CmpFunPrim extends BugChecker {
+object CmpFunPrim extends BugDetector {
 
   def cmpFunPrim(expr: CFGExpr, l: CFGExpr, r: CFGExpr): String = {
     val span = expr.ir.span

@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
-object AbsentProp extends BugChecker {
+object AbsentProp extends BugDetector {
   def absentProp(expr: CFGExpr, name: AbsStr, obj: CFGExpr): String =
     expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 

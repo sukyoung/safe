@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
-object CheckNaN extends BugChecker {
+object CheckNaN extends BugDetector {
   def checkNaN(v: AbsValue, span: Span): List[String] = {
     if (AbsNum.NaN ⊑ v) {
       List(span.toString + ":\n    [Warning] Observed NaN.")

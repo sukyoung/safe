@@ -25,7 +25,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   val name: String = "bugDetector"
   val help: String = "Detect possible bugs in JavaScript source files."
 
-  val checkers = List(CheckNaN)
+  val checkers = List(CheckNaN, CmpFunPrim, ConcatUndefStr)
   // Generators of bug detector messages
 
   // Move to CFGBlock?  Copied from HTMLWriter.
@@ -34,7 +34,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
 
   // Collect CFG expressions from CFG instructions
   // Check block/instruction-level rules: ConditionalBranch
-  private def checkBlock(block: CFGBlock, semantics: Semantics, checkers: List[BugChecker]): List[String] =
+  private def checkBlock(block: CFGBlock, semantics: Semantics, checkers: List[BugDetector]): List[String] =
     if (isReachableUserCode(semantics, block)) {
       semantics.getState(block).foldLeft(List[String]()) {
         case (bugs, (tp, st)) => {

@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
-object Always extends BugChecker {
+object Always extends BugDetector {
   def always(expr: CFGExpr, cond: Boolean): String =
     expr.ir.span.toString + ":\n    [Warning] The conditional expression \"" + expr.ir.ast.toString(0) + "\" is always " + cond + "."
 

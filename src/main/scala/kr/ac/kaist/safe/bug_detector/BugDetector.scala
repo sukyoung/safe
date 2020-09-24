@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
-trait BugChecker {
+trait BugDetector {
   def getAlarmsFromInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String]
   def getAlarmsFromBlock(b: CFGBlock, state: AbsState, semantics: Semantics): List[String]
 }
