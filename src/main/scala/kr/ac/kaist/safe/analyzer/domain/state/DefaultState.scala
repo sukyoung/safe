@@ -258,8 +258,10 @@ object DefaultState extends StateDomain {
       Elem(heap.cleanChanged, context.cleanChanged, allocs)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
-    val fields = json.asJsObject().fields
-    Elem(AbsHeap.fromJSON(fields("heap"), cfg), AbsContext.fromJSON(fields("context"), cfg), AllocLocSet.Bot)
+  def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
+    case JsString(str) if (str == "⊥") => Bot
+    case _ =>
+      val fields = json.asJsObject().fields
+      Elem(AbsHeap.fromJSON(fields("heap"), cfg), AbsContext.fromJSON(fields("context"), cfg), AllocLocSet.Bot)
   }
 }

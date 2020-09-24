@@ -222,15 +222,19 @@ case class Semantics(
           //  println(cp.block.func.id)
           //  val newTP = cp.tracePartition
           //  val exitCP = ControlPoint(func.exit, newTP)
+          //  //(newSt, AbsState.Bot)
           //  println(exitCP)
           //  val json = scala.io.Source.fromFile(BASE_DIR + "/output.json").mkString.parseJson
           //  val fields = json.asJsObject().fields
           //  val loaded = AbsState.fromJSON(fields("state"), cfg)
-          //  println(loaded)
-          //  setState(exitCP, loaded)
-          //  worklist.add(exitCP)
-          //  (AbsState.Bot, AbsState.Bot)
-          //  //(newSt, AbsState.Bot)
+          //  if (loaded ⊑ AbsState.Bot) {
+          //    (newSt, AbsState.Bot)
+          //  } else {
+          //    println(loaded)
+          //    setState(exitCP, loaded)
+          //    worklist.add(exitCP)
+          //    (AbsState.Bot, AbsState.Bot)
+          //  }
           //} else {
           //  (newSt, AbsState.Bot)
           //}

@@ -11,7 +11,7 @@
     "recency": false,
     "heap-clone": true,
     "callsiteSensitivity": 20,
-    "loopIter": 100,
+    "loopIter": 10,
     "loopDepth": 10,
     "snapshot": ""
   }
