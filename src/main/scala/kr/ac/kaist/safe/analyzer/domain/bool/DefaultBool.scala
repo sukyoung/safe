@@ -125,4 +125,10 @@ object DefaultBool extends BoolDomain {
       case _ => Top
     }
   }
+
+  def fromJSON(json: JsValue): Elem = json match {
+    case JsBoolean(bool) => if (bool) True else False
+    case JsString(str) if (str == "⊤") => Top
+    case _ => Bot
+  }
 }

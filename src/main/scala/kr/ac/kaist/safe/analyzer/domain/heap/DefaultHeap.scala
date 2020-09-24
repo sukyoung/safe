@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.nodes.cfg.{ CFGId, GlobalVar }
+import kr.ac.kaist.safe.nodes.cfg.{ CFGId, GlobalVar, CFG }
 
 import spray.json._
 
@@ -390,5 +390,17 @@ object DefaultHeap extends HeapDomain {
       }
       case _ => that
     }
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    val mapFields = fields("map").asJsObject.fields
+    HeapMap(
+      mapFields.foldLeft[Map[Loc, AbsObj]](Map())({
+        case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsObj.fromJSON(v, cfg))
+      }),
+      LocSet.Bot,
+      LocSet.Bot
+    )
   }
 }

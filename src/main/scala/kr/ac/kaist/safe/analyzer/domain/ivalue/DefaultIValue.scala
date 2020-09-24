@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.nodes.cfg.{ FunctionId, CFG }
 
 import spray.json._
 
@@ -76,5 +76,10 @@ object DefaultIValue extends IValueDomain {
       value: AbsValue,
       fidset: AbsFId
     ): Elem = Elem(value, fidset)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(AbsValue.fromJSON(fields("value"), cfg), AbsFId.fromJSON(fields("fidset")))
   }
 }

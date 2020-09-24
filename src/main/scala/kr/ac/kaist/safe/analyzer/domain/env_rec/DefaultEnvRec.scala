@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // default environment record abstract domain
 object DefaultEnvRec extends EnvRecDomain {
@@ -132,5 +133,10 @@ object DefaultEnvRec extends EnvRecDomain {
 
     def remove(locs: Set[Loc]): Elem =
       Elem(decEnvRec.remove(locs), globalEnvRec)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(AbsDecEnvRec.fromJSON(fields("decEnvRec"), cfg), AbsGlobalEnvRec.fromJSON(fields("globalEnvRec")))
   }
 }

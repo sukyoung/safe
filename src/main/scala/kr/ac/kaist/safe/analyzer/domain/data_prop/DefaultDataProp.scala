@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // default data property abstract domain
 object DefaultDataProp extends DataPropDomain {
@@ -114,5 +115,10 @@ object DefaultDataProp extends DataPropDomain {
       enumerable: AbsBool,
       configurable: AbsBool
     ): Elem = Elem(value, writable, enumerable, configurable)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(AbsValue.fromJSON(fields("value"), cfg), AbsBool.fromJSON(fields("writable")), AbsBool.fromJSON(fields("enumerable")), AbsBool.fromJSON(fields("configurable")))
   }
 }

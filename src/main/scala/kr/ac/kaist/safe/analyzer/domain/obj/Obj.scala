@@ -55,6 +55,12 @@ object IName {
   def makeMap[V](value: V): Map[IName, V] = all.foldLeft(Map[IName, V]()) {
     case (map, iname) => map + (iname -> value)
   }
+  def parse(str: String): IName = {
+    all.find(_.toString == str) match {
+      case Some(n) => n
+      case _ => ???
+    }
+  }
 }
 case object IPrototype extends IName("Prototype")
 case object IClass extends IName("Class")

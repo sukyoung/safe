@@ -344,4 +344,14 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
 
   private def isNumber(str: String): Boolean =
     numRegexp.matcher(str).matches()
+
+  def fromJSON(json: JsValue): Elem = json match {
+    case JsArray(vector) => StrSet(vector.collect({
+      case JsString(str) => str
+    }).toSet)
+    case JsString(str) if (str == "Number") => Number
+    case JsString(str) if (str == "Other") => Other
+    case _ => Top
+  }
+
 }

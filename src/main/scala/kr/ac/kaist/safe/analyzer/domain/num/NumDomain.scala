@@ -141,4 +141,6 @@ trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
     def tan: Elem
     def toJSON: JsValue
   }
+
+  def fromJSON(json: JsValue): Elem
 }

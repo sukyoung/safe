@@ -172,4 +172,15 @@ object DefaultPValue extends PValueDomain {
       strval: AbsStr = this.strval
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
   }
+
+  def fromJSON(json: JsValue): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(
+      AbsUndef.fromJSON(fields("undefval")),
+      AbsNull.fromJSON(fields("nullval")),
+      AbsBool.fromJSON(fields("boolval")),
+      AbsNum.fromJSON(fields("numval")),
+      AbsStr.fromJSON(fields("strval"))
+    )
+  }
 }

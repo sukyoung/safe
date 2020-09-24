@@ -61,4 +61,9 @@ object DefaultNull extends NullDomain {
       case _ => AbsBool.Bot
     }
   }
+
+  def fromJSON(json: JsValue): Elem = json match {
+    case JsString(str) if (str == "⊤") => Top
+    case _ => Bot
+  }
 }

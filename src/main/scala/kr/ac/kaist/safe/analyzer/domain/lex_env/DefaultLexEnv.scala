@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 
 import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // default lexical environment abstract domain
 object DefaultLexEnv extends LexEnvDomain {
@@ -239,5 +240,14 @@ object DefaultLexEnv extends LexEnvDomain {
       "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)
     ))
     Elem(envRec, outer, AbsAbsent.Bot)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(
+      AbsEnvRec.fromJSON(fields("record"), cfg),
+      LocSet.fromJSON(fields("outer"), cfg),
+      AbsAbsent.fromJSON(fields("nullOuter"))
+    )
   }
 }

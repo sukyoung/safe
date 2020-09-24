@@ -50,4 +50,6 @@ trait StrDomain extends AbsDomain[Str] {
     def ToBoolean: AbsBool
     def toJSON: JsValue
   }
+
+  def fromJSON(json: JsValue): Elem
 }

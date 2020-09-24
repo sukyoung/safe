@@ -191,4 +191,9 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
   }
+
+  def fromJSON(json: JsValue): Elem = json match {
+    case JsString(str) if (str == "⊤") => Top
+    case _ => Bot
+  }
 }

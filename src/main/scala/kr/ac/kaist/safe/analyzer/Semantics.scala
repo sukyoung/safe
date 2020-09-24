@@ -22,6 +22,10 @@ import kr.ac.kaist.safe.util.{ NodeUtil, EJSNumber, EJSString, EJSBool, EJSNull,
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.mutable.{ Map => MMap }
 
+import kr.ac.kaist.safe.BASE_DIR
+import spray.json._
+import DefaultJsonProtocol._
+
 case class Semantics(
     cfg: CFG,
     worklist: Worklist
@@ -129,6 +133,14 @@ case class Semantics(
       }
       case (Exit(_), _) if st.context.isBottom => AbsState.Bot
       case (Exit(f1), acall @ AfterCall(f2, retVar, call)) =>
+        //if (cp1.block.func.id == 2) {
+        //  println(cp1)
+        //  println(st)
+        //  println(st.toJSON.prettyPrint)
+        //  println(cp1.block.func.id)
+        //  println(cp1)
+        //  println("EXIT")
+        //}
         val call = acall.call
         val params = f1.argVars
         val info = getCallInfo(call, cp2.tracePartition)
@@ -183,7 +195,7 @@ case class Semantics(
       val ctx = st.context
       val allocs = st.allocs
       cp.block match {
-        case Entry(_) => {
+        case Entry(func) => {
           val fun = cp.block.func
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
@@ -203,12 +215,25 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          if (cp.block.func.id > 0) {
-            println(cp)
-            println(newSt)
-            println(newSt.toJSON.prettyPrint)
-            println(cp.block.func.id)
-          }
+          //if (cp.block.func.id == 2) {
+          //  println(cp)
+          //  println(newSt)
+          //  println(newSt.toJSON.prettyPrint)
+          //  println(cp.block.func.id)
+          //  val newTP = cp.tracePartition
+          //  val exitCP = ControlPoint(func.exit, newTP)
+          //  println(exitCP)
+          //  val json = scala.io.Source.fromFile(BASE_DIR + "/output.json").mkString.parseJson
+          //  val fields = json.asJsObject().fields
+          //  val loaded = AbsState.fromJSON(fields("state"), cfg)
+          //  println(loaded)
+          //  setState(exitCP, loaded)
+          //  worklist.add(exitCP)
+          //  (AbsState.Bot, AbsState.Bot)
+          //  //(newSt, AbsState.Bot)
+          //} else {
+          //  (newSt, AbsState.Bot)
+          //}
           (newSt, AbsState.Bot)
         }
         case (call: Call) =>

@@ -111,4 +111,12 @@ case object DefaultFId extends FIdDomain {
       case FIdSet(set) => FIdSet(set - fid)
     }
   }
+
+  def fromJSON(json: JsValue): Elem = json match {
+    case JsArray(vector) => FIdSet(vector.collect({
+      case JsNumber(fid) => fid.toInt
+    }).toSet)
+    case JsString(str) if (str == "⊤") => Top
+    case _ => Bot
+  }
 }

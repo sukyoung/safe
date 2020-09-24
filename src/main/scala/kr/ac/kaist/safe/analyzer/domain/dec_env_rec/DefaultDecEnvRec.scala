@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar }
+import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar, CFG }
 
 import spray.json._
 
@@ -144,18 +144,24 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
 
     def toJSON: JsValue = this match {
       case Bot => JsString("⊥")
-      case LBindMap(map) => JsObject(map.map {
-        case (k, (binding, absent)) => k -> JsObject(
-          "binding" -> binding.toJSON,
-          "absent" -> JsString(absent.toString)
-        )
-      })
-      case UBindMap(map) => JsObject(map.map {
-        case (k, (binding, absent)) => k -> JsObject(
-          "binding" -> binding.toJSON,
-          "absent" -> JsString(absent.toString)
-        )
-      })
+      case LBindMap(map) => JsObject(
+        "type" -> JsString("LBindMap"),
+        "map" -> JsObject(map.map {
+          case (k, (binding, absent)) => k -> JsObject(
+            "binding" -> binding.toJSON,
+            "absent" -> JsString(absent.toString)
+          )
+        })
+      )
+      case UBindMap(map) => JsObject(
+        "type" -> JsString("UBindMap"),
+        "map" -> JsObject(map.map {
+          case (k, (binding, absent)) => k -> JsObject(
+            "binding" -> binding.toJSON,
+            "absent" -> JsString(absent.toString)
+          )
+        })
+      )
     }
 
     // 10.2.1.1.1 HasBinding(N)
@@ -407,5 +413,23 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     // delete
     def -(name: String): Elem =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
+    case JsString(str) => Bot
+    case _ =>
+      val fields = json.asJsObject().fields
+      val mapFields = fields("map").asJsObject.fields
+      val map = mapFields.foldLeft[Map[String, (AbsBinding, AbsAbsent)]](Map())({
+        case (acc, (k, v)) =>
+          val fields = v.asJsObject().fields
+          acc + (k -> (AbsBinding.fromJSON(fields("binding"), cfg), AbsAbsent.fromJSON(fields("absent"))))
+      })
+      fields("type") match {
+        case JsString(str) if (str == "LBindMap") =>
+          LBindMap(map)
+        case _ =>
+          UBindMap(map)
+      }
   }
 }

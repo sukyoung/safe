@@ -257,4 +257,9 @@ object DefaultState extends StateDomain {
     def cleanChanged: Elem =
       Elem(heap.cleanChanged, context.cleanChanged, allocs)
   }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(AbsHeap.fromJSON(fields("heap"), cfg), AbsContext.fromJSON(fields("context"), cfg), AllocLocSet.Bot)
+  }
 }

@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
 
 import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // location set
 object LocSet extends AbsDomain[Loc] {
@@ -132,5 +133,12 @@ object LocSet extends AbsDomain[Loc] {
       case Top => Top
       case LSet(set) => LSet(set -- locs)
     }
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
+    case JsArray(vector) => LocSet(vector.collect({
+      case JsString(str) => Loc.parseString(str, cfg)
+    }).toSet)
+    case _ => ???
   }
 }

@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 
 import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // default value abstract domain
 object DefaultValue extends ValueDomain {
@@ -121,5 +122,10 @@ object DefaultValue extends ValueDomain {
 
       locSet1 ⊔ locSet2 ⊔ locSet3
     }
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(AbsPValue.fromJSON(fields("pvalue")), LocSet.fromJSON(fields("locset"), cfg))
   }
 }

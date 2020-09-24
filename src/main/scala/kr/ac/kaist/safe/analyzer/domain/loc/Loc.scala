@@ -19,6 +19,8 @@ import kr.ac.kaist.safe.util._
 import scala.util.parsing.combinator._
 import scala.util.{ Try, Success, Failure }
 
+import spray.json._
+
 // concrete location type
 abstract class Loc extends Value {
   def isUser: Boolean = this match {
@@ -29,6 +31,10 @@ abstract class Loc extends Value {
   }
 }
 object Loc {
+  def parseString(str: String, cfgIn: CFG): Loc = (new LocParser { val cfg = cfgIn })(str) match {
+    case Success(loc) => loc
+    case _ => ???
+  }
   def parse(str: String, cfgIn: CFG): Try[Loc] = (new LocParser { val cfg = cfgIn })(str)
   def apply(str: String): Loc = apply(PredAllocSite(str), Sensitivity.initTP)
   def apply(asite: AllocSite, tp: TracePartition): Loc = {

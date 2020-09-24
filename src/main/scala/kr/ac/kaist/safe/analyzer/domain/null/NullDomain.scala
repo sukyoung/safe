@@ -23,4 +23,6 @@ trait NullDomain extends AbsDomain[Null] {
     def StrictEquals(that: Elem): AbsBool
     def toJSON: JsValue
   }
+
+  def fromJSON(json: JsValue): Elem
 }

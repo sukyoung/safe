@@ -781,4 +781,35 @@ object CKeyObject extends ObjDomain {
     val (obj4, _, excSet4) = put(obj3, "configurable", toValue(desc.configurable))
     (obj4, excSet1 ++ excSet2 ++ excSet3 ++ excSet4)
   }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    val nmap = fields("nmap").asJsObject.fields
+    val nmapMap = nmap("map").asJsObject.fields
+    val nmapDefault = nmap("default").asJsObject.fields
+    val ndv = NVOpt(AbsDataProp.fromJSON(nmapDefault("value"), cfg), AbsAbsent.fromJSON(nmapDefault("absent")))
+
+    val imap = fields("imap").asJsObject.fields
+    val imapMap = imap("map").asJsObject.fields
+    val imapDefault = imap("default").asJsObject.fields
+    val idv = IVOpt(AbsIValue.fromJSON(imapDefault("value"), cfg), AbsAbsent.fromJSON(imapDefault("absent")))
+    Elem(
+      NMap.Bot.copy(
+        map = nmapMap.foldLeft[Map[String, NVOpt]](Map())({
+          case (acc, (k, v)) =>
+            val f = v.asJsObject.fields
+            acc + (k -> NVOpt(AbsDataProp.fromJSON(f("value"), cfg), AbsAbsent.fromJSON(f("absent"))))
+        }),
+        default = ndv
+      ),
+      IMap.Bot.copy(
+        map = imapMap.foldLeft[Map[IName, IVOpt]](Map())({
+          case (acc, (k, v)) =>
+            val f = v.asJsObject.fields
+            acc + (IName.parse(k) -> IVOpt(AbsIValue.fromJSON(f("value"), cfg), AbsAbsent.fromJSON(f("absent"))))
+        }),
+        default = idv
+      )
+    )
+  }
 }

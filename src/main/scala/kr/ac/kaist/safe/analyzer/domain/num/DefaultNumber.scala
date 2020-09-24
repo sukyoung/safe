@@ -822,4 +822,21 @@ object DefaultNumber extends NumDomain {
   }
 
   private def isNegZero(v: Double): Boolean = 1 / v == Double.NegativeInfinity
+
+  def fromJSON(json: JsValue): Elem = json match {
+    case JsNumber(n) =>
+      val num = n.toDouble
+      val uint = num.toLong
+      if ((num == uint) && (uint > 0 || (num compare 0.0) == 0)) UIntConst(uint)
+      else NUIntConst(num)
+    case JsString(str) if (str == "NaN") => NaN
+    case JsString(str) if (str == "+∞") => PosInf
+    case JsString(str) if (str == "-∞") => NegInf
+    case JsString(str) if (str == "∞") => Inf
+    case JsString(str) if (str == "-0") => NUIntConst(0)
+    case JsString(str) if (str == "UInt") => UInt
+    case JsString(str) if (str == "NUInt") => NUInt
+    case JsString(str) if (str == "⊤") => Top
+    case _ => Bot
+  }
 }

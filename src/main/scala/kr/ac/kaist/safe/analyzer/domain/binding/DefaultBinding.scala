@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // default binding abstract domain
 object DefaultBinding extends BindingDomain {
@@ -110,5 +111,14 @@ object DefaultBinding extends BindingDomain {
       uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable
     ): Elem = Elem(value, uninit, mutable)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(
+      AbsValue.fromJSON(fields("value"), cfg),
+      AbsAbsent.fromJSON(fields("uninit")),
+      AbsBool.fromJSON(fields("mutable"))
+    )
   }
 }
