@@ -24,7 +24,7 @@ object AbsentProp extends BugDetector {
     expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 
   // Check expression-level rules: AbsentPropertyRead
-  private def checkExpr(expr: CFGExpr, state: AbsState,
+  def checkExpr(expr: CFGExpr, state: AbsState,
     semantics: Semantics): List[String] = expr match {
     // Don't check if this instruction is "LHS = <>fun<>["prototype"]".
     case CFGLoad(_, CFGVarRef(_, CFGTempId(name, _)),
@@ -46,26 +46,4 @@ object AbsentProp extends BugDetector {
       })
     case _ => List[String]()
   }
-
-  private def collectExprs(i: CFGNormalInst): List[CFGExpr] = i match {
-    case CFGAlloc(_, _, _, Some(e), _) => List(e)
-    case CFGEnterCode(_, _, _, e) => List(e)
-    case CFGExprStmt(_, _, _, e) => List(e)
-    case CFGDelete(_, _, _, e) => List(e)
-    case CFGDeleteProp(_, _, _, e1, e2) => List(e1, e2)
-    case CFGStore(_, _, e1, e2, e3) => List(e1, e2, e3)
-    case CFGStoreStringIdx(_, _, e1, _, e2) => List(e1, e2)
-    case CFGAssert(_, _, e, _) => List(e)
-    case CFGReturn(_, _, Some(e)) => List(e)
-    case CFGThrow(_, _, e) => List(e)
-    case CFGInternalCall(_, _, _, _, es, _) => es
-    case _ => Nil
-  }
-
-  def getAlarmsFromInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = {
-    val exprsBugs = collectExprs(i).foldRight(List[String]())((e, r) => checkExpr(e, state, semantics) ::: r)
-    exprsBugs
-  }
-
-  def getAlarmsFromBlock(b: CFGBlock, state: AbsState, semantics: Semantics): List[String] = List()
 }

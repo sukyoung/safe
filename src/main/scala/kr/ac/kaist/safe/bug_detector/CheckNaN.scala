@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object CheckNaN extends BugDetector {
-  def checkNaN(v: AbsValue, span: Span): List[String] = {
+  private def checkNaN(v: AbsValue, span: Span): List[String] = {
     if (AbsNum.NaN ⊑ v) {
       List(span.toString + ":\n    [Warning] Observed NaN.")
     } else {
@@ -28,8 +28,7 @@ object CheckNaN extends BugDetector {
     }
   }
 
-  // Check expression-level rules: AbsentPropertyRead
-  private def checkExpr(expr: CFGExpr, state: AbsState,
+  def checkExpr(expr: CFGExpr, state: AbsState,
     semantics: Semantics): List[String] = expr match {
     case _: CFGLoad | _: CFGBin | _: CFGUn =>
       val (v, _) = semantics.V(expr, state)
@@ -37,47 +36,17 @@ object CheckNaN extends BugDetector {
     case _ => List[String]()
   }
 
-  private def collectExprs(expr: CFGExpr): List[CFGExpr] = {
-    val subExprs = expr match {
-      case CFGLoad(_, obj, index) => List(obj, index)
-      case CFGBin(_, first, _, second) => List(first, second)
-      case CFGUn(_, _, expr) => List(expr)
-      case _ => Nil
+  override def checkBlock(block: CFGBlock, semantics: Semantics): List[String] = block match {
+    case AfterCall(_, retVar, _) => {
+      if (isReachableUserCode(block, semantics)) {
+        semantics.getState(block).foldLeft(List[String]()) {
+          case (bugs, (tp, st)) => {
+            val (retVal, excSet) = st.lookup(retVar)
+            checkNaN(retVal, block.span)
+          }
+        }
+      } else List()
     }
-    subExprs.foldLeft(List(expr))((acc, expr) => {
-      collectExprs(expr) ::: acc
-    })
-  }
-
-  private def collectExprs(i: CFGNormalInst): List[CFGExpr] = {
-    val exprs = i match {
-      case CFGAlloc(_, _, _, Some(e), _) => List(e)
-      case CFGEnterCode(_, _, _, e) => List(e)
-      case CFGExprStmt(_, _, _, e) => List(e)
-      case CFGDelete(_, _, _, e) => List(e)
-      case CFGDeleteProp(_, _, _, e1, e2) => List(e1, e2)
-      case CFGStore(_, _, e1, e2, e3) => List(e1, e2, e3)
-      case CFGStoreStringIdx(_, _, e1, _, e2) => List(e1, e2)
-      case CFGAssert(_, _, e, _) => List(e)
-      case CFGReturn(_, _, Some(e)) => List(e)
-      case CFGThrow(_, _, e) => List(e)
-      case CFGInternalCall(_, _, _, _, es, _) => es
-      case _ => Nil
-    }
-    exprs.foldLeft(List[CFGExpr]())((acc, expr) => {
-      collectExprs(expr) ::: acc
-    })
-  }
-
-  def getAlarmsFromInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = {
-    val exprsBugs = collectExprs(i).foldRight(List[String]())((e, r) => checkExpr(e, state, semantics) ::: r)
-    exprsBugs
-  }
-
-  def getAlarmsFromBlock(b: CFGBlock, state: AbsState, semantics: Semantics): List[String] = b match {
-    case AfterCall(func, retVar, call) =>
-      val (retVal, excSet) = state.lookup(retVar)
-      checkNaN(retVal, b.span)
-    case _ => List()
+    case _ => super.checkBlock(block, semantics)
   }
 }

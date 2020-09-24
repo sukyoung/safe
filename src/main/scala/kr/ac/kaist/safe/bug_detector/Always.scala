@@ -23,7 +23,7 @@ object Always extends BugDetector {
   def always(expr: CFGExpr, cond: Boolean): String =
     expr.ir.span.toString + ":\n    [Warning] The conditional expression \"" + expr.ir.ast.toString(0) + "\" is always " + cond + "."
 
-  def getAlarmsFromInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = i match {
+  override def checkInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = i match {
     case i @ CFGAssert(_, _, cond, true) =>
       val (v, _) = semantics.V(cond, state)
       val bv = TypeConversionHelper.ToBoolean(v)
@@ -35,5 +35,5 @@ object Always extends BugDetector {
     case _ => List()
   }
 
-  def getAlarmsFromBlock(b: CFGBlock, state: AbsState, semantics: Semantics): List[String] = List()
+  def checkExpr(expr: CFGExpr, state: AbsState, semantics: Semantics): List[String] = List()
 }

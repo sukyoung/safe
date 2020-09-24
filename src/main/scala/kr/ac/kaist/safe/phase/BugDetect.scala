@@ -25,39 +25,8 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   val name: String = "bugDetector"
   val help: String = "Detect possible bugs in JavaScript source files."
 
-  val checkers = List(CheckNaN, CmpFunPrim, ConcatUndefStr)
+  val checkers: List[BugDetector] = List(CheckNaN, CmpFunPrim, ConcatUndefStr)
   // Generators of bug detector messages
-
-  // Move to CFGBlock?  Copied from HTMLWriter.
-  private def isReachableUserCode(sem: Semantics, block: CFGBlock): Boolean =
-    !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
-
-  // Collect CFG expressions from CFG instructions
-  // Check block/instruction-level rules: ConditionalBranch
-  private def checkBlock(block: CFGBlock, semantics: Semantics, checkers: List[BugDetector]): List[String] =
-    if (isReachableUserCode(semantics, block)) {
-      semantics.getState(block).foldLeft(List[String]()) {
-        case (bugs, (tp, st)) => {
-          val cp = ControlPoint(block, tp)
-          val (res, _) = block.getInsts.foldRight(bugs, st)((inst, r) => {
-            inst match {
-              case inst: CFGNormalInst =>
-                val (bs, state) = r
-                val newAlarms = checkers.foldLeft(List[String]())((acc, checker) => {
-                  checker.getAlarmsFromInst(inst, state, semantics) ::: acc
-                })
-                val (res, _) = semantics.I(cp, inst, state, AbsState.Bot)
-                (newAlarms ::: bs, res)
-              case _ => r
-            }
-          })
-          val blockAlarms = checkers.foldLeft(List[String]())((acc, checker) => {
-            checker.getAlarmsFromBlock(block, st, semantics) ::: acc
-          })
-          blockAlarms ::: res
-        }
-      }
-    } else List[String]()
 
   def apply(
     in: (CFG, Int, TracePartition, Semantics),
@@ -66,8 +35,11 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   ): Try[CFG] = {
     val (cfg, _, _, semantics) = in
     // Bug detection
-    val result = cfg.getUserBlocks.foldRight(List[String]())((b, r) => checkBlock(b, semantics, checkers) ++ r)
-    result.foreach(println)
+    checkers.foreach(checker => {
+      val result = cfg.getUserBlocks.foldRight(List[String]())((b, r) =>
+        checker.checkBlock(b, semantics) ::: r)
+      result.foreach(println)
+    })
     Success(cfg)
   }
 
