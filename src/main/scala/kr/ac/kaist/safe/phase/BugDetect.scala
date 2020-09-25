@@ -25,8 +25,12 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   val name: String = "bugDetector"
   val help: String = "Detect possible bugs in JavaScript source files."
 
-  val checkers: List[BugDetector] = List(CheckNaN, CmpFunPrim, ConcatUndefStr)
-  // Generators of bug detector messages
+  val checkers: List[BugDetector] = List(
+    CheckNaN,
+    CmpFunPrim,
+    ConcatUndefStr,
+    UndefOffset
+  )
 
   def apply(
     in: (CFG, Int, TracePartition, Semantics),
