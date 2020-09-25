@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.bug_detector
 
-import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -22,7 +20,7 @@ import kr.ac.kaist.safe.util._
 object ShadowProtoProp extends BugDetector {
   private def shadowProtoProp(inst: CFGNormalInst, obj: CFGExpr, index: CFGExpr): String = {
     val span = inst.span
-    s"$span\n    [Warning] Writing property $index of $obj might shadow its prototype."
+    s"$span:$LINE_SEP    [Warning] Writing property $index of $obj might shadow its prototype."
   }
 
   override def checkInst(inst: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = inst match {

@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.bug_detector
 
-import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -22,7 +20,7 @@ import kr.ac.kaist.safe.util._
 object UndefOffset extends BugDetector {
   def undefOffset(expr: CFGExpr): String = {
     val span = expr.ir.span
-    s"$span\n    [Warning] Offset $expr may be undefined."
+    s"$span:$LINE_SEP    [Warning] Offset $expr may be undefined."
   }
 
   def checkExpr(expr: CFGExpr, state: AbsState,
@@ -33,19 +31,6 @@ object UndefOffset extends BugDetector {
         List(undefOffset(index))
       else
         List()
-      /*
-			val (v, _) = semantics.V(expr, state)
-      val (lv, _) = semantics.V(l, state)
-      val (rv, _) = semantics.V(r, state)
-
-      def isStr(v: AbsValue) = !v.pvalue.strval.isBottom
-      def isUndef(v: AbsValue) = !v.pvalue.undefval.isBottom
-
-      if (isStr(v) && (isUndef(lv) || isUndef(rv)))
-        List(concatUndefStr(expr, l, r))
-      else
-        List()
-				*/
     }
     case _ => {
       List()

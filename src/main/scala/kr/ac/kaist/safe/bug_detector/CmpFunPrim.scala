@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.bug_detector
 
-import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -22,7 +20,7 @@ import kr.ac.kaist.safe.util._
 object CmpFunPrim extends BugDetector {
   private def cmpFunPrim(expr: CFGExpr, l: CFGExpr, r: CFGExpr): String = {
     val span = expr.ir.span
-    s"$span\n    [Warning] Comparison between function and primitive value: $l and $r."
+    s"$span:$LINE_SEP    [Warning] Comparison between function and primitive value: $l and $r."
   }
 
   private def isFun(v: AbsValue, h: AbsHeap): Boolean = {

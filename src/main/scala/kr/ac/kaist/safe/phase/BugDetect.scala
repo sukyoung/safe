@@ -14,9 +14,7 @@ package kr.ac.kaist.safe.phase
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.bug_detector._
 
@@ -39,11 +37,12 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
     config: BugDetectConfig
   ): Try[CFG] = {
     val (cfg, _, _, semantics) = in
-    // Bug detection
+    // Bug detection for each checker
     checkers.foreach(checker => {
-      val result = cfg.getUserBlocks.foldRight(List[String]())((b, r) =>
-        checker.checkBlock(b, semantics) ::: r)
-      result.foreach(println)
+      cfg.getUserBlocks.foreach(b => {
+        val bugs = checker.checkBlock(b, semantics)
+        bugs.foreach(println)
+      })
     })
     Success(cfg)
   }

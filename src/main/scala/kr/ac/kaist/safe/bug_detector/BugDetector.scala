@@ -11,18 +11,16 @@
 
 package kr.ac.kaist.safe.bug_detector
 
-import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 trait BugDetector {
   protected def isReachableUserCode(block: CFGBlock, sem: Semantics): Boolean =
     !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
 
+  // Detect bugs that can happen at block level
   def checkBlock(block: CFGBlock, semantics: Semantics): List[String] = {
     if (isReachableUserCode(block, semantics)) {
       semantics.getState(block).foldLeft(List[String]()) {
@@ -74,10 +72,12 @@ trait BugDetector {
     })
   }
 
+  // Detect bugs that can happen at instruction level
   def checkInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = {
     val subExprs = collectExprs(i)
     subExprs.foldRight(List[String]())((e, r) => checkExpr(e, state, semantics) ::: r)
   }
 
+  // Detect bugs that can happen at expression level
   def checkExpr(expr: CFGExpr, state: AbsState, semantics: Semantics): List[String]
 }
