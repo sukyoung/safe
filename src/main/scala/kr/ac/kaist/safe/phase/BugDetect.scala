@@ -29,7 +29,8 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
     CheckNaN,
     CmpFunPrim,
     ConcatUndefStr,
-    UndefOffset
+    UndefOffset,
+    ShadowProtoProp
   )
 
   def apply(
