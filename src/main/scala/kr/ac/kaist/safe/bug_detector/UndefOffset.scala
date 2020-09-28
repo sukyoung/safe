@@ -18,9 +18,14 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object UndefOffset extends BugDetector {
-  def undefOffset(expr: CFGExpr): String = {
-    val span = expr.ir.span
-    s"$span:$LINE_SEP    [Warning] Offset $expr may be undefined."
+  def undefOffset(expr: CFGExpr, index: CFGExpr): String = {
+    val span = expr.span
+    println(expr);
+    s"$span:$LINE_SEP    [Warning] Offset $index may be undefined."
+  }
+  def undefOffset(inst: CFGNormalInst, index: CFGExpr): String = {
+    val span = inst.ir.span
+    s"$span:$LINE_SEP    [Warning] Offset $index may be undefined."
   }
 
   def checkExpr(expr: CFGExpr, state: AbsState,
@@ -28,7 +33,7 @@ object UndefOffset extends BugDetector {
     case CFGLoad(_, obj, index) => {
       val (iv, _) = semantics.V(index, state)
       if (!iv.pvalue.undefval.isBottom)
-        List(undefOffset(index))
+        List(undefOffset(expr, index))
       else
         List()
     }
@@ -41,7 +46,7 @@ object UndefOffset extends BugDetector {
     case CFGStore(_, _, _, index, _) => {
       val (iv, _) = semantics.V(index, state)
       if (!iv.pvalue.undefval.isBottom)
-        List(undefOffset(index))
+        List(undefOffset(inst, index))
       else
         List()
     }
