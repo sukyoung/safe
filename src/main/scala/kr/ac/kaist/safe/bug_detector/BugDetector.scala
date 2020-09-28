@@ -32,7 +32,10 @@ trait BugDetector {
               val newAlarms = checkInst(inst, state, semantics)
               val (res, _) = semantics.I(cp, inst, state, AbsState.Bot)
               (newAlarms ::: bs, res)
-            case _ => r
+            case inst: CFGCallInst =>
+              val (bs, state) = r
+              val newAlarms = checkCallInst(inst, state)
+              (newAlarms ::: bs, state)
           })
           res
         }
@@ -77,6 +80,7 @@ trait BugDetector {
     val subExprs = collectExprs(i)
     subExprs.foldRight(List[String]())((e, r) => checkExpr(e, state, semantics) ::: r)
   }
+  def checkCallInst(i: CFGCallInst, state: AbsState): List[String] = List()
 
   // Detect bugs that can happen at expression level
   def checkExpr(expr: CFGExpr, state: AbsState, semantics: Semantics): List[String]
