@@ -18,9 +18,9 @@ combined analysis of the core language.
       \exprrule{\st}{\expr}{\val}\\
     }
     {
-      \st = (\lab, \mem, \ctxtstack, \addr)
+      \st = (\lab, \mem, \ctxt, \addr)
       \trans
-      (\labnext(\lab), \mem[\loc \mapsto \val], \ctxtstack, \addr)
+      (\labnext(\lab), \mem[\loc \mapsto \val], \ctxt, \addr)
     }
 
     \inferrule*[width=0.48\textwidth]
@@ -30,9 +30,9 @@ combined analysis of the core language.
       \addr' = \text{(a fresh object address)}
     }
     {
-      \st = (\lab, \mem, \ctxtstack, \addr)
+      \st = (\lab, \mem, \ctxt, \addr)
       \trans
-      (\labnext(\lab), \mem[\loc \mapsto \addr'], \ctxtstack, \addr)
+      (\labnext(\lab), \mem[\loc \mapsto \addr'], \ctxt, \addr)
     }
 
     \inferrule*[width=0.48\textwidth]
@@ -44,21 +44,22 @@ combined analysis of the core language.
       \addr' = \text{(a fresh environment address)}
     }
     {
-      \st = (\lab, \mem, \ctxtstack, \addr)
+      \st = (\lab, \mem, \ctxt, \addr)
       \trans
-      (\lab_b, \mem[(\addr', x) \mapsto \val_a], (\addr, \labnext(\lab), \loc)
-      :: \ctxtstack, \addr')
+      (\lab_b, \mem[(\addr', x) \mapsto \val_a], \ctxt[\addr' \mapsto (\addr,
+      \labnext(\lab), \loc)], \addr')
     }
 
     \inferrule*[width=0.48\textwidth]
     {
       \prog(\lab) = \kwret \; \expr\\
       \exprrule{\st}{\expr}{\val}\\
+      \ctxt(\addr) = (\addr', \lab', \loc)
     }
     {
-      \st = (\lab, \mem, (\addr', \lab', \loc) :: \ctxtstack, \addr)
+      \st = (\lab, \mem, \ctxt, \addr)
       \trans
-      (\lab', \mem[\loc \mapsto \val], \ctxtstack, \addr')
+      (\lab', \mem[\loc \mapsto \val], \ctxt, \addr')
     }
 
     \inferrule*[width=0.48\textwidth]
@@ -67,9 +68,9 @@ combined analysis of the core language.
       \exprrule{\st}{\expr}{\kwtrue}\\
     }
     {
-      \st = (\lab, \mem, \ctxtstack, \addr)
+      \st = (\lab, \mem, \ctxt, \addr)
       \trans
-      (\lab', \mem, \ctxtstack, \addr)
+      (\lab', \mem, \ctxt, \addr)
     }
 
     \inferrule*[width=0.48\textwidth]
@@ -78,9 +79,9 @@ combined analysis of the core language.
       \exprrule{\st}{\expr}{\kwfalse}\\
     }
     {
-      \st = (\lab, \mem, \ctxtstack, \addr)
+      \st = (\lab, \mem, \ctxt, \addr)
       \trans
-      (\labnext(\lab), \mem, \ctxtstack, \addr)
+      (\labnext(\lab), \mem, \ctxt, \addr)
     }
   \end{mathpar}
 
@@ -89,7 +90,7 @@ combined analysis of the core language.
     \inferrule*[width=0.48\textwidth]
     {}
     {
-      \referrule{\st = (\lab, \mem, \ctxtstack, \addr)}{x}{(\addr, x)}\\
+      \referrule{\st = (\lab, \mem, \ctxt, \addr)}{x}{(\addr, x)}\\
     }
 
     \inferrule*[width=0.48\textwidth]
@@ -99,7 +100,7 @@ combined analysis of the core language.
       \val_1 \in \strset\\
     }
     {
-      \referrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\expr_0 [ \expr_1
+      \referrule{\st = (\lab, \mem, \ctxt, \addr)}{\expr_0 [ \expr_1
       ]}{(\addr_0, \val_1)}
     }
   \end{mathpar}
@@ -109,13 +110,13 @@ combined analysis of the core language.
     \inferrule*[width=0.48\textwidth]
     {}
     {
-      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\pval}{\pval}
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}{\pval}{\pval}
     }
 
     \inferrule*[width=0.48\textwidth]
     {}
     {
-      \exprrule{\st = (\lab, \mem, \ctxtstack,
+      \exprrule{\st = (\lab, \mem, \ctxt,
       \addr)}{\fval{x}{\lab'}}{\fval{x}{\lab'}}
     }
 
@@ -125,7 +126,7 @@ combined analysis of the core language.
       \loc \in \Dom(\mem)
     }
     {
-      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}{\refer}{\mem(\loc)}
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}{\refer}{\mem(\loc)}
     }
 
     \inferrule*[width=0.48\textwidth]
@@ -135,7 +136,7 @@ combined analysis of the core language.
       \exprrule{\st}{\expr_n}{\val_n}
     }
     {
-      \exprrule{\st = (\lab, \mem, \ctxtstack, \addr)}
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}
       {\op(\expr_1, \cdots, \expr_n)}{\op(\val_1, \cdots, \val_n)}
     }
   \end{mathpar}
@@ -178,10 +179,10 @@ reference, or an operation between other expressions.
 \[
   \begin{array}{lr@{~}c@{~}l@{~}c@{~}l}
     \text{States} & \st &\in& \stset &=& \labset \times \memset \times
-    \ctxtset^* \times \eaddrset\\
+    \ctxtset \times \eaddrset\\
     \text{Memories} & \mem &\in& \memset &=& \locset \finmap \valset\\
-    \text{Contexts} & \ctxt &\in& \ctxtset &=& \eaddrset \times \labset \times
-    \locset\\
+    \text{Contexts} & \ctxt &\in& \ctxtset &=& \eaddrset \finmap (\eaddrset
+    \times \labset \times \locset)\\
     \text{Locations} & \loc &\in& \locset &=& (\eaddrset \times \varset) \uplus
     (\oaddrset \times \strset)\\
     \text{Values} & \val &\in& \valset &=& \pvalset \uplus \oaddrset \uplus
@@ -193,19 +194,19 @@ reference, or an operation between other expressions.
   \end{array}
 \]
 
-States $\stset$ consist of labels $\labset$, memories $\memset$, context stacks
-$\ctxtset^*$, and environment addresses $\eaddrset$.  A memory $\mem \in
-\memset$ is a finite mapping from locations to values.  Context stacks is
-sequences of contexts $\ctxtset$ and a context $\ctxt \in \ctxtset$ is a tuple
-of an environment address, a return label, and a left-hand side location.  A
-location $\loc \in \locset$ is a variable or an object property; a variable
-location consists of an environment address and its name, and an object property
-location consists of an object address and a string value.  A value $\val \in
-\valset$ is a primitive, an address, or a function value.  An address $\addr \in
-\addrset$ is an environment address or an object address.  A function value
-$\fval{x}{\lab} \in \fvalset$ consists of a parameter and a body label.  In the
-core language, the closed scoping is used for functions for brevity thus only
-parameters and local variables are accessible in the function body.
+States $\stset$ consist of labels $\labset$, memories $\memset$, contexts
+$\ctxtset$, and environment addresses $\eaddrset$.  A memory $\mem \in \memset$
+is a finite mapping from locations to values.  A context $\ctxt \in \ctxtset$ is
+a finite mapping from environment addresses to tuple of environment addresses,
+return labels, and left-hand side locations.  A location $\loc \in \locset$ is a
+variable or an object property; a variable location consists of an environment
+address and its name, and an object property location consists of an object
+address and a string value.  A value $\val \in \valset$ is a primitive, an
+address, or a function value.  An address $\addr \in \addrset$ is an environment
+address or an object address.  A function value $\fval{x}{\lab} \in \fvalset$
+consists of a parameter and a body label.  In the core language, the closed
+scoping is used for functions for brevity thus only parameters and local
+variables are accessible in the function body.
 
 We formulate the concrete semantics of the core language as described in
 Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
@@ -404,7 +405,7 @@ locations in $L$ with the abstract value $\absval$.  It performs the strong
 update if the abstract address for an abstract location $(\absaddr, \_) \in L$
 is singleton: $\abscount(\absaddr) = \absone$.  Otherwise, it performs the weak
 update for the soundness.  Moreover, we define the increment function $\inc:
-\abscountset \times \absaddr \rightarrow \abscountset$ of the abstract counter
+\abscountset \times \absaddrset \rightarrow \abscountset$ of the abstract counter
 defined as follows:
 \[
   \inc(\abscount)(\absaddr_0) = \lambda \absaddr \in \absaddrset. \; \left\{
@@ -417,3 +418,69 @@ defined as follows:
     \end{array}
   \right.
 \]
+
+
+\subsection{Combined Analysis}
+
+We define the symbolic states with the extended concrete values and the abstract
+counters for addresses as follows:
+\[
+  \begin{array}{r@{~}c@{~}l}
+    \symbstset &=& \labset \times \memset \times \ctxtset \times \eaddrset
+    \times \abscountset\\
+    \ctxtset &=& \addrset \finmap ((\addrset \times \labset \times \locset)
+    \uplus \symbset)\\
+    \valset &=& \pvalset \uplus \oaddrset \uplus \fvalset \uplus \symbset\\
+    \abscountset &=& \addrset \rightarrow \{ \abszero, \absone, \absmany \}\\
+  \end{array}
+\]
+We define the converter $\asconverter: \absdom \rightarrow \symbstset$ from
+abstract states to corresponding symbolic states as follows:
+\[
+  \asconverter((\lab, (\absmem, \absctxt, \absaddr, \abscount))) = (\lab,
+  \asconverter^\memset(\absmem), \asconverter^\ctxtset(\absctxt),
+  \asconverter^\addrset(\absaddr), \abscount)\\
+\]
+The converter for memories $\asconverter^\memset$ is defined with the converter
+for values $\asconverter^\valset$ where:
+\[
+  \asconverter^\valset(\absval) = \left\{
+    \begin{array}{ll}
+      \val & \text{if} \; \absval = \{ \val \}\\
+      \absval & \text{otherwise}\\
+    \end{array}
+  \right.
+\]
+In a similar way, the converter for contexts $\asconverter^\ctxtset$ is defined
+as follows:
+\[
+  \asconverter^\ctxtset(\absctxt)(\absaddr) = \left\{
+    \begin{array}{ll}
+      (\absaddr, \lab, \loc) & \text{if} \; \absctxt(\absaddr) = \{ (\absaddr,
+      \lab, \{ \loc \}) \}\\
+      \absctxt(\absaddr) & \text{otherwise}\\
+    \end{array}
+  \right.
+\]
+The opposite converter $\saconverter: \symbstset \rightarrow \absdom$ from
+symbolic states to abstract states is defined as the inverse function of
+$\asconverter$: $\saconverter = \asconverter^{-1}$.
+The symbolic transition relation $\symbtrans$ is an extension of the original
+concrete transition relation $\trans$.  When the exact values of symbolic values
+are required, symbolic states have the symbolic transition relation with the
+exception state $\excst$.  For example, we add the following rule for $\kwret$
+statements:
+\begin{mathpar}
+  \inferrule
+  {
+    \prog(\lab) = \kwret \; \expr\\
+    \exprrule{\st}{\expr}{\val}\\
+    \ctxt(\addr) \in \symbset
+  }
+  {
+    \st = (\lab, \mem, \ctxt, \addr)
+    \trans \excst
+  }
+\end{mathpar}
+We extend each rule of concrete semantics to support such behaviors of symbolic
+values.
