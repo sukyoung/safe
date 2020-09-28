@@ -20,4 +20,5 @@ package object phase {
   type ArgRegex[PhaseConfig <: Config] = (Regex, Regex, (PhaseConfig, String) => Try[Unit])
   type PhaseOption[PhaseConfig <: Config] = (String, OptionKind[PhaseConfig], String)
   type CCFG = Map[FunctionId, Map[BlockId, (Map[CFGEdgeType, List[BlockId]], String)]]
+  type CFGSpanList = List[List[String]]
 }

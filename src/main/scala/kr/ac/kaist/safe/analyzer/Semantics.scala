@@ -261,6 +261,7 @@ case class Semantics(
       case CFGAlloc(_, _, x, e, newASite) => {
         val objProtoSingleton = LocSet(OBJ_PROTO_LOC)
         val loc = Loc(newASite, tp)
+        //println(loc)
         val st1 = st.alloc(loc)
         val (vLocSet, excSet) = e match {
           case None => (objProtoSingleton, ExcSetEmpty)
@@ -280,6 +281,9 @@ case class Semantics(
       }
       case CFGAllocArray(_, _, x, n, newASite) => {
         val loc = Loc(newASite, tp)
+        //println("Array")
+        //println(newASite)
+        //println(loc)
         val st1 = st.alloc(loc)
         val np = AbsNum(n.toInt)
         val h2 = st1.heap.update(loc, AbsObj.newArrayObject(np))

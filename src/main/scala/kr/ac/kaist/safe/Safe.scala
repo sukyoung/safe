@@ -76,6 +76,7 @@ object Safe {
     CmdTranslate,
     CmdCFGBuild,
     CmdCCFGBuild,
+    CmdCFGSpanInfo,
     CmdLabelBuild,
     CmdHeapBuild,
     CmdAnalyze,

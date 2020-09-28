@@ -21,6 +21,9 @@ import kr.ac.kaist.safe.util.ArgParser
 
 import scala.util.Try
 
+import spray.json._
+import DefaultJsonProtocol._
+
 sealed trait Command {
   val name: String
   def apply(args: List[String], testMode: Boolean): Try[Any]
@@ -93,6 +96,11 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdTranslate >> CFGBuild)
 // ccfgBuild
 case object CmdCCFGBuild extends CommandObj("ccfgBuild", CmdCFGBuild >> CCFGBuild) {
   override def display(ccfg: CCFG): Unit = println(ccfg.toString())
+}
+
+// cfgSpanInfo
+case object CmdCFGSpanInfo extends CommandObj("cfgSpanInfo", CmdHeapBuild >> CFGSpanInfo) {
+  override def display(span: CFGSpanList): Unit = println(span.toJson.prettyPrint)
 }
 
 // labelBuild
