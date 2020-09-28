@@ -61,31 +61,7 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
         }
       })
     })
-    val blocks = cfg.getAllBlocks
-    val spanList = blocks.foldLeft[CFGSpanList](List())((acc, b) => {
-      if (b.func.id >= 0) {
-        acc
-      } else {
-        b.getInsts.foldLeft(acc)((acc, i) => {
-          i match {
-            case CFGAlloc(ir, block, lhs, protoOpt, asite) =>
-              block.func.ast match {
-                case Some(ast) =>
-                  List("T", ir.span.toString, asite.toString, ast.toString(0)) :: acc
-                case _ => acc
-              }
-            case CFGAllocArray(ir, block, lhs, length, asite) =>
-              block.func.ast match {
-                case Some(ast) =>
-                  List("T", ir.span.toString, asite.toString, ast.toString(0)) :: acc
-                case _ => acc
-              }
-            case _ => acc
-          }
-        })
-      }
-    })
-    spanList.reverse
+    userSpanList.reverse
   }
 
   def defaultConfig: CFGSpanInfoConfig = CFGSpanInfoConfig()

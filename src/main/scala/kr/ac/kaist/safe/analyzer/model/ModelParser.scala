@@ -32,6 +32,19 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
     val newFuncs = other.funcs.foldLeft(this.funcs) {
       case (funList, (body, cfgFunc)) => {
         cfgFunc.id = cfgFunc.id - this.fidMax
+        def mutate(asite: AllocSite): AllocSite = asite match {
+          case PredAllocSite(pred) if (pred.startsWith("-")) =>
+            PredAllocSite(s"${cfgFunc.id}")
+          case _ => asite
+        }
+        cfgFunc.getAllBlocks.foreach(_.getInsts.foreach {
+          case i: CFGAlloc => i.asite = mutate(i.asite)
+          case i: CFGAllocArray => i.asite = mutate(i.asite)
+          case i: CFGAllocArg => i.asite = mutate(i.asite)
+          case i: CFGCallInst => i.asite = mutate(i.asite)
+          case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
+          case _ =>
+        })
         (body, cfgFunc) :: funList
       }
     }
