@@ -26,7 +26,6 @@ object CheckNaN extends BugDetector {
   private def checkNaN(expr: CFGExpr): String = {
     val span = expr.span
     s"$span:$LINE_SEP    [Warning] The result of ${expr.ir.ast.toString(0)} might be NaN."
-    //s"$span:$LINE_SEP    [Warning] The result of $expr might be NaN."
   }
 
   def isNaN(v: AbsValue): Boolean = AbsNum.NaN ⊑ v

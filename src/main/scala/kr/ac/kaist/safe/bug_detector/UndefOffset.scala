@@ -20,7 +20,6 @@ import kr.ac.kaist.safe.util._
 object UndefOffset extends BugDetector {
   def undefOffset(expr: CFGExpr, index: CFGExpr): String = {
     val span = expr.span
-    println(expr);
     s"$span:$LINE_SEP    [Warning] Offset $index may be undefined."
   }
   def undefOffset(inst: CFGNormalInst, index: CFGExpr): String = {
