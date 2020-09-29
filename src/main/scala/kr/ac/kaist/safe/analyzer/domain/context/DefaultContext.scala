@@ -20,19 +20,17 @@ import spray.json._
 
 // default execution context abstract domain
 object DefaultContext extends ContextDomain {
-  private val EmptyMap: Map[Loc, AbsLexEnv] = Map()
-
   case object Bot extends Elem
   case object Top extends Elem
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
-    val map: Map[Loc, AbsLexEnv],
+    val map: LayeredMap[Loc, AbsLexEnv],
     val merged: LocSet,
     val changed: LocSet,
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
   lazy val Empty: Elem =
-    CtxMap(EmptyMap, LocSet.Bot, LocSet.Bot, LocSet(GLOBAL_LOC))
+    CtxMap(LayeredMap(), LocSet.Bot, LocSet.Bot, LocSet(GLOBAL_LOC))
 
   def alpha(ctx: Context): Elem = Top // TODO more precise
 
@@ -40,7 +38,7 @@ object DefaultContext extends ContextDomain {
     map: Map[Loc, AbsLexEnv],
     merged: LocSet,
     thisBinding: AbsValue
-  ): Elem = CtxMap(Map(map.toSeq: _*), merged, LocSet.Bot, thisBinding)
+  ): Elem = CtxMap(LayeredMap(map), merged, LocSet.Bot, thisBinding)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
@@ -113,10 +111,10 @@ object DefaultContext extends ContextDomain {
       }
     }
 
-    private def weakUpdated(m: Map[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): Map[Loc, AbsLexEnv] =
+    private def weakUpdated(m: LayeredMap[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): LayeredMap[Loc, AbsLexEnv] =
       m.get(loc) match {
-        case Some(oldEnv) => m.updated(loc, oldEnv ⊔ newEnv)
-        case None => m.updated(loc, newEnv)
+        case Some(oldEnv) => m + (loc -> (oldEnv ⊔ newEnv))
+        case None => m + (loc -> newEnv)
       }
 
     def weakUpdate(loc: Loc, env: AbsLexEnv): Elem = this match {
@@ -131,7 +129,7 @@ object DefaultContext extends ContextDomain {
       case Top => Top
       case cmap @ CtxMap(map, _, changed, _) => {
         if (isConcrete(loc)) {
-          cmap.copy(map = map.updated(loc, env), changed = changed + loc)
+          cmap.copy(map = map + (loc -> env), changed = changed + loc)
         } else {
           cmap.copy(map = weakUpdated(map, loc, env), changed = changed + loc)
         }
@@ -153,7 +151,7 @@ object DefaultContext extends ContextDomain {
           case None => (map, merged)
         })
         CtxMap(
-          newMap.map { case (k, v) => k -> v.subsLoc(from, to) },
+          newMap.valueMap(_.subsLoc(from, to)),
           newMerged.subsLoc(from, to),
           changed + from + to,
           thisBinding.subsLoc(from, to)
@@ -165,7 +163,7 @@ object DefaultContext extends ContextDomain {
       case Top => Top
       case Bot => Bot
       case CtxMap(map, merged, changed, thisBinding) => CtxMap(
-        (map -- locs).map { case (k, v) => k -> v.remove(locs) },
+        (map -- locs).valueMap(_.remove(locs)),
         merged.remove(locs),
         changed ⊔ LocSet(locs),
         thisBinding.remove(locs)
@@ -204,7 +202,7 @@ object DefaultContext extends ContextDomain {
     def getMap: Map[Loc, AbsLexEnv] = this match {
       case Bot => Map()
       case Top => Map() // TODO it is not sound
-      case CtxMap(map, _, _, _) => map
+      case CtxMap(map, _, _, _) => Map(map.toSeq: _*)
     }
 
     def thisBinding: AbsValue = this match {
@@ -322,15 +320,16 @@ object DefaultContext extends ContextDomain {
   }
 
   def fromJSON(json: JsValue, cfg: CFG): Elem = {
-    val fields = json.asJsObject().fields
-    val mapFields = fields("map").asJsObject.fields
-    CtxMap(
-      mapFields.foldLeft[Map[Loc, AbsLexEnv]](Map())({
-        case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
-      }),
-      LocSet.Bot,
-      LocSet.Bot,
-      AbsValue.fromJSON(fields("thisBinding"), cfg)
-    )
+    ???
+    // val fields = json.asJsObject().fields
+    // val mapFields = fields("map").asJsObject.fields
+    // CtxMap(
+    //   mapFields.foldLeft[Map[Loc, AbsLexEnv]](Map())({
+    //     case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
+    //   }),
+    //   LocSet.Bot,
+    //   LocSet.Bot,
+    //   AbsValue.fromJSON(fields("thisBinding"), cfg)
+    // )
   }
 }

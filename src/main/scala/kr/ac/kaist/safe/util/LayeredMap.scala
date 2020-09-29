@@ -13,39 +13,61 @@ package kr.ac.kaist.safe.util
 
 import scala.collection.immutable.AbstractMap
 
-case class LayeredMap[A, +B](
-    bottom: Map[A, B],
-    top: Map[A, B],
-    touched: Set[A]
+case class LayeredMap[A, B](
+    bottom: HashMap[A, B] = HashMap[A, B](),
+    top: HashMap[A, B] = HashMap[A, B](),
+    touched: Set[A] = Set[A]()
 ) extends AbstractMap[A, B] with Map[A, B] {
+  type PartialOrder[B1] = (B1, B1) => Boolean
+  type OptionPartialOrder[B1] = (Option[B1], Option[B1]) => Boolean
+
   def +[V1 >: B](kv: (A, V1)): LayeredMap[A, V1] =
     LayeredMap(bottom, top + kv, touched + kv._1)
-  def -(key: A): scala.collection.immutable.Map[A, B] =
+  def -(key: A): LayeredMap[A, B] =
     LayeredMap(bottom, top - key, touched + key)
+  def --(keys: Iterable[A]): LayeredMap[A, B] =
+    keys.foldLeft(this)(_ - _)
   def get(key: A): Option[B] =
     if (touched contains key) top.get(key)
     else bottom.get(key)
   def iterator: Iterator[(A, B)] =
     top.iterator ++ (bottom -- touched).iterator
 
-  def mergeWithIdem[B1 >: B](
-    that: LayeredMap[A, B1]
-  )(mergef: (Option[B1], Option[B1]) => B1): LayeredMap[A, B1] = {
+  def compareOptionWithPartialOrder(
+    that: LayeredMap[A, B]
+  )(order: OptionPartialOrder[B]): Boolean = {
+    if (this eq that) true
+    else touched.forall(k => order(this.top.get(k), that.top.get(k)))
+  }
+
+  def compareWithPartialOrder(
+    that: LayeredMap[A, B]
+  )(order: PartialOrder[B]): Boolean = {
+    if (this eq that) true
+    else touched.forall(k => (this.top.get(k), that.top.get(k)) match {
+      case (Some(x), Some(y)) => order(x, y)
+      case (x, _) => x == None
+    })
+  }
+
+  def mergeWithIdem(
+    that: LayeredMap[A, B]
+  )(mergef: (Option[B], Option[B]) => B): LayeredMap[A, B] = {
     if (this eq that) this else {
       val touched = this.touched ++ that.touched
-      val top = touched.foldLeft(Map[A, B1]()) {
+      val top = touched.foldLeft(Map[A, B]()) {
         case (m, k) => m + (k -> mergef(this.top.get(k), that.top.get(k)))
       }
       LayeredMap(bottom, top, touched)
     }
   }
 
-  def unionWithIdem[B1 >: B](
-    that: LayeredMap[A, B1]
-  )(mergef: (B1, B1) => B1): LayeredMap[A, B1] = {
+  def unionWithIdem(
+    that: LayeredMap[A, B]
+  )(mergef: (B, B) => B): LayeredMap[A, B] = {
     if (this eq that) this else {
       val touched = this.touched ++ that.touched
-      val top = touched.foldLeft(Map[A, B1]()) {
+      val top = touched.foldLeft(Map[A, B]()) {
         case (m, k) => (this.top.get(k), that.top.get(k)) match {
           case (Some(x), Some(y)) => m + (k -> mergef(x, y))
           case (Some(x), None) => m + (k -> x)
@@ -57,12 +79,12 @@ case class LayeredMap[A, +B](
     }
   }
 
-  def intersectWithIdem[B1 >: B](
-    that: LayeredMap[A, B1]
-  )(mergef: (B1, B1) => B1): LayeredMap[A, B1] = {
+  def intersectWithIdem(
+    that: LayeredMap[A, B]
+  )(mergef: (B, B) => B): LayeredMap[A, B] = {
     if (this eq that) this else {
       val touched = this.touched ++ that.touched
-      val top = touched.foldLeft(Map[A, B1]()) {
+      val top = touched.foldLeft(Map[A, B]()) {
         case (m, k) => (this.top.get(k), that.top.get(k)) match {
           case (Some(x), Some(y)) => m + (k -> mergef(x, y))
           case _ => m
@@ -71,9 +93,11 @@ case class LayeredMap[A, +B](
       LayeredMap(bottom, top, touched)
     }
   }
-}
 
-object LayeredMap {
-  def apply[A, B](bottom: Map[A, B]): LayeredMap[A, B] =
-    LayeredMap(bottom, Map(), Set())
+  def valueMap(f: B => B): LayeredMap[A, B] = foldLeft(this) {
+    case (m, (k, v)) =>
+      val w = f(v)
+      if (w != v) m + (k -> w)
+      else m
+  }
 }

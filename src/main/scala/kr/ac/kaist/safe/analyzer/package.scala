@@ -11,9 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.util.LayeredMap
+import kr.ac.kaist.safe.util.HashMap
 
 package object analyzer {
-  type Map[K, V] = LayeredMap[K, V]
-  val Map = LayeredMap
+  type Map[K, V] = HashMap[K, V]
+  val Map = HashMap
 }
