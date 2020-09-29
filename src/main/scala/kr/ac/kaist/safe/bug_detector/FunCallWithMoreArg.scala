@@ -18,10 +18,12 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object FunCallWithMoreArg extends BugDetector {
+  val id = 4
+
   private def funCallWithMoreArg(i: CFGCallInst): String = {
     val span = i.span
     val call = i.ir.ast.toString(0)
-    s"$span:$LINE_SEP    [Warning] Too may arguments are passed at function call: $call."
+    s"[$id] $span:$LINE_SEP    [Warning] Too may arguments are passed at function call: $call."
   }
 
   override def checkCallInst(inst: CFGCallInst, state: AbsState): List[String] = {

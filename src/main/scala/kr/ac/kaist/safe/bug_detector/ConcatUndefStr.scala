@@ -20,9 +20,11 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object ConcatUndefStr extends BugDetector {
+  val id = 3
+
   def concatUndefStr(expr: CFGExpr, l: CFGExpr, r: CFGExpr): String = {
     val span = expr.ir.span
-    s"$span:$LINE_SEP    [Warning] Concatenation of undefined with string: $l and $r."
+    s"[$id] $span:$LINE_SEP    [Warning] Concatenation of undefined with string: $l and $r."
   }
 
   // Check expression-level rules: AbsentPropertyRead

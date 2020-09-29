@@ -18,14 +18,16 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object CheckNaN extends BugDetector {
+  val id = 1
+
   private def checkNaN(block: AfterCall): String = {
     val span = block.call.span
     val call = block.call.callInst.ir.ast.toString(0)
-    s"$span:$LINE_SEP    [Warning] NaN might be returned by $call."
+    s"[$id] $span:$LINE_SEP    [Warning] NaN might be returned by $call."
   }
   private def checkNaN(expr: CFGExpr): String = {
     val span = expr.span
-    s"$span:$LINE_SEP    [Warning] The result of ${expr.ir.ast.toString(0)} might be NaN."
+    s"[$id] $span:$LINE_SEP    [Warning] The result of ${expr.ir.ast.toString(0)} might be NaN."
   }
 
   def isNaN(v: AbsValue): Boolean = AbsNum.NaN ⊑ v

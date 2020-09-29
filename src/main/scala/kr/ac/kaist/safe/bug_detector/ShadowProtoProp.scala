@@ -18,10 +18,12 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object ShadowProtoProp extends BugDetector {
+  val id = 5
+
   private def shadowProtoProp(inst: CFGNormalInst, obj: CFGExpr, index: CFGExpr): String = {
     val span = inst.span
     val objStr = obj.ir.ast.toString(0);
-    s"$span:$LINE_SEP    [Warning] Writing property $index of $objStr might shadow its prototype."
+    s"[$id] $span:$LINE_SEP    [Warning] Writing property $index of $objStr might shadow its prototype."
   }
 
   override def checkInst(inst: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = inst match {

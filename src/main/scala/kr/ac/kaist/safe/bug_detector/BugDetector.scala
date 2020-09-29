@@ -17,6 +17,8 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 
 trait BugDetector {
+  val id: Int
+
   protected def isReachableUserCode(block: CFGBlock, sem: Semantics): Boolean =
     !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
 

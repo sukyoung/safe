@@ -18,9 +18,11 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 object CmpFunPrim extends BugDetector {
+  val id = 2
+
   private def cmpFunPrim(expr: CFGExpr, l: CFGExpr, r: CFGExpr): String = {
     val span = expr.ir.span
-    s"$span:$LINE_SEP    [Warning] Comparison between function and primitive value: $l and $r."
+    s"[$id] $span:$LINE_SEP    [Warning] Comparison between function and primitive value: $l and $r."
   }
 
   private def isFun(v: AbsValue, h: AbsHeap): Boolean = {
