@@ -636,8 +636,8 @@ class DefaultCFGBuilder(
       case IRBin(_, first, op, second) =>
         CFGBin(expr, ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
       /* PEI : id lookup */
-      case IRUn(_, op, expr) =>
-        CFGUn(expr, op.kind, ir2cfgExpr(expr))
+      case IRUn(_, op, subexpr) =>
+        CFGUn(expr, op.kind, ir2cfgExpr(subexpr))
       case id: IRId => id2cfgExpr(id)
       case IRThis(_) => CFGThis(expr)
       case IRInternalValue(_, n) => CFGInternalValue(expr, n)
