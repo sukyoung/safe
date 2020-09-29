@@ -167,7 +167,7 @@ $\neg\checker$.  It should satisfy the following condition for the soundness and
 the termination of the combined analysis:
 \[
   \checker(\symbst) \Rightarrow \symbst \symbtrans^k \excst \wedge
-  1 \leq k \leq N
+  1 < k \leq N
 \]
 where $N$ is the pre-defined maximum length of the lazy concrete interpretation.
 The combined analysis just performs one-step symbolic transition for each
