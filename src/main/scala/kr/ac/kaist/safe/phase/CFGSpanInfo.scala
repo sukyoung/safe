@@ -50,13 +50,13 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
       b.getInsts.foldLeft(acc)((acc, i) => {
         i match {
           case CFGAlloc(ir, block, lhs, protoOpt, asite) =>
-            List("T", ir.span.toString, asite.toString) :: acc
+            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
           case CFGAllocArray(ir, block, lhs, length, asite) =>
-            List("T", ir.span.toString, asite.toString) :: acc
+            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
           case CFGCall(ir, block, fun, thisArg, arguments, asite) =>
-            List("FM", ir.span.toString, asite.toString, 0.toString, block.func.id + ":" + block.id) :: acc
+            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 0.toString, block.func.id + ":" + block.id) :: acc
           case CFGConstruct(ir, block, fun, thisArg, arguments, asite) =>
-            List("FM", ir.span.toString, asite.toString, 1.toString, block.func.id + ":" + block.id) :: acc
+            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 1.toString, block.func.id + ":" + block.id) :: acc
           case _ => acc
         }
       })
