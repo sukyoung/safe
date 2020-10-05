@@ -105,8 +105,8 @@ object DefaultDataProp extends DataPropDomain {
     def toJSON: JsValue = JsObject(
       "value" -> this.value.toJSON,
       "writable" -> this.writable.toJSON,
-      "enumerable" -> this.writable.toJSON,
-      "configurable" -> this.writable.toJSON
+      "enumerable" -> this.enumerable.toJSON,
+      "configurable" -> this.configurable.toJSON
     )
 
     def copy(

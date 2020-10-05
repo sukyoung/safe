@@ -218,8 +218,8 @@ case class Semantics(
           //if (cp.block.func.id == 2) {
           //  println(cp)
           //  println(newSt)
-          //  println(newSt.toJSON.prettyPrint)
-          //  println(cp.block.func.id)
+          //  val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
+          //  println(dump.prettyPrint)
           //  val newTP = cp.tracePartition
           //  val exitCP = ControlPoint(func.exit, newTP)
           //  //(newSt, AbsState.Bot)
