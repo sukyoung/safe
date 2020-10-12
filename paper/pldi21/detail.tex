@@ -214,8 +214,8 @@ states is defined with the semantics of references and expressions using two
 different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
 \fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
 $\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
-the initial label, $\epsilon$ empty list, and $\tladdr$ the top-level
-environment address.  The function $\labnext$ returns the next lable of the
+the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
+environment address.  The function $\labnext$ returns the next lable of a
 given lable in the current program $\prog$.
 
 
@@ -259,7 +259,7 @@ given lable in the current program $\prog$.
       \exprabssem{\expr_a}(\abselem) = \absval_a\\
       \eabsaddr = \lab_b\\
       \eabsctxt = \absctxt[\eabsaddr \mapsto \absctxt(\eabsaddr) \cup \{
-      (\absaddr, \lab, L) \} ]
+      (\absaddr, \labnext(\lab), L) \} ]
     }
     {
       \viewtrans{\lab}{\lab_b}(\abselem) = (\absmem[(\eabsaddr, x) \mapsto
@@ -314,7 +314,7 @@ given lable in the current program $\prog$.
       S = \exprabssem{\expr_1}(\abselem) \cap \strset\\
     }
     {
-      \referabssem{\expr_0 [ \expr_1 ]} = A \times S
+      \referabssem{\expr_0 [ \expr_1 ]}(\abselem) = A \times S
     }
   \end{mathpar}
 
@@ -360,7 +360,7 @@ given lable in the current program $\prog$.
 In abstract semantics of the core language, we use the flow sensitivity with a
 flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$ that
 discriminates states using their labels: $\forall \lab \in \labset. \;
-\fsviewmap(\lab) = \{ \st \in \stset \mid \st = (\lab, \_, \_, \_) \}$ Thus, the
+\fsviewmap(\lab) = \{ \st \in \stset \mid \st = (\lab, \_, \_, \_) \}$. Thus, the
 sensitive abstract domain is defined as $\sabsdom = \labset \rightarrow
 \absdom$.  We define an abstract state $\abselem \in \absdom$ as a tuple of an
 abstract memory, an abstract context, an abstract address, and set of singleton
@@ -395,7 +395,7 @@ abstract addresses, views, and powerset of abstract locations.  For abstract
 counting~\cite{abstract-gc-counting, revisit-recency} in static analysis, we
 define abstract counters $\abscountset$ that maps from abstract addresses to
 their abstract counts representing how many times each abstract address has been
-allocated; $\abszero$ denotes that it have never been allocated, $\absone$ once,
+allocated; $\abszero$ denotes that it has never been allocated, $\absone$ once,
 and $\absmany$ more than or equals to twice.
 
 We define the semantics of view transition for the core language in
@@ -420,7 +420,7 @@ defined as follows:
 \]
 
 
-\subsection{Combined Analysis}
+\subsection{Lazy Concrete Interpretation}
 
 We define the symbolic states with the extended concrete values and the abstract
 counters for addresses as follows:
@@ -428,14 +428,14 @@ counters for addresses as follows:
   \begin{array}{r@{~}c@{~}l}
     \symbstset &=& \labset \times \memset \times \ctxtset \times \eaddrset
     \times \abscountset\\
-    \ctxtset &=& \addrset \finmap ((\addrset \times \labset \times \locset)
+    \ctxtset &=& \eaddrset \finmap ((\eaddrset \times \labset \times \locset)
     \uplus \symbset)\\
     \valset &=& \pvalset \uplus \oaddrset \uplus \fvalset \uplus \symbset\\
-    \abscountset &=& \addrset \rightarrow \{ \abszero, \absone, \absmany \}\\
+    \abscountset &=& \oaddrset \rightarrow \{ \abszero, \absone, \absmany \}\\
   \end{array}
 \]
-We define the converter $\asconverter: \absdom \rightarrow \symbstset$ from
-abstract states to corresponding symbolic states as follows:
+We define the converter $\asconverter: (\viewset \times \absdom) \rightarrow
+\symbstset$ from abstract states to corresponding symbolic states as follows:
 \[
   \asconverter((\lab, (\absmem, \absctxt, \absaddr, \abscount))) = (\lab,
   \asconverter^\memset(\absmem), \asconverter^\ctxtset(\absctxt),
@@ -462,9 +462,9 @@ as follows:
     \end{array}
   \right.
 \]
-The opposite converter $\saconverter: \symbstset \rightarrow \absdom$ from
-symbolic states to abstract states is defined as the inverse function of
-$\asconverter$: $\saconverter = \asconverter^{-1}$.
+The opposite converter $\saconverter: \symbstset \rightarrow (\viewset \times
+\absdom)$ from symbolic states to abstract states is defined as the inverse
+function of $\asconverter$: $\saconverter = \asconverter^{-1}$.
 The symbolic transition relation $\symbtrans$ is an extension of the original
 concrete transition relation $\trans$.  When the exact values of symbolic values
 are required, symbolic states have the symbolic transition relation with the

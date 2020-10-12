@@ -45,7 +45,7 @@ states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
 
 \subsection{Abstract Interpretation}
 The abstract interpretation~\cite{abs-interp-1977, abs-interp-1992}
-over-approximate the transfer $\transfer$ to the \textit{abstract transfer
+over-approximates the transfer $\transfer$ to the \textit{abstract transfer
 function} $\abstransfer: \absdom \rightarrow \absdom$ to get the
 \textit{abstract semantics} $\abssem{\prog}$ in finite iterations as follows:
 \[
@@ -54,7 +54,7 @@ function} $\abstransfer: \absdom \rightarrow \absdom$ to get the
 \]
 We define a \textit{state abstraction} $\dom \galois{\alpha}{\gamma} \absdom$ as
 a Galois connection between the concrete domain $\dom$ and an abstract domain
-$\absdom$ with a \textit{concretization function} $\gamma$ and a
+$\absdom$ with a \textit{concretization function} $\gamma$ and an
 \textit{abstraction function} $\alpha$.  The initial abstract state $\iabselem
 \in \absdom$ represents an abstraction of the initial state set; $\ielem
 \subseteq \gamma(\iabselem)$.  The abstract transfer function $\abstransfer:
@@ -111,9 +111,9 @@ analysis:
 We define a \textit{lazy concrete interpretation} by extending the transition
 relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
 states. First, we extends the concrete states $\stset$ to \textit{symbolic
-states} with symbolic values $\symbset$ that denote abstract values cannot be
+states} with symbolic values $\symbset$ that denote abstract values that cannot be
 concretized to singleton values. A symbolic transition relation $\symbtrans
-\subseteq \symbstset \times (\symbstset \uplus \{ \excst \})$ is exactly same
+\subseteq \symbstset \times (\symbstset \uplus \{ \excst \})$ is exactly the same
 with the original transition relation $\trans$ except when the relation requires
 the exact value of symbolic values.  In this case, the symbolic state has the
 relation a special exception state $\excst$ to represent that it is impossible
@@ -121,7 +121,7 @@ to interpret in a concrete way.  Thus, a symbolic state \textit{always} has a
 symbolic transition relation with a single symbolic state, and the lazy concrete
 interpret is linear execution until reaching the exception state.
 
-To freely convert a pair of view and an abstract state to the corresponding
+To freely convert a pair of view and an abstract state to its corresponding
 symbolic state and vice versa, we define two domain converters $\symbstset
 \galois{\saconverter}{\asconverter} (\viewset \times \absdom)$.  In the
 converter $\asconverter$ from abstract states to symbolic states, if an abstract
@@ -169,7 +169,7 @@ the termination of the combined analysis:
   \checker(\symbst) \Rightarrow \symbst \symbtrans^k \excst \wedge
   1 < k \leq N
 \]
-where $N$ is the pre-defined maximum length of the lazy concrete interpretation.
+where $N$ is a pre-defined maximum length of the lazy concrete interpretation.
 The combined analysis just performs one-step symbolic transition for each
 symbolic state that passes the filter $\checker$. On the other hand, it converts
 remaining symbolic states to the corresponding abstract states, merges them into
