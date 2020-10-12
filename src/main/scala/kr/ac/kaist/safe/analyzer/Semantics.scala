@@ -25,6 +25,7 @@ import scala.collection.mutable.{ Map => MMap }
 import kr.ac.kaist.safe.BASE_DIR
 import spray.json._
 import DefaultJsonProtocol._
+import kr.ac.kaist.safe.util.Useful
 
 case class Semantics(
     cfg: CFG,
@@ -224,6 +225,11 @@ case class Semantics(
           //  val exitCP = ControlPoint(func.exit, newTP)
           //  //(newSt, AbsState.Bot)
           //  println(exitCP)
+          //  val (fw, writer) = Useful.fileNameToWriters("state.json")
+          //  writer.write(dump.prettyPrint)
+          //  writer.close
+          //  fw.close
+
           //  val json = scala.io.Source.fromFile(BASE_DIR + "/output.json").mkString.parseJson
           //  val fields = json.asJsObject().fields
           //  val loaded = AbsState.fromJSON(fields("state"), cfg)
