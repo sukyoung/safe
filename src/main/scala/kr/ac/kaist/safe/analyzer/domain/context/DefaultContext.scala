@@ -320,16 +320,15 @@ object DefaultContext extends ContextDomain {
   }
 
   def fromJSON(json: JsValue, cfg: CFG): Elem = {
-    ???
-    // val fields = json.asJsObject().fields
-    // val mapFields = fields("map").asJsObject.fields
-    // CtxMap(
-    //   mapFields.foldLeft[Map[Loc, AbsLexEnv]](Map())({
-    //     case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
-    //   }),
-    //   LocSet.Bot,
-    //   LocSet.Bot,
-    //   AbsValue.fromJSON(fields("thisBinding"), cfg)
-    // )
+    val fields = json.asJsObject().fields
+    val mapFields = fields("map").asJsObject.fields
+    CtxMap(
+      mapFields.foldLeft[LayeredMap[Loc, AbsLexEnv]](LayeredMap())({
+        case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
+      }),
+      LocSet.Bot,
+      LocSet.Bot,
+      AbsValue.fromJSON(fields("thisBinding"), cfg)
+    )
   }
 }

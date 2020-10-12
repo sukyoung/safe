@@ -217,14 +217,14 @@ case class Semantics(
             jSt.createMutableBinding(x, undefV)
           })
           //if (cp.block.func.id == 2) {
-          //  println(cp)
-          //  println(newSt)
+          //  //println(cp)
+          //  //println(newSt)
           //  val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
-          //  println(dump.prettyPrint)
+          //  //println(dump.prettyPrint)
           //  val newTP = cp.tracePartition
           //  val exitCP = ControlPoint(func.exit, newTP)
           //  //(newSt, AbsState.Bot)
-          //  println(exitCP)
+          //  //println(exitCP)
           //  val (fw, writer) = Useful.fileNameToWriters("state.json")
           //  writer.write(dump.prettyPrint)
           //  writer.close
@@ -236,7 +236,7 @@ case class Semantics(
           //  if (loaded ⊑ AbsState.Bot) {
           //    (newSt, AbsState.Bot)
           //  } else {
-          //    println(loaded)
+          //    //println(loaded)
           //    setState(exitCP, loaded)
           //    worklist.add(exitCP)
           //    (AbsState.Bot, AbsState.Bot)

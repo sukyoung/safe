@@ -391,15 +391,14 @@ object DefaultHeap extends HeapDomain {
   }
 
   def fromJSON(json: JsValue, cfg: CFG): Elem = {
-    ???
-    // val fields = json.asJsObject().fields
-    // val mapFields = fields("map").asJsObject.fields
-    // HeapMap(
-    //   mapFields.foldLeft[Map[Loc, AbsObj]](Map())({
-    //     case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsObj.fromJSON(v, cfg))
-    //   }),
-    //   LocSet.Bot,
-    //   LocSet.Bot
-    // )
+    val fields = json.asJsObject().fields
+    val mapFields = fields("map").asJsObject.fields
+    HeapMap(
+      mapFields.foldLeft[LayeredMap[Loc, AbsObj]](LayeredMap())({
+        case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsObj.fromJSON(v, cfg))
+      }),
+      LocSet.Bot,
+      LocSet.Bot
+    )
   }
 }
