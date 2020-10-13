@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.HeapBuildConfig
-import org.jline.reader.LineReaderBuilder
+import org.jline.reader._
 import org.jline.reader.impl.completer.StringsCompleter
 import org.jline.terminal._
 
@@ -74,7 +74,9 @@ class Console(
       setPrompt()
       while ({
         println
-        val line = reader.readLine(prompt)
+        val line = try reader.readLine(prompt) catch {
+          case _: EndOfFileException => "run"
+        }
         startTime = System.currentTimeMillis
         beforeTime = System.currentTimeMillis
         val loop = runCmd(line) match {
