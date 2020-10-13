@@ -34,7 +34,8 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
         cfgFunc.id = cfgFunc.id - this.fidMax
         def mutate(asite: AllocSite): AllocSite = asite match {
           case PredAllocSite(pred) if (pred.startsWith("-")) =>
-            PredAllocSite(s"${cfgFunc.id}")
+            val id = pred.substring(pred.indexOf('[') + 1, pred.length - 1)
+            PredAllocSite(s"${cfgFunc.id}[$id]")
           case _ => asite
         }
         cfgFunc.getAllBlocks.foreach(_.getInsts.foreach {
