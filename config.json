@@ -1,8 +1,8 @@
 {
   "silent": true,
   "analyzer": {
-    "console": false,
-    "exitDump": true,
+    "console": true,
+    "exitDump": false,
     "out": false,
     "html": ""
   },
@@ -10,8 +10,8 @@
     "maxStrSetSize": 10,
     "recency": false,
     "heap-clone": true,
-    "callsiteSensitivity": 20,
-    "loopIter": 10,
+    "callsiteSensitivity": 30,
+    "loopIter": 400,
     "loopDepth": 10,
     "snapshot": ""
   }
