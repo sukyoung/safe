@@ -4664,8 +4664,8 @@ Function: {
   \\],
   96: [\\
   function now () {
-    // TODO
-    return @NumTop;
+    if (Date.__now__) return Date.__now__ += 10;
+    else return Date.__now__ = 0;
   }
   \\],
   97: [\\
