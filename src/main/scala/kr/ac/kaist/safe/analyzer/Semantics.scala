@@ -134,14 +134,6 @@ case class Semantics(
       }
       case (Exit(_), _) if st.context.isBottom => AbsState.Bot
       case (Exit(f1), acall @ AfterCall(f2, retVar, call)) =>
-        //if (cp1.block.func.id == 2) {
-        //  println(cp1)
-        //  println(st)
-        //  println(st.toJSON.prettyPrint)
-        //  println(cp1.block.func.id)
-        //  println(cp1)
-        //  println("EXIT")
-        //}
         val call = acall.call
         val params = f1.argVars
         val info = getCallInfo(call, cp2.tracePartition)

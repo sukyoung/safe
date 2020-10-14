@@ -33,7 +33,10 @@ abstract class Loc extends Value {
 object Loc {
   def parseString(str: String, cfgIn: CFG): Loc = (new LocParser { val cfg = cfgIn })(str) match {
     case Success(loc) => loc
-    case _ => ???
+    case Failure(f) =>
+      println(str)
+      println(f)
+      ???
   }
   def parse(str: String, cfgIn: CFG): Try[Loc] = (new LocParser { val cfg = cfgIn })(str)
   def apply(str: String): Loc = apply(PredAllocSite(str), Sensitivity.initTP)

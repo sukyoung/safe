@@ -815,14 +815,6 @@ Heap: {
     [[Call]]: fun(49),
     "length": <0.0, F, F, F>
   },
-  #Number.prototype.constructor: {
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    [[Call]]: fun(39),
-    "length": <1.0, F, F, F>
-  },
   #Date.prototype.getDate: {
     [[Class]]: "Function",
     [[Extensible]]: true,
