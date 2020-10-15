@@ -47,9 +47,16 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
   def getCFGSpanList(cfg: CFG): CFGSpanList = {
     val userBlocks = cfg.getUserBlocks
     val funcSpanList = cfg.getUserFuncs.collect({
-      case func @ CFGFunction(_, _, _, _, _, _, Some(ast)) =>
-        val ty = if (func.id == 0) "Se" else "Fe"
-        List(ast.span.begin.line.toString, ast.span.begin.column.toString, ast.span.end.line.toString, ast.span.end.column.toString, ty, func.id.toString)
+      case func @ CFGFunction(_, _, _, localVars, _, _, Some(ast)) =>
+        val (ty, locals) = if (func.id == 0) {
+          ("Se", "")
+        } else {
+          ("Fe", localVars.filter((id) => id.kind match {
+            case CapturedVar | CapturedCatchVar => true
+            case _ => false
+          }).map((id) => id.toString).mkString(","))
+        }
+        List(ast.span.begin.line.toString, ast.span.begin.column.toString, ast.span.end.line.toString, ast.span.end.column.toString, ty, func.id.toString, locals)
     }).reverse
     val userSpanList = userBlocks.foldLeft[CFGSpanList](List())((acc, b) => {
       b.getInsts.foldLeft(acc)((acc, i) => {
