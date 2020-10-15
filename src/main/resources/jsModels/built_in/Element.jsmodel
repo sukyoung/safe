@@ -28,7 +28,8 @@ Heap: {
     [[Class]]: "Object",
     [[Extensible]]: true,
     [[Prototype]]: #Object.prototype,
-    "error": <#console.error, T, T, T>
+    "error": <#console.error, T, T, T>,
+    "log": <#console.log, T, T, T>
   },
   #console.error: {
     [[Call]]: fun(39),
@@ -38,6 +39,15 @@ Heap: {
     [[Class]]: "Function",
     "length": <1, F, F, T>,
     "name": <"error", F, F, T>
+  },
+  #console.log: {
+    [[Call]]: fun(40),
+    [[Scope]]: null,
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Class]]: "Function",
+    "length": <1, F, F, T>,
+    "name": <"log", F, F, T>
   },
   #Element: {
     [[Call]]: fun(1),
@@ -687,6 +697,11 @@ Function: {
   39: [\\
   function error(msg) {
     @Print("console.error: " + msg);
+  }
+  \\],
+  40: [\\
+  function log(msg) {
+    @Print(msg);
   }
   \\],
 }

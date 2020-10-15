@@ -803,6 +803,22 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet1 ++ excSet2)
         (st1, excSt ⊔ newExcSt)
       }
+      case (NodeUtil.INTERNAL_IS_NATIVE, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val obj = st.heap.get(v.locset)
+        val fidset = obj(ICall).fidset
+
+        val abool = AbsBool(fidset.foldLeft(Set[Boolean]()) {
+          case (set, fid) => set + (fid < 0)
+        })
+
+        val st1 =
+          if (!v.isBottom) st.varStore(lhs, AbsValue(abool))
+          else AbsState.Bot
+
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_GET_OWN_PROP_NAMES, List(expr), Some(aNew)) => {
         val h = st.heap
         val arrASite = aNew

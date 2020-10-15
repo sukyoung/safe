@@ -1651,7 +1651,8 @@ Function: {
   32: [\\
   function toString() {
     if (typeof this !== 'function') throw new TypeError();
-    return @StrTop;
+    if (@IsNative(this)) return 'function () { [native code] }';
+    else return @StrTop;
   }
   \\],
   33: [\\
