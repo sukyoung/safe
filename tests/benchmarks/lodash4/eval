@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if ! command -v js &> /dev/null
+then
+  if ! test -f /Library/Java/JavaVirtualMachines/graalvm-ce-java8-20.1.0/Contents/Home/bin/js; then
+    echo "Cannot find 'js' engine."
+    exit 1
+  fi
+  alias js=/Library/Java/JavaVirtualMachines/graalvm-ce-java8-20.1.0/Contents/Home/bin/js
+fi
+
+if [ "$#" -eq 1 ]; then
+    js setting.js lodash.js test-setting.js tests/$1.js
+	exit 1
+fi
+
+for file in tests/*; do
+  if [ -f "$file" ]; then
+    js setting.js lodash.js test-setting.js $file
+  fi
+done
