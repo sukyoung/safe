@@ -338,7 +338,8 @@ Heap: {
     "Infinity": <Infinity, F, F, F>,
     "SyntaxError": <#SyntaxError, T, F, T>,
     "<>Global<>true": <true, F, F, F>,
-    "undefined": <undefined, F, F, F>
+    "undefined": <undefined, F, F, F>,
+    "__print__": <#Global.__print__, F, F, F>
   },
   #Math.min: {
     [[Class]]: "Function",
@@ -877,6 +878,14 @@ Heap: {
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null,
     [[Call]]: fun(4),
+    "length": <1.0, F, F, F>
+  },
+  #Global.__print__: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(142),
     "length": <1.0, F, F, F>
   },
   #RegExp.prototype.toString: {
@@ -5097,8 +5106,8 @@ Function: {
   }
   \\],
   142: [\\
-  function ToNumber (v) {
-    return @ToNumber(@getLoc('ToPrimitive')(v, 'number'));
+  function __print__ (v) {
+    return @Print(v);
   }
   \\]
 }

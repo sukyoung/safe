@@ -590,24 +590,14 @@ Function: {
     // modeled using bubble sort (http://en.wikipedia.org/wiki/Bubble_sort)
     var a = @ToObject(this);
     var n = a.length;
-    if (@SameValue(comparefn,undefined)) {
-      comparefn = function (left,right) {
-        if (left < right) {
-          return -1;
-        }else if (left == right) {
-          return 0;
-        }else if (left > right) {
-          return 1;
-        }
-      }
-    }
     do {
       var newn = 0;
       for (var i = 1; i< n; i++) {
-        var result = comparefn(a[i-1],a[i]);
-        // a[i-1] > a[i]
-        if (result === 1) {
-          var temp = a[-1];
+        var check = false;
+        if (@SameValue(comparefn,undefined)) check = a[i-1] > a[i];
+        else check = comparefn(a[i-1],a[i]) === 1;
+        if (check) {
+          var temp = a[i-1];
           a[i-1] = a[i];
           a[i] = temp;
           newn = i;
