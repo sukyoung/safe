@@ -22,15 +22,32 @@ import kr.ac.kaist.safe.util.{ NodeUtil, EJSNumber, EJSString, EJSBool, EJSNull,
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.mutable.{ Map => MMap }
 
-import kr.ac.kaist.safe.BASE_DIR
 import spray.json._
 import DefaultJsonProtocol._
-import kr.ac.kaist.safe.util.Useful
+import java.net._
+import collection.mutable.ListBuffer
+import java.io._
+import scala.io._
 
 case class Semantics(
     cfg: CFG,
     worklist: Worklist
 ) {
+  def send(message: String): JsValue = {
+    val sock = new Socket(InetAddress.getByName("localhost"), 8000)
+    lazy val in = new BufferedSource(sock.getInputStream).getLines
+    val out = new PrintStream(sock.getOutputStream)
+
+    out.println(message)
+    out.flush
+    out.print("###EOF###");
+    out.flush
+
+    val received = in.mkString
+    sock.close
+    received.parseJson
+  }
+
   lazy val engine = new ScriptEngineManager().getEngineByMimeType("text/javascript")
   def init: Unit = {
     val entry = cfg.globalFunc.entry
@@ -208,27 +225,21 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          //if (cp.block.func.id == 2) {
-          //  //println(cp)
-          //  //println(newSt)
+          //if (cp.block.func.id == 0) {
           //  val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
-          //  //println(dump.prettyPrint)
           //  val newTP = cp.tracePartition
           //  val exitCP = ControlPoint(func.exit, newTP)
-          //  //(newSt, AbsState.Bot)
-          //  //println(exitCP)
-          //  val (fw, writer) = Useful.fileNameToWriters("state.json")
-          //  writer.write(dump.prettyPrint)
-          //  writer.close
-          //  fw.close
 
-          //  val json = scala.io.Source.fromFile(BASE_DIR + "/output.json").mkString.parseJson
+          //  val s = System.currentTimeMillis
+          //  val json = send(dump.prettyPrint)
+          //  val e = System.currentTimeMillis
+          //  println("[elapsedTime]: " + ((e - s) / 1000.0f) + " sec")
+
           //  val fields = json.asJsObject().fields
           //  val loaded = AbsState.fromJSON(fields("state"), cfg)
           //  if (loaded ⊑ AbsState.Bot) {
           //    (newSt, AbsState.Bot)
           //  } else {
-          //    //println(loaded)
           //    setState(exitCP, loaded)
           //    worklist.add(exitCP)
           //    (AbsState.Bot, AbsState.Bot)
