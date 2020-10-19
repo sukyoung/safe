@@ -110,7 +110,7 @@ object Safe {
       "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
-    ("time", BoolOption(c => c.silent = true),
+    ("time", BoolOption(c => c.time = true),
       "show the duration of time."),
     ("testMode", BoolOption(c => c.testMode = true),
       "switch on the test mode.")
