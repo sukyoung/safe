@@ -339,7 +339,10 @@ Heap: {
     "SyntaxError": <#SyntaxError, T, F, T>,
     "<>Global<>true": <true, F, F, F>,
     "undefined": <undefined, F, F, F>,
-    "__print__": <#Global.__print__, F, F, F>
+    "__print__": <#Global.__print__, F, F, F>,
+    "__num_top__": <number, F, F, F>,
+    "__str_top__": <string, F, F, F>,
+    "__bool_top__": <bool, F, F, F>
   },
   #Math.min: {
     [[Class]]: "Function",

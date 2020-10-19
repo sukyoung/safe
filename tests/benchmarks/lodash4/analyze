@@ -1,13 +1,15 @@
 #!/bin/bash
 
 if [ "$#" -eq 1 ]; then
-  safe analyze setting.js lodash.js test-setting.js tests/$1.js
+  safe analyze setting.js lodash.js test-setting.js $1
 	exit 1
 fi
 
 for file in tests/*; do
   if [ -f "$file" ] && [ ${file: -3} == ".js" ]; then
+    base=`basename "$file"`
+    to="result/$base.result"
     echo "Analyzing $file..."
-    safe analyze setting.js lodash.js test-setting.js $file 2>&1 | tee $file.result
+    safe analyze setting.js lodash.js test-setting.js $file 2>&1 | tee $to
   fi
 done
