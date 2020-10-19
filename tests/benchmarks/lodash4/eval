@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if ! command -v js &> /dev/null
 then
@@ -16,6 +16,7 @@ fi
 
 for file in tests/*; do
   if [ -f "$file" ]; then
+    echo "Analyzing $file..."
     js setting.js lodash.js test-setting.js $file
   fi
 done
