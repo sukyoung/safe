@@ -1,0 +1,3 @@
+[submodule "dynamic-shortcut"]
+	path = dynamic-shortcut
+	url = git@github.com:kaist-plrg/dynamic-shortcut.git
