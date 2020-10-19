@@ -225,18 +225,23 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          //if (cp.block.func.id == 0) {
+          //if (cp.block.func.id == 2) {
+          //  val s = System.currentTimeMillis
           //  val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
           //  val newTP = cp.tracePartition
           //  val exitCP = ControlPoint(func.exit, newTP)
 
-          //  val s = System.currentTimeMillis
-          //  val json = send(dump.prettyPrint)
-          //  val e = System.currentTimeMillis
-          //  println("[elapsedTime]: " + ((e - s) / 1000.0f) + " sec")
+          //  val dumped = dump.prettyPrint
+          //  val e1 = System.currentTimeMillis
+          //  val json = send(dumped)
+          //  val e2 = System.currentTimeMillis
 
           //  val fields = json.asJsObject().fields
           //  val loaded = AbsState.fromJSON(fields("state"), cfg)
+          //  val e3 = System.currentTimeMillis
+          //  println("[elapsedTime]: " + ((e1 - s) / 1000.0f) + " sec")
+          //  println("[elapsedTime]: " + ((e2 - s) / 1000.0f) + " sec")
+          //  println("[elapsedTime]: " + ((e3 - s) / 1000.0f) + " sec")
           //  if (loaded ⊑ AbsState.Bot) {
           //    (newSt, AbsState.Bot)
           //  } else {

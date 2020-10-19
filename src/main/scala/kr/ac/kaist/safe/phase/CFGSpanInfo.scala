@@ -58,27 +58,30 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
         }
         List(ast.span.begin.line.toString, ast.span.begin.column.toString, ast.span.end.line.toString, ast.span.end.column.toString, ty, func.id.toString, locals)
     }).reverse
-    val userSpanList = userBlocks.foldLeft[CFGSpanList](List())((acc, b) => {
-      b.getInsts.foldLeft(acc)((acc, i) => {
-        i match {
-          case CFGFunExpr(ir, block, lhs, _, func, aNew1, aNew2, aNew3) =>
-            val li = List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", aNew1.toString, func.id.toString, aNew2.toString)
-            val li2 = aNew3 match {
-              case Some(aNew) => li ::: List(aNew.toString)
-              case None => li
-            }
-            li2 :: acc
-          case CFGAlloc(ir, block, lhs, protoOpt, asite) =>
-            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
-          case CFGAllocArray(ir, block, lhs, length, asite) =>
-            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
-          case CFGCall(ir, block, fun, thisArg, arguments, asite) =>
-            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 0.toString, block.func.id + ":" + block.id) :: acc
-          case CFGConstruct(ir, block, fun, thisArg, arguments, asite) =>
-            List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 1.toString, block.func.id + ":" + block.id) :: acc
-          case _ => acc
-        }
-      })
+    val userSpanList = userBlocks.foldLeft[CFGSpanList](List())((acc, b) => b match {
+      case lh @ LoopHead(func, cond, span) =>
+        List(span.begin.line.toString, span.begin.column.toString, span.end.line.toString, span.end.column.toString, "LE", func.id + ":" + lh.id) :: acc
+      case _ =>
+        b.getInsts.foldLeft(acc)((acc, i) => {
+          i match {
+            case CFGFunExpr(ir, block, lhs, _, func, aNew1, aNew2, aNew3) =>
+              val li = List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", aNew1.toString, func.id.toString, aNew2.toString)
+              val li2 = aNew3 match {
+                case Some(aNew) => li ::: List(aNew.toString)
+                case None => li
+              }
+              li2 :: acc
+            case CFGAlloc(ir, block, lhs, protoOpt, asite) =>
+              List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
+            case CFGAllocArray(ir, block, lhs, length, asite) =>
+              List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
+            case CFGCall(ir, block, fun, thisArg, arguments, asite) =>
+              List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 0.toString, block.func.id + ":" + block.id) :: acc
+            case CFGConstruct(ir, block, fun, thisArg, arguments, asite) =>
+              List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 1.toString, block.func.id + ":" + block.id) :: acc
+            case _ => acc
+          }
+        })
     })
     funcSpanList ::: userSpanList.reverse
   }
