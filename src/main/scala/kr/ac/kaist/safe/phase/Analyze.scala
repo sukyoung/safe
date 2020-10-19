@@ -64,7 +64,10 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
 
     // check the exit block reachability
     val exitSt = sem.getState(exitCP)
-    if (config.exitReachable && exitSt.isBottom) throw ExitNotReachable
+    if (config.exitReachable) {
+      if (exitSt.isBottom) throw ExitNotReachable
+      else println("[ExitReachable] exit block is reachable")
+    }
 
     // dump exit state
     if (config.exitDump) println(exitSt.toString)
