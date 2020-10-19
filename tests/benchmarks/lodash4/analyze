@@ -5,7 +5,7 @@ if [ "$#" -eq 1 ]; then
 	exit 1
 fi
 
-for file in tests/*; do
+for file in tests-rewritten/*; do
   if [ -f "$file" ] && [ ${file: -3} == ".js" ]; then
     base=`basename "$file"`
     to="result/$base.result"

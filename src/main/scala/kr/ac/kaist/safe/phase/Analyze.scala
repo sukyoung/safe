@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.console.{ Console, Interactive, WebConsole }
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
+import kr.ac.kaist.safe.errors.error.ExitNotReachable
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.web.WebServer
@@ -61,11 +62,12 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
       HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
     })
 
+    // check the exit block reachability
+    val exitSt = sem.getState(exitCP)
+    if (config.exitReachable && exitSt.isBottom) throw ExitNotReachable
+
     // dump exit state
-    if (config.exitDump) {
-      val state = sem.getState(exitCP)
-      println(state.toString)
-    }
+    if (config.exitDump) println(exitSt.toString)
 
     Success((cfg, iters, initTP, sem))
   }
@@ -89,7 +91,9 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     ("stopAlreadyVisited", BoolOption(_ => stopAlreadyVisited = true),
       "stop when it creates multiple traces."),
     ("stopExitExc", BoolOption(_ => stopExitExc = true),
-      "stop when it throw an exception.")
+      "stop when it throw an exception."),
+    ("exitReachable", BoolOption(c => c.exitReachable = true),
+      "check whether the exit block is reachable.")
   )
 }
 
@@ -101,5 +105,6 @@ case class AnalyzeConfig(
   var timeLog: Boolean = false,
   var exitDump: Boolean = false,
   var outFile: Option[String] = None,
-  var htmlName: Option[String] = None
+  var htmlName: Option[String] = None,
+  var exitReachable: Boolean = false
 ) extends Config

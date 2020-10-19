@@ -31,8 +31,20 @@ import scala.io._
 
 case class Semantics(
     cfg: CFG,
-    worklist: Worklist
+    worklist: Worklist,
+    timeLimit: Int = 0
 ) {
+  var startTime: Long = 0
+  var instCount: Int = 0
+  def setting: Unit = {
+    if (instCount == 0) startTime = System.currentTimeMillis
+    instCount = instCount + 1
+    if (instCount % 1000 != 0) return
+    if (timeLimit <= 0) return
+    if ((System.currentTimeMillis - startTime) > (timeLimit * 1000))
+      throw Timeout(timeLimit)
+  }
+
   def send(message: String): JsValue = {
     val sock = new Socket(InetAddress.getByName("localhost"), 8000)
     lazy val in = new BufferedSource(sock.getInputStream).getLines
@@ -269,6 +281,7 @@ case class Semantics(
   }
 
   def I(cp: ControlPoint, i: CFGNormalInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
+    setting
     val tp = cp.tracePartition
     i match {
       case _ if st.isBottom => (AbsState.Bot, excSt)

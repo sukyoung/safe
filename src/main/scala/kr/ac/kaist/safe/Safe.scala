@@ -52,13 +52,13 @@ object Safe {
     // execute the command.
     val result: Try[Result] = runner(config)
 
-    if (!config.silent) {
-      result.map(res => {
-        // display the result.
-        command.display(res)
-      })
+    // display the result.
+    if (!config.silent) result.map(res => {
+      command.display(res)
+    })
 
-      // display the time.
+    // display the time.
+    if (!config.silent || config.time) {
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
       println(s"The command '$name' took $duration ms.")
@@ -110,6 +110,8 @@ object Safe {
       "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
+    ("time", BoolOption(c => c.silent = true),
+      "show the duration of time."),
     ("testMode", BoolOption(c => c.testMode = true),
       "switch on the test mode.")
   )
@@ -191,5 +193,6 @@ case class SafeConfig(
   var fileNames: List[String] = Nil,
   var silent: Boolean = false,
   var testMode: Boolean = false,
+  var time: Boolean = false,
   var html: Boolean = false // only turn on when HTML files are given.
 ) extends Config

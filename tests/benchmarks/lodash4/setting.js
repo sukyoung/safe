@@ -24,7 +24,7 @@ var popJobs = function() {
   } while(count > 0);
 }
 
-document = WeakMap = WeakSet = Map = Set = undefined;
+document = WeakMap = WeakSet = Map = Set = Symbol = undefined;
 
 var QUnit = {};
 if (!this.print) {
