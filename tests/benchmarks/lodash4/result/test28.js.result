@@ -1,0 +1,65 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.cond"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:33,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:41,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:13,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:17,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:13,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:21,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:29,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,778:13,20:8,772:13,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test28.js:3:2-75:4
+Call[17] of function[772] funexpr@3:2-75:2 @ tests/test28.js:57:3-63:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[5] of function[779] funexpr@57:82-63:4 @ tests/test28.js:60:5-62:7
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[1] of function[780] funexpr@60:38-62:6 @ tests/test28.js:61:7-78
+Call[3] of function[29] Assert.prototype.raises @ setting.js:74:9-12
+Call[1] of function[781] funexpr@61:21-66 @ tests/test28.js:61:34-61
+Call[11] of function[591] cond @ lodash.js:15368:30-15373:9
+Call[11] of function[64] arrayMap @ lodash.js:639:23-59
+LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
+LoopHead[8] (0/400) function[64] arrayMap @ lodash.js:638:5
+[StopAnalysis] throws an exception

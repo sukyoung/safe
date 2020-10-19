@@ -1,0 +1,13 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.replace"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test207.js:3:2-11:4
+Call[1] of function[772] funexpr@3:2-11:2 @ tests/test207.js:4:3-10:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[9] of function[773] funexpr@4:52-10:4 @ tests/test207.js:8:5-65
+Call[1] of function[27] Assert.prototype.strictEqual @ setting.js:67:3-34
+Call[8] of function[22] ok @ setting.js:52:10-19
+[StopAnalysis] throws an exception

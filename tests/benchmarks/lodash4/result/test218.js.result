@@ -1,0 +1,15 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.shuffle"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,28:1,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] notStrictEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test218.js:3:2-35:4
+Call[5] of function[772] funexpr@3:2-35:2 @ tests/test218.js:13:3-18:5
+Call[8] of function[20] test @ setting.js:37:3-12
+[StopAnalysis] throws an exception

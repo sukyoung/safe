@@ -1,0 +1,18 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.isEqual"
+        objects:
+Call[253] of function[0] top-level @ tests/test106.js:3:2-831:4
+Call[13] of function[772] funexpr@3:2-831:2 @ tests/test106.js:7:3-31:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[85] of function[773] funexpr@7:43-31:4 @ tests/test106.js:26:18-28:7
+Call[11] of function[450] map @ lodash.js:9596:14-56
+Call[11] of function[64] arrayMap @ lodash.js:639:23-59
+Call[1] of function[775] funexpr@26:42-28:6 @ tests/test106.js:27:14-41
+Call[1] of function[501] isEqual @ lodash.js:11575:14-39
+Call[34] of function[204] baseIsEqual @ lodash.js:3281:14-84
+Call[66] of function[205] baseIsEqualDeep @ lodash.js:3322:13-85
+Call[72] of function[333] equalByTag @ lodash.js:5749:18-37
+LoopHead[8] (1/400) function[64] arrayMap @ lodash.js:638:5
+[StopAnalysis] already visited

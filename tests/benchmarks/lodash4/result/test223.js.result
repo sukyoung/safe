@@ -1,0 +1,35 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] sortBy methods"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,20:8,772:149,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:9,20:8,772:153,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,778:8,58:7,447:11,777:5,20:8,772:157,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0),58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test223.js:3:1-93:3
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[157] of function[772] funexpr@3:42-93:2 @ tests/test223.js:48:3-55:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[5] of function[777] funexpr@48:93-55:4 @ tests/test223.js:51:5-54:7
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[8] of function[778] funexpr@51:52-54:6 @ tests/test223.js:53:7-72
+Call[5] of function[24] Assert.prototype.deepEqual @ setting.js:58:3-36
+Call[8] of function[22] ok @ setting.js:52:10-19
+LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
+LoopHead[4] (1/400) function[58] arrayEach @ lodash.js:515:5
+[StopAnalysis] throws an exception

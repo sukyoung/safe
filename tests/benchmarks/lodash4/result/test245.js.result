@@ -1,0 +1,11 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.truncate"
+        objects:
+Call[253] of function[0] top-level @ tests/test245.js:3:2-84:4
+Call[1] of function[772] funexpr@3:2-84:2 @ tests/test245.js:6:3-10:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[5] of function[773] funexpr@6:55-10:4 @ tests/test245.js:9:24-42
+Call[31] of function[588] truncate @ lodash.js:15128:26-47
+[StopAnalysis] already visited

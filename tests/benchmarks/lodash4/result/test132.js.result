@@ -1,0 +1,93 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.iteratee"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:13,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:23,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:13,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:21,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:13,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:23,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:31,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:13,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:23,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:31,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:13,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(2))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:23,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(2))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:31,58:7,447:11,778:5,20:8,772:13,0:253)|LSA[i:10,j:400](58:4(2))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,780:13,20:8,772:17,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,780:25,20:8,772:17,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,780:37,20:8,772:17,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test132.js:3:2-183:4
+Call[21] of function[772] funexpr@3:2-183:2 @ tests/test132.js:81:3-88:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[13] of function[781] funexpr@81:78-88:4 @ tests/test132.js:87:5-46
+Call[1] of function[27] Assert.prototype.strictEqual @ setting.js:67:3-34
+Call[8] of function[22] ok @ setting.js:52:10-19
+[StopAnalysis] throws an exception

@@ -1,0 +1,23 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.isNaN"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:21,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test115.js:3:2-49:4
+Call[1] of function[772] funexpr@3:2-49:2 @ tests/test115.js:4:3-9:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[21] of function[773] funexpr@4:47-9:4 @ tests/test115.js:8:5-51
+Call[1] of function[27] Assert.prototype.strictEqual @ setting.js:67:3-34
+Call[8] of function[22] ok @ setting.js:52:10-19
+[StopAnalysis] throws an exception

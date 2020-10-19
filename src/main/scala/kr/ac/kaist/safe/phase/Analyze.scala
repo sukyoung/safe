@@ -85,7 +85,11 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
-      "the resulting CFG with states will be drawn to the {string}.html")
+      "the resulting CFG with states will be drawn to the {string}.html"),
+    ("stopAlreadyVisited", BoolOption(_ => stopAlreadyVisited = true),
+      "stop when it creates multiple traces."),
+    ("stopExitExc", BoolOption(_ => stopExitExc = true),
+      "stop when it throw an exception.")
   )
 }
 

@@ -1,0 +1,49 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] math operator methods"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:11,20:8,772:7,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:9,20:8,772:11,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:17,20:8,772:11,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:25,20:8,772:11,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:5,86:8,617:21,775:5,20:8,772:15,58:7,447:11,0:253)|LSA[i:10,j:400](86:5(0),58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:5,86:8,617:21,775:5,20:8,772:15,58:7,447:11,0:253)|LSA[i:10,j:400](86:5(1),58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+Call[253] of function[0] top-level @ tests/test235.js:3:1-79:3
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[19] of function[772] funexpr@3:62-79:2 @ tests/test235.js:37:3-42:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[9] of function[778] funexpr@37:72-42:4 @ tests/test235.js:40:5-39
+Call[1] of function[24] Assert.prototype.deepEqual @ setting.js:58:11-22
+Call[1] of function[54] funexpr@269:17-273:11 @ setting.js:270:25-60
+Call[49] of function[-101] apply @ stringParse_yn9IWZ8cBrzilmuZ:25:12-41
+Call[9] of function[41] innerEquiv @ setting.js:263:40-65
+Call[1] of function[40] typeEquiv @ setting.js:251:23-36
+LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
+LoopHead[4] (0/400) function[41] innerEquiv @ setting.js:261:12
+[StopAnalysis] already visited

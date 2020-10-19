@@ -1,0 +1,37 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.invokeMap"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:9,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+Call[253] of function[0] top-level @ tests/test96.js:3:2-132:4
+Call[13] of function[772] funexpr@3:2-132:2 @ tests/test96.js:34:3-41:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[9] of function[778] funexpr@34:61-41:4 @ tests/test96.js:40:5-52
+Call[1] of function[24] Assert.prototype.deepEqual @ setting.js:58:11-22
+Call[1] of function[54] funexpr@269:17-273:11 @ setting.js:270:25-60
+Call[49] of function[-101] apply @ stringParse_BHpjOBRMidcWVEYK:25:12-41
+Call[9] of function[41] innerEquiv @ setting.js:263:40-65
+Call[10] of function[40] typeEquiv @ setting.js:252:45-66
+Call[7] of function[46] array @ setting.js:187:21-57
+Call[9] of function[38] breadthFirstCompareChild @ setting.js:151:40-55
+Call[10] of function[40] typeEquiv @ setting.js:252:45-66
+Call[1] of function[34] useStrictEquality @ setting.js:130:16-26
+Call[10] of function[3] _typeof @ setting.js:99:10-22
+LoopHead[4] (0/400) function[41] innerEquiv @ setting.js:261:12
+LoopHead[4] (0/400) function[46] array @ setting.js:186:14
+[StopAnalysis] already visited

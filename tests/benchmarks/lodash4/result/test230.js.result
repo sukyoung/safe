@@ -1,0 +1,12 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.startCase"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test230.js:3:2-11:4
+Call[1] of function[772] funexpr@3:2-11:2 @ tests/test230.js:4:3-10:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[5] of function[773] funexpr@4:72-10:4 @ tests/test230.js:7:24-50
+Call[1] of function[294] funexpr@5004:14-5006:8 @ lodash.js:5005:34-48
+[StopAnalysis] throws an exception

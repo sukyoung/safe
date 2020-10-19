@@ -1,0 +1,18 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.wrap"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test284.js:3:2-51:4
+Call[1] of function[772] funexpr@3:2-51:2 @ tests/test284.js:4:3-12:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[5] of function[773] funexpr@4:50-12:4 @ tests/test284.js:7:13-9:7
+Call[5] of function[488] wrap @ lodash.js:10999:14-51
+Call[27] of function[369] funexpr@6586:14-6602:8 @ lodash.js:6601:16-44
+Call[24] of function[56] apply @ lodash.js:475:22-58
+Call[16] of function[-102] call @ stringParse_JZo8MVrt9sECSQ07:11:12-41
+Call[9] of function[678] funexpr@10744:28-10747:6 @ lodash.js:10746:14-79
+Call[122] of function[327] createWrap @ lodash.js:5575:14-69
+Call[1] of function[373] setWrapToString @ lodash.js:6709:79-101
+[StopAnalysis] throws an exception

@@ -9,11 +9,14 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer
+package kr.ac.kaist.safe
 
 import kr.ac.kaist.safe.util.HashMap
 
 package object analyzer {
   type Map[K, V] = HashMap[K, V]
   val Map = HashMap
+
+  var stopAlreadyVisited = false
+  var stopExitExc = false
 }

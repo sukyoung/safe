@@ -1,0 +1,38 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash(...) methods that return unwrapped values"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,23:1,774:14,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,775:18,20:8,773:5,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,23:1,774:14,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,775:18,20:8,773:5,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+Call[253] of function[0] top-level @ tests/test303.js:3:2-125:4
+Call[1] of function[772] funexpr@3:2-125:2 @ tests/test303.js:100:3-124:5
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[1] of function[773] funexpr@100:28-124:4 @ tests/test303.js:101:5-111:7
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[10] of function[774] funexpr@101:105-111:6 @ tests/test303.js:105:23-38
+Call[29] of function[604] funexpr@15765:42-15776:12 @ lodash.js:15775:20-76
+Call[49] of function[-101] apply @ stringParse_AUc6O6NtLybHVUJ5:25:12-41
+Call[9] of function[567] capitalize @ lodash.js:14203:14-56
+Call[10] of function[292] funexpr@4977:14-4993:8 @ lodash.js:4981:13-34
+LoopHead[4] (2/400) function[58] arrayEach @ lodash.js:515:5
+[StopAnalysis] already visited

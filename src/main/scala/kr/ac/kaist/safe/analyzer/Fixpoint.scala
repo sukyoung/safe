@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Interactive
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.errors.error.StopAnalysis
 
 class Fixpoint(
     semantics: Semantics,
@@ -58,6 +59,10 @@ class Fixpoint(
         cp.next(block, CFGEdgeNormal, semantics, nextSt).foreach(succCP => {
           val oldSt = semantics.getState(succCP)
           if (!(nextSt ⊑ oldSt)) {
+            if (stopAlreadyVisited && !oldSt.isBottom) {
+              cp.tracePartition.toStringList.foreach(println _)
+              throw StopAnalysis("already visited")
+            }
             val newSt = oldSt ⊔ nextSt
             semantics.setState(succCP, newSt)
             worklist.add(succCP)
@@ -79,6 +84,11 @@ class Fixpoint(
         cp.next(block, CFGEdgeExc, semantics, nextExcSt).foreach(excSuccCP => {
           val oldExcSt = semantics.getState(excSuccCP)
           if (!(nextExcSt ⊑ oldExcSt)) {
+            if (stopExitExc) {
+              println("--------------------------------------------------")
+              cp.tracePartition.toStringList.foreach(println _)
+              throw StopAnalysis("throws an exception")
+            }
             val newExcSet = oldExcSt ⊔ nextExcSt
             semantics.setState(excSuccCP, newExcSet)
             worklist.add(excSuccCP)

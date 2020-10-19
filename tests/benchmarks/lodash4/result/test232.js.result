@@ -1,0 +1,15 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.startsWith and lodash.endsWith"
+        objects:
+Call[253] of function[0] top-level @ tests/test232.js:3:1-42:3
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[4] of function[772] funexpr@3:47-42:2 @ tests/test232.js:10:3-15:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[9] of function[773] funexpr@10:75-15:4 @ tests/test232.js:13:24-49
+Call[1] of function[579] startsWith @ lodash.js:14700:16-32
+Call[4] of function[531] toString @ lodash.js:12601:35-54
+LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
+[StopAnalysis] already visited

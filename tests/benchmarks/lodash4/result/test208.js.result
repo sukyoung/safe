@@ -1,0 +1,27 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.result"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test208.js:3:2-38:4
+Call[9] of function[772] funexpr@3:2-38:2 @ tests/test208.js:19:3-27:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[9] of function[775] funexpr@19:54-27:4 @ tests/test208.js:24:5-26:7
+Call[11] of function[447] forEach @ lodash.js:9384:14-56
+Call[7] of function[58] arrayEach @ lodash.js:516:11-47
+Call[5] of function[776] funexpr@24:44-26:6 @ tests/test208.js:25:7-53
+Call[1] of function[27] Assert.prototype.strictEqual @ setting.js:67:3-34
+Call[8] of function[22] ok @ setting.js:52:10-19
+LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
+[StopAnalysis] throws an exception

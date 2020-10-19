@@ -1,10 +1,12 @@
 {
   "silent": true,
   "analyzer": {
-    "console": true,
+    "console": false,
     "exitDump": false,
     "out": false,
-    "html": ""
+    "html": "",
+    "stopAlreadyVisited": true,
+    "stopExitExc": true
   },
   "heapBuilder": {
     "maxStrSetSize": 10,

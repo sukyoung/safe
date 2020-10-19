@@ -1,0 +1,25 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.isNative"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:19,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:13,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test116.js:3:2-96:4
+Call[5] of function[772] funexpr@3:2-96:2 @ tests/test116.js:14:3-36:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[17] of function[774] funexpr@14:62-36:4 @ tests/test116.js:25:24-40
+Call[14] of function[513] isNative @ lodash.js:11972:14-33
+Call[38] of function[208] baseIsNative @ lodash.js:3425:19-34
+Call[5] of function[378] toSource @ lodash.js:6809:18-41
+Call[16] of function[-102] call @ stringParse_0vzo5dyoXyOSIGSB:11:12-41
+[StopAnalysis] throws an exception

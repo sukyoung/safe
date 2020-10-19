@@ -96,3 +96,7 @@ case object IllFormedBlockStr extends AnalyzeError("")
 case class NotYetDefined(name: String) extends AnalyzeError(
   s"[NotYetDefined] $name"
 )
+
+case class StopAnalysis(msg: String) extends AnalyzeError(
+  s"[StopAnalysis] $msg"
+)

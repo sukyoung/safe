@@ -1,0 +1,12 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.findLast"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test64.js:3:2-108:4
+Call[1] of function[772] funexpr@3:2-108:2 @ tests/test64.js:4:17-52
+Call[4] of function[465] curry @ lodash.js:10242:20-115
+Call[122] of function[327] createWrap @ lodash.js:5575:14-69
+Call[1] of function[373] setWrapToString @ lodash.js:6709:79-101
+[StopAnalysis] throws an exception

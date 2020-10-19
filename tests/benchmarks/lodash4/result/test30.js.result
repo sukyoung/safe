@@ -1,0 +1,125 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] conforms methods"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:13,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:25,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,779:20,20:8,772:5,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,783:13,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,783:17,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,785:13,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,785:21,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,789:13,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,792:20,20:8,772:21,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,795:17,20:8,772:25,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,798:17,20:8,772:29,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,800:13,20:8,772:33,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:13,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:25,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,779:20,20:8,772:5,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,783:13,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,783:17,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,785:13,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,785:21,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,789:13,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,792:20,20:8,772:21,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,795:17,20:8,772:25,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,798:17,20:8,772:29,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,800:13,20:8,772:33,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:

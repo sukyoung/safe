@@ -1,0 +1,27 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.rest"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:13,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:13,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+Call[253] of function[0] top-level @ tests/test210.js:3:2-59:4
+Call[9] of function[772] funexpr@3:2-59:2 @ tests/test210.js:22:3-34:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[13] of function[776] funexpr@22:74-34:4 @ tests/test210.js:28:18-31:7
+Call[11] of function[450] map @ lodash.js:9596:14-56
+Call[11] of function[64] arrayMap @ lodash.js:639:23-59
+Call[1] of function[777] funexpr@28:43-31:6 @ tests/test210.js:29:18-35
+Call[14] of function[483] rest @ lodash.js:10841:45-61
+Call[1] of function[526] toInteger @ lodash.js:12440:20-35
+Call[7] of function[525] toFinite @ lodash.js:12405:15-30
+LoopHead[8] (2/400) function[64] arrayMap @ lodash.js:638:5
+[StopAnalysis] already visited

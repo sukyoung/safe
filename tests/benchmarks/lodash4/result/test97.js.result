@@ -1,0 +1,13 @@
+[DEBUG] (-40:Block[0], (30-CFA(19:1,0:249)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[MODULE] lodash.isArguments"
+        objects:
+--------------------------------------------------
+Call[253] of function[0] top-level @ tests/test97.js:3:2-45:4
+Call[1] of function[772] funexpr@3:2-45:2 @ tests/test97.js:4:3-9:5
+Call[8] of function[20] test @ setting.js:37:3-12
+Call[9] of function[773] funexpr@4:62-9:4 @ tests/test97.js:7:5-50
+Call[1] of function[27] Assert.prototype.strictEqual @ setting.js:67:3-34
+Call[8] of function[22] ok @ setting.js:52:10-19
+[StopAnalysis] throws an exception
