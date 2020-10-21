@@ -482,17 +482,31 @@ object CKeyObject extends ObjDomain {
 
     private def DefaultValueAsString(h: AbsHeap): AbsPValue = {
       val toString = Get("toString", h)
-      val isCallable = TypeConversionHelper.IsCallable(toString, h)
-      val str =
-        if (AbsBool.True ⊑ isCallable) AbsPValue(strval = AbsStr.Top)
-        else AbsPValue.Bot
-      if (AbsBool.False ⊑ isCallable) {
-        val valueOf = Get("valueOf", h)
-        val value =
-          if (AbsBool.True ⊑ TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
+      if (toString == AbsValue(Loc("Object.prototype.toString"))) {
+        val className = this(IClass).value.pvalue.strval
+        AbsStr("[object ") concat className concat AbsStr("]")
+      } else if (toString == AbsValue(Loc("Function.prototype.toString"))) {
+        val fidset = this(ICall).fidset
+        val abool = AbsBool(fidset.foldLeft(Set[Boolean]()) {
+          case (set, fid) => set + (fid < 0)
+        })
+        var str = AbsStr.Bot
+        if (AbsBool.True ⊑ abool) str = str ⊔ AbsStr("function () { [native code] }")
+        if (AbsBool.False ⊑ abool) str = str ⊔ AbsStr.Top
+        str
+      } else {
+        val isCallable = TypeConversionHelper.IsCallable(toString, h)
+        val str =
+          if (AbsBool.True ⊑ isCallable) AbsPValue(strval = AbsStr.Top)
           else AbsPValue.Bot
-        str ⊔ value
-      } else str
+        if (AbsBool.False ⊑ isCallable) {
+          val valueOf = Get("valueOf", h)
+          val value =
+            if (AbsBool.True ⊑ TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
+            else AbsPValue.Bot
+          str ⊔ value
+        } else str
+      }
     }
 
     private def DefaultValueAsNumber(h: AbsHeap): AbsPValue = {
