@@ -3,11 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.updateWith"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test277.js:3:2-20:4
-Call[1] of function[772] funexpr@3:2-20:2 @ tests/test277.js:4:3-12:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[9] of function[773] funexpr@4:58-12:4 @ tests/test277.js:11:5-59
-Call[5] of function[24] Assert.prototype.deepEqual @ setting.js:58:3-36
-Call[8] of function[22] ok @ setting.js:52:10-19
-[StopAnalysis] throws an exception
+The command 'analyze' took 305362 ms.
+[Timeout] 300 seconds.

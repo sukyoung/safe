@@ -33,3 +33,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
+[ExitReachable] exit block is reachable
+The command 'analyze' took 37818 ms.

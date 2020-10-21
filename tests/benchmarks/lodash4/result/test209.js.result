@@ -3,28 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.get and lodash.result"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:5,58:7,447:11,773:5,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0),58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:5,58:7,447:11,773:5,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1),58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test209.js:3:1-179:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[5] of function[772] funexpr@3:38-179:2 @ tests/test209.js:16:3-27:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[13] of function[775] funexpr@16:72-27:4 @ tests/test209.js:22:18-24:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[1] of function[776] funexpr@22:42-24:6 @ tests/test209.js:23:14-31
-Call[4] of function[541] get @ lodash.js:13170:49-70
-Call[1] of function[190] baseGet @ lodash.js:3034:14-36
-Call[7] of function[265] castPath @ lodash.js:4494:14-34
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[8] (1/400) function[64] arrayMap @ lodash.js:638:5
-[StopAnalysis] already visited
+The command 'analyze' took 315097 ms.
+[Timeout] 300 seconds.

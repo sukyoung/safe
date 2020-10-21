@@ -3,56 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash methods"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,775:29,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] `_.add` accepts falsey arguments"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,775:29,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] `_.assign` accepts falsey arguments"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,775:29,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] `_.assignIn` accepts falsey arguments"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,775:29,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(3))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] `_.assignInWith` accepts falsey arguments"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,775:29,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(4))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] `_.assignWith` accepts falsey arguments"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:23,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(5))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,775:29,58:7,447:11,774:9,20:8,772:21,0:253)|LSA[i:10,j:400](58:4(5))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] `_.at` accepts falsey arguments"
-        objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test306.js:3:2-202:4
-Call[21] of function[772] funexpr@3:2-202:2 @ tests/test306.js:91:3-122:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[9] of function[774] funexpr@91:48-122:4 @ tests/test306.js:96:5-114:7
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[1] of function[775] funexpr@96:37-114:6 @ tests/test306.js:100:20-102:9
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[7] of function[776] funexpr@100:45-102:8 @ tests/test306.js:101:38-44
-Call[27] of function[369] funexpr@6586:14-6602:8 @ lodash.js:6601:16-44
-Call[24] of function[56] apply @ lodash.js:475:22-58
-Call[16] of function[-102] call @ stringParse_MTkvOwV4I4lPImEh:11:12-41
-Call[3] of function[704] funexpr@15293:28-15299:6 @ lodash.js:15295:16-44
-LoopHead[4] (6/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[8] (0/400) function[64] arrayMap @ lodash.js:638:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 303034 ms.
+[Timeout] 300 seconds.

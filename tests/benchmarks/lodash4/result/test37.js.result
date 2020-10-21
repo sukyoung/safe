@@ -13,8 +13,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-Call[253] of function[0] top-level @ tests/test37.js:3:2-296:4
-Call[1] of function[772] funexpr@3:2-296:2 @ tests/test37.js:4:3-32:5
-Call[14] of function[20] test @ setting.js:38:23-32
-LoopHead[18] (400/400) function[18] popJobs @ setting.js:14:3
-[StopAnalysis] already visited
+The command 'analyze' took 328608 ms.
+[Timeout] 300 seconds.

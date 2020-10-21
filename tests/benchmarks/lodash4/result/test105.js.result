@@ -48,10 +48,15 @@
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:111,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(1))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:111,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:111,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
 [DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
         expression: <>msg<>1
@@ -63,98 +68,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:25,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,775:9,20:8,772:9,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,776:9,20:8,772:13,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:9,20:8,772:17,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,777:17,20:8,772:17,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,779:16,20:8,772:21,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,781:17,20:8,772:25,0:253)|LSA[i:10,j:400](13:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,781:17,20:8,772:25,0:253)|LSA[i:10,j:400](13:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,781:17,20:8,772:25,0:253)|LSA[i:10,j:400](13:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,781:17,20:8,772:25,0:253)|LSA[i:10,j:400](13:4(3))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,783:17,20:8,772:29,0:253)|LSA[i:10,j:400](13:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,783:17,20:8,772:29,0:253)|LSA[i:10,j:400](13:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,783:17,20:8,772:29,0:253)|LSA[i:10,j:400](13:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,783:17,20:8,772:29,0:253)|LSA[i:10,j:400](13:4(3))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,785:16,20:8,772:33,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,787:16,20:8,772:37,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,789:9,20:8,772:41,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,790:14,20:8,772:45,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,791:18,20:8,772:49,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
+The command 'analyze' took 42129 ms.
+LocSet.Top.gamma is impossible

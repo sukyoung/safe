@@ -3,40 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] filter methods"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:12,20:8,772:5,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:12,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,777:20,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,777:34,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test204.js:3:1-123:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[17] of function[772] funexpr@3:41-123:2 @ tests/test204.js:55:3-75:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[14] of function[780] funexpr@55:71-75:4 @ tests/test204.js:62:20-64:10
-Call[7] of function[430] zipObject @ lodash.js:8694:14-67
-Call[7] of function[262] baseZipObject @ lodash.js:4455:9-48
-Call[27] of function[160] assignValue @ lodash.js:2479:9-44
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[1] (0/400) function[262] baseZipObject @ lodash.js:4453:7
-[StopAnalysis] already visited
+The command 'analyze' took 310869 ms.
+[Timeout] 300 seconds.

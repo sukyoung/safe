@@ -3,13 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.template"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test244.js:3:2-541:4
-Call[1] of function[772] funexpr@3:2-541:2 @ tests/test244.js:4:3-16:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[13] of function[773] funexpr@4:61-16:4 @ tests/test244.js:11:18-13:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[1] of function[774] funexpr@11:44-13:6 @ tests/test244.js:12:14-32
-LoopHead[8] (0/400) function[64] arrayMap @ lodash.js:638:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 36266 ms.
+[ExitNotReachable] exit block is not reachable

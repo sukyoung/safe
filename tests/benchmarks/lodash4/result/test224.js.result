@@ -3,42 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] sortedIndex methods"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:12,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:12,20:8,772:5,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,777:17,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test224.js:3:1-91:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[13] of function[772] funexpr@3:55-91:2 @ tests/test224.js:48:3-67:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[22] of function[779] funexpr@48:69-67:4 @ tests/test224.js:56:5-66:7
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[1] of function[780] funexpr@59:8-66:6 @ tests/test224.js:60:24-39
-Call[27] of function[369] funexpr@6586:14-6602:8 @ lodash.js:6601:16-44
-Call[24] of function[56] apply @ lodash.js:475:22-58
-Call[16] of function[-102] call @ stringParse_Wjs96XxCtHM0Rt3O:11:12-41
-Call[34] of function[670] funexpr@9971:27-9982:6 @ lodash.js:9981:14-68
-Call[24] of function[226] baseOrderBy @ lodash.js:3760:14-3762:9
-Call[1] of function[84] baseSortBy @ lodash.js:932:5-25
-Call[26] of function[-54] sort @ stringParse_RjXRpWH6o7ry3kxA:10:22-44
-Call[1] of function[231] funexpr@3760:33-3762:8 @ lodash.js:3761:16-54
-Call[4] of function[274] compareMultiple @ lodash.js:4675:22-78
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[17] (0/400) function[-54] sort @ stringParse_RjXRpWH6o7ry3kxA:5:5
-LoopHead[20] (3/400) function[-54] sort @ stringParse_RjXRpWH6o7ry3kxA:7:7
-LoopHead[1] (0/400) function[274] compareMultiple @ lodash.js:4674:7
-[StopAnalysis] already visited
+The command 'analyze' took 321052 ms.
+[Timeout] 300 seconds.

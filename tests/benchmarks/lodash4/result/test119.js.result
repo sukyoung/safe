@@ -83,3 +83,5 @@
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
         objects:
+[ExitReachable] exit block is reachable
+The command 'analyze' took 43825 ms.

@@ -13,7 +13,17 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,781:21,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
 [DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,783:13,20:8,772:9,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,783:21,20:8,772:9,0:253)|LSA[i:10,j:400]()))
         expression: <>msg<>1
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
@@ -33,11 +43,20 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test154.js:3:2-192:4
-Call[17] of function[772] funexpr@3:2-192:2 @ tests/test154.js:77:3-81:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[787] funexpr@77:84-81:4 @ tests/test154.js:80:5-68
-Call[3] of function[29] Assert.prototype.raises @ setting.js:74:9-12
-Call[1] of function[788] funexpr@80:19-56 @ tests/test154.js:80:32-53
-[StopAnalysis] throws an exception
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,785:21,20:8,772:13,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,29:7,787:5,20:8,772:17,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] raises"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,789:13,20:8,772:21,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+The command 'analyze' took 303798 ms.
+[Timeout] 300 seconds.

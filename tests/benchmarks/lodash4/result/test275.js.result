@@ -8,30 +8,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,58:7,447:11,773:5,20:8,772:1,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,774:5,58:7,447:11,773:5,20:8,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,58:7,447:11,773:5,20:8,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test275.js:3:2-142:4
-Call[5] of function[772] funexpr@3:2-142:2 @ tests/test275.js:14:3-26:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[21] of function[775] funexpr@14:49-26:4 @ tests/test275.js:20:18-23:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[1] of function[776] funexpr@20:42-23:6 @ tests/test275.js:22:15-35
-Call[4] of function[559] unset @ lodash.js:13882:38-61
-Call[1] of function[256] baseUnset @ lodash.js:4345:14-36
-Call[7] of function[265] castPath @ lodash.js:4494:14-34
-LoopHead[8] (1/400) function[64] arrayMap @ lodash.js:638:5
-[StopAnalysis] already visited
+The command 'analyze' took 345178 ms.
+[Timeout] 300 seconds.

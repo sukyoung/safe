@@ -8,24 +8,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test13.js:3:2-81:4
-Call[9] of function[772] funexpr@3:2-81:2 @ tests/test13.js:17:3-27:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[9] of function[776] funexpr@17:48-27:4 @ tests/test13.js:22:18-24:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[1] of function[777] funexpr@22:43-24:6 @ tests/test13.js:23:14-52
-Call[27] of function[369] funexpr@6586:14-6602:8 @ lodash.js:6601:16-44
-Call[24] of function[56] apply @ lodash.js:475:22-58
-Call[16] of function[-102] call @ stringParse_Ux2JzMQLc3EUaSTQ:11:12-41
-Call[3] of function[704] funexpr@15293:28-15299:6 @ lodash.js:15295:16-44
-Call[14] of function[56] apply @ lodash.js:473:22-40
-Call[16] of function[-102] call @ stringParse_Ux2JzMQLc3EUaSTQ:11:12-41
-LoopHead[8] (0/400) function[64] arrayMap @ lodash.js:638:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 305200 ms.
+[Timeout] 300 seconds.

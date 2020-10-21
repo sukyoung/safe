@@ -8,6 +8,36 @@
         exceptions: Set()
         pvalue    : "[PASS] undefined"
         objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,773:25,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] undefined"
+        objects:
 [DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:13,20:8,772:5,0:253)|LSA[i:10,j:400]()))
         expression: <>msg<>1
         exceptions: Set()
@@ -18,3 +48,5 @@
         exceptions: Set()
         pvalue    : "[PASS] undefined"
         objects:
+[ExitReachable] exit block is reachable
+The command 'analyze' took 70643 ms.

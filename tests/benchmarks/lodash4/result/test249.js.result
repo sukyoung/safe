@@ -3,29 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.toArray"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,774:17,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:29,20:8,772:9,0:253)|LSA[i:10,j:400](13:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:9,20:8,772:13,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test249.js:3:2-66:4
-Call[13] of function[772] funexpr@3:2-66:2 @ tests/test249.js:38:3-44:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[13] of function[776] funexpr@38:50-44:4 @ tests/test249.js:42:22-37
-Call[14] of function[524] toArray @ lodash.js:12367:34-54
-[StopAnalysis] already visited
+The command 'analyze' took 324599 ms.
+[Timeout] 300 seconds.

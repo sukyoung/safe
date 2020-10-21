@@ -3,18 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.sortedUniq"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:5,58:7,447:11,773:5,20:8,772:1,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:5,58:7,447:11,773:5,20:8,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:5,58:7,447:11,773:5,20:8,772:1,0:253)|LSA[i:10,j:400](58:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
+The command 'analyze' took 325058 ms.
+[Timeout] 300 seconds.

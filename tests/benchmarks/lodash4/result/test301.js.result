@@ -3,43 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash(...) methods that return the wrapped modified array"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,774:14,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,28:1,774:18,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] notStrictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,774:14,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,28:1,774:18,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] notStrictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,774:14,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,28:1,774:18,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] notStrictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,774:14,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(3))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,28:1,774:18,20:8,773:1,58:7,447:11,772:1,0:253)|LSA[i:10,j:400](58:4(3))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] notStrictEqual"
-        objects:
+The command 'analyze' took 331911 ms.
+[Timeout] 300 seconds.

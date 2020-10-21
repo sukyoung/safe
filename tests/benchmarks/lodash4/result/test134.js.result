@@ -23,3 +23,5 @@
         exceptions: Set()
         pvalue    : "[PASS] undefined"
         objects:
+[ExitReachable] exit block is reachable
+The command 'analyze' took 43266 ms.

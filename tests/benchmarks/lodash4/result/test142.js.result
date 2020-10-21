@@ -3,13 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.findLastIndex and lodash.lastIndexOf"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test142.js:3:1-75:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[3] of function[772] funexpr@3:53-75:2 @ tests/test142.js:6:49-84
-Call[4] of function[465] curry @ lodash.js:10242:20-115
-Call[122] of function[327] createWrap @ lodash.js:5575:14-69
-Call[1] of function[373] setWrapToString @ lodash.js:6709:79-101
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 351025 ms.
+[Timeout] 300 seconds.

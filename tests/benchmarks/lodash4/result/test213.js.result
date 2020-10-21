@@ -8,18 +8,5 @@
         exceptions: Set()
         pvalue    : "[PASS] undefined"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,776:26,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,776:34,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,776:38,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
+The command 'analyze' took 303821 ms.
+[Timeout] 300 seconds.

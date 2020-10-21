@@ -3,26 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.at"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test12.js:3:2-162:4
-Call[9] of function[772] funexpr@3:2-162:2 @ tests/test12.js:21:3-36:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[21] of function[775] funexpr@21:65-36:4 @ tests/test12.js:33:18-37
-Call[27] of function[369] funexpr@6586:14-6602:8 @ lodash.js:6601:16-44
-Call[24] of function[56] apply @ lodash.js:475:22-58
-Call[16] of function[-102] call @ stringParse_SXiqWNwQgAMGvEmv:11:12-41
-Call[11] of function[167] baseAt @ lodash.js:2582:44-69
-Call[4] of function[541] get @ lodash.js:13170:49-70
-Call[1] of function[190] baseGet @ lodash.js:3034:14-36
-Call[7] of function[265] castPath @ lodash.js:4494:14-34
-LoopHead[5] (0/400) function[167] baseAt @ lodash.js:2581:7
-[StopAnalysis] already visited
+The command 'analyze' took 320672 ms.
+[Timeout] 300 seconds.

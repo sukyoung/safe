@@ -3,15 +3,15 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.pad"
         objects:
-Call[253] of function[0] top-level @ tests/test178.js:3:2-38:4
-Call[1] of function[772] funexpr@3:2-38:2 @ tests/test178.js:6:3-17:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[13] of function[773] funexpr@6:55-17:4 @ tests/test178.js:12:18-14:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[7] of function[774] funexpr@12:43-14:6 @ tests/test178.js:13:48-64
-Call[11] of function[572] pad @ lodash.js:14418:32-50
-Call[6] of function[113] stringSize @ lodash.js:1312:9-28
-LoopHead[8] (0/400) function[64] arrayMap @ lodash.js:638:5
-LoopHead[5] (0/400) function[115] unicodeSize @ lodash.js:1347:5
-[StopAnalysis] already visited
+[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:17,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] deepEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,775:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+The command 'analyze' took 65008 ms.
+LocSet.Top.gamma is impossible

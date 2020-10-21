@@ -3,9 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] map caches"
         objects:
-Call[253] of function[0] top-level @ tests/test3.js:3:2-65:4
-Call[8] of function[772] funexpr@3:2-65:2 @ tests/test3.js:28:23-42
-Call[15] of function[773] createCaches @ tests/test3.js:20:17-42
-Call[11] of function[128] Hash @ lodash.js:1915:9-37
-LoopHead[8] (7/400) function[128] Hash @ lodash.js:1913:7
-[StopAnalysis] already visited
+The command 'analyze' took 306002 ms.
+[Timeout] 300 seconds.

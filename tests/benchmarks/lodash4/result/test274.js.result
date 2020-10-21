@@ -3,10 +3,10 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.uniqueId"
         objects:
-Call[253] of function[0] top-level @ tests/test274.js:3:2-26:4
-Call[1] of function[772] funexpr@3:2-26:2 @ tests/test274.js:4:3-12:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[773] funexpr@4:44-12:4 @ tests/test274.js:7:18-9:7
-Call[21] of function[617] times @ lodash.js:16188:20-47
-LoopHead[5] (400/400) function[86] baseTimes @ lodash.js:975:5
-[StopAnalysis] already visited
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:13,20:8,772:1,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+The command 'analyze' took 315647 ms.
+[Timeout] 300 seconds.

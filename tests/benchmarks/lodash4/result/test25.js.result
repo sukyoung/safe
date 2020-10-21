@@ -18,44 +18,15 @@
         exceptions: Set()
         pvalue    : "[PASS] undefined"
         objects:
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[172] of function[169] baseClone @ lodash.js:2689:7-2696:9
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[4] of function[172] funexpr@2689:33-2696:8 @ lodash.js:2695:34-93
-Call[125] of function[169] baseClone @ lodash.js:2668:21-37
-Call[1] of function[152] stackGet @ lodash.js:2328:14-36
-Call[1] of function[137] listCacheGet @ lodash.js:2072:19-42
-LoopHead[4] (3/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-[StopAnalysis] already visited
+[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,778:13,20:8,772:90,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] strictEqual"
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,28:1,778:17,20:8,772:90,0:253)|LSA[i:10,j:400]()))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] notStrictEqual"
+        objects:
+The command 'analyze' took 56971 ms.
+LocSet.Top.gamma is impossible

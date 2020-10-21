@@ -3,21 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] update methods"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test278.js:3:1-23:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[1] of function[772] funexpr@3:45-23:2 @ tests/test278.js:7:3-22:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[773] funexpr@7:101-22:4 @ tests/test278.js:13:5-21:7
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[1] of function[774] funexpr@13:59-21:6 @ tests/test278.js:14:7-17:9
-Call[8] of function[560] update @ lodash.js:13913:40-87
-Call[5] of function[257] baseUpdate @ lodash.js:4361:36-66
-Call[1] of function[775] funexpr@14:26-17:8 @ tests/test278.js:15:9-40
-Call[1] of function[27] Assert.prototype.strictEqual @ setting.js:67:3-34
-Call[8] of function[22] ok @ setting.js:52:10-19
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 334079 ms.
+[Timeout] 300 seconds.

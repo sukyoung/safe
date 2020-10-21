@@ -3,12 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.curryRight"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test35.js:3:2-156:4
-Call[1] of function[772] funexpr@3:2-156:2 @ tests/test35.js:8:3-17:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[774] funexpr@8:69-17:4 @ tests/test35.js:11:19-35
-Call[4] of function[466] curryRight @ lodash.js:10287:20-121
-Call[122] of function[327] createWrap @ lodash.js:5575:14-69
-Call[1] of function[373] setWrapToString @ lodash.js:6709:79-101
-[StopAnalysis] throws an exception
+The command 'analyze' took 348660 ms.
+[Timeout] 300 seconds.

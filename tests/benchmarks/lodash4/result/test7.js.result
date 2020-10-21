@@ -3,12 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.ary"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test7.js:3:2-109:4
-Call[1] of function[772] funexpr@3:2-109:2 @ tests/test7.js:8:3-16:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[774] funexpr@8:71-16:4 @ tests/test7.js:11:53-71
-Call[11] of function[462] ary @ lodash.js:10064:14-92
-Call[122] of function[327] createWrap @ lodash.js:5575:14-69
-Call[1] of function[373] setWrapToString @ lodash.js:6709:79-101
-[StopAnalysis] throws an exception
+The command 'analyze' took 43183 ms.
+[ExitNotReachable] exit block is not reachable

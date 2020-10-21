@@ -3,17 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] case methods"
         objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test18.js:3:1-124:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[5] of function[772] funexpr@3:75-124:2 @ tests/test18.js:23:3-32:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[774] funexpr@23:89-32:4 @ tests/test18.js:26:18-29:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[8] of function[775] funexpr@26:44-29:6 @ tests/test18.js:28:14-26
-Call[1] of function[294] funexpr@5004:14-5006:8 @ lodash.js:5005:34-48
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[8] (0/400) function[64] arrayMap @ lodash.js:638:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 331071 ms.
+[Timeout] 300 seconds.

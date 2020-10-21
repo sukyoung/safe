@@ -3,18 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] toInteger methods"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,773:9,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-Call[253] of function[0] top-level @ tests/test253.js:3:1-25:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[1] of function[772] funexpr@3:51-25:2 @ tests/test253.js:7:3-18:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[13] of function[773] funexpr@7:74-18:4 @ tests/test253.js:11:24-35
-Call[1] of function[526] toInteger @ lodash.js:12440:20-35
-Call[7] of function[525] toFinite @ lodash.js:12405:15-30
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-[StopAnalysis] already visited
+The command 'analyze' took 312281 ms.
+[Timeout] 300 seconds.

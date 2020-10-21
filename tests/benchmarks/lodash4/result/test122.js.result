@@ -103,13 +103,20 @@
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,784:29,20:8,772:47,0:253)|LSA[i:10,j:400](13:4(1))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,784:29,20:8,772:47,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,784:29,20:8,772:47,0:253)|LSA[i:10,j:400](13:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
 [DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,785:15,20:8,772:51,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
         objects:
+[ExitReachable] exit block is reachable
+The command 'analyze' took 46386 ms.

@@ -3,12 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.keyBy"
         objects:
-Call[253] of function[0] top-level @ tests/test135.js:3:2-92:4
-Call[1] of function[772] funexpr@3:2-92:2 @ tests/test135.js:9:3-19:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[5] of function[773] funexpr@9:53-19:4 @ tests/test135.js:14:18-16:7
-Call[17] of function[282] funexpr@4854:14-4859:8 @ lodash.js:4858:16-79
-Call[11] of function[57] arrayAggregator @ lodash.js:497:7-57
-Call[1] of function[667] funexpr@9548:34-9550:6 @ lodash.js:9549:7-42
-LoopHead[4] (0/400) function[57] arrayAggregator @ lodash.js:495:5
-[StopAnalysis] already visited
+The command 'analyze' took 316995 ms.
+[Timeout] 300 seconds.

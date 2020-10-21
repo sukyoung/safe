@@ -3,33 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] stub methods"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(3))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(4))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:17,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(5))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
+The command 'analyze' took 336828 ms.
+[Timeout] 300 seconds.

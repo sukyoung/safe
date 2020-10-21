@@ -3,13 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] extremum methods"
         objects:
-Call[253] of function[0] top-level @ tests/test161.js:3:1-34:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[12] of function[772] funexpr@3:53-34:2 @ tests/test161.js:7:3-14:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[19] of function[773] funexpr@7:70-14:4 @ tests/test161.js:13:24-42
-Call[5] of function[620] max @ lodash.js:16347:11-48
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-LoopHead[1] (1/400) function[181] baseExtremum @ lodash.js:2866:7
-[StopAnalysis] already visited
+The command 'analyze' took 333067 ms.
+[Timeout] 300 seconds.

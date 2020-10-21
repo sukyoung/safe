@@ -13,15 +13,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-Call[253] of function[0] top-level @ tests/test219.js:3:2-98:4
-Call[9] of function[772] funexpr@3:2-98:2 @ tests/test219.js:18:3-30:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[9] of function[775] funexpr@18:49-30:4 @ tests/test219.js:23:18-27:7
-Call[11] of function[450] map @ lodash.js:9596:14-56
-Call[11] of function[64] arrayMap @ lodash.js:639:23-59
-Call[5] of function[776] funexpr@23:43-27:6 @ tests/test219.js:25:24-38
-Call[14] of function[458] size @ lodash.js:9889:39-61
-Call[6] of function[113] stringSize @ lodash.js:1312:9-28
-LoopHead[8] (6/400) function[64] arrayMap @ lodash.js:638:5
-LoopHead[5] (0/400) function[115] unicodeSize @ lodash.js:1347:5
-[StopAnalysis] already visited
+The command 'analyze' took 310556 ms.
+[Timeout] 300 seconds.

@@ -3,13 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.pickBy"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:1,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:9,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
+The command 'analyze' took 306561 ms.
+[Timeout] 300 seconds.

@@ -3,39 +3,5 @@
         exceptions: Set()
         pvalue    : "[MODULE] lodash.assign and lodash.assignIn"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:9,20:8,772:1,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:9,20:8,772:5,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:17,20:8,772:5,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:9,20:8,772:9,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,776:9,20:8,772:13,58:7,447:11,0:253)|LSA[i:10,j:400](58:4(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
---------------------------------------------------
-Call[253] of function[0] top-level @ tests/test9.js:3:1-100:3
-Call[11] of function[447] forEach @ lodash.js:9384:14-56
-Call[7] of function[58] arrayEach @ lodash.js:516:11-47
-Call[17] of function[772] funexpr@3:43-100:2 @ tests/test9.js:34:3-75:5
-Call[8] of function[20] test @ setting.js:37:3-12
-Call[51] of function[777] funexpr@34:87-75:4 @ tests/test9.js:74:5-37
-Call[5] of function[24] Assert.prototype.deepEqual @ setting.js:58:3-36
-Call[8] of function[22] ok @ setting.js:52:10-19
-LoopHead[4] (0/400) function[58] arrayEach @ lodash.js:515:5
-[StopAnalysis] throws an exception
+The command 'analyze' took 315171 ms.
+[Timeout] 300 seconds.

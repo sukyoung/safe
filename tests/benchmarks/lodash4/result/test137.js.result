@@ -13,33 +13,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,775:9,20:8,772:9,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,776:14,20:8,772:13,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,777:18,20:8,772:17,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] undefined"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,778:18,20:8,772:21,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,780:24,86:8,617:21,779:10,20:8,772:25,0:253)|LSA[i:10,j:400](86:5(0))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,27:1,780:24,86:8,617:21,779:10,20:8,772:25,0:253)|LSA[i:10,j:400](86:5(1))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] strictEqual"
-        objects:
+The command 'analyze' took 359200 ms.
+[Timeout] 300 seconds.

@@ -8,13 +8,5 @@
         exceptions: Set()
         pvalue    : "[PASS] strictEqual"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,773:22,20:8,772:1,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,24:5,774:14,20:8,772:5,0:253)|LSA[i:10,j:400]()))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] deepEqual"
-        objects:
+The command 'analyze' took 313195 ms.
+[Timeout] 300 seconds.

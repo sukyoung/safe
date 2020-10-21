@@ -8,12 +8,17 @@
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:38,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(1))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:38,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:38,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(2))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,773:38,20:8,772:1,0:253)|LSA[i:10,j:400](13:4(0))))
+        expression: <>msg<>1
+        exceptions: Set()
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
+        objects:
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:38,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
@@ -21,19 +26,14 @@
 [DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:38,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:38,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(1))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:38,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:38,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(2))))
-        expression: <>msg<>1
-        exceptions: Set()
-        pvalue    : "[PASS] test skipped"
-        objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,775:38,20:8,772:5,0:253)|LSA[i:10,j:400](13:4(3))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,776:22,20:8,772:9,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
@@ -41,15 +41,17 @@
 [DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,776:22,20:8,772:9,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
-[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,776:22,20:8,772:9,0:253)|LSA[i:10,j:400](13:4(1))))
+[DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,776:22,20:8,772:9,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
-        pvalue    : "[PASS] test skipped"
+        pvalue    : "[PASS] test skipped", "[PASS] undefined", Top(undefined)
         objects:
 [DEBUG] (-40:Block[0], (30-CFA(22:3,13:7,777:20,20:8,772:13,0:253)|LSA[i:10,j:400](13:4(0))))
         expression: <>msg<>1
         exceptions: Set()
         pvalue    : "[PASS] test skipped"
         objects:
+[ExitReachable] exit block is reachable
+The command 'analyze' took 43028 ms.
