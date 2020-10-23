@@ -149,8 +149,9 @@ case class IRInternalValue(
 
 // Value
 case class IRVal(
+    override val ast: ASTNode,
     value: EJSVal
-) extends IRExpr(NodeUtil.TEMP_AST) {
+) extends IRExpr(ast) {
   override def toString(indent: Int): String = value match {
     case EJSString(str) =>
       "\"" + NodeUtil.pp(str.replaceAll("\\\\", "\\\\\\\\")) + "\""
@@ -158,6 +159,7 @@ case class IRVal(
   }
 }
 object IRVal {
+  def apply(ejsVal: EJSVal): IRVal = IRVal(NodeUtil.TEMP_AST, ejsVal)
   def apply(text: String, num: Double): IRVal = IRVal(EJSNumber(text, num))
   def apply(str: String): IRVal = IRVal(EJSString(str))
   def apply(bool: Boolean): IRVal = IRVal(EJSBool(bool))

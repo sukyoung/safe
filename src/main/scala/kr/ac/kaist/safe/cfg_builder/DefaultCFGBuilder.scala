@@ -641,7 +641,7 @@ class DefaultCFGBuilder(
       case id: IRId => id2cfgExpr(id)
       case IRThis(_) => CFGThis(expr)
       case IRInternalValue(_, n) => CFGInternalValue(expr, n)
-      case IRVal(v) => CFGVal(v)
+      case IRVal(_, v) => CFGVal(v)
     }
   }
 
