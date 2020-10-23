@@ -1,3 +1,36 @@
+% Styles
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstdefinelanguage{JavaScript}{
+  keywords={async, await, break, case, catch, class, const, continue, debugger,
+    default, delete, do, else, enum, export, extends, false, finally, for,
+    function, if, import, in, instanceof, new, null, return, super, switch, this,
+    throw, true, try, typeof, var, void, while, with, yield},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinestyle{myJSstyle}{
+  language=JavaScript,
+  extendedchars=true,
+  basicstyle=\footnotesize\ttfamily,
+  showstringspaces=false,
+  showspaces=false,
+  numbers=none,
+  tabsize=2,
+  breaklines=true,
+  showtabs=false,
+  captionpos=b
+}
+
 % Basic
 \DeclareMathAlphabet{\mathpzc}{T1}{pzc}{m}{it}
 \newcommand{\powerset}[1]{\mathcal{P}(#1)}
