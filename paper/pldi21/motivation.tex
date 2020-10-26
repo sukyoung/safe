@@ -1,3 +1,72 @@
 \section{Motivation}\label{sec:motivation}
 
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.5\textwidth}
+    \begin{lstlisting}[style=myJSstyle]
+function concat() {
+  var length = arguments.length;
+  if (!length) return [];
+  var args = Array(length - 1),
+      array = arguments[0],
+      index = length;
+  while (index--)
+    args[index-1] = arguments[index];
+  return arrayPush(isArray(array) ?
+    copyArray(array) :
+    [array], baseFlatten(args, 1));
+}
+    \end{lstlisting}
+    \label{fig:example-concat}
+    \vspace*{-1em}
+    \caption{Lodash's \code{concat} function.}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \begin{lstlisting}[style=myJSstyle,firstnumber=13]
+function getData(e) {
+  var option = ... // option of server connection
+  post(option).then(function(e) {
+    if (e.total_records && e.total_records > 0) {
+      // non-deterministic arguments of `concat`
+      this.pastEvents =
+        _.concat(this.pastEvents, e.events);
+      this.total = e.total_records;
+    } else this.noPastData = !0
+  })
+}
+    \end{lstlisting}
+    \label{fig:example-concat}
+    \vspace*{-1em}
+    \caption{The \code{getData} function to load more events from the server.}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \begin{lstlisting}[style=myJSstyle,firstnumber=24]
+function changeCountry(G) {
+  ...
+  if (G.selectedVal === "US" && state) {
+    // deterministic arguments of `concat`
+    state.items = _.concat([["Other", "Other"]],
+      WebinarBase.questions.state.items);
+    state.selectedVal = _.head(_.head(C.items));
+  }
+}
+    \end{lstlisting}
+    \label{fig:example-concat}
+    \vspace*{-1em}
+    \caption{The \code{changeCountry} function to update state information.}
+  \end{subfigure}
+  \label{fig:example}
+  \vspace*{-1em}
+  \caption{Motivating Example: Excerpts from Lodash library and JavaScript codes
+  in \code{zoom.us} site.}
+\end{figure}
+
+\begin{lstlisting}[style=myJSstyle]
+WebinarBase.questions = { ...
+  state: { ...
+    items: [["AL","Alabama"], ["AK","Alaska"], ...]
+  }
+};
+\end{lstlisting}
+
 \todo
