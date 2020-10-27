@@ -10,7 +10,7 @@ The cross-platform frameworks like React Native and Electron have spread
 JavaScript to the new domains of mobile and desktop beyond the web.
 This is only possible thanks to JavaScript's easy operation in development and
 deployment with scripting language characteristics such as dynamic and
-interpreted language features~\cite{weakly}.
+interpreted language features~\cite{weaklySPE}.
 
 
 However, such features make it difficult to support developer tools that require
@@ -23,21 +23,21 @@ Even a minor precision loss at property name can cause reading all methods in
 the object and its prototype chain, including hundreds of built-ins, that
 results in useless analysis results.
 In static analyses of Java, the benchmark results clearly show the trade-off
-between precision and performance~\cite{}, a low degree of context sensitivity
-shows a high performance but low precision.
+between precision and performance~\cite{data-driven} \todo, a low degree of
+context sensitivity shows a high performance but low precision.
 In the case of JavaScript, the relationship between precision and performance is
 more complex due to the spurious callee explosion.
 Low precision tends to cause the large number of spurious callees, which
-significantly degrades the performance~\cite{}.
+significantly degrades the performance~\cite{correlation, determinacy-jQuery, weaklySPE, value-refinement}.
 
 
-For this reason, recent studies on JavaScript static analysis have proposed
-techniques to improve analysis precision against this challenge.
-Madsen et al.~\cite{} presented sophisticated abstract domains for strings.
-Park and Ryu proposed high degrees of context sensitivity for loop~\cite{}.
-Relations between object properties aid to analysis precision~\cite{}.
-Demand-driven value refinement~\cite{} and lightweight variants of trace
-partitioning~\cite{} showed promising results.
+For this reason, recent studies on JavaScript static analysis have developed
+to improve analysis precision against this challenge.
+Madsen et al.~\cite{string, regex, combining-string} presented sophisticated abstract domains for strings.
+Park et al. proposed high degrees of context sensitivity for loop~\cite{lsaECOOP, lsaSPE}.
+Relations between object properties have aided to analysis precision~\cite{correlation, weaklyAPLAS, weaklySPE}.
+The idea stretches from property name to non-local variables and types for predicate functions~\cite{value-partitioning}.
+The on-demand backward analyses~\cite{value-refinement} refines imprecise values for property writes.
 
 
 Unfortunately, it does not mean that high precision leads to "good" performance
@@ -49,24 +49,25 @@ approach of static and dynamic analyses.
 
 
 Existing combined approaches derive three kinds of benefits of dynamic analysis.
-Dynamic analysis can run on a highly-optimized JavaScript engine like V8, so
-it boosts up analysis performance.
+Dynamic analyses~\cite{jalangi, jalangi2, dlint} can run on a highly-optimized
+JavaScript engine like V8, so it boosts up analysis performance.
 There is no precision loss coming from limitations of abstract domains and
-sensitivities if the dynamic analysis terminates.
+sensitivities if the dynamic analysis terminates~\cite{concerto}.
 Dynamic analysis can pass by opaque codes that require extra handling for static
-analysis.
+analysis~\cite{battles, sra}.
 
 However, the existing combined analyses are limited to maximize benefits of
 dynamic analysis.
 Staged analyses first collect particular information by dynamic analysis and
-apply static analysis augmented with dynamic information.
-Dynamic information can be argument length, object creation site, entire heap at
-specific program points.
+apply static analysis augmented with dynamic information~\cite{staged, blendedJava, eha} \todo.
+Dynamic information can be argument length, object creation site~\cite{blended}, entire heap at
+specific program points~\cite{battles}.
 Once static analysis starts, it does not utilize more dynamic information.
-The other design of combined analysis is divide whole program into two parts.
+The other design of combined analysis is divide whole program into two parts~\cite{concerto}.
 One for the dynamic analysis (framework code) and the other for the static analysis (user code).
 The policy to divde a program is predefined and syntactic.
 Each analysis always take on each part of code.
+
 
 We present a much more fine-grained method to combine two analyses to maximize
 benefits.
