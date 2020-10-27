@@ -55,7 +55,7 @@ object Loc {
 trait LocParser extends TracePartitionParser {
   // allocation site abstraction
   lazy val userASite = "#" ~> nat ^^ { id => UserAllocSite(id) }
-  lazy val predName = "[0-9a-zA-Z-.<>\\[\\][_]]+".r
+  lazy val predName = "[0-9a-zA-Z-.<>\\[\\]_]+".r
   lazy val predASite = "#" ~> predName ^^ { name => PredAllocSite(name) }
   lazy val allocSite = userASite | predASite
 
