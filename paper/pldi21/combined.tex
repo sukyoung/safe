@@ -228,14 +228,11 @@ view transition as follows:
 \]
 where $S = \combelem\mid_{\checker}$ and $D =
 \dot{\saconverter}(\combelem\mid_{\neg\checker})$.  The dot notation $\dot{f}$
-denotes the element-wise extended function of a function $f$.  We could
-configure when the sealed symbolic execution or the abstract interpretation is
-performed based on the definition of the $\checker$ function and its negation
-$\neg\checker$.  The combined analysis performs one-step symbolic transition for
-each symbolic state that passes the filter $\checker$. On the other hand, it
-converts remaining symbolic states to the corresponding abstract states, merges
-them into a single abstract state, and performs the abstract one-step execution
-for the abstract state.
+denotes the element-wise extended function of a function $f$.  The combined
+analysis performs one-step symbolic transition for each symbolic state that
+passes the filter $\checker$. On the other hand, it converts remaining symbolic
+states to the corresponding abstract states, merges them into a single abstract
+state, and performs the abstract one-step execution for the abstract state.
 
 For example, Figure~\ref{fig:combined-analysis} depicts the
 diagram of the view transition from $\view$ to $\view'$ in the combined
@@ -251,9 +248,12 @@ the abstract semantics via the original view transition
 $\viewtrans{\view}{\view'}$ and the converter $\asconverter$ to convert the
 result to the corresponding symbolic state.
 
-For the soundness and the termination of the combined analysis, the filter
-$\checker$ in the extended view transition should satisfy the following
-condition:
+We could configure when the sealed symbolic execution or the abstract
+interpretation is performed based on the definition of the $\checker$ function
+and its negation $\neg\checker$.  For example, we could define the $\checker$
+that passes only function entry, call, and exit points to perform conversions in
+a function level.  However, for the soundness and the termination of the
+combined analysis, it should satisfy the following condition:
 \begin{theorem}
   The combined analysis has sound analysis result and terminates in a finite
   time if its abstract semantics is sound and $\checker$ satisfies the following
