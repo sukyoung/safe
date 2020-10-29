@@ -61,30 +61,39 @@ function getData(e) {
   \label{fig:example}
 \end{figure}
 
-In this section, we will explain the motivation of the combined analysis for
-JavaScript programs with a simple motivating example described in
-Figure~\ref{fig:example}.  It shows how to utilize dynamic analysis during
-static analysis using lazy concrete execution to increase performance and
-precision of static analysis.
+In this section, we first point out limitations that existing techniques face to
+analyze the real-world example described in Figure~\ref{fig:example}.
+We then show how our combined analysis increase the analysis scalability and
+precision through lazy concrete execution, seamlessly combined with the original
+static analysis.
 
-For a motivating example, we excerpt the \jscode{concat} function in
-Figure~\ref{fig:concat} from Lodash library~\cite{lodash} (v4.17.20), which is
-the most popular npm package~\footnote{https://www.npmjs.com/browse/depended}
-and \inred{124,562} npm packages have dependency with it.  The \jscode{concat}
-function creates a new array concatenating given arrays or values.  It first
-checks the length of arguments in line 2-3. Then, it stores the first argument
-to \jscode{array} in line 5 and copies the remaining arguments to \jscode{args} in
-line 7-8.  Finally, it creates a new array by copying the given array via
-\jscode{copyArray} or initializing with a single value in line 10, and pushes
-each element of \jscode{args} after flattening it via \jscode{baseFlatten} in
-line 11.
 
-For applications of Lodash, we excerpt two functions \jscode{changeCountry} in
-Figure~\ref{fig:changeCountry} and \jscode{getData} in Figure~\ref{fig:getData}
-from the \code{zoom.us}~\cite{zoom} site.  The website \code{zoom.us} is
-homepage of Zoom, which is a videotelephony software program developed by Zooom
-Video Communications and it is ranked as \inred{16th} popular web site accroding
+We excerpt the \jscode{concat} function in Figure~\ref{fig:concat} from Lodash
+library~\cite{lodash} (v4.17.20), which is the most popular npm package~\footnote{https://www.npmjs.com/browse/depended}
+that \inred{124,562} npm packages depend on.
+The \jscode{concat} function creates a new array concatenating given arrays or
+values.
+It first checks the length of arguments in line 2-3. Then, it stores the first
+argument to \jscode{array} in line 5 and copies the remaining arguments to
+\jscode{args} in line 7-8.
+Finally, it creates a new array by copying the given array via \jscode{copyArray}
+or initializing with a single value in line 10, and pushes each element of
+\jscode{args} after flattening it via \jscode{baseFlatten} in line 11.
+
+
+A low degree of context sensitivity tends to face spurious callee explosion
+during analyzing \jscode{concat} function.
+The analysis is not supposed to lose precision for the loop in line 7-8.
+Moreover, \jscode{baseFlatten} has a recursive call in a loop that is a
+traditional challenge for static analysis.
+
+
+We excerpt two functions \jscode{changeCountry} in Figure~\ref{fig:changeCountry}
+and \jscode{getData} in Figure~\ref{fig:getData} from the \code{zoom.us}~\cite{zoom}
+site.
+The website \code{zoom.us} is ranked at \inred{16th} popular web site accroding
 to Alexa~\footnote{https://www.alexa.com/siteinfo/zoom.us} in November 2020.
+
 
 When the given arguments of a function invokation are concrete values, we can
 perform dynamic analysis instead of static analysis. For example, The
