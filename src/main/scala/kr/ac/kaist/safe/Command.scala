@@ -26,6 +26,7 @@ import DefaultJsonProtocol._
 
 sealed trait Command {
   val name: String
+  def phaseNameList: List[String]
   def apply(args: List[String], testMode: Boolean): Try[Any]
 }
 
@@ -34,6 +35,7 @@ class CommandObj[Result](
     pList: PhaseList[Result],
     modeMap: Map[String, PhaseList[Result]] = Map[String, PhaseList[Result]]()
 ) extends Command {
+  def phaseNameList: List[String] = pList.nameList
   def apply(
     args: List[String],
     testMode: Boolean = false
