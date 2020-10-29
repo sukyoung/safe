@@ -80,8 +80,8 @@ maximize the benefits.
 Our idea enables abstract interpretation to use the dynamic analysis on demand
 to speed up the analysis while preserving soundness, so we call that adding
 dynamic shortcuts.
-We extend a dynamic analysis to work as long as possible despite of the presence
-of abstract values by laziness.
+We use a linear symbolic execution as dynamic analysis to analyze program on the
+concrete engine as long as possible despite of the presence of abstract values.
 The analysis goes on the concrete engine as much as possible until it meets
 operations with non-deterministic values by abstract values or analysis
 sensitivity that the concrete engine cannot handle.

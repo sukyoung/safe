@@ -61,6 +61,7 @@ function getData(e) {
   \label{fig:example}
 \end{figure}
 
+
 In this section, we first point out limitations that existing techniques face to
 analyze the real-world example described in Figure~\ref{fig:example}.
 We then show how our combined analysis increase the analysis scalability and
@@ -81,62 +82,110 @@ or initializing with a single value in line 10, and pushes each element of
 \jscode{args} after flattening it via \jscode{baseFlatten} in line 11.
 
 
-A low degree of context sensitivity tends to face spurious callee explosion
-during analyzing \jscode{concat} function.
-The analysis is not supposed to lose precision for the loop in line 7-8.
-Moreover, \jscode{baseFlatten} has a recursive call in a loop that is a
-traditional challenge for static analysis.
-
-
+The functions in Lodash are popular to implement common functionalities for
+websites as well.
 We excerpt two functions \jscode{changeCountry} in Figure~\ref{fig:changeCountry}
-and \jscode{getData} in Figure~\ref{fig:getData} from the \code{zoom.us}~\cite{zoom}
-site.
+and \jscode{getData} in Figure~\ref{fig:getData} from the \code{zoom.us}~\cite{zoom} site.
 The website \code{zoom.us} is ranked at \inred{16th} popular web site accroding
 to Alexa~\footnote{https://www.alexa.com/siteinfo/zoom.us} in November 2020.
-
-
-When the given arguments of a function invokation are concrete values, we can
-perform dynamic analysis instead of static analysis. For example, The
-\jscode{changeCountry} function is invoked when a country different with the
-current one is selected in registration of Zoom meetings.  When the ``United
-States of America'' (USA) is selected, it calls the \jscode{concat} function
-with two pre-defined concrete values as arguments to load USA state information
-in line 17-18.  The first argument is an array literal \jscode{[["Other",
+The \jscode{changeCountry} is the example of using \jscode{concat} only with
+concrete values.
+The \jscode{changeCountry} function is invoked when a user selects his/her
+country on the dropdown list in the register page.
+When the user selects ``United States of America'', \jscode{changeCountry} calls
+the \jscode{concat} function in line 17-18 to prepare the array for
+``State/Province'' dropdown list.
+The first argument of \jscode{concat} is an array literal \jscode{[["Other",
 "Other"]]} and the second one is an array of pairs of abbreviations and names of
-USA states defined as follows:
+the states defined as follows:
 \begin{lstlisting}[style=myJSstyle,numbers=none]
 WebinarBase.questions.state.items =
   [["AL","Alabama"], ..., ["WY", "Wyoming"]]
 \end{lstlisting}
-Moreover, \jscode{this} value is also a concrete value, the Lodash top-level
-object \jscode{\_}.  Thus, we could perform dynamic analysis by invoking the
-\jscode{concat} funciton with \jscode{\_} as \jscode{this} value and above two
-concrete values as arguments.  It increases performance of static analysis by
-skipping the analysis of function call in line 17-18 and utilizing the result of
-dynamic analysis.
+Thus, \jscode{changeCountry} always invokes \jscode{concat} with concrete values.
+In the case of \jscode{getData}, \jscode{concat} works with unknown values.
+The \jscode{getData} function is invoked when loading more Zoom events in
+``Webinars \& Events'' page.
+At the first time, initial eight events appear on the page.
+For each click of the ``Load More'' button, the \jscode{getData} sends a POST
+request to the server and receives data of 8 more events by calling \jscode{concat} in line 28.
+As a result, the events list on the page keeps growing by 8.
+Both functions, selecting an option of dropdown list and loading more contents
+from server-side, are familiar to users.
 
-Dynamic analysis is still applicable using sealed symbolic concrete execution even if the
-arguments are not concrete values.  The \jscode{getData} function is another
-part to use \jscode{concat} function but we can only partially apply dynamic
-analysis in this case.  It is invoked when loading more Zoom events in
-``Webinars \& Events'' page.  At the first time, initial eight events are stored
-in \jscode{this.pastEvents}.  For each click of the ``Load More'' button, the
-\jscode{getData} sends a POST request to the server and receives additional
-event information \jscode{e} in line 24.  Then, eight events in
-\jscode{e.events} are appended to \jscode{this.pastEvents} using the
-\jscode{concat} function in line 27-28.  In this case, arguments are not
-deterministic but dependent on the given data from the server.  However, we know
-that the number of arguments are still deterministically defined as \jscode{2}
-and they are array objects.  Thus, we just invoke the funciton \jscode{concat}
-with \jscode{\_} as \jscode{this} value and two abstract arrays as arguments for
-dynamic analysis.  Then, dynamic analysis is successfully performed in line 2-8
-because it just checks the length of \jscode{arguments} and passes its elements
-to \jscode{array} and \jscode{args}.  Moreover, \jscode{isArray(array)} is also
-able to be evaluated using concrete semantics because we know that \code{array}
-is an abstract array.  Only copying via \jscode{copyArray}, flattening via
-\jscode{baseFlatten}, and pushing via \jscode{arrayPush} utilize the abstract
-semantics.  This is the core idea of sealed symbolic execution to maximize the
-part of dynamic analysis during static analysis.
+
+Existing techniques: static analysis, dynamic analysis, and combined analysis
+have limitations to deal with the program containing \jscode{changeCountry} and
+\jscode{getData}.
+Static analyses of low degrees of context sensitivity tend to cause the
+precision loss during analyzing \jscode{concat} function.
+The loop in line 7-8 can lead to messing up every property value of args object.
+Moreover, \jscode{baseFlatten} has a recursive call that is another challenge
+for static analysis.
+High degrees of context sensitivity is the promising way, but its computaion
+cost is the burden.
+Dynamic analyses can show much higher performance for the \jscode{concat} call
+by \jscode{changeCountry} than static analyses without any unsoundness and
+precision loss.
+However, they cannot cover all possible behavior of the \jscode{concat} call
+by \jscode{getData} originated by unknown server-side data.
+A promising form of combined analysis is dynamically analyzing the call by \jscode{changeCountry}
+and statically analyzing the call by \jscode{getData} that is not possible by
+existing combined analyses.
+User events trigger both functions, the order of function calls is
+non-deterministic, so the proper point to divide stages for combined analyses
+does not exist.
+The syntactic division of the program imposes to choose only one kind of analysis
+for the \jscode{concat} function that restricts the benefits of combined analysis.
+
+
+We present a more flexible and fine-grained method to combine two analyses to
+maximize the benefits.
+
+Our observation is
+
+%When the given arguments of a function invokation are concrete values, we can
+%perform dynamic analysis instead of static analysis. For example, The
+%\jscode{changeCountry} function is invoked when a country different with the
+%current one is selected in registration of Zoom meetings.  When the ``United
+%States of America'' (USA) is selected, it calls the \jscode{concat} function
+%with two pre-defined concrete values as arguments to load USA state information
+%in line 17-18.  The first argument is an array literal \jscode{[["Other",
+%"Other"]]} and the second one is an array of pairs of abbreviations and names of
+%USA states defined as follows:
+%\begin{lstlisting}[style=myJSstyle,numbers=none]
+%WebinarBase.questions.state.items =
+%  [["AL","Alabama"], ..., ["WY", "Wyoming"]]
+%\end{lstlisting}
+%Moreover, \jscode{this} value is also a concrete value, the Lodash top-level
+%object \jscode{\_}.  Thus, we could perform dynamic analysis by invoking the
+%\jscode{concat} funciton with \jscode{\_} as \jscode{this} value and above two
+%concrete values as arguments.  It increases performance of static analysis by
+%skipping the analysis of function call in line 17-18 and utilizing the result of
+%dynamic analysis.
+%
+%Dynamic analysis is still applicable using lazy concrete execution even if the
+%arguments are not concrete values.  The \jscode{getData} function is another
+%part to use \jscode{concat} function but we can only partially apply dynamic
+%analysis in this case.  It is invoked when loading more Zoom events in
+%``Webinars \& Events'' page.  At the first time, initial eight events are stored
+%in \jscode{this.pastEvents}.  For each click of the ``Load More'' button, the
+%\jscode{getData} sends a POST request to the server and receives additional
+%event information \jscode{e} in line 24.  Then, eight events in
+%\jscode{e.events} are appended to \jscode{this.pastEvents} using the
+%\jscode{concat} function in line 27-28.  In this case, arguments are not
+%deterministic but dependent on the given data from the server.  However, we know
+%that the number of arguments are still deterministically defined as \jscode{2}
+%and they are array objects.  Thus, we just invoke the funciton \jscode{concat}
+%with \jscode{\_} as \jscode{this} value and two abstract arrays as arguments for
+%dynamic analysis.  Then, dynamic analysis is successfully performed in line 2-8
+%because it just checks the length of \jscode{arguments} and passes its elements
+%to \jscode{array} and \jscode{args}.  Moreover, \jscode{isArray(array)} is also
+%able to be evaluated using concrete semantics because we know that \code{array}
+%is an abstract array.  Only copying via \jscode{copyArray}, flattening via
+%\jscode{baseFlatten}, and pushing via \jscode{arrayPush} utilize the abstract
+%semantics.  This is the core idea of lazy concrete execution to maximize the
+%part of dynamic analysis during static analysis.
 
 In the remaining section we formally define the combined analysis with sealed
 symbolic execution in Section~\ref{sec:formal}.  Then, we explain how to define
