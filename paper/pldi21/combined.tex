@@ -1,26 +1,11 @@
 \section{Combined Analysis}\label{sec:formal}
 
-In this section, we formally define the dynamic shortcut over the abstract
-interpretation.
+In this section, we formally define the combined analysis with lazy concrete
+execution.  We extend the formalization of abstract interpretation and analysis
+sensitivity proposed by \citet{sens-toplas}.
 
 
 \subsection{Concrete Semantics}
-
-% \[
-%   \prog ::= (\lab: \inst)^*\\
-% \]
-% A program $\prog$ is a sequence of labelled instructions.  We represent the
-% semantics of a program $\prog$ as a state transition system $(\stset, \trans,
-% \istset)$.  A state $\st \in \stset = \labset \times \memset$ is a pair of a
-% label and a memory and represents a status of the program $\prog$.  A memory
-% $\mem \in \memset = \locset \finmap \valset$ is a finite mapping from locations
-% to values. A program starts with an initial state in $\istset$.  The transition
-% relation $\trans \subseteq \stset \times \stset$ describes how states are
-% transformed to other states.  It is defined with the \textit{concrete semantics}
-% $\sem{\inst}: \stset \rightarrow \powerset{\stset}$ of instructions as follows:
-% \[
-%   \st \trans \st' \iff \st = (\lab, \_) \wedge \st' \in \sem{\prog(\lab)}(\st)
-% \]
 
 We define a program $\prog$ as a state transition system $(\stset, \trans,
 \istset)$.  A program starts with an initial state in $\istset$ and the
@@ -42,6 +27,29 @@ states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
 \dom$ transforms states using the transition relation $\trans$: $\step(\elem) =
 \{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
 
+\begin{figure}[H]
+  \[
+    \begin{array}{l}
+      \enspace \labdot{0} \; \varx = \;? \; ;  \; \labdot{1}\\
+      \enspace \kwif \; (\; \varx \geq 0 \;) \; \labdot{2} \; \varx = \varx ;\\
+      \enspace \kwelse \; \labdot{3} \; \varx = -\varx ;  \; \labdot{4}\\
+    \end{array}
+  \]
+\vspace*{-1em}
+\caption{Conditional branch}
+\label{fig:running-example}
+\end{figure}
+
+For example, the code in Figure~\ref{fig:running-example} is a simple program
+that applies the mathematical absolute value function to the variable $\varx$.
+The question mark $?$ denotes the user input that returns an integer.  States
+are pairs of labels and integers $\varx$: $\stset = \labset \times \mathbb{N}$.
+The initial states are $\istset = \{ (\lab_0, 0) \}$ which means the program
+starts with the varible $\varx$ that stores 0 at $\lab_0$.  If the user input is
+$-42$, the program is executed with the following trace:
+\[
+  (\lab_0, 0) \trans (\lab_1, -42) \trans (\lab_3, -42) \trans (\lab_4, 42)
+\]
 
 \subsection{Abstract Interpretation}
 The abstract interpretation~\cite{abs-interp-1977, abs-interp-1992}
@@ -69,6 +77,12 @@ conditions:
   \item $\forall \abselem \in \absdom. \; \absstep \circ \gamma(\abselem) \subseteq
     \gamma \circ \absstep(\abselem)$
 \end{itemize}
+
+A simple example abstract domain is $\absdom_\pm = \powerset{\{ -, +, 0 \}}$ with
+set operators as domain operators; $-$ denotes negative integers, $+$ positive
+integers, and $0$ zero.  If we use it for the code in
+Figure~\ref{fig:running-example}, the analysis result becomes $\{ -, +, 0 \}$
+because $\varx$ can have any integers at $\lab_1$.
 
 
 \subsection{Analysis Sensitivity}
@@ -105,10 +119,25 @@ analysis:
   \viewtrans{\view'}{\view}(\abselem)
 \]
 
+One of the most widely-used analysis sensitivity is \textit{flow sensitivity}
+defined with the flow-sensitive view abstraction $\fsviewmap: \labset
+\rightarrow \dom$ where
+\[
+  \forall \lab\in\labset. \; \fsviewmap(\lab) = \{ \st \mid \st = (\lab, \_) \}
+\]
+If we apply the flow sensitivity for the above example, the analysis result
+becomes as follows:
+\[
+  \begin{array}{|c||c|c|c|c|c|}\hline
+    \labset & \lab_0 & \lab_1 & \lab_2 & \lab_3 & \lab_4\\\hline
+    \absdom_\pm & 0 & -, +, 0 & +, 0 & - & +, 0\\\hline
+  \end{array}
+\]
 
-\subsection{Lazy Concrete Interpretation}
 
-We define a \textit{lazy concrete interpretation} by extending the transition
+\subsection{Lazy Concrete Execution}
+
+We define a \textit{lazy concrete execution} by extending the transition
 relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
 states. First, we extends the concrete states $\stset$ to \textit{symbolic
 states} with symbolic values $\symbset$ that denote abstract values that cannot be
@@ -119,7 +148,7 @@ the exact value of symbolic values.  In this case, the symbolic state has the
 relation a special exception state $\excst$ to represent that it is impossible
 to interpret in a concrete way.  Thus, a symbolic state \textit{always} has a
 symbolic transition relation with a single symbolic state, and the lazy concrete
-interpret is linear execution until reaching the exception state.
+execution is linear until reaching the exception state.
 
 To freely convert a pair of view and an abstract state to its corresponding
 symbolic state and vice versa, we define two domain converters $\symbstset
@@ -127,7 +156,7 @@ symbolic state and vice versa, we define two domain converters $\symbstset
 converter $\asconverter$ from abstract states to symbolic states, if an abstract
 value $\absval$ represents a singleton value, the function transforms the
 abstract value to the corresponding concrete value.  Otherwise, it converts the
-abstract value as a symbolic value in the result symbolic state.  Two converters
+abstract value as a symbolic value in a result symbolic state.  Two converters
 convert given elements wihtout loss of information:
 \[
   \saconverter \circ \asconverter = \asconverter \circ \saconverter = \identity
@@ -138,7 +167,7 @@ where $\identity$ denotes the identity function.
 \subsection{Combined Analysis}
 
 We define the \textit{combined analysis} of the abstract interpretation and the
-lazy concrete interpretation.  In the combined analysis, we use the powerset of
+lazy concrete execution.  In the combined analysis, we use the powerset of
 symbolic states as the domain $\combdom = \powerset{\symbstset}$, and extend the
 view transition as follows:
 \[
@@ -161,7 +190,7 @@ view transition as follows:
 where $S = \combelem\mid_{\checker}$ and $D =
 \dot{\saconverter}(\combelem\mid_{\neg\checker})$.  The dot notation $\dot{f}$
 denotes the element-wise extended function of a function $f$.  We could
-configure when the lazy concrete interpretation or the abstract interpretation
+configure when the lazy concrete execution or the abstract interpretation
 is performed based on the definition of the $\checker$ function and its negation
 $\neg\checker$.  It should satisfy the following condition for the soundness and
 the termination of the combined analysis:
@@ -169,17 +198,9 @@ the termination of the combined analysis:
   \checker(\symbst) \Rightarrow \symbst \symbtrans^k \excst \wedge
   1 < k \leq N
 \]
-where $N$ is a pre-defined maximum length of the lazy concrete interpretation.
+where $N$ is a pre-defined maximum length of the lazy concrete execution.
 The combined analysis just performs one-step symbolic transition for each
 symbolic state that passes the filter $\checker$. On the other hand, it converts
 remaining symbolic states to the corresponding abstract states, merges them into
 a single abstract state, and performs the abstract one-step execution for the
 abstract state.
-
-% The abstract sensitivity should be defined with a view
-% abstraction $\viewmap: \viewset \rightarrow \dom$ more find-grained than the
-% flow sensitive view abstraction $\fsviewmap$:
-% \[
-%   \forall \view \in \viewset. \; \exists \lab \in \labset. \;
-%   \viewmap(\view) \subseteq \fsviewmap(\lab)
-% \]
