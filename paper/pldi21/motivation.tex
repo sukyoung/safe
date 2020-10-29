@@ -64,7 +64,7 @@ function getData(e) {
 In this section, we first point out limitations that existing techniques face to
 analyze the real-world example described in Figure~\ref{fig:example}.
 We then show how our combined analysis increase the analysis scalability and
-precision through lazy concrete execution, seamlessly combined with the original
+precision through sealed symbolic execution, seamlessly combined with the original
 static analysis.
 
 
@@ -115,7 +115,7 @@ concrete values as arguments.  It increases performance of static analysis by
 skipping the analysis of function call in line 17-18 and utilizing the result of
 dynamic analysis.
 
-Dynamic analysis is still applicable using lazy concrete execution even if the
+Dynamic analysis is still applicable using sealed symbolic concrete execution even if the
 arguments are not concrete values.  The \jscode{getData} function is another
 part to use \jscode{concat} function but we can only partially apply dynamic
 analysis in this case.  It is invoked when loading more Zoom events in
@@ -135,9 +135,9 @@ to \jscode{array} and \jscode{args}.  Moreover, \jscode{isArray(array)} is also
 able to be evaluated using concrete semantics because we know that \code{array}
 is an abstract array.  Only copying via \jscode{copyArray}, flattening via
 \jscode{baseFlatten}, and pushing via \jscode{arrayPush} utilize the abstract
-semantics.  This is the core idea of lazy concrete execution to maximize the
+semantics.  This is the core idea of sealed symbolic execution to maximize the
 part of dynamic analysis during static analysis.
 
-In the remaining section we formally define the combined analysis with lazy
-concrete execution in Section~\ref{sec:formal}.  Then, we explain how to define
+In the remaining section we formally define the combined analysis with sealed
+symbolic execution in Section~\ref{sec:formal}.  Then, we explain how to define
 the combined analysis for JavaScript programs in Section~\ref{sec:javascript}.
