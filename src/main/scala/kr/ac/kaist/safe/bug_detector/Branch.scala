@@ -33,9 +33,9 @@ object Branch extends BugDetector {
     branch.foreach(p => {
       val (ast, cover) = p
       if (cover._1)
-        println(s"${ast.span} (${ast.toString(0)}) ==> True")
+        println(s"${ast.span} (${ast.toString(0).replaceAll(LINE_SEP, "")}) ==> True")
       if (cover._2)
-        println(s"${ast.span} (${ast.toString(0)}) ==> False")
+        println(s"${ast.span} (${ast.toString(0).replaceAll(LINE_SEP, "")}) ==> False")
     })
     val cnt = branch.size
     println(s"total 2 * $cnt = ${2 * cnt} number of branches")
@@ -43,6 +43,14 @@ object Branch extends BugDetector {
 
   override def checkInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = i match {
     case i @ CFGAssert(_, _, cond, true) =>
+      //<>cond<> is only created by "new Obj(arg, ...)", which we should ignore
+      def createdByNew(cfg: CFGNode): Boolean = cfg match {
+        case CFGVarRef(_, _) => cfg.toString().startsWith("<>cond<>")
+        case _ => false
+      }
+      if (createdByNew(cond))
+        return List()
+
       val (v, _) = semantics.V(cond, state)
       val bv = TypeConversionHelper.ToBoolean(v)
       val ast = cond.ir.ast

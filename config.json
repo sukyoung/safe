@@ -16,7 +16,7 @@
     "exitDump": false,
     "out": false,
     "html": "",
-    "exitReachable": true,
+    "exitReachable": false,
     "stopAlreadyVisited": false,
     "stopExitExc": false
   }
