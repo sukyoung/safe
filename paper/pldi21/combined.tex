@@ -35,9 +35,9 @@ states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
       \enspace \kwelse \; \labdot{3} \; \varx = -\varx ;  \; \labdot{4}\\
     \end{array}
   \]
-\vspace*{-1em}
-\caption{Conditional branch}
-\label{fig:running-example}
+  \vspace*{-1em}
+  \caption{Conditional branch}
+  \label{fig:running-example}
 \end{figure}
 
 For example, the code in Figure~\ref{fig:running-example} is a simple program
@@ -137,18 +137,48 @@ becomes as follows:
 
 \subsection{Sealed Symbolic Execution}
 
-We define a \textit{sealed symbolic execution} by extending the transition
-relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
-states. First, we extends the concrete states $\stset$ to \textit{symbolic
-states} with symbolic values $\symbset$ that denote abstract values that cannot be
-concretized to singleton values. A symbolic transition relation $\symbtrans
-\subseteq \symbstset \times (\symbstset \uplus \{ \excst \})$ is exactly the same
-with the original transition relation $\trans$ except when the relation requires
-the exact value of symbolic values.  In this case, the symbolic state has the
-relation a special exception state $\excst$ to represent that it is impossible
-to interpret in a concrete way.  Thus, a symbolic state \textit{always} has a
-symbolic transition relation with a single symbolic state, and the sealed
-symbolic execution is linear until reaching the exception state.
+To handle abstract values in concrete semantics, we define \textit{sealed
+symbolic execution} by extending the transition relation $\trans$ as a symbolic
+transition relation $\symbtrans$ on symbolic states.  First, we extends the
+concrete states $\stset$ to symbolic states with \textit{sealed symbolic values}
+$\symbset$.  A symbolic transition relation $\symbtrans \subseteq \symbstset
+\times (\symbstset \uplus \{ \excst \})$ is exactly the same with the original
+transition relation $\trans$ except when the relation requires the exact value
+of sealed symbolic values.  In this case, the symbolic state has the relation a
+special exception state $\excst$ to represent that it is impossible to interpret
+in a concrete way.  Thus, a symbolic state \textit{always} has a symbolic
+transition relation with a single symbolic state, and the sealed symbolic
+execution is linear until being terminated or reaching the exception state
+$\excst$.
+
+The main difference of sealed symbolic execution with the traditional symbolic
+execution~\cite{symbolic} is that it only supports sealed symbolic values
+instead of symbolic expressions and path constraints.  For example, the
+following trace represents the traditional symbolic execution of the running
+example in Figure~\ref{fig:running-example}:
+\[
+  \begin{array}{r@{~}c@{~}l}
+    &&(\lab_2, \symb)[\symb \geq 0] \trans (\lab_4, \symb)[\symb \geq 0]
+    \vspace*{-0.5em}\\
+    &\rutrans&
+    \vspace*{-0.5em}\\
+    (\lab_0, 0)[] \trans (\lab_1, \symb)[]&&
+    \vspace*{-0.5em}\\
+    &\rdtrans&
+    \vspace*{-0.5em}\\
+    &&(\lab_3, \symb)[\symb < 0] \trans (\lab_4, -\symb)[\symb < 0]\\
+  \end{array}
+\]
+It first assigns a symbolic value $\symb$ to the variable $\varx$ at $\lab_1$.
+For the conditional branch, it is forked by creating two symbolic states with
+different path conditions $\symb \geq 0$ and $\symb < 0$ for true and false
+branches, respectively.  After executing statements $\varx = \varx$ and $\varx =
+-\varx$, the variable $\varx$ stores symblic expressions $\symb$ and $-\symb$ at
+$\lab_4$.  However, the sealed symbolic execution stops at $\lab_1$ as follows:
+\[
+  (\lab_0, 0) \; \symbtrans \; (\lab_1, \symb) \; \symbtrans \; \excst
+\]
+because the branch requires the actual value of the symbolic value $\symb$.
 
 To freely convert a pair of view and an abstract state to its corresponding
 symbolic state and vice versa, we define two domain converters $\symbstset
@@ -165,6 +195,15 @@ where $\identity$ denotes the identity function.
 
 
 \subsection{Combined Analysis}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{img/combined-analysis}
+  \vspace*{-2em}
+  \caption{The diagram for the extended view transition in the combined analysis.}
+  \vspace*{-1em}
+  \label{fig:combined-analysis}
+\end{figure}
 
 We define the \textit{combined analysis} of the abstract interpretation and the
 sealed symbolic execution.  In the combined analysis, we use the powerset of
@@ -189,18 +228,43 @@ view transition as follows:
 \]
 where $S = \combelem\mid_{\checker}$ and $D =
 \dot{\saconverter}(\combelem\mid_{\neg\checker})$.  The dot notation $\dot{f}$
-denotes the element-wise extended function of a function $f$.  We could
-configure when the sealed symbolic execution or the abstract interpretation
-is performed based on the definition of the $\checker$ function and its negation
-$\neg\checker$.  It should satisfy the following condition for the soundness and
-the termination of the combined analysis:
-\[
-  \checker(\symbst) \Rightarrow \symbst \symbtrans^k \excst \wedge
-  1 < k \leq N
-\]
-where $N$ is a pre-defined maximum length of the sealed symbolic execution.
-The combined analysis just performs one-step symbolic transition for each
-symbolic state that passes the filter $\checker$. On the other hand, it converts
-remaining symbolic states to the corresponding abstract states, merges them into
-a single abstract state, and performs the abstract one-step execution for the
-abstract state.
+denotes the element-wise extended function of a function $f$.  The combined
+analysis performs one-step symbolic transition for each symbolic state that
+passes the filter $\checker$. On the other hand, it converts remaining symbolic
+states to the corresponding abstract states, merges them into a single abstract
+state, and performs the abstract one-step execution for the abstract state.
+
+For example, Figure~\ref{fig:combined-analysis} depicts the
+diagram of the view transition from $\view$ to $\view'$ in the combined
+analysis.  The element $\combelem$ in $\view$ consists of five symbolic states
+from $\nsymbst{1}$ to $\nsymbst{5}$.  The solid box denotes that the corresponding
+symbolic state passes the filter $\checker$ and the dotted box denotes that it
+does not.  For each symbolic state that passes the filter ($\nsymbst{1}$,
+$\nsymbst{2}$, and $\nsymbst{4}$), it applies the symbolic transition $\symbtrans$.
+For failed symbolic states ($\nsymbst{3}$ and $\nsymbst{5}$), it applies the
+converter $\saconverter$ to convert each of them to the corresponding abstract
+state and merges results using the join operator ($\join$).  Then, it utilizes
+the abstract semantics via the original view transition
+$\viewtrans{\view}{\view'}$ and the converter $\asconverter$ to convert the
+result to the corresponding symbolic state.
+
+We could configure when the sealed symbolic execution or the abstract
+interpretation is performed based on the definition of the $\checker$ function
+and its negation $\neg\checker$.  For example, we could define the $\checker$
+that passes only function entry, call, and exit points to perform conversions in
+a function level.  However, for the soundness and the termination of the
+combined analysis, it should satisfy the following condition:
+\begin{theorem}
+  The combined analysis has sound analysis result and terminates in a finite
+  time if its abstract semantics is sound and $\checker$ satisfies the following
+  condition:
+  \[
+    \checker(\symbst) \Rightarrow \symbst \symbtrans^k \excst \wedge
+    1 < k \leq N
+  \]
+  where $N$ is a pre-defined maximum length of the sealed symbolic execution.
+\end{theorem}
+\inred{We prove that any combined analysis defined with the extended view
+transition satisfying the above condition always has sound analysis result and
+terminates in a finite time. Because of the page limitation, we omit the
+proof in this paper and include it in a companion report.}
