@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.bug_detector._
 case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), BugDetectConfig, CFG] {
   val name: String = "bugDetector"
   val help: String = "Detect possible bugs in JavaScript source files."
-
+  /*
   val checkers: List[BugDetector] = List(
     CheckNaN,
     CmpFunPrim,
@@ -31,6 +31,8 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
     ShadowProtoProp,
     FunCallWithMoreArg
   )
+	*/
+  val checkers: List[BugDetector] = List(Branch)
 
   def apply(
     in: (CFG, Int, TracePartition, Semantics),
@@ -38,13 +40,10 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
     config: BugDetectConfig
   ): Try[CFG] = {
     val (cfg, _, _, semantics) = in
+
     // Bug detection for each checker
-    checkers.foreach(checker => {
-      cfg.getUserBlocks.foreach(b => {
-        val bugs = checker.checkBlock(b, semantics)
-        bugs.foreach(println)
-      })
-    })
+    checkers.foreach(checker => checker(cfg, semantics))
+
     Success(cfg)
   }
 

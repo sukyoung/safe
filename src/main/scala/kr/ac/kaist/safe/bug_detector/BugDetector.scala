@@ -19,6 +19,13 @@ import kr.ac.kaist.safe.util._
 trait BugDetector {
   val id: Int
 
+  def apply(cfg: CFG, semantics: Semantics): Unit = {
+    cfg.getUserBlocks.foreach(b => {
+      val bugs = checkBlock(b, semantics)
+      bugs.foreach(println)
+    })
+  }
+
   protected def isReachableUserCode(block: CFGBlock, sem: Semantics): Boolean =
     !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
 

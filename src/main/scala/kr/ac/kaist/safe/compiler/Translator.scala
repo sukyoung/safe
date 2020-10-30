@@ -1243,9 +1243,9 @@ class Translator(program: Program) {
 
     case (n: Null) => (List(), IRVal(EJSNull))
 
-    case b @ Bool(_, isBool) =>
+    case b @ Bool(_, isTrue) =>
       (List(),
-        if (isBool) IRVal(true) else IRVal(false))
+        if (isTrue) IRVal(b, EJSBool(true)) else IRVal(b, EJSBool(false)))
 
     case DoubleLiteral(_, text, num) =>
       (List(), IRVal(text, num))

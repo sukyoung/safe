@@ -163,4 +163,5 @@ object IRVal {
   def apply(text: String, num: Double): IRVal = IRVal(EJSNumber(text, num))
   def apply(str: String): IRVal = IRVal(EJSString(str))
   def apply(bool: Boolean): IRVal = IRVal(EJSBool(bool))
+  def apply(ast: ASTNode, bool: Boolean): IRVal = IRVal(ast, EJSBool(bool))
 }
