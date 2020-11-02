@@ -89,11 +89,11 @@ semantics of the third line does not dependent with the meaning of
 \jscode{absval}.  To utilize this observation in dynamic shortcut, we introduce
 \textit{sealed symbolic execution}, which is an augmented concrete execution
 with sealed symbolic values.  We represent each abstract value as a sealed
-symbolic value, which is a symbolic value that throws an error when trying to
-access its actual meaning.  To evaluate our approach, we implemented $\tool$ by
-extending the existing JavaScript static analyzer SAFE with dynamic shortcut.
-For evaluation of $\tool$, we analyzed abstracted versions of \inred{77}
-official tests of \inred{Lodash 4} library.
+symbolic value, which is a symbolic value that detects when trying to access its
+actual meaning.  To evaluate our approach, we implemented $\tool$ by extending
+the existing JavaScript static analyzer SAFE with dynamic shortcut.  For
+evaluation of $\tool$, we analyzed abstracted versions of \inred{77} official
+tests of \inred{Lodash 4} library.
 
 Our contributions in this paper include the following:
 \begin{itemize}
