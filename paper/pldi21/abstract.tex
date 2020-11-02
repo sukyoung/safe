@@ -1,10 +1,29 @@
 \begin{abstract}
-Static analyses based on abstract interpretation can be integrated into developer workflow and help developers to find bugs.
-However, the dynamic features of JavaScript degrade the scalability and precision of the pure static analyses.
-Combining static and dynamic analyses is one of the breakthroughs in JavaScript bug detection.
-Existing combined analyses have static boundaries that distinguish which analysis used for which part of a program.
-Such boundaries are intuitive but limit chances to optimize transitions between two analyses.
-We formally present the dynamic shortcut, a more flexible compound of static and dynamic analyses.
-We implement a proof of concept bug detector by extending the existing static analyzer supporting a subset of ECMAScript 5.1.
-Our experimental results show that the combined analysis indeed speeds up and produces more precise results.
+  JavaScript becomes one of the most widely used programming languages for web
+  development, server-side programming, and embedded systems.  However, its
+  dynamic language features degrade the scalability and precision of the static
+  analysis.  Moreover, the variety of built-in functions and host environments
+  requires excessive manual modeling of their behaviors for the static analysis
+  of real-world JavaScript applications.  To alleviate this problem, several
+  researchers utilize the dynamic analysis to take its advantage during
+  JavaScript static analysis.  However, most of them sacrifice the soundness
+  and focus on only reducing the effort of manual modeling.
+
+  In this paper, we propose a novel \textit{dynamic shortcut} technique to
+  leverage high performance of dynamic analysis for static analysis in a sound
+  way.  It could significantly accelerate the JavaScript static analysis by
+  using the highly-optimized commercial JavaScript engines for the concretely
+  executable program parts.  Moreover, it might improve the precision and lessen
+  the modeling effort by performing dynamic analysis for opaque codes.  To
+  maximize the usage of dynamic analysis, we propose \textit{sealed symbolic
+  execution}, which is an augmented concrete execution that represents abstract
+  values as sealed symbolic values.  We formally define the static analysis with
+  dynamic shortcut using sealed symbolic execution.  We actualize our method via
+  $\tool$, which is an extension of the existing JavaScript static analyzer
+  $\safe$ with dynamic shortcut.  For evaluation of $\tool$, we analyzed
+  abstracted versions of \inred{77} official tests of \inred{Lodash 4} library.
+  Our tool is \inred{X.X}x faster than the original static analysis on average.
+  Moreover, it improves \inred{XX.XX}\% of analysis precision by using dynamic
+  analysis instead of static analysis for \inred{XX.X} opaque functions on
+  average.
 \end{abstract}
