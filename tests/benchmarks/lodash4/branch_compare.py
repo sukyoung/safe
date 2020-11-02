@@ -46,11 +46,14 @@ def check_file(jsfile):
 	
 	def parse_safe_alarm(alarm):
 		taken = alarm.split(" ==> ")[1].strip()
-		splits = alarm.split(":")
+		splits = alarm.split()[0].split(":")
 		line = int(splits[1])
-		if "-" in splits[2].split()[0]:
+		if len(splits) == 4:
 			st = int(splits[2].split("-")[0])
-			fn = int(splits[2].split("-")[1].split()[0])
+			fn = int(splits[3])
+		elif "-" in splits[2].split()[0]:
+			st = int(splits[2].split("-")[0])
+			fn = int(splits[2].split("-")[1])
 		else:
 			st = int(splits[2].split()[0])
 			fn = st
