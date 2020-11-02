@@ -506,7 +506,7 @@ class Translator(program: Program) {
       val (ss, r) = walkExpr(expr, env, varIgn(expr))
       if (isInternal) IRSeq(expr, makeListIgnore(expr, ss, r))
       else IRStmtUnit(expr, makeListIgnore(expr, ss, r))
-
+    /*
     case If(_, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("&&") && allAnds(left) =>
       val args = getArgs(left) :+ right
       val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, arg.span, "new" + index) }
@@ -562,7 +562,7 @@ class Translator(program: Program) {
       }
       val body2 = IRSeq(s, IRLabelStmt(s, lab1, body1), walkStmt(trueB, env))
       IRStmtUnit(s, IRSeq(s, ss1 :+ IRLabelStmt(s, lab2, body2)))
-
+*/
     case If(info, Parenthesized(_, expr), trueBranch, falseBranch) =>
       walkStmt(If(info, expr, trueBranch, falseBranch), env)
 
@@ -823,7 +823,7 @@ class Translator(program: Program) {
       })
       val (ss2, r2) = walkExpr(exprs.last, env, res)
       (stmts ++ ss2, r2)
-
+    /*
     case Cond(_, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("&&") =>
       val newa = freshId(left, left.span, "newa")
       val (ssa, ra) = walkExpr(left, env, newa)
@@ -855,7 +855,7 @@ class Translator(program: Program) {
         IRBreak(e, lab2))
       val body2 = IRSeq(e, IRLabelStmt(e, lab1, body1), makeSeq(trueB, ss2, r2, res))
       (ssa :+ IRLabelStmt(e, lab2, body2), res)
-
+*/
     case Cond(info, Parenthesized(_, expr), trueBranch, falseBranch) =>
       walkExpr(Cond(info, expr, trueBranch, falseBranch), env, res)
 
@@ -952,6 +952,7 @@ class Translator(program: Program) {
         (ss, IRUn(e, IROp(NU.TEMP_AST, EJSOp(opText)), r))
       }
 
+    /*
     case infix @ InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
       val args = getAndArgs(left) :+ right
       val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, arg.span, "new" + index) }
@@ -1004,6 +1005,18 @@ class Translator(program: Program) {
           }),
         res
       )
+*/
+
+    case InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
+      val y = freshId(left, left.span, "y")
+      val z = freshId(right, right.span, "z")
+      val (ss1, r1) = walkExpr(left, env, y)
+      val (ss2, r2) = walkExpr(right, env, z)
+      (ss1 :+ IRIf(e, r1, IRSeq(
+        e,
+        ss2 :+ mkExprS(right, res, r2)
+      ), Some(mkExprS(left, res, r1))),
+        res)
 
     case InfixOpApp(_, left, op, right) if op.text.equals("||") =>
       val y = freshId(left, left.span, "y")
