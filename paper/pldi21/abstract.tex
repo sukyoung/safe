@@ -1,29 +1,29 @@
 \begin{abstract}
   JavaScript becomes one of the most widely used programming languages for web
-  development, server-side programming, and embedded systems.  However, its
-  dynamic language features degrade the scalability and precision of the static
-  analysis.  Moreover, the variety of built-in functions and host environments
-  requires excessive manual modeling of their behaviors for the static analysis
-  of real-world JavaScript applications.  To alleviate this problem, several
-  researchers utilize the dynamic analysis to take its advantage during
-  JavaScript static analysis.  However, most of them sacrifice the soundness
-  and focus on only reducing the effort of manual modeling.
+  development, server-side programming, and even micro-controllers for IoT.
+  However, its dynamic language features degrade the scalability and precision
+  of the static analysis.  Moreover, the variety of built-in functions and host
+  environments requires excessive manual modeling of their behaviors.  To
+  alleviate this problem, several researchers utilize dynamic analysis to take
+  its advantage during JavaScript static analysis.  However, most of them cannot
+  fully utilize high performance of dynamic analysis and sacrifice the soundness
+  of static analysis.
 
   In this paper, we propose a novel \textit{dynamic shortcut} technique to
-  leverage high performance of dynamic analysis for static analysis in a sound
-  way.  It could significantly accelerate the JavaScript static analysis by
-  using the highly-optimized commercial JavaScript engines for the concretely
-  executable program parts.  Moreover, it might improve the precision and lessen
-  the modeling effort by performing dynamic analysis for opaque codes.  To
-  maximize the usage of dynamic analysis, we propose \textit{sealed symbolic
-  execution}, which is an augmented concrete execution that represents abstract
-  values as sealed symbolic values.  We formally define the static analysis with
-  dynamic shortcut using sealed symbolic execution.  We actualize our method via
-  $\tool$, which is an extension of the existing JavaScript static analyzer
-  $\safe$ with dynamic shortcut.  For evaluation of $\tool$, we analyzed
-  abstracted versions of \inred{77} official tests of \inred{Lodash 4} library.
-  Our tool is \inred{X.X}x faster than the original static analysis on average.
-  Moreover, it improves \inred{XX.XX}\% of analysis precision by using dynamic
-  analysis instead of static analysis for \inred{XX.X} opaque functions on
-  average.
+  leverage high performance of dynamic analysis for static analysis by freely
+  switching between them in a sound way.  It could significantly accelerate the
+  JavaScript static analysis by using the highly-optimized commercial JavaScript
+  engines for the concretely executable program parts.  Moreover, it might
+  improve the precision and lessen the modeling effort by performing dynamic
+  analysis for opaque codes.  To maximize the usage of dynamic analysis, we
+  propose \textit{sealed symbolic execution}, which is an augmented concrete
+  execution that represents abstract values as sealed symbolic values.  We
+  formally define the static analysis with dynamic shortcut using sealed
+  symbolic execution.  We actualize our method via $\tool$, which is an
+  extension of the existing JavaScript static analyzer SAFE with dynamic
+  shortcut.  For evaluation of $\tool$, we analyzed abstracted versions of
+  \inred{77} official tests of \inred{Lodash 4} library.  Our tool is
+  \inred{X.X}x faster than the original static analysis on average.  Moreover,
+  it improves \inred{XX.XX}\% of analysis precision by using dynamic analysis
+  instead of static analysis for \inred{XX.X} opaque functions on average.
 \end{abstract}
