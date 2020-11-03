@@ -1,8 +1,8 @@
-\section{Combined Analysis for JavaScript}\label{sec:javascript}
+\section{Dynamic Shortcut for JavaScript}\label{sec:javascript}
 
 In this section, we introduce the core language of JavaScript that supports
 first-class functions, open objects, and first-class property names, and define
-combined analysis of the core language.
+sealed symbolic execution of the core language for dynamic shortcut.
 
 \subsection{Core Language of JavaScript}
 
@@ -170,7 +170,7 @@ combined analysis of the core language.
   \end{array}
 \]
 
-A program $\prog$ is a sequence of labelled instructions. An instruction $\inst$
+A program $\prog$ is a sequence of labeled instructions. An instruction $\inst$
 is an expression assignment, an object creation, a function call, a return
 instruction, or a branch.  A reference $\refer$ is a variable or a property
 access of an object.  An expression $\expr$ is a primitive, a lambda function, a
@@ -215,8 +215,8 @@ different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
 \fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
 $\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
 the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
-environment address.  The function $\labnext$ returns the next lable of a
-given lable in the current program $\prog$.
+environment address.  The function $\labnext$ returns the next label of a
+given label in the current program $\prog$.
 
 
 \subsection{Abstract Semantics}
