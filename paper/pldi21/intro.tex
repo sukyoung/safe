@@ -77,23 +77,23 @@ leverage high performance of dynamic analysis for static analysis by freely
 switching between them in a sound way.  Our key observation is that we can
 use concrete semantics for specific program parts while preserving the soundness
 if they are not dependent with meaning of abstract values.  For example, the
-third line of the following program passes the abstract value \jscode{absval}
-stored in \jscode{obj.p1} to the variable \jscode{x}:
+third line of the following program passes the abstract value \jscode{v} stored
+in \jscode{obj.p1} to the variable \jscode{x}:
 \begin{lstlisting}[style=myJSstyle,numbers=none]
-var absval = ... // an abstract value
-var obj = { p1: absval }, y = "p";
+var v = ... // an abstract value
+var obj = { p1: v }, y = "p";
 x = obj[y + 1];
 \end{lstlisting}
-Even though \jscode{obj} contains an abstract value \jscode{absval}, the
-semantics of the third line does not dependent with the meaning of
-\jscode{absval}.  To utilize this observation in dynamic shortcut, we introduce
-\textit{sealed symbolic execution}, which is an augmented concrete execution
-with sealed symbolic values.  We represent each abstract value as a sealed
-symbolic value, which is a symbolic value that detects when trying to access its
-actual meaning.  To evaluate our approach, we implemented $\tool$ by extending
-the existing JavaScript static analyzer SAFE with dynamic shortcut.  For
-evaluation of $\tool$, we analyzed abstracted versions of \inred{77} official
-tests of \inred{Lodash 4} library.
+Even though \jscode{obj} contains an abstract value \jscode{v}, the semantics of
+the third line does not dependent with the meaning of \jscode{v}.  To utilize
+this observation in dynamic shortcut, we introduce \textit{sealed symbolic
+execution}, which is an augmented concrete execution with sealed symbolic
+values.  We represent each abstract value as a sealed symbolic value, which is a
+symbolic value that detects when trying to access its actual meaning.  To
+evaluate our approach, we implemented $\tool$ by extending the existing
+JavaScript static analyzer SAFE with dynamic shortcut.  For evaluation of
+$\tool$, we analyzed abstracted versions of \inred{77} official tests of
+\inred{Lodash 4} library.
 
 Our contributions in this paper include the following:
 \begin{itemize}
