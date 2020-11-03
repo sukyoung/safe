@@ -894,7 +894,7 @@ class Translator(program: Program) {
       if (op.text.equals("++") || op.text.equals("--")) {
         val lhsspan = lhs.span
         val oldVal = freshId(lhs, lhsspan, OLD_NAME)
-        val newVal = freshId(lhs, lhsspan, "new")
+        val newVal = freshId(e, e.span, "new")
         (
           walkLval(e, lhs, addE(env, OLD_NAME, oldVal), List(toNumber(lhs, newVal, oldVal)),
             IRBin(e, newVal,
@@ -912,7 +912,7 @@ class Translator(program: Program) {
       val opText = op.text
       if (opText.equals("++") || opText.equals("--")) {
         val oldVal = freshId(right, rightspan, OLD_NAME)
-        val newVal = freshId(right, rightspan, "new")
+        val newVal = freshId(e, e.span, "new")
         val bin = IRBin(e, newVal,
           if (opText.equals("++")) PLUS else MINUS,
           ONE_NUM)
