@@ -34,6 +34,22 @@ case class Semantics(
     worklist: Worklist,
     timeLimit: Int = 0
 ) {
+  var dsTriedCPs: Set[ControlPoint] = Set()
+  def addTriedCPs(json: JsValue): Unit = json match {
+    case JsArray(vector) => vector.foreach(_ match {
+      case JsObject(fields) => fields("fid") match {
+        case JsNumber(d) =>
+          val fid = d.toInt
+          val tp = TracePartition(fields("tracePartition").toString)(cfg)
+          val cp = ControlPoint(cfg.getFunc(fid).get.entry, tp)
+          dsTriedCPs += cp
+        case _ =>
+      }
+      case _ =>
+    })
+    case _ =>
+  }
+
   var startTime: Long = 0
   var instCount: Int = 0
   def setting: Unit = {
@@ -237,34 +253,27 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          //if (cp.block.func.id == 2) {
-          //  val s = System.currentTimeMillis
-          //  val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
-          //  val newTP = cp.tracePartition
-          //  val exitCP = ControlPoint(func.exit, newTP)
+          if (dynamicShortcut && !dsTriedCPs.contains(cp)) {
+            dsTriedCPs += cp
+            val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
+            val newTP = cp.tracePartition
+            val exitCP = ControlPoint(func.exit, newTP)
 
-          //  val dumped = dump.prettyPrint
-          //  val e1 = System.currentTimeMillis
-          //  val json = send(dumped)
-          //  val e2 = System.currentTimeMillis
+            val dumped = dump.prettyPrint
+            val json = send(dumped)
 
-          //  val fields = json.asJsObject().fields
-          //  val loaded = AbsState.fromJSON(fields("state"), cfg)
-          //  val e3 = System.currentTimeMillis
-          //  println("[elapsedTime]: " + ((e1 - s) / 1000.0f) + " sec")
-          //  println("[elapsedTime]: " + ((e2 - s) / 1000.0f) + " sec")
-          //  println("[elapsedTime]: " + ((e3 - s) / 1000.0f) + " sec")
-          //  if (loaded ⊑ AbsState.Bot) {
-          //    (newSt, AbsState.Bot)
-          //  } else {
-          //    setState(exitCP, loaded)
-          //    worklist.add(exitCP)
-          //    (AbsState.Bot, AbsState.Bot)
-          //  }
-          //} else {
-          //  (newSt, AbsState.Bot)
-          //}
-          (newSt, AbsState.Bot)
+            val fields = json.asJsObject().fields
+            addTriedCPs(fields("visitedEntryControlPoints"))
+
+            val loaded = AbsState.fromJSON(fields("state"), cfg)
+            if (loaded.isBottom) {
+              (newSt, AbsState.Bot)
+            } else {
+              setState(exitCP, loaded)
+              worklist.add(exitCP)
+              (AbsState.Bot, AbsState.Bot)
+            }
+          } else (newSt, AbsState.Bot)
         }
         case (call: Call) =>
           val (thisVal, argVal, resSt, resExcSt) = internalCI(cp, call.callInst, st, AbsState.Bot)

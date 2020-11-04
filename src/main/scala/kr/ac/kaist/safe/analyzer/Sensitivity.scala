@@ -47,6 +47,12 @@ trait TracePartition {
 
   def toJSON: JsValue
 }
+object TracePartition {
+  def apply(str: String)(implicit givenCfg: CFG): TracePartition = {
+    val parser = new TracePartitionParser { val cfg = givenCfg }
+    parser.parse(parser.tp, str).get
+  }
+}
 
 // trace partition parser
 trait TracePartitionParser extends CFGBlockParser {

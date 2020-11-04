@@ -19,4 +19,5 @@ package object analyzer {
 
   var stopAlreadyVisited = false
   var stopExitExc = false
+  var dynamicShortcut = false
 }
