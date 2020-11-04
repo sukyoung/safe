@@ -2,17 +2,12 @@
 var a
 var b
 {
+  if("asdf")
   {
-    if("asdf")
-    {
-      <>Global<>ignore1 = 1234
-    }
-    else
-      if(typeof "asdf" == "boolean")
-        <>Global<>ignore1 = false
-      else
-        <>Global<>ignore1 = "asdf"
+    <>Global<>ignore1 = 1234
   }
+  else
+    <>Global<>ignore1 = "asdf"
   a = <>Global<>ignore1
 }
 {

@@ -8,45 +8,36 @@ function[0] top-level {
     [0] assert("asdf")
     [1] <>Global<>ignore1 := 1234
 
-  Block[2] -> [5], [4], ExitExc
+  Block[2] -> [3], ExitExc
     [0] assert(! "asdf")
+    [1] <>Global<>ignore1 := "asdf"
 
-  Block[3] -> [8], [7], ExitExc
+  Block[3] -> [5], [4], ExitExc
     [0] a := <>Global<>ignore1
 
   Block[4] -> [6], ExitExc
-    [0] assert(typeof "asdf" == "boolean")
-    [1] <>Global<>ignore1 := false
-
-  Block[5] -> [6], ExitExc
-    [0] assert(typeof "asdf" != "boolean")
-    [1] <>Global<>ignore1 := "asdf"
-
-  Block[6] -> [3]
-
-  Block[7] -> [9], ExitExc
     [0] assert(a)
     [1] <>Global<>ignore2 := a
 
-  Block[8] -> [9], ExitExc
+  Block[5] -> [6], ExitExc
     [0] assert(! a)
     [1] <>Global<>ignore2 := 3456
 
-  Block[9] -> [10], ExitExc
+  Block[6] -> [7], ExitExc
     [0] b := <>Global<>ignore2
     [1] <>obj<>1 := @ToObject(a) @ #1
     [2] <>arguments<>2 := allocArg(0) @ #2
     [3] <>fun<>3 := @GetBase(a)
     [4] <>this<> := enterCode(<>fun<>3)
 
-  Call[10] -> ExitExc
+  Call[7] -> ExitExc
     [0] call(<>obj<>1, <>this<>, <>arguments<>2) @ #3
 
-  AfterCall[11] -> [13]
+  AfterCall[8] -> [10]
 
-  AfterCatch[12] -> ExitExc
+  AfterCatch[9] -> ExitExc
 
-  Block[13] -> Exit, ExitExc
+  Block[10] -> Exit, ExitExc
     [0] a := <>y<>4 | b
     [1] <>obj<>5 := @ToObject(a) @ #4
     [2] a := <>obj<>5["b"] + b

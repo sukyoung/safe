@@ -1,56 +1,60 @@
 
 
 {
-  <>label<>1 : {
-    if(true)
-      if(false)
-      {
-        <>Global<>ignore2 = "true"
-        break <>label<>1
-      }
+  if(true)
+  {
+    <>new<>1 = false
+  }
+  else
+    <>new<>1 = true
+  if(<>new<>1)
+    <>Global<>ignore2 = "true"
+  else
     <>Global<>ignore4 = "false"
-  }
 }
 {
-  <>label2<>2 : {
-    <>label1<>3 : {
-      if(true)
-        break <>label1<>3
-      if(false)
-        break <>label1<>3
-      <>Global<>ignore6 = "false"
-      break <>label2<>2
-    }
-    <>Global<>ignore8 = "true"
+  if(true)
+    <>new<>2 = true
+  else
+  {
+    <>new<>2 = false
   }
+  if(<>new<>2)
+    <>Global<>ignore6 = "true"
+  else
+    <>Global<>ignore8 = "false"
 }
 {
-  <>label<>4 : {
-    if(true)
-    {
-      if(false)
-      {
-        <>Global<>ignore9 = "true"
-        break <>label<>4
-      }
-    }
+  if(true)
+  {
+    <>new1<>3 = false
+  }
+  else
+    <>new1<>3 = true
+  if(<>new1<>3)
+  {
+    <>Global<>ignore9 = "true"
+  }
+  else
+  {
     <>Global<>ignore9 = "false"
   }
   x = <>Global<>ignore9
 }
 {
-  <>label2<>5 : {
-    <>label1<>6 : {
-      if(true)
-        break <>label1<>6
-      if(false)
-        break <>label1<>6
-      <>Global<>ignore10 = "false"
-      break <>label2<>5
-    }
-    {
-      <>Global<>ignore10 = "true"
-    }
+  if(true)
+    <>new1<>4 = true
+  else
+  {
+    <>new1<>4 = false
+  }
+  if(<>new1<>4)
+  {
+    <>Global<>ignore10 = "true"
+  }
+  else
+  {
+    <>Global<>ignore10 = "false"
   }
   x = <>Global<>ignore10
 }

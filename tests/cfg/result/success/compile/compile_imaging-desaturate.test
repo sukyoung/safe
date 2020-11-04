@@ -63,21 +63,16 @@ var pixcounter
     var <>pix2<>22
     <>params<>13 = <>arguments<>12["0"]
     {
+      <>obj<>23 = @ToObject(<>params<>13)
+      <>obj<>24 = @ToObject(<>obj<>23["options"])
+      if(<>obj<>24["average"])
       {
-        <>obj<>23 = @ToObject(<>params<>13)
-        <>obj<>24 = @ToObject(<>obj<>23["options"])
-        if(<>obj<>24["average"])
-        {
-          <>obj<>25 = @ToObject(<>params<>13)
-          <>obj<>26 = @ToObject(<>obj<>25["options"])
-          <>y<>27 = <>obj<>26["average"] != "false"
-        }
-        else
-          if(typeof <>obj<>24["average"] == "boolean")
-            <>y<>27 = false
-          else
-            <>y<>27 = <>obj<>24["average"]
+        <>obj<>25 = @ToObject(<>params<>13)
+        <>obj<>26 = @ToObject(<>obj<>25["options"])
+        <>y<>27 = <>obj<>26["average"] != "false"
       }
+      else
+        <>y<>27 = <>obj<>24["average"]
       <>useAverage<>14 = ! ! <>y<>27
     }
     {

@@ -4,90 +4,86 @@ function[0] top-level {
   Block[0] -> [2], [1]
     [0] noop(StartOfFile)
 
-  Block[1] -> [4], [3], ExitExc
+  Block[1] -> [3], ExitExc
     [0] assert(true)
+    [1] <>new<>1 := false
 
-  Block[2] -> [6], ExitExc
+  Block[2] -> [3], ExitExc
     [0] assert(! true)
+    [1] <>new<>1 := true
 
-  Block[3] -> [7], ExitExc
-    [0] assert(false)
+  Block[3] -> [5], [4]
+
+  Block[4] -> [6], ExitExc
+    [0] assert(<>new<>1)
     [1] <>Global<>ignore2 := "true"
 
-  Block[4] -> [5], ExitExc
-    [0] assert(! false)
+  Block[5] -> [6], ExitExc
+    [0] assert(! <>new<>1)
+    [1] <>Global<>ignore4 := "false"
 
-  Block[5] -> [6]
+  Block[6] -> [8], [7]
 
-  Block[6] -> [7], ExitExc
-    [0] <>Global<>ignore4 := "false"
-
-  Branch[7] -> [9], [8]
-
-  Block[8] -> [14], ExitExc
+  Block[7] -> [9], ExitExc
     [0] assert(true)
+    [1] <>new<>2 := true
 
-  Block[9] -> [10], ExitExc
+  Block[8] -> [9], ExitExc
     [0] assert(! true)
+    [1] <>new<>2 := false
 
-  Block[10] -> [12], [11]
+  Block[9] -> [11], [10]
 
-  Block[11] -> [14], ExitExc
-    [0] assert(false)
+  Block[10] -> [12], ExitExc
+    [0] assert(<>new<>2)
+    [1] <>Global<>ignore6 := "true"
 
-  Block[12] -> [13], ExitExc
-    [0] assert(! false)
+  Block[11] -> [12], ExitExc
+    [0] assert(! <>new<>2)
+    [1] <>Global<>ignore8 := "false"
+
+  Block[12] -> [14], [13]
 
   Block[13] -> [15], ExitExc
-    [0] <>Global<>ignore6 := "false"
-
-  Branch[14] -> [15], ExitExc
-    [0] <>Global<>ignore8 := "true"
-
-  Branch[15] -> [17], [16]
-
-  Block[16] -> [19], [18], ExitExc
     [0] assert(true)
+    [1] <>new1<>3 := false
 
-  Block[17] -> [21], ExitExc
+  Block[14] -> [15], ExitExc
     [0] assert(! true)
+    [1] <>new1<>3 := true
 
-  Block[18] -> [22], ExitExc
-    [0] assert(false)
+  Block[15] -> [17], [16]
+
+  Block[16] -> [18], ExitExc
+    [0] assert(<>new1<>3)
     [1] <>Global<>ignore9 := "true"
 
-  Block[19] -> [20], ExitExc
-    [0] assert(! false)
+  Block[17] -> [18], ExitExc
+    [0] assert(! <>new1<>3)
+    [1] <>Global<>ignore9 := "false"
 
-  Block[20] -> [21]
-
-  Block[21] -> [22], ExitExc
-    [0] <>Global<>ignore9 := "false"
-
-  Branch[22] -> [24], [23], ExitExc
+  Block[18] -> [20], [19], ExitExc
     [0] x := <>Global<>ignore9
 
-  Block[23] -> [29], ExitExc
+  Block[19] -> [21], ExitExc
     [0] assert(true)
+    [1] <>new1<>4 := true
 
-  Block[24] -> [25], ExitExc
+  Block[20] -> [21], ExitExc
     [0] assert(! true)
+    [1] <>new1<>4 := false
 
-  Block[25] -> [27], [26]
+  Block[21] -> [23], [22]
 
-  Block[26] -> [29], ExitExc
-    [0] assert(false)
+  Block[22] -> [24], ExitExc
+    [0] assert(<>new1<>4)
+    [1] <>Global<>ignore10 := "true"
 
-  Block[27] -> [28], ExitExc
-    [0] assert(! false)
+  Block[23] -> [24], ExitExc
+    [0] assert(! <>new1<>4)
+    [1] <>Global<>ignore10 := "false"
 
-  Block[28] -> [30], ExitExc
-    [0] <>Global<>ignore10 := "false"
-
-  Branch[29] -> [30], ExitExc
-    [0] <>Global<>ignore10 := "true"
-
-  Branch[30] -> Exit, ExitExc
+  Block[24] -> Exit, ExitExc
     [0] x := <>Global<>ignore10
     [1] noop(EndOfFile)
 
