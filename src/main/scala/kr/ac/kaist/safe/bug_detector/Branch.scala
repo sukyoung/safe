@@ -43,17 +43,18 @@ object Branch extends BugDetector {
 
   override def checkInst(i: CFGNormalInst, state: AbsState, semantics: Semantics): List[String] = i match {
     case i @ CFGAssert(_, _, cond, true) =>
-      //<>cond<> is only created by "new Obj(arg, ...)", which we should ignore
-      def createdByNew(cfg: CFGNode): Boolean = cfg match {
-        case CFGVarRef(_, _) => cfg.toString().startsWith("<>cond<>")
+      //<>cond<> is only created by "new Obj(arg, ...)", <>cond1<> is only created by "for in", which we should ignore
+      def ignore(cfg: CFGNode): Boolean = cfg match {
+        case CFGVarRef(_, _) => cfg.toString().startsWith("<>cond<>") || cfg.toString().startsWith("<>cond1<>")
         case _ => false
       }
-      if (createdByNew(cond))
+      if (ignore(cond))
         return List()
 
       val (v, _) = semantics.V(cond, state)
       val bv = TypeConversionHelper.ToBoolean(v)
       val ast = cond.ir.ast
+
       var (t, f) = branch.getOrElse(ast, (false, false))
       if (AbsBool.True ⊑ bv)
         t = true
