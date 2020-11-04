@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 load_line_no = 0
 
@@ -24,41 +25,75 @@ def merge(files, newfile):
 def check_file(jsfile):
 	print("testing " + jsfile)
 
-	merged_file = "merged.js"
-	#merge(["setting.js", "lodash.js", "test-setting.js", jsfile], merged_file)
-	merge(["setting.js", "lodash.js", jsfile], merged_file)
+	merged_name = "merged"
+	merged_file = merged_name + ".js"
+	merge(["setting.js", "lodash.js", "test-setting.js", jsfile], merged_file)
+	#merge(["setting.js", "lodash.js", jsfile], merged_file)
 
 	jalangi_cmd = "node ../../../../jalangi2/src/js/commands/jalangi.js --inlineIID --inlineSource --analysis ../../../../jalangi2/src/js/sample_analyses/ChainedAnalyses.js --analysis ../../../../jalangi2/src/js/sample_analyses/pldi16/BranchCoverage.js "+ merged_file
 	safe_cmd = "../../../bin/safe bugDetect " + merged_file
 
+	# Run analyzers
 	jalangi_alarms = os.popen(jalangi_cmd).readlines()
 	safe_alarms = os.popen(safe_cmd).readlines()[:-1]
 	total = safe_alarms.pop()
 	total = int(total.split("=")[1].split()[0])
-	
+
+	# Gather span info
+	info = json.load(open(merged_name + "_jalangi_.json"))
+	info = dict(filter(lambda p: p[0].isdigit() and len(p[1]) >=5 and p[1][4] == 'C', info.items()))
+	rev_info = dict(map(lambda p: (tuple(p[1][:-1]),p[0]), info.items()))
+
 	def parse_jalangi_alarm(alarm):
-		taken = alarm.split()[0]
+		taken = alarm.split()[0] == "True"
 		splits = alarm.split(":")
-		line = int(splits[1])
-		st = int(splits[2])
-		fn = int(splits[4].split(")")[0])
-		return (line, st, fn, taken)
+		l1 = int(splits[1])
+		c1 = int(splits[2])
+		l2 = int(splits[3])
+		c2 = int(splits[4].split(")")[0])
+
+		span = (l1, c1, l2, c2)
+
+		assert(span in rev_info)
+
+		return (span, taken)
 	
 	def parse_safe_alarm(alarm):
-		taken = alarm.split(" ==> ")[1].strip()
+		taken = alarm.split(" ==> ")[1].strip() == "True"
 		splits = alarm.split()[0].split(":")
-		line = int(splits[1])
+		l1 = int(splits[1])
 		if len(splits) == 4:
-			st = int(splits[2].split("-")[0])
-			fn = int(splits[3])
-		elif "-" in splits[2].split()[0]:
-			st = int(splits[2].split("-")[0])
-			fn = int(splits[2].split("-")[1])
+			c1 = int(splits[2].split("-")[0])
+			l2 = int(splits[2].split("-")[1])
+			c2 = int(splits[3])
+		elif "-" in splits[2]:
+			c1 = int(splits[2].split("-")[0])
+			l2 = l1
+			c2 = int(splits[2].split("-")[1])
 		else:
-			st = int(splits[2].split()[0])
-			fn = st
-		return (line, st, fn, taken)
+			c1 = int(splits[2])
+			l2 = l1
+			c2 = c1
 
+		span = (l1, c1, l2, c2)
+
+		if span not in rev_info:
+			newspan1 = (l1, c1, l2, c2 - 1)
+			newspan2 = (l1, c1 + 1, l2, c2 - 1)
+			if newspan1 in rev_info:
+				span = newspan1
+			elif newspan2 in rev_info:
+				span = newspan2
+			else:
+				while span not in rev_info:
+					l1, c1, l2, c2 = span
+					if c1 == c2:
+						raise NotImplementedError
+					span = (l1, c1, l2, c2-1)
+
+		return (span, taken)
+
+	# Parse
 	jalangi_alarms = sorted(list(map(parse_jalangi_alarm, jalangi_alarms)))
 	safe_alarms = sorted(list(map(parse_safe_alarm, safe_alarms)))
 
@@ -82,6 +117,14 @@ def check_file(jsfile):
 	print("alarms that safe overapproximate:")
 	for a in safe_alarms:
 		if not a in jalangi_alarms:
+			print(a)
+	
+	print("alarms that differ:")
+	for a in jalangi_alarms:
+		b = (a[0], not a[1])
+		if b in jalangi_alarms:
+			continue
+		if b in safe_alarms:
 			print(a)
 
 def test():
