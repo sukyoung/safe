@@ -25,7 +25,9 @@ var popJobs = function() {
 }
 
 document = WeakMap = WeakSet = Map = Set = Symbol = undefined;
+DataView = Promise = global = exports = undefined;
 delete Array.from;
+delete Object.getOwnPropertySymbols;
 
 var QUnit = {};
 if (!this.print) {
