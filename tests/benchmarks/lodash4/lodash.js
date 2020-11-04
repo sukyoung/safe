@@ -3414,7 +3414,7 @@
      *  else `false`.
      */
     function baseIsNative(value) {
-      if (!isObject(value) || isMasked(value)) {
+      if ((!isObject(value)) || isMasked(value)) {
         return false;
       }
       if (isFunction(value)) {
@@ -11755,7 +11755,7 @@
      */
     function isLength(value) {
       return typeof value == 'number' &&
-        value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+        (value > -1) && (value % 1 == 0) && (value <= MAX_SAFE_INTEGER);
     }
 
     /**
