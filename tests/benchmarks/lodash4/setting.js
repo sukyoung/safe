@@ -25,6 +25,7 @@ var popJobs = function() {
 }
 
 document = WeakMap = WeakSet = Map = Set = Symbol = undefined;
+delete Array.from;
 
 var QUnit = {};
 if (!this.print) {
@@ -40,7 +41,7 @@ QUnit.test = function test(msg, f) {
 }
 
 function fail(msg) {
-  throw new Error(msg);
+  print('[FAIL] ' + msg); // throw new Error(msg);
 }
 
 function Assert() { this.isAsync = false; }
@@ -80,7 +81,7 @@ Assert.prototype.async = function () {
   return function () { self.check(); };
 }
 Assert.prototype.check = function () {
-  if (this.count > 0) fail(this.count + ' assertions reamin');
+  if (this.count > 0) fail(this.count + ' assertions remain');
 }
 
 function _typeof(obj) {
