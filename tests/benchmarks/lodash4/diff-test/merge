@@ -1,10 +1,8 @@
 #!/bin/sh
 
-cd $SAFE_HOME/tests/benchmarks/lodash4
+TARGET="merged.js"
 
-TARGET="diff-test/merged.js"
-
-cat setting.js lodash.js test-setting.js > $TARGET
+cat ../setting.js ../lodash.js ../test-setting.js > $TARGET
 if [ "$#" -eq 1 ]; then
   cat $1 >> $TARGET
 fi

@@ -7,11 +7,20 @@ def check_file():
   def out(data):
     f.write(str(data) + "\n")
 
+  lf = open("log", "w")
+  def log(data):
+    lf.write(str(data) + "\n")
+
+
+  def spanNotFound(alarm, span):
+    log("Span " + alarm + " @ " + str(span) + " not in rev_info")
+
   merged_name = "merged"
   filename = merged_name + ".js"
 
   # Load analysis result
   jalangi_alarms = open("jalangi.result", "r").readlines()
+  jalangi_alarms = filter(lambda l: "branch taken at" in l, jalangi_alarms)
   safe_alarms = open("safe.result", "r").readlines()
   total = list(filter(lambda l: l.startswith("total"), safe_alarms))[0]
   total = int(total.split("=")[1].split()[0])
@@ -19,7 +28,16 @@ def check_file():
 
   # Gather span info
   info = json.load(open(merged_name + "_jalangi_.json"))
-  info = dict(filter(lambda p: p[0].isdigit() and len(p[1]) >=5 and p[1][4] == 'C', info.items()))
+
+  def jalangi_filter(p):
+    if not p[0].isdigit():
+      return False
+    if len(p[1]) < 5:
+      return False
+    kind = p[1][4]
+    return (kind == 'C' or kind == 'C2')
+
+  info = dict(filter(jalangi_filter, info.items()))
   rev_info = dict(map(lambda p: (tuple(p[1][:-1]),p[0]), info.items()))
 
   # Gather span by lines
@@ -41,6 +59,8 @@ def check_file():
 
     span = (l1, c1, l2, c2)
 
+    if not (span in rev_info):
+      spanNotFound(alarm, span)
     assert(span in rev_info)
 
     return (span, taken)
@@ -78,6 +98,7 @@ def check_file():
         span = (l1, s, l2, e)
 
     if span == False:
+      spanNotFound(alarm, (l1, c1, l2, c2))
       raise Error("Not found")
 
     return (span, taken)
@@ -104,6 +125,7 @@ def check_file():
     if b in safe_alarms:
       out(a)
   f.close()
+  lf.close()
 
 def test():
   pass

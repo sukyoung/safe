@@ -1,4 +1,5 @@
 #!/bin/sh
 
-rm merged*
-rm *.result
+rm -f merged*
+rm -f *.result
+rm -f log

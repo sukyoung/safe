@@ -1,0 +1,19 @@
+#!/bin/sh
+
+for file in ../tests/*; do
+  if [ -f "$file" ]; then
+    echo "--------------------------------------------------"
+    echo "- Diff-Testing for $file"
+    echo "--------------------------------------------------"
+    ./run $file
+    base=`basename $file`
+    name="${base%.*}"
+    if ! [ -d "result/$name" ]; then
+      mkdir result/$name
+    fi
+    mv merged* result/$name
+    mv *.result result/$name
+    mv log result/$name
+  fi
+done
+

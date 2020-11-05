@@ -1,7 +1,11 @@
 #!/bin/sh
 
 echo "Merging files..."
-./merge
+if [ "$#" -eq 1 ]; then
+  ./merge $1
+else
+  ./merge
+fi
 echo "Analyzing files..."
 ./analyze
 echo "Calculating diff..."
