@@ -62,3 +62,9 @@ paper/*/main.pdf
 
 # Visual Studio workspace
 *.code-workspace
+
+# temporal files
+__merged__.js
+merged.js
+merged_jalangi_.js
+merged_jalangi_.json
