@@ -1,3 +1,6 @@
 [submodule "dynamic-shortcut"]
 	path = dynamic-shortcut
 	url = git@github.com:kaist-plrg/dynamic-shortcut.git
+[submodule "jalangi2"]
+	path = jalangi2
+	url = https://github.com/GMBale/jalangi2.git
