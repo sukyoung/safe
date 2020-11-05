@@ -41,6 +41,8 @@
   delete this.Object.getOwnPropertySymbols;
   delete this.exports;
   delete this.Buffer;
+  delete this.process;
+  delete this.ArrayBuffer;
 
   // Set the print function
   if (!this.print) {

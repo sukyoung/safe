@@ -22,6 +22,15 @@ def check_file():
   info = dict(filter(lambda p: p[0].isdigit() and len(p[1]) >=5 and p[1][4] == 'C', info.items()))
   rev_info = dict(map(lambda p: (tuple(p[1][:-1]),p[0]), info.items()))
 
+  # Gather span by lines
+  ranges_by_line = {}
+  for span in rev_info:
+    line = span[0]
+    if line in ranges_by_line:
+      ranges_by_line[line].append(span)
+    else:
+      ranges_by_line[line] = [span]
+
   def parse_jalangi_alarm(alarm):
     taken = alarm.split()[0] == "True"
     splits = alarm.split(":")
@@ -37,41 +46,39 @@ def check_file():
     return (span, taken)
 
   def parse_safe_alarm(alarm):
-    taken = alarm.split(" ==> ")[1].strip() == "True"
-    splits = alarm.split()[0].split(":")
+    [pre, taken] = alarm.split(") ==> ")
+    taken = taken.strip() == "True"
+    ast_len = len(pre) - (pre.find("(") + 1)
+    splits = pre.split()[0].split(":")
     l1 = int(splits[1])
     if len(splits) == 4:
       c1 = int(splits[2].split("-")[0])
       l2 = int(splits[2].split("-")[1])
-      c2 = int(splits[3])
+      # c2 = int(splits[3])
     elif "-" in splits[2]:
       c1 = int(splits[2].split("-")[0])
       l2 = l1
-      c2 = int(splits[2].split("-")[1])
+      # c2 = int(splits[2].split("-")[1])
     else:
       c1 = int(splits[2])
       l2 = l1
-      c2 = c1
+      # c2 = c1
+    c2 = c1 + ast_len
 
-    span = (l1, c1, l2, c2)
+    span = False
 
-    if span not in rev_info:
-      newspan1 = (l1, c1, l2, c2 - 1)
-      newspan2 = (l1, c1 + 1, l2, c2 - 1)
-      if newspan1 in rev_info:
-        span = newspan1
-      elif newspan2 in rev_info:
-        span = newspan2
-      else:
-        out(str(span))
-        while span not in rev_info:
-          l1, c1, l2, c2 = span
-          if c1 == c2:
-            print("span", file=sys.stderr)
-            print(span, file=sys.stderr)
-            raise NotImplementedError
-            break
-          span = (l1, c1, l2, c2-1)
+    rngs = ranges_by_line[l1]
+    min_dist = -1
+    for (_, s, l, e) in rngs:
+      if l != l2:
+        continue
+      dist = abs(s - c1) + abs(e - c2)
+      if min_dist == -1 or min_dist > dist:
+        min_dist = dist
+        span = (l1, s, l2, e)
+
+    if span == False:
+      raise Error("Not found")
 
     return (span, taken)
 

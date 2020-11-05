@@ -65,5 +65,5 @@ paper/*/main.pdf
 
 # temporal files
 __merged__.js
-diff-test/merged*
-diff-test/*.result
+**/diff-test/merged*
+**/diff-test/*.result
