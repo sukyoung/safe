@@ -43,7 +43,31 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum,
       strval: AbsStr
   ) extends ElemTrait {
-    def gamma: ConSet[PValue] = ConInf // TODO more precisely
+    def gamma: ConSet[PValue] = (undefval.gamma, nullval.gamma, boolval.gamma, numval.gamma, strval.gamma) match {
+      case (ConFin(uset), ConFin(nullset), ConFin(bset), ConFin(nset), ConFin(sset)) =>
+        val usetv: Set[PValue] = uset.map((v) => {
+          val uonv: PValue = v
+          v
+        })
+        val nullsetv: Set[PValue] = nullset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        val bsetv: Set[PValue] = bset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        val nsetv: Set[PValue] = nset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        val ssetv: Set[PValue] = sset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        ConFin(usetv | nullsetv | bsetv | nsetv | ssetv)
+      case _ => ConInf
+    }
 
     def getSingle: ConSingle[PValue] = (
       undefval.getSingle,

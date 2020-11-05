@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ NodeUtil, EJSNumber, EJSString, EJSBool, EJSNull, EJSUndef, AllocSite, Recency, Recent, Old }
+import kr.ac.kaist.safe.util.{ NodeUtil, EJSNumber, EJSString, EJSBool, EJSNull, EJSUndef, AllocSite, Recency, Recent, Old, PredAllocSite }
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.mutable.{ Map => MMap }
 
@@ -253,7 +253,7 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          if (dynamicShortcut && !dsTriedCPs.contains(cp)) {
+          if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id > 0) {
             dsTriedCPs += cp
             val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
             val newTP = cp.tracePartition
@@ -1250,6 +1250,85 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet1 ++ excSet2)
         (st1, excSt ⊔ newExcSt)
       }
+      case (NodeUtil.INTERNAL_REGEX_EXEC, List(thisE, strE), None) => {
+        val (thisV, excSet1) = V(thisE, st)
+        val (strV, excSet2) = V(strE, st)
+        val newExcSt = st.raiseException(excSet1) ⊔ st.raiseException(excSet2)
+        //println("##regexExec")
+        //println(thisV)
+        //println(strV)
+        //println(thisV.getSingle)
+        //println(strV.getSingle)
+        //println(strV.gamma)
+        val newSt = (thisV.getSingle, strV.gamma) match {
+          case (ConOne(thisLoc: Loc), ConFin(set)) =>
+            val aLoc = loc match {
+              case Some(l) => Loc(l, tp)
+              case _ => Loc(PredAllocSite("-165"), tp)
+            }
+            val obj = st.heap.get(thisLoc)
+            //println("thisPrim")
+            //println(obj(IPrimitiveValue).value.getSingle)
+            //println("lastIndex")
+            //println(obj("lastIndex").value.getSingle)
+            (obj(IPrimitiveValue).value.getSingle, obj("lastIndex").value.getSingle) match {
+              case (ConOne(Str(prim)), ConOne(Num(num))) =>
+                val regexStr = ('"' + prim + '"').parseJson match {
+                  case JsString(str) => str
+                  case _ => ??? //throw new RegexPrimitiveValueError(prim)
+                }
+                val lastIdx = num.toInt
+                val (absObj, pval) = set.foldLeft[(AbsObj, AbsPValue)]((AbsObj.Bot, AbsPValue.Bot))((acc, str) => {
+                  val (accObj, accPVal) = acc
+                  val arg = str match {
+                    case Str(str) => str
+                    case _ => ???
+                  }
+                  val script = s"var regex = ${regexStr}; regex.lastIndex = $lastIdx; var ret = regex.exec('$arg'); if(ret) { ret.push(ret.index); ret.push(ret.input); } JSON.stringify(ret);"
+                  //println(script)
+                  val evalRes = engine.eval(script).toString
+                  //println(evalRes)
+                  val jsonRes = evalRes.parseJson
+                  //println(jsonRes)
+                  val (absObj, pval): (AbsObj, AbsPValue) = jsonRes match {
+                    case JsArray(lst) =>
+                      val len = lst.length - 2
+                      val absObj = (0 until len).zip(lst).foldLeft(AbsObj.newArrayObject(AbsNum(len))) {
+                        case (acc, (i, e)) =>
+                          //println(i)
+                          //println(e)
+                          acc.update(i.toString, AbsDataProp(alphaJSONPrimitive(e), AT, AT, AT))
+                      }
+                      //println(lst)
+                      val added = absObj.update("index", AbsDataProp(alphaJSONPrimitive(lst(len)), AT, AT, AT)).update("input", AbsDataProp(alphaJSONPrimitive(lst(len + 1)), AT, AT, AT))
+                      (added, AbsPValue.Bot)
+                    case JsNull => (AbsObj.Bot, AbsNull.Top)
+                    case _ => ???
+                  }
+                  //println("##EXEC")
+                  //println(arg)
+                  //println(absObj)
+                  (accObj ⊔ absObj, accPVal ⊔ pval)
+                })
+                //println(absObj)
+                if (absObj.isBottom) {
+                  st.varStore(lhs, AbsValue(pval))
+                } else {
+                  val st1 = st.alloc(aLoc)
+                  val h2 = st1.heap.update(aLoc, absObj)
+                  st1.copy(heap = h2).varStore(lhs, AbsValue(pval, aLoc))
+                }
+              case _ =>
+                val st1 = st.alloc(aLoc)
+                val h2 = st1.heap.update(aLoc, AbsObj.Top)
+                st1.copy(heap = h2).varStore(lhs, AbsValue(AbsPValue.Bot, aLoc))
+            }
+          case (ConOne(thisLoc: Loc), ConInf) =>
+            ???
+          case _ => ???
+        }
+        (newSt, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_IS_OBJ, List(expr), None) => {
         val (v, excSet) = V(expr, st)
         val st1 =
@@ -1510,6 +1589,14 @@ case class Semantics(
         excLog.signal(IRSemanticsNotYetImplementedError(ir))
         (AbsState.Bot, AbsState.Bot)
     }
+  }
+
+  def alphaJSONPrimitive(jv: JsValue): AbsValue = jv match {
+    case JsBoolean(b) => AbsValue(b)
+    case JsString(str) => AbsValue(str)
+    case JsNumber(num) => AbsValue(num.toDouble)
+    case JsNull => AbsNull.Top
+    case _ => ??? //throw new RegexPrimitiveValueError(jv.toString)
   }
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {

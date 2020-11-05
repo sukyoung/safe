@@ -4675,7 +4675,8 @@ Function: {
   }
   \\],
   97: [\\
-  function exec () {
+  function exec (str) {
+    return @regexExec(this, str);
   }
   \\],
   98: [\\

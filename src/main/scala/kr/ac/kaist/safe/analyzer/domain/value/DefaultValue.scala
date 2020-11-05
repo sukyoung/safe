@@ -35,7 +35,19 @@ object DefaultValue extends ValueDomain {
   def apply(pvalue: AbsPValue, locset: LocSet): Elem = Elem(pvalue, locset)
 
   case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
-    def gamma: ConSet[Value] = ConInf // TODO more precisely
+    def gamma: ConSet[Value] = (pvalue.gamma, locset.gamma) match {
+      case (ConFin(pset), ConFin(lset)) =>
+        val psetv: Set[Value] = pset.map((v) => {
+          val conv: Value = v
+          v
+        })
+        val lsetv: Set[Value] = lset.map((v) => {
+          val conv: Value = v
+          v
+        })
+        ConFin(psetv | lsetv)
+      case _ => ConInf
+    }
 
     def getSingle: ConSingle[Value] = (pvalue.getSingle, locset.getSingle) match {
       case (ConZero, ConZero) => ConZero

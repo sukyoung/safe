@@ -83,7 +83,7 @@ object DefaultHeap extends HeapDomain {
 
     override def toString: String = {
       //buildString(loc => loc.isUser || loc == GLOBAL_LOC)
-      buildString(loc => (loc.isUser || loc == GLOBAL_LOC) && !(AbsStr("Arguments") ⊑ this.get(loc)(IClass).value.pvalue.strval))
+      buildString(loc => !(AbsStr("Arguments") ⊑ this.get(loc)(IClass).value.pvalue.strval))
     }
 
     def toJSON: JsValue = this match {
