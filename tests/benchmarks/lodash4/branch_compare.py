@@ -30,7 +30,7 @@ def check_file(jsfile):
 	merge(["setting.js", "lodash.js", "test-setting.js", jsfile], merged_file)
 	#merge(["setting.js", "lodash.js", jsfile], merged_file)
 
-	jalangi_cmd = "node ../../../../jalangi2/src/js/commands/jalangi.js --inlineIID --inlineSource --analysis ../../../../jalangi2/src/js/sample_analyses/ChainedAnalyses.js --analysis ../../../../jalangi2/src/js/sample_analyses/pldi16/BranchCoverage.js "+ merged_file
+	jalangi_cmd = "node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js "+ merged_file
 	safe_cmd = "../../../bin/safe bugDetect " + merged_file
 
 	# Run analyzers
