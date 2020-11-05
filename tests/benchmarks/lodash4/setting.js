@@ -6,7 +6,7 @@
     var count;
     do {
       count = 0;
-      var curTime = Date.now();
+      var curTime = __getTime__();
       for (var id in jobs) {
         var job = jobs[id];
         if (job.time <= curTime) {
@@ -22,7 +22,7 @@
     var uid = uidCount++;
     jobs[uid] = {
       func: f,
-      time: Date.now() + duration
+      time: __getTime__() + duration
     };
     return uid;
   }
@@ -48,13 +48,18 @@
     else this.print = this.__print__;
   }
 
-  // TODO Revised Date.now
-  // var __time__ = 0;
-  // var __interval__ = 10;
-  // this.Date = 
-  // this.Date.now = function now() {
-  //   return __time__ += __interval__;
-  // }
+  // Modeling of Date
+  var __time__ = 0;
+  var __interval__ = 10;
+
+  var origDate = this.Date;
+  function Date(time) {
+    if (time === undefined) time = __getTime__();
+    return new origDate(time);
+  }
+  function __getTime__() { return __time__ += __interval__; }
+  Date.now = __getTime__;
+  this.Date = Date;
 
   // Light modeling of QUnit test module
   var QUnit = {};
