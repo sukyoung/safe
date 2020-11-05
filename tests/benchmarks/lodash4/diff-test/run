@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "Merging files..."
+./merge
+echo "Analyzing files..."
+./analyze
+echo "Calculating diff..."
+python3 branch_compare.py
