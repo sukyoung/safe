@@ -1,130 +1,153 @@
-var jobs = {};
-var uidCount = 0;
-var setTimeout = function(f, duration) {
-  var uid = uidCount++;
-  jobs[uid] = {
-    func: f,
-    time: Date.now() + duration
-  };
-  return uid;
-}
-var clearTimeout = function(uid) { delete jobs[uid]; }
-var popJobs = function() {
-  var count;
-  do {
-    count = 0;
-    var curTime = Date.now();
-    for (var id in jobs) {
-      var job = jobs[id];
-      if (job.time <= curTime) {
-        job.func();
-        delete jobs[id];
-      } else count++;
+;(function() {
+  // job queue
+  this.jobs = {};
+  var uidCount = 0;
+  this.popJobs = function() {
+    var count;
+    do {
+      count = 0;
+      var curTime = Date.now();
+      for (var id in jobs) {
+        var job = jobs[id];
+        if (job.time <= curTime) {
+          job.func();
+          delete jobs[id];
+        } else count++;
+      }
+    } while(count > 0);
+  }
+
+  // modeling setTimeout and clearTimeout
+  this.setTimeout = function(f, duration) {
+    var uid = uidCount++;
+    jobs[uid] = {
+      func: f,
+      time: Date.now() + duration
+    };
+    return uid;
+  }
+  this.clearTimeout = function(uid) { delete jobs[uid]; }
+
+  // removed ES6 or Node.js features
+  delete this.document;
+  delete this.WeakMap;
+  delete this.WeakSet;
+  delete this.Map;
+  delete this.Set;
+  delete this.Symbol;
+  delete this.DataView
+  delete this.Promise
+  delete this.Array.from;
+  delete this.Object.getOwnPropertySymbols;
+
+  // Set the print function
+  if (!this.print) {
+    if (console) this.print = console.log;
+    else this.print = this.__print__;
+  }
+
+  // TODO Revised Date.now
+  // var __time__ = 0;
+  // var __interval__ = 10;
+  // this.Date = 
+  // this.Date.now = function now() {
+  //   return __time__ += __interval__;
+  // }
+
+  // Light modeling of QUnit test module
+  var QUnit = {};
+  QUnit.module = function module(name) { print('[MODULE] ' + name); }
+  QUnit.test = function test(msg, f) {
+    var assert = new Assert;
+    f(assert);
+    if (assert.isAsync) popJobs();
+    else assert.check();
+  }
+  this.QUnit = QUnit;
+
+  function fail(msg) {
+    print('[FAIL] ' + msg); // throw new Error(msg);
+  }
+
+  function Assert() { this.isAsync = false; }
+  Assert.prototype.expect = function(n) { this.count = n; };
+  Assert.prototype.ok = function ok(pass, msg) {
+    if (pass) {
+      print('[PASS] ' + msg);
+      this.count--;
+    } else fail(msg);
+  }
+  Assert.prototype.notOk = function(fail, msg) {
+    this.ok(!fail, msg);
+  }
+  Assert.prototype.deepEqual = function(a, b) {
+    this.ok(equiv(a, b), 'deepEqual');
+  }
+  Assert.prototype.equal = function(a, b) {
+    this.ok(a == b, 'equal');
+  }
+  Assert.prototype.notEqual = function(a, b) {
+    this.ok(a != b, 'notEqual');
+  }
+  Assert.prototype.strictEqual = function(a, b) {
+    this.ok(a === b, 'strictEqual');
+  }
+  Assert.prototype.notStrictEqual = function(a, b) {
+    this.ok(a !== b, 'notStrictEqual');
+  }
+  Assert.prototype.raises = function (f, expected) {
+    var pass = false;
+    try { f(); } catch(e) { pass = true; }
+    this.ok(pass, 'raises');
+  }
+  Assert.prototype.async = function () {
+    var self = this;
+    this.isAsync = true;
+    return function () { self.check(); };
+  }
+  Assert.prototype.check = function () {
+    if (this.count > 0) fail(this.count + ' assertions remain');
+  }
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
     }
-  } while(count > 0);
-}
 
-document = WeakMap = WeakSet = Map = Set = Symbol = undefined;
-DataView = Promise = global = exports = undefined;
-delete Array.from;
-delete Object.getOwnPropertySymbols;
-
-var QUnit = {};
-if (!this.print) {
-  if (console) this.print = console.log;
-  else this.print = this.__print__;
-}
-QUnit.module = function module(name) { print('[MODULE] ' + name); }
-QUnit.test = function test(msg, f) {
-  var assert = new Assert;
-  f(assert);
-  if (assert.isAsync) popJobs();
-  else assert.check();
-}
-
-function fail(msg) {
-  print('[FAIL] ' + msg); // throw new Error(msg);
-}
-
-function Assert() { this.isAsync = false; }
-Assert.prototype.expect = function(n) { this.count = n; };
-Assert.prototype.ok = function ok(pass, msg) {
-  if (pass) {
-    print('[PASS] ' + msg);
-    this.count--;
-  } else fail(msg);
-}
-Assert.prototype.notOk = function(fail, msg) {
-  this.ok(!fail, msg);
-}
-Assert.prototype.deepEqual = function(a, b) {
-  this.ok(equiv(a, b), 'deepEqual');
-}
-Assert.prototype.equal = function(a, b) {
-  this.ok(a == b, 'equal');
-}
-Assert.prototype.notEqual = function(a, b) {
-  this.ok(a != b, 'notEqual');
-}
-Assert.prototype.strictEqual = function(a, b) {
-  this.ok(a === b, 'strictEqual');
-}
-Assert.prototype.notStrictEqual = function(a, b) {
-  this.ok(a !== b, 'notStrictEqual');
-}
-Assert.prototype.raises = function (f, expected) {
-  var pass = false;
-  try { f(); } catch(e) { pass = true; }
-  this.ok(pass, 'raises');
-}
-Assert.prototype.async = function () {
-  var self = this;
-  this.isAsync = true;
-  return function () { self.check(); };
-}
-Assert.prototype.check = function () {
-  if (this.count > 0) fail(this.count + ' assertions remain');
-}
-
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function (obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
+    return _typeof(obj);
   }
-
-  return _typeof(obj);
-}
-function objectType(obj) {
-  if (typeof obj === "undefined") return "undefined";
-  if (obj === null) return "null";
-  var str = toString.call(obj);
-  if (str.substring(0, 8) === '[object ') {
-    var type = str.substring(8, str.length - 1);
+  function objectType(obj) {
+    if (typeof obj === "undefined") return "undefined";
+    if (obj === null) return "null";
+    var str = toString.call(obj);
+    if (str.substring(0, 8) === '[object ') {
+      var type = str.substring(8, str.length - 1);
+    }
+    switch (type) {
+      case "Number":
+        if (isNaN(obj)) return "nan";
+        return "number";
+      case "String":
+      case "Boolean":
+      case "Array":
+      case "Set":
+      case "Map":
+      case "Date":
+      case "RegExp":
+      case "Function":
+      case "Symbol": return type.toLowerCase();
+      default: return _typeof(obj);
+    }
   }
-  switch (type) {
-    case "Number":
-      if (isNaN(obj)) return "nan";
-      return "number";
-    case "String":
-    case "Boolean":
-    case "Array":
-    case "Set":
-    case "Map":
-    case "Date":
-    case "RegExp":
-    case "Function":
-    case "Symbol": return type.toLowerCase();
-    default: return _typeof(obj);
-  }
-}
-var equiv = (function () {
+  var equiv = (function () {
     var pairs = [];
     var getProto = Object.getPrototypeOf || function (obj) {
       return obj.__proto__;
@@ -275,3 +298,4 @@ var equiv = (function () {
       return result;
     };
   })();
+}).call(global);

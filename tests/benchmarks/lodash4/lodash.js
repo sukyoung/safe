@@ -17175,4 +17175,4 @@
     // Export to the global object.
     root._ = _;
   }
-}.call(this));
+}.call(global));
