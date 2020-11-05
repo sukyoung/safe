@@ -272,14 +272,16 @@
   })];
 
   /** Used to test async functions. */
-  this.asyncFunc = lodashStable.attempt(function() {
-    return Function('return async () => {}');
-  });
+  this.asyncFunc = new Error('');
+  // this.asyncFunc = lodashStable.attempt(function() {
+  //   return Function('return async () => {}');
+  // });
 
   /** Used to test generator functions. */
-  this.genFunc = lodashStable.attempt(function() {
-    return Function('return function*(){}');
-  });
+  this.genFunc = new Error('');
+  // this.genFunc = lodashStable.attempt(function() {
+  //   return Function('return function*(){}');
+  // });
 
   /** Used to restore the `_` reference. */
   this.oldDash = root._;
