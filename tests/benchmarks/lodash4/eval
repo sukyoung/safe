@@ -9,7 +9,7 @@ fi
 cat setting.js lodash.js test-setting.js > __merged__.js
 for file in tests/*; do
   if [ -f "$file" ]; then
-    echo "process.stdout.write('Testing $file...');" >> __merged__.js
+    echo "process.stdout.write('Testing $file...\\\\n');" >> __merged__.js
     cat $file >> __merged__.js
   fi
 done
