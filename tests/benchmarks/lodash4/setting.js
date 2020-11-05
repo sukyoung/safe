@@ -39,6 +39,8 @@
   delete this.Promise
   delete this.Array.from;
   delete this.Object.getOwnPropertySymbols;
+  delete this.exports;
+  delete this.Buffer;
 
   // Set the print function
   if (!this.print) {

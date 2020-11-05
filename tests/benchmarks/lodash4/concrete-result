@@ -225,10 +225,10 @@ Analyzing tests/test106.js...
 [PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -244,9 +244,9 @@ Analyzing tests/test106.js...
 [PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -490,7 +490,7 @@ Analyzing tests/test117.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
 Analyzing tests/test118.js...
@@ -571,7 +571,7 @@ Analyzing tests/test120.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] test skipped
-[PASS] strictEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] test skipped
 [PASS] test skipped
@@ -609,7 +609,7 @@ Analyzing tests/test122.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
-[PASS] deepEqual
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] test skipped
 [PASS] strictEqual
@@ -619,9 +619,9 @@ Analyzing tests/test122.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] test skipped
 Analyzing tests/test123.js...
 [MODULE] lodash.isRegExp
@@ -678,8 +678,8 @@ Analyzing tests/test125.js...
 [PASS] test skipped
 Analyzing tests/test126.js...
 [MODULE] lodash.isSymbol
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -726,7 +726,7 @@ Analyzing tests/test128.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
 [PASS] test skipped
 Analyzing tests/test129.js...
 [MODULE] lodash.isWeakMap
@@ -1618,33 +1618,33 @@ Analyzing tests/test173.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] undefined
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] undefined
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 Analyzing tests/test174.js...
 [MODULE] lodash.once
@@ -1959,17 +1959,17 @@ Analyzing tests/test189.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 Analyzing tests/test19.js...
 [MODULE] lodash.camelCase
@@ -2294,7 +2294,7 @@ Analyzing tests/test209.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
-[PASS] strictEqual
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -2325,7 +2325,7 @@ Analyzing tests/test209.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
-[PASS] strictEqual
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -2532,45 +2532,8 @@ Analyzing tests/test217.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] undefined
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] undefined
-[PASS] undefined
-[PASS] undefined
-[PASS] undefined
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -2606,12 +2569,49 @@ Analyzing tests/test217.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] undefined
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] undefined
+[PASS] undefined
+[PASS] undefined
 [PASS] undefined
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
 [PASS] strictEqual
@@ -2643,8 +2643,8 @@ Analyzing tests/test217.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -3000,8 +3000,8 @@ Analyzing tests/test235.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] undefined
 [PASS] undefined
 [PASS] strictEqual
@@ -3012,8 +3012,8 @@ Analyzing tests/test235.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] undefined
 [PASS] undefined
 [PASS] strictEqual
@@ -3024,8 +3024,8 @@ Analyzing tests/test235.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] undefined
 [PASS] undefined
 [PASS] strictEqual
@@ -3036,8 +3036,8 @@ Analyzing tests/test235.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] undefined
 [PASS] undefined
 Analyzing tests/test236.js...
@@ -3342,7 +3342,7 @@ Analyzing tests/test248.js...
 Analyzing tests/test249.js...
 [MODULE] lodash.toArray
 [PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
 [PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
@@ -3412,18 +3412,18 @@ Analyzing tests/test25.js...
 [PASS] undefined
 [PASS] deepEqual
 [PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
@@ -3520,6 +3520,205 @@ Analyzing tests/test25.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] undefined
+[PASS] notStrictEqual
+[PASS] undefined
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] notStrictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] undefined
+[PASS] deepEqual
+[PASS] undefined
+[PASS] undefined
+[PASS] undefined
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] undefined
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] notStrictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
 [PASS] deepEqual
 [PASS] notStrictEqual
 [PASS] strictEqual
@@ -3533,212 +3732,13 @@ Analyzing tests/test25.js...
 [PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] undefined
-[PASS] notStrictEqual
-[PASS] undefined
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] notStrictEqual
 [PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] undefined
-[PASS] deepEqual
-[PASS] undefined
-[PASS] undefined
-[PASS] undefined
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] notStrictEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
 [PASS] test skipped
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] undefined
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] notStrictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
 [PASS] test skipped
@@ -3920,6 +3920,7 @@ Analyzing tests/test255.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -3927,6 +3928,7 @@ Analyzing tests/test255.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -3934,6 +3936,7 @@ Analyzing tests/test255.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -3941,6 +3944,7 @@ Analyzing tests/test255.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -3948,11 +3952,7 @@ Analyzing tests/test255.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 Analyzing tests/test256.js...
@@ -3986,10 +3986,10 @@ Analyzing tests/test259.js...
 [PASS] deepEqual
 [PASS] notStrictEqual
 [PASS] notStrictEqual
-[PASS] undefined
-[PASS] undefined
-[PASS] undefined
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -4020,8 +4020,8 @@ Analyzing tests/test261.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 Analyzing tests/test262.js...
 [MODULE] lodash.transform
@@ -4212,6 +4212,8 @@ Analyzing tests/test270.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -4221,6 +4223,8 @@ Analyzing tests/test270.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -4230,6 +4234,8 @@ Analyzing tests/test270.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -4238,6 +4244,8 @@ Analyzing tests/test270.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -4246,16 +4254,8 @@ Analyzing tests/test270.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 Analyzing tests/test271.js...
 [MODULE] lodash.uniq
@@ -4298,8 +4298,8 @@ Analyzing tests/test275.js...
 [PASS] strictEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
-[PASS] undefined
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] deepEqual
 [PASS] strictEqual
@@ -4412,7 +4412,7 @@ Analyzing tests/test283.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] operation took 6ms
+[PASS] operation took 0ms
 Analyzing tests/test284.js...
 [MODULE] lodash.wrap
 [PASS] strictEqual
@@ -4555,41 +4555,41 @@ Analyzing tests/test292.js...
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 Analyzing tests/test293.js...
 [MODULE] lodash(...).plant
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] test skipped
 Analyzing tests/test294.js...
 [MODULE] lodash(...).pop
 [PASS] strictEqual
@@ -6337,6 +6337,7 @@ Analyzing tests/test60.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+
 [MODULE] lodash.findIndex
 [PASS] strictEqual
 [PASS] strictEqual
@@ -6349,6 +6350,7 @@ Analyzing tests/test60.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+
 [MODULE] lodash.findKey
 [PASS] strictEqual
 [PASS] strictEqual
@@ -6361,6 +6363,7 @@ Analyzing tests/test60.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+
 [MODULE] lodash.findLast
 [PASS] strictEqual
 [PASS] strictEqual
@@ -6373,6 +6376,7 @@ Analyzing tests/test60.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+
 [MODULE] lodash.findLastIndex
 [PASS] strictEqual
 [PASS] strictEqual
@@ -6385,6 +6389,7 @@ Analyzing tests/test60.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
+
 [MODULE] lodash.findLastKey
 [PASS] strictEqual
 [PASS] strictEqual
@@ -6526,7 +6531,7 @@ Analyzing tests/test69.js...
 [PASS] undefined
 [PASS] deepEqual
 [PASS] undefined
-[PASS] deepEqual
+[PASS] test skipped
 [PASS] deepEqual
 [PASS] deepEqual
 [PASS] deepEqual
@@ -7068,6 +7073,26 @@ Analyzing tests/test84.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
+[PASS] test skipped
+[PASS] test skipped
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] deepEqual
+[PASS] strictEqual
+[PASS] strictEqual
+[PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
@@ -7077,29 +7102,9 @@ Analyzing tests/test84.js...
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] strictEqual
-[PASS] strictEqual
 [PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] strictEqual
-[PASS] deepEqual
-[PASS] strictEqual
-[PASS] strictEqual
+[PASS] test skipped
+[PASS] test skipped
 [PASS] strictEqual
 [PASS] strictEqual
 [PASS] deepEqual
