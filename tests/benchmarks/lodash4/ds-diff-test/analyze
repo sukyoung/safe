@@ -4,6 +4,13 @@ TARGET=merged.js
 REV_JSON=`echo $TARGET | sed 's/\(.*\).js/\1_jalangi_.json/'`
 REV_JS=`echo $TARGET | sed 's/\(.*\).js/\1_jalangi_.js/'`
 
+# Jalangi
+node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
+  --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+  --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
+  merged.js > jalangi.result
+
+# DynamicShortcut
 if [ -f "cfgSpanInfo.json" ] ; then
   echo "file exist"
 else
@@ -20,5 +27,5 @@ echo > $DS_HOME/ds-jalangi.result
 $SAFE_HOME/bin/safe bugDetect -config=ds.json merged.js > ds-safe.result
 mv $DS_HOME/ds-jalangi.result ds-jalangi.result
 
-
+# SAFE
 $SAFE_HOME/bin/safe bugDetect -config=config.json merged.js > safe.result
