@@ -19,11 +19,13 @@ def check_file():
   filename = merged_name + ".js"
 
   # Load analysis result
-  jalangi_alarms = open("jalangi.result", "r").readlines()
-  jalangi_alarms = filter(lambda l: "branch taken at" in l, jalangi_alarms)
+  ds_jalangi_alarms = open("ds-jalangi.result", "r").readlines()
+  ds_jalangi_alarms = filter(lambda l: "branch taken at" in l, ds_jalangi_alarms)
+  
+  ds_safe_alarms = open("ds-safe.result", "r").readlines()
+  ds_safe_alarms = filter(lambda l: l.startswith(filename), ds_safe_alarms)
+  
   safe_alarms = open("safe.result", "r").readlines()
-  total = list(filter(lambda l: l.startswith("total"), safe_alarms))[0]
-  total = int(total.split("=")[1].split()[0])
   safe_alarms = filter(lambda l: l.startswith(filename), safe_alarms)
 
   # Gather span info
@@ -104,23 +106,25 @@ def check_file():
     return (span, taken)
 
   # Parse
-  jalangi_alarms = sorted(list(map(parse_jalangi_alarm, jalangi_alarms)))
+  ds_jalangi_alarms = sorted(list(map(parse_jalangi_alarm, ds_jalangi_alarms)))
+  ds_safe_alarms = sorted(list(map(parse_safe_alarm, ds_safe_alarms)))
+  ds_alarms = ds_jalangi_alarms + ds_safe_alarms
   safe_alarms = sorted(list(map(parse_safe_alarm, safe_alarms)))
 
   out("alarms that safe miss (There shouldn't be any):")
-  for a in jalangi_alarms:
+  for a in ds_alarms:
     if not a in safe_alarms:
       out(a)
 
   out("alarms that safe overapproximate:")
   for a in safe_alarms:
-    if not a in jalangi_alarms:
+    if not a in ds_alarms:
       out(a)
 
   out("alarms that differ:")
-  for a in jalangi_alarms:
+  for a in ds_alarms:
     b = (a[0], not a[1])
-    if b in jalangi_alarms:
+    if b in ds_alarms:
       continue
     if b in safe_alarms:
       out(a)
