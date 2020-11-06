@@ -5,7 +5,7 @@ QUnit.module('lodash.isTypedArray');
     assert.expect(1);
 
     var expected = lodashStable.map(typedArrays, function(type) {
-      return type in root;
+      return root[type] != undefined;
     });
 
     var actual = lodashStable.map(typedArrays, function(type) {

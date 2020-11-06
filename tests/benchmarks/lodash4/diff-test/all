@@ -8,9 +8,7 @@ for file in ../tests/*; do
     ./run $file
     base=`basename $file`
     name="${base%.*}"
-    if ! [ -d "result/$name" ]; then
-      mkdir result/$name
-    fi
+    mkdir -p result/$name
     mv merged* result/$name
     mv *.result result/$name
     mv log result/$name

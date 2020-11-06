@@ -43,6 +43,18 @@
   delete this.Buffer;
   delete this.process;
   delete this.ArrayBuffer;
+  delete this.Proxy;
+
+  // removed typed arrays
+  delete this.Float32Array;
+  delete this.Float64Array;
+  delete this.Int8Array;
+  delete this.Int16Array;
+  delete this.Int32Array;
+  delete this.Uint8Array;
+  delete this.Uint8ClampedArray;
+  delete this.Uint16Array;
+  delete this.Uint32Array;
 
   // Set the print function
   if (!this.print) {
