@@ -143,13 +143,16 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Bot => JsString("⊥")
+      case Bot => JsString("__BOT__")
       case LBindMap(map) => JsObject(
         "type" -> JsString("LBindMap"),
         "map" -> JsObject(map.map {
           case (k, (binding, absent)) => k -> JsObject(
             "binding" -> binding.toJSON,
-            "absent" -> JsString(absent.toString)
+            "absent" -> JsString(absent.toString match {
+              case "⊥" => "__BOT__"
+              case _ => "__TOP__"
+            })
           )
         })
       )
@@ -158,7 +161,10 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
         "map" -> JsObject(map.map {
           case (k, (binding, absent)) => k -> JsObject(
             "binding" -> binding.toJSON,
-            "absent" -> JsString(absent.toString)
+            "absent" -> JsString(absent.toString match {
+              case "⊥" => "__BOT__"
+              case _ => "__TOP__"
+            })
           )
         })
       )

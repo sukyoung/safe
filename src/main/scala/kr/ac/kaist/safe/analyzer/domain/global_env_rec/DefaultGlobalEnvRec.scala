@@ -55,8 +55,8 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Bot => JsString("⊥")
-      case Top => JsString("⊤")
+      case Bot => JsString("__BOT__")
+      case Top => JsString("__TOP__")
     }
 
     // 10.2.1.2.1 HasBinding(N)

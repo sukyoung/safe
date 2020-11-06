@@ -191,7 +191,7 @@ package object domain {
   // absent value for parital map
   object AbsAbsent extends SimpleDomain[None.type] {
     def fromJSON(json: JsValue): Elem = json match {
-      case JsString(str) if (str == "⊤") => Top
+      case JsString(str) if (str == "__TOP__") => Top
       case _ => Bot
     }
   }

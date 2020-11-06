@@ -102,7 +102,10 @@ object DefaultBinding extends BindingDomain {
 
     def toJSON: JsValue = JsObject(
       "value" -> this.value.toJSON,
-      "uninit" -> JsString(this.uninit.toString),
+      "uninit" -> JsString(this.uninit.toString match {
+        case "⊥" => "__BOT__"
+        case _ => "__TOP__"
+      }),
       "mutable" -> this.mutable.toJSON
     )
 

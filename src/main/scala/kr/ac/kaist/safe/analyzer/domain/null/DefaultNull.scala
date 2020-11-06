@@ -37,8 +37,8 @@ object DefaultNull extends NullDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Bot => JsString("⊥")
-      case Top => JsString("⊤")
+      case Bot => JsString("__BOT__")
+      case Top => JsString("__TOP__")
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
@@ -63,7 +63,7 @@ object DefaultNull extends NullDomain {
   }
 
   def fromJSON(json: JsValue): Elem = json match {
-    case JsString(str) if (str == "⊤") => Top
+    case JsString(str) if (str == "__TOP__") => Top
     case _ => Bot
   }
 }

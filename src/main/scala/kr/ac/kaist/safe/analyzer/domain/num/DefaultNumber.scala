@@ -210,7 +210,7 @@ object DefaultNumber extends NumDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Bot => JsString("⊥")
+      case Bot => JsString("__BOT__")
       case NaN => JsString("NaN")
       case PosInf => JsString("+∞")
       case NegInf => JsString("-∞")
@@ -220,7 +220,7 @@ object DefaultNumber extends NumDomain {
       case NUIntConst(n) => JsNumber(n)
       case UInt => JsString("UInt")
       case NUInt => JsString("NUInt")
-      case Top => JsString("⊤")
+      case Top => JsString("__TOP__")
     }
 
     // 9.8.1 ToString Applied to the Number Type
@@ -836,7 +836,7 @@ object DefaultNumber extends NumDomain {
     case JsString(str) if (str == "-0") => NUIntConst(0)
     case JsString(str) if (str == "UInt") => UInt
     case JsString(str) if (str == "NUInt") => NUInt
-    case JsString(str) if (str == "⊤") => Top
+    case JsString(str) if (str == "__TOP__") => Top
     case _ => Bot
   }
 }

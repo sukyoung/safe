@@ -1,7 +1,24 @@
 #!/bin/sh
 
-node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
-  --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
-  --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
-  merged.js > jalangi.result
-$SAFE_HOME/bin/safe bugDetect merged.js > safe.result
+TARGET=merged.js
+REV_JSON=`echo $TARGET | sed 's/\(.*\).js/\1_jalangi_.json/'`
+REV_JS=`echo $TARGET | sed 's/\(.*\).js/\1_jalangi_.js/'`
+
+if [ -f "cfgSpanInfo.json" ] ; then
+  echo "file exist"
+else
+  echo "file not exist"
+  $SAFE_HOME/bin/safe cfgSpanInfo -cfgSpanInfo:out=cfgSpanInfo.json $TARGET
+  node $JALANGI_HOME/src/js/commands/esnstrument_cli.js --inlineIID --inlineSource $TARGET
+  node $DS_HOME/IID2CFGSpan.js $REV_JSON cfgSpanInfo.json
+  node $DS_HOME/instrument.js $REV_JS
+fi
+
+node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js
+
+echo > $DS_HOME/ds-jalangi.result
+$SAFE_HOME/bin/safe bugDetect -config=ds.json merged.js > ds-safe.result
+mv $DS_HOME/ds-jalangi.result ds-jalangi.result
+
+
+$SAFE_HOME/bin/safe bugDetect -config=config.json merged.js > safe.result

@@ -216,14 +216,14 @@ object DefaultContext extends ContextDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Bot => JsString("⊥")
-      case Top => JsString("⊤")
+      case Bot => JsString("__BOT__")
+      case Top => JsString("__TOP__")
       case CtxMap(map, merged, changed, thisBinding) => JsObject(
         "map" -> JsObject(map.map {
           case (k, v) => k.toString -> v.toJSON
         }),
-        "merged" -> JsString("⊥"),
-        "changed" -> JsString("⊥"),
+        "merged" -> JsString("__BOT__"),
+        "changed" -> JsString("__BOT__"),
         "thisBinding" -> thisBinding.toJSON
       )
     }

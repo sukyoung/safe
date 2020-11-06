@@ -45,10 +45,10 @@ object DefaultBool extends BoolDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Bot => JsString("b")
+      case Bot => JsString("__BOT__")
       case True => JsBoolean(true)
       case False => JsBoolean(false)
-      case Top => JsString("t")
+      case Top => JsString("__TOP__")
     }
 
     def ToString: AbsStr = this match {
@@ -128,7 +128,7 @@ object DefaultBool extends BoolDomain {
 
   def fromJSON(json: JsValue): Elem = json match {
     case JsBoolean(bool) => if (bool) True else False
-    case JsString(str) if (str == "⊤") => Top
+    case JsString(str) if (str == "__TOP__") => Top
     case _ => Bot
   }
 }

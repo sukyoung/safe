@@ -54,7 +54,7 @@ object LocSet extends AbsDomain[Loc] {
     }
 
     def toJSON: JsValue = this match {
-      case Top => JsString("⊤")
+      case Top => JsString("__TOP__")
       case LSet(set) => JsArray(set.toVector.map(l => JsString(l.toString)))
     }
 
@@ -139,6 +139,7 @@ object LocSet extends AbsDomain[Loc] {
     case JsArray(vector) => LocSet(vector.collect({
       case JsString(str) => Loc.parseString(str, cfg)
     }).toSet)
-    case _ => ???
+    case _ => Top
+
   }
 }

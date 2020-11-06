@@ -239,7 +239,7 @@ object DefaultState extends StateDomain {
       JsObject(
         "heap" -> this.heap.toJSON,
         "context" -> this.context.toJSON,
-        "allocs" -> JsString("⊥")
+        "allocs" -> JsString("__BOT__")
       )
     }
 

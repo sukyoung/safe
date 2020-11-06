@@ -81,7 +81,10 @@ object DefaultLexEnv extends LexEnvDomain {
     def toJSON: JsValue = JsObject(
       "record" -> this.record.toJSON,
       "outer" -> this.outer.toJSON,
-      "nullOuter" -> JsString(this.nullOuter.toString)
+      "nullOuter" -> JsString(this.nullOuter.toString match {
+        case "⊥" => "__BOT__"
+        case _ => "__TOP__"
+      })
     )
 
     def copy(

@@ -87,14 +87,14 @@ object DefaultHeap extends HeapDomain {
     }
 
     def toJSON: JsValue = this match {
-      case Top => JsString("⊤")
-      case Bot => JsString("⊥")
+      case Top => JsString("__TOP__")
+      case Bot => JsString("__BOT__")
       case HeapMap(m, merged, changed) => JsObject(
         "map" -> JsObject(m.map {
           case (k, v) => k.toString -> v.toJSON
         }),
-        "merged" -> JsString("⊥"),
-        "changed" -> JsString("⊥")
+        "merged" -> JsString("__BOT__"),
+        "changed" -> JsString("__BOT__")
       )
     }
 

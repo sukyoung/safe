@@ -81,24 +81,36 @@ object CKeyObject extends ObjDomain {
         "map" -> JsObject(nmap.map.map {
           case (k, v) => k -> JsObject(
             "value" -> v.value.toJSON,
-            "absent" -> JsString(v.absent.toString)
+            "absent" -> JsString(v.absent.toString match {
+              case "⊥" => "__BOT__"
+              case _ => "__TOP__"
+            })
           )
         }),
         "default" -> JsObject(
           "value" -> nmap.default.value.toJSON,
-          "absent" -> JsString(nmap.default.absent.toString)
+          "absent" -> JsString(nmap.default.absent.toString match {
+            case "⊥" => "__BOT__"
+            case _ => "__TOP__"
+          })
         )
       ),
       "imap" -> JsObject(
         "map" -> JsObject(imap.map.map {
           case (k, v) => k.toString -> JsObject(
             "value" -> v.value.toJSON,
-            "absent" -> JsString(v.absent.toString)
+            "absent" -> JsString(v.absent.toString match {
+              case "⊥" => "__BOT__"
+              case _ => "__TOP__"
+            })
           )
         }),
         "default" -> JsObject(
           "value" -> imap.default.value.toJSON,
-          "absent" -> JsString(imap.default.absent.toString)
+          "absent" -> JsString(imap.default.absent.toString match {
+            case "⊥" => "__BOT__"
+            case _ => "__TOP__"
+          })
         )
       )
     )

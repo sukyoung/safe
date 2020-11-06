@@ -70,7 +70,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
 
     def toJSON: JsValue = this match {
       case StrSet(set) => JsArray(set.toVector.map(s => JsString(s.toString)))
-      case Top => JsString("⊤")
+      case Top => JsString("__TOP__")
       case Number => JsString("Number")
       case Other => JsString("Other")
     }
