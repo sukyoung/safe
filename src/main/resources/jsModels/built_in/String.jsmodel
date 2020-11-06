@@ -357,7 +357,15 @@ Function: {
   }
   \\],
   11: [\\
-  function () {
+  function replace(strOrRegex, newStrOrFunc) {
+    if (@SameValue(undefined,this) || @SameValue(null,this)){
+      throw new TypeError();
+    }
+    if (@IsCallable(newStrOrFunc)) {
+      var args = [];
+      args[@UInt] = @BoolTop ? (@BoolTop ? @StrTop : @NumTop) : undefined;
+      newStrOrFunc.apply(global, args);
+    }
   }
   \\],
   12: [\\
