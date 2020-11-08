@@ -28,8 +28,8 @@ def check_file():
   ds_safe_alarms = open("ds-safe.result", "r").readlines()
   ds_safe_alarms = filter(lambda l: l.startswith(filename), ds_safe_alarms)
   
-  safe_alarms = open("safe.result", "r").readlines()
-  safe_alarms = filter(lambda l: l.startswith(filename), safe_alarms)
+  #safe_alarms = open("safe.result", "r").readlines()
+  #safe_alarms = filter(lambda l: l.startswith(filename), safe_alarms)
 
   # Gather span info
   info = json.load(open(merged_name + "_jalangi_.json"))
@@ -113,35 +113,35 @@ def check_file():
   ds_jalangi_alarms = sorted(list(map(parse_jalangi_alarm, ds_jalangi_alarms)))
   ds_safe_alarms = sorted(list(map(parse_safe_alarm, ds_safe_alarms)))
   ds_alarms = ds_jalangi_alarms + ds_safe_alarms
-  safe_alarms = sorted(list(map(parse_safe_alarm, safe_alarms)))
+  #safe_alarms = sorted(list(map(parse_safe_alarm, safe_alarms)))
 
   out("alarms that ds miss (There shouldn't be any):")
   for a in jalangi_alarms:
     if not a in ds_alarms:
       out(a)
 
-  out("alarms that safe miss (There shouldn't be any):")
-  for a in ds_alarms:
-    if not a in safe_alarms:
-      out(a)
+  #out("alarms that safe miss (There shouldn't be any):")
+  #for a in ds_alarms:
+  #  if not a in safe_alarms:
+  #    out(a)
 
   out("alarms that ds overapproximate jalangi:")
   for a in ds_alarms:
     if not a in jalangi_alarms:
       out(a)
 
-  out("alarms that safe more overapproximate than ds:")
-  for a in safe_alarms:
-    if not a in ds_alarms:
-      out(a)
-
-  #out("alarms that differ:")
-  #for a in ds_alarms:
-  #  b = (a[0], not a[1])
-  #  if b in ds_alarms:
-  #    continue
-  #  if b in safe_alarms:
+  #out("alarms that safe more overapproximate than ds:")
+  #for a in safe_alarms:
+  #  if not a in ds_alarms:
   #    out(a)
+
+  out("alarms that differ:")
+  for a in ds_alarms:
+    b = (a[0], not a[1])
+    if b in ds_alarms:
+      continue
+    if b in jalangi_alarms:
+      out(a)
   f.close()
   lf.close()
 
