@@ -1,11 +1,14 @@
 #!/bin/sh
 
-echo "Analyzing files..."
+echo "Merging files..."
 if [ "$#" -eq 1 ]; then
-  ./analyze $1
+  ./merge $1
 else
-  ./analyze loading
+  ./merge
 fi
-
+echo "Instrumenting..."
+./instrument
+echo "Analyzing files..."
+./analyze
 echo "Calculating diff..."
 python3 branch_compare.py

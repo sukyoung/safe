@@ -1,18 +1,11 @@
 #!/bin/sh
 
-name=$1
 DS_DIFF_TEST=$SAFE_HOME/tests/benchmarks/lodash4/ds-diff-test
-
-echo "Copying cached instrumented files to $DS_HOME..."
-cp cache/$name/merged.js $DS_HOME
-cp cache/$name/iidMap.json $DS_HOME
-cp cache/$name/iidToLocation.json $DS_HOME
-cp cache/$name/function.json $DS_HOME
-cp cache/$name/direct_vanilla.js $DS_HOME
 
 echo "Changed directory to $DS_HOME"
 cd $DS_HOME
 
+# INPUT: direct_vanilla.js, iidMap.json, function.json
 echo "Start server..."
 node server.js &
 pid=$!
@@ -20,13 +13,15 @@ pid=$!
 echo "Analyzing with SAFE + DynamicShortcut..."
 echo > $DS_HOME/ds-jalangi.result
 $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut merged.js > $DS_DIFF_TEST/ds-safe.result
-mv $DS_HOME/ds-jalangi.result $DS_DIFF_TEST/ds-jalangi.result
+mv $DS_HOME/ds-jalangi.result $DS_DIFF_TEST
 
 echo "Analyzing with Jalangi..."
+cp $DS_DIFF_TEST/merged_jalangi_.js .
 node $JALANGI_HOME/src/js/commands/direct.js \
-  —analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
-  —analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
+  --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+  --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
   merged_jalangi_.js > jalangi.result
+mv $DS_HOME/jalangi.result $DS_DIFF_TEST
 
 echo "Killing the server..."
 kill -9 $pid

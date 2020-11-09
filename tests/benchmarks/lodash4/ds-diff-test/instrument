@@ -4,55 +4,17 @@ TARGET=merged.js
 REV_JSON=`echo $TARGET | sed 's/\(.*\).js/\1_jalangi_.json/'`
 REV_JS=`echo $TARGET | sed 's/\(.*\).js/\1_jalangi_.js/'`
 
-function merge() {
-  name=$1
-  file=$2
-  echo "Merging files for $name..."
-  ./merge $file
-}
+echo "Generating $REV_JSON and $REV_JS..."
+node $JALANGI_HOME/src/js/commands/esnstrument_cli.js --inlineIID --inlineSource $TARGET
 
-function instrument() {
-  echo "Generating $REV_JSON and $REV_JS..."
-  node $JALANGI_HOME/src/js/commands/esnstrument_cli.js --inlineIID --inlineSource $TARGET
+echo "Generating cfgSpanInfo.json..."
+$SAFE_HOME/bin/safe cfgSpanInfo -cfgSpanInfo:out=cfgSpanInfo.json $TARGET
 
-  echo "Generating cfgSpanInfo.json..."
-  $SAFE_HOME/bin/safe cfgSpanInfo -cfgSpanInfo:out=cfgSpanInfo.json $TARGET
+echo "Generating iidMap.json and iidToLocation.json... @ $DS_HOME"
+node $DS_HOME/IID2CFGSpan.js $REV_JSON cfgSpanInfo.json
 
-  echo "Generating iidMap.json and iidToLocation.json... @ $DS_HOME"
-  node $DS_HOME/IID2CFGSpan.js $REV_JSON cfgSpanInfo.json
+echo "Generating function.json ... @ $DS_HOME"
+node $DS_HOME/instrument.js $REV_JS
 
-  echo "Generating function.json ... @ $DS_HOME"
-  node $DS_HOME/instrument.js $REV_JS
-
-  echo "Generating direct_vanilla.js... @ $DS_HOME"
-  node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js
-}
-
-function move() {
-  dirname=$1
-  echo "Moving generated filed to $dirname..."
-  mkdir -p $dirname
-  mv log merged.js $REV_JSON $REV_JS cfgSpanInfo.json $DS_HOME/{iidMap.json,iidToLocation.json,function.json,direct_vanilla.js} $dirname
-}
-
-# for loading code
-echo > log
-name="loading"
-echo "Instrumenting for $name..."
-echo "Merging files for $name..." >> log
-./merge >> log 2>&1
-instrument >> log 2>&1
-move cache/$name >> log 2>&1
-
-# for Lodash 306 tests
-for file in ../tests/*; do
-  if [ -f "$file" ]; then
-    echo > log
-    base=`basename $file`
-    name="${base%.*}"
-    echo "Instrumenting for $name..."
-    merge $name $file >> log 2>&1
-    instrument >> log 2>&1
-    move cache/$name >> log 2>&1
-  fi
-done
+echo "Generating direct_vanilla.js... @ $DS_HOME"
+node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js
