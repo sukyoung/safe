@@ -1,0 +1,24 @@
+{
+  "silent": true,
+  "time": true,
+  "heapBuilder": {
+    "maxStrSetSize": 10,
+    "recency": false,
+    "heap-clone": true,
+    "callsiteSensitivity": 30,
+    "loopIter": 400,
+    "loopDepth": 10,
+    "snapshot": "",
+    "timeLimit": 300
+  },
+  "analyzer": {
+    "console": false,
+    "exitDump": false,
+    "out": false,
+    "html": "",
+    "exitReachable": true,
+    "stopAlreadyVisited": false,
+    "stopExitExc": false,
+    "dynamicShortcut": false
+  }
+}
