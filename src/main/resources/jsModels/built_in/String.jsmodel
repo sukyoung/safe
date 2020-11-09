@@ -353,7 +353,13 @@ Function: {
   }
   \\],
   10: [\\
-  function () {
+  function match(regex) {
+    if (@BoolTop) return null;
+    else {
+      var args = [];
+      args[@UInt] = @StrTop;
+      return args;
+    }
   }
   \\],
   11: [\\
