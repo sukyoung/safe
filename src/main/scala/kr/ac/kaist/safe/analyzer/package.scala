@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe
 
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.util.HashMap
 
 package object analyzer {
@@ -20,7 +21,9 @@ package object analyzer {
   var stopAlreadyVisited = false
   var stopExitExc = false
 
+  ////////////////////////////////////////////////////////////////////////////////
   // DynamicShortcut
+  ////////////////////////////////////////////////////////////////////////////////
   var dynamicShortcut = false
 
   // count
@@ -33,4 +36,7 @@ package object analyzer {
 
   // touched functions
   var touchedFuncs: Set[Int] = Set()
+
+  // fid to location
+  var fidToName: Map[Int, String] = Map()
 }

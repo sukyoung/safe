@@ -37,7 +37,18 @@ object Initialize {
       model.funcs.foreach {
         case (_, func) => cfg.addJSModel(func)
       }
-      AbsHeap(model.heap)
+      val heap = model.heap
+      heap.map.foreach {
+        case (loc, obj) => obj.imap.get(ICall) match {
+          case Some(FId(fid)) =>
+            val str = loc.toString
+            val name = str.substring(1, str.indexOf(':'))
+            fidToName += fid -> name
+            println(s"$fid -> $name")
+          case _ =>
+        }
+      }
+      AbsHeap(heap)
     }
 
     AbsState(modeledHeap, initCtx, AllocLocSet.Empty)
