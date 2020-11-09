@@ -21,13 +21,13 @@ def check_file():
   # Load analysis result
   jalangi_alarms = open("jalangi.result", "r").readlines()
   jalangi_alarms = filter(lambda l: "branch taken at" in l, jalangi_alarms)
- 
+
   ds_jalangi_alarms = open("ds-jalangi.result", "r").readlines()
   ds_jalangi_alarms = filter(lambda l: "branch taken at" in l, ds_jalangi_alarms)
-  
+
   ds_safe_alarms = open("ds-safe.result", "r").readlines()
   ds_safe_alarms = filter(lambda l: l.startswith(filename), ds_safe_alarms)
-  
+
   #safe_alarms = open("safe.result", "r").readlines()
   #safe_alarms = filter(lambda l: l.startswith(filename), safe_alarms)
 

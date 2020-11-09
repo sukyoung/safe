@@ -11,9 +11,7 @@ for file in ../tests/*; do
     if ! [ -d "result/$name" ]; then
       mkdir result/$name
     fi
-    mv merged* result/$name
     mv *.result result/$name
-    mv log result/$name
   fi
 done
 
