@@ -44,7 +44,6 @@ object Initialize {
             val str = loc.toString
             val name = str.substring(1, str.indexOf(':'))
             fidToName += fid -> name
-            println(s"$fid -> $name")
           case _ =>
         }
       }
