@@ -19,5 +19,18 @@ package object analyzer {
 
   var stopAlreadyVisited = false
   var stopExitExc = false
+
+  // DynamicShortcut
   var dynamicShortcut = false
+
+  // count
+  var dsCount = 0
+  var dsSuccessCount = 0
+
+  // time
+  var totalDuration = 0L
+  var dsDuration = 0L
+
+  // touched functions
+  var touchedFuncs: Set[Int] = Set()
 }

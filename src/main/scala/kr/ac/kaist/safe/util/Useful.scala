@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.util
 
 import scala.util.Try
-import java.io.{ BufferedWriter, File, FileWriter, IOException }
+import java.io.{ BufferedWriter, File, FileWriter, IOException, PrintWriter }
 import kr.ac.kaist.safe.{ LINE_SEP, CUR_DIR, BASE_DIR, SEP }
 
 object Useful {
@@ -60,4 +60,7 @@ object Useful {
   }
 
   def path(dirs: String*): String = BASE_DIR + SEP + dirs.mkString(SEP)
+
+  def getPrintWriter(filename: String): PrintWriter =
+    new PrintWriter(new File(filename))
 }

@@ -24,7 +24,7 @@ class Fixpoint(
 
   def compute(initIters: Int = 0): (Int, Double) = {
     // set the start time.
-    val startTime = System.nanoTime
+    val startTime = System.currentTimeMillis
 
     var iters = initIters
     while (!worklist.isEmpty) {
@@ -34,9 +34,9 @@ class Fixpoint(
     consoleOpt.foreach(_.runFinished)
 
     // calculate duration
-    val duration = (System.nanoTime - startTime) / 1e9
+    totalDuration = System.currentTimeMillis - startTime
 
-    (iters, duration)
+    (iters, totalDuration)
   }
 
   var cpSet: Set[CFGBlock] = Set()

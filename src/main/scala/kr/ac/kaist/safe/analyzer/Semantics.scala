@@ -253,8 +253,14 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id > 0) {
+
+          var touchedFunc = func.id < 0
+
+          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id > 0) {
             dsTriedCPs += cp
+            dsCount += 1
+            val startTime = System.currentTimeMillis
+
             val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
             val newTP = cp.tracePartition
             val exitCP = ControlPoint(func.exit, newTP)
@@ -266,14 +272,26 @@ case class Semantics(
             addTriedCPs(fields("visitedEntryControlPoints"))
 
             val loaded = AbsState.fromJSON(fields("state"), cfg)
-            if (loaded.isBottom) {
+            val result = if (loaded.isBottom) {
               (newSt, AbsState.Bot)
             } else {
+              dsSuccessCount += 1
+              touchedFunc = false
+
               setState(exitCP, loaded)
               worklist.add(exitCP)
               (AbsState.Bot, AbsState.Bot)
             }
+
+            val duration = System.currentTimeMillis - startTime
+            dsDuration += duration
+
+            result
           } else (newSt, AbsState.Bot)
+
+          if (touchedFunc) touchedFuncs += func.id
+
+          result
         }
         case (call: Call) =>
           val (thisVal, argVal, resSt, resExcSt) = internalCI(cp, call.callInst, st, AbsState.Bot)

@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.Useful._
 import kr.ac.kaist.safe.bug_detector._
 
 // BugDetect phase
@@ -43,6 +44,11 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
 
     // Bug detection for each checker
     checkers.foreach(checker => checker(cfg, semantics))
+
+    touchedFuncs.foreach(fid => println(s"Touched built-in function: $fid"))
+
+    println(s"COUNT: $dsSuccessCount / $dsCount")
+    println(s"TIME : $dsDuration ms / $totalDuration ms")
 
     Success(cfg)
   }
