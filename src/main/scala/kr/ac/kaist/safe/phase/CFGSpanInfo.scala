@@ -75,6 +75,8 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
               List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
             case CFGAllocArray(ir, block, lhs, length, asite) =>
               List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "T", asite.toString) :: acc
+            case CFGAllocArg(ir, block, lhs, length, asite) =>
+              List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "A", asite.toString) :: acc
             case CFGCall(ir, block, fun, thisArg, arguments, asite) =>
               List(ir.span.begin.line.toString, ir.span.begin.column.toString, ir.span.end.line.toString, ir.span.end.column.toString, "F,M", asite.toString, 0.toString, block.func.id + ":" + block.id) :: acc
             case CFGConstruct(ir, block, fun, thisArg, arguments, asite) =>

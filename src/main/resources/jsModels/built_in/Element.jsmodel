@@ -11,7 +11,7 @@ Heap: {
     "document": <#document, T, F, T>,
     "addEventListener": <#EventTarget.prototype.addEventListener, T, T, T>,
     "location": <#location, F, T, T>,
-    "setInterval": <#Document.prototype.setInterval, T, T, T>,
+    "setInterval": <#Global.setInterval, T, T, T>,
     "setTimeout": <#Global.setTimeout, T, T, T>,
     "clearTimeout": <#Global.clearTimeout, T, T, T>,
     "navigator": <#Global.clientInformation, F, T, T>,
@@ -304,7 +304,7 @@ Heap: {
     [[Prototype]]: #HTMLHtmlElement.prototype,
     [[Scope]]: null
   },
-  #Document.prototype.setInterval: {
+  #Global.setInterval: {
     [[Call]]: fun(17),
     [[Class]]: "Function",
     [[Extensible]]: true,
