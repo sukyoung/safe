@@ -1,0 +1,7 @@
+#!/bin/sh
+#node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js
+#node $DS_HOME/server.js &
+
+echo > $DS_HOME/ds-jalangi.result
+$SAFE_HOME/bin/safe bugDetect -config=ds.json merged.js > ds-safe.result
+mv $DS_HOME/ds-jalangi.result ds-jalangi.result
