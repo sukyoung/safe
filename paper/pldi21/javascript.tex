@@ -1,11 +1,4 @@
 \section{Dynamic Shortcut for JavaScript}\label{sec:javascript}
-
-In this section, we introduce the core language of JavaScript that supports
-first-class functions, open objects, and first-class property names, and define
-sealed symbolic execution of the core language for dynamic shortcut.
-
-\subsection{Core Language of JavaScript}
-
 \begin{figure*}[t]
   \centering
 
@@ -145,81 +138,12 @@ sealed symbolic execution of the core language for dynamic shortcut.
   \label{fig:core-trans-rel}
 \end{figure*}
 
-\[
-  \begin{array}{ll@{~}c@{~}l}
-    \text{Programs} & \prog &::=& (\lab: \inst)^*\\
-
-    \text{Labels} & \lab &\in& \labset\\
-
-    \text{Instructions} & \inst &::=&
-    \refer = \expr \mid
-    \refer = \kwobj \mid
-    \refer = \expr ( \expr ) \mid
-    \kwret \; \expr \mid
-    \kwif \; \expr \; \lab\\
-
-    \text{References} & \refer &::=&
-    x \mid
-    \expr [ \expr ]\\
-
-    \text{Expressions} & \expr &::=&
-    \pval \mid
-    \lambda x. \; \lab \mid
-    \refer \mid
-    \op(\expr^*)\\
-  \end{array}
-\]
-
-A program $\prog$ is a sequence of labeled instructions. An instruction $\inst$
-is an expression assignment, an object creation, a function call, a return
-instruction, or a branch.  A reference $\refer$ is a variable or a property
-access of an object.  An expression $\expr$ is a primitive, a lambda function, a
-reference, or an operation between other expressions.
-
-\[
-  \begin{array}{lr@{~}c@{~}l@{~}c@{~}l}
-    \text{States} & \st &\in& \stset &=& \labset \times \memset \times
-    \ctxtset \times \eaddrset\\
-    \text{Memories} & \mem &\in& \memset &=& \locset \finmap \valset\\
-    \text{Contexts} & \ctxt &\in& \ctxtset &=& \eaddrset \finmap (\eaddrset
-    \times \labset \times \locset)\\
-    \text{Locations} & \loc &\in& \locset &=& (\eaddrset \times \varset) \uplus
-    (\oaddrset \times \strset)\\
-    \text{Values} & \val &\in& \valset &=& \pvalset \uplus \oaddrset \uplus
-    \fvalset\\
-    \text{Primitives} & \pval &\in& \pvalset &=& \strset \uplus \cdots\\
-    \text{Addresses} & \addr &\in& \addrset &=& \eaddrset \uplus \oaddrset\\
-    \text{Functions} & \fval{x}{\lab} &\in& \fvalset &=& \varset \times
-    \labset\\
-  \end{array}
-\]
-
-States $\stset$ consist of labels $\labset$, memories $\memset$, contexts
-$\ctxtset$, and environment addresses $\eaddrset$.  A memory $\mem \in \memset$
-is a finite mapping from locations to values.  A context $\ctxt \in \ctxtset$ is
-a finite mapping from environment addresses to tuple of environment addresses,
-return labels, and left-hand side locations.  A location $\loc \in \locset$ is a
-variable or an object property; a variable location consists of an environment
-address and its name, and an object property location consists of an object
-address and a string value.  A value $\val \in \valset$ is a primitive, an
-address, or a function value.  An address $\addr \in \addrset$ is an environment
-address or an object address.  A function value $\fval{x}{\lab} \in \fvalset$
-consists of a parameter and a body label.  In the core language, the closed
-scoping is used for functions for brevity thus only parameters and local
-variables are accessible in the function body.
-
-We formulate the concrete semantics of the core language as described in
-Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
-states is defined with the semantics of references and expressions using two
-different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
-\fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
-$\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
-the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
-environment address.  The function $\labnext$ returns the next label of a
-given label in the current program $\prog$.
+In this section, we introduce the core language of JavaScript that supports
+first-class functions, open objects, and first-class property names, and define
+sealed symbolic execution of the core language for dynamic shortcut.
 
 
-\subsection{Abstract Semantics}
+\subsection{Core Language of JavaScript}
 
 \begin{figure*}[t]
   \centering
@@ -356,6 +280,82 @@ given label in the current program $\prog$.
   \caption{The semantics of view transition for the core language of JavaScript}
   \label{fig:core-view-trans}
 \end{figure*}
+
+\[
+  \begin{array}{ll@{~}c@{~}l}
+    \text{Programs} & \prog &::=& (\lab: \inst)^*\\
+
+    \text{Labels} & \lab &\in& \labset\\
+
+    \text{Instructions} & \inst &::=&
+    \refer = \expr \mid
+    \refer = \kwobj \mid
+    \refer = \expr ( \expr ) \mid
+    \kwret \; \expr \mid
+    \kwif \; \expr \; \lab\\
+
+    \text{References} & \refer &::=&
+    x \mid
+    \expr [ \expr ]\\
+
+    \text{Expressions} & \expr &::=&
+    \pval \mid
+    \lambda x. \; \lab \mid
+    \refer \mid
+    \op(\expr^*)\\
+  \end{array}
+\]
+
+A program $\prog$ is a sequence of labeled instructions. An instruction $\inst$
+is an expression assignment, an object creation, a function call, a return
+instruction, or a branch.  A reference $\refer$ is a variable or a property
+access of an object.  An expression $\expr$ is a primitive, a lambda function, a
+reference, or an operation between other expressions.
+
+\[
+  \begin{array}{lr@{~}c@{~}l@{~}c@{~}l}
+    \text{States} & \st &\in& \stset &=& \labset \times \memset \times
+    \ctxtset \times \eaddrset\\
+    \text{Memories} & \mem &\in& \memset &=& \locset \finmap \valset\\
+    \text{Contexts} & \ctxt &\in& \ctxtset &=& \eaddrset \finmap (\eaddrset
+    \times \labset \times \locset)\\
+    \text{Locations} & \loc &\in& \locset &=& (\eaddrset \times \varset) \uplus
+    (\oaddrset \times \strset)\\
+    \text{Values} & \val &\in& \valset &=& \pvalset \uplus \oaddrset \uplus
+    \fvalset\\
+    \text{Primitives} & \pval &\in& \pvalset &=& \strset \uplus \cdots\\
+    \text{Addresses} & \addr &\in& \addrset &=& \eaddrset \uplus \oaddrset\\
+    \text{Functions} & \fval{x}{\lab} &\in& \fvalset &=& \varset \times
+    \labset\\
+  \end{array}
+\]
+
+States $\stset$ consist of labels $\labset$, memories $\memset$, contexts
+$\ctxtset$, and environment addresses $\eaddrset$.  A memory $\mem \in \memset$
+is a finite mapping from locations to values.  A context $\ctxt \in \ctxtset$ is
+a finite mapping from environment addresses to tuple of environment addresses,
+return labels, and left-hand side locations.  A location $\loc \in \locset$ is a
+variable or an object property; a variable location consists of an environment
+address and its name, and an object property location consists of an object
+address and a string value.  A value $\val \in \valset$ is a primitive, an
+address, or a function value.  An address $\addr \in \addrset$ is an environment
+address or an object address.  A function value $\fval{x}{\lab} \in \fvalset$
+consists of a parameter and a body label.  In the core language, the closed
+scoping is used for functions for brevity thus only parameters and local
+variables are accessible in the function body.
+
+We formulate the concrete semantics of the core language as described in
+Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
+states is defined with the semantics of references and expressions using two
+different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
+\fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
+$\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
+the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
+environment address.  The function $\labnext$ returns the next label of a
+given label in the current program $\prog$.
+
+
+\subsection{Abstract Semantics}
 
 In abstract semantics of the core language, we use the flow sensitivity with a
 flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$ that

@@ -1,5 +1,13 @@
 \section{Evaluation}\label{sec:eval}
 
+We developed $\tool$ to implement dynamic shortcut technique for JavaScript
+static analysis (Section~\ref{sec:javascript}).  Our tool is an extension of
+a state-of-the-art JavaScript static analyzer SAFE 2.0~\cite{safe2} with the
+dynamic analyzer Jalangi 2~\cite{jalangi}.
+
+\todo - Explain the detail of implementation
+
+We evaluated our tool based on the following research questions:
 \begin{itemize}
   \item \textbf{RQ1) Analysis Speed-up:} How much analysis time is reduced by
     adding dynamic shortcut to static analysis?
@@ -8,3 +16,63 @@
   \item \textbf{RQ3) Opaque Function Coverage:} How many opaque functions are
     covered by dynamic shortcut without using manual modeling?
 \end{itemize}
+We performed our experiments on an Ubuntu machine equipped with 4.2GHz Quad-Core
+Intel Core i7 and 64GB of RAM.
+
+
+\subsection{Analysis Speed-up}
+
+\begin{table}
+  \caption{Analysis of 306 tests of Lodash 4.}
+  \label{table:conc-test}
+  \vspace*{-1em}
+  \centering
+  \[
+    \begin{array}{c?r|r|r}
+      &
+      \multicolumn{1}{c|}{\text{SAFE (ms)}} &
+      \multicolumn{1}{c|}{\tool \text{ (ms)}} &
+      \multicolumn{1}{c}{\text{Speed Up}}\\\hline\hline
+      \text{avg.}       & \inred{168,399} & \inred{1,811} & \inred{116.38}\\\hline
+      \text{min.}       & \inred{ 37,095} & \inred{  514} & \inred{ 12.81}\\\hline
+      \text{max.}       & \inred{299,375} & \inred{2,986} & \inred{489.67}\\\hline\hline
+      \text{\# success} & \inred{    274} & \inred{  306} &
+    \end{array}
+  \]
+  \vspace*{-1em}
+\end{table}
+
+We targeted official 306 tests of Lodash 4\cite{lodash} used in motivating
+examples (Section~\ref{sec:motivation}).  Recent papers for JavaScript static
+analysis techniques~\cite{value-refinement, value-partitioning} also evaluated
+their techniques based on them.  Table~\ref{table:conc-test} shows that our tool
+successfully analyzes \inred{all 306} tests in \inred{514 ms} on average while
+SAFE only analyzes \inred{274} out of 306 tests within 5 minute timeout.  For
+\inred{274} tests analyzable by SAFE, our tool is at least \inred{12.81x}, at
+most \inred{489.67x}, and \inred{116.38x} on average faster than SAFE.
+
+However, all tests do not contain any non-deterministic values thus they could
+be analyzed via only dynamic analysis without static analysis.  In fact, our
+tool covers all program parts via only one dynamic shortcut without using
+abstract semantics of static analysis.  Thus, we modified 306 official tests to
+include abstract values by lifting each literal to the corresponding typed
+value.  For example, the numerical literal \jscode{42} will be lifted to the
+abstract value $\top_{\code{num}}$, which represents the whole numerical values.
+
+% abstract versions
+% of official 
+% 
+% performs only dynamic shortcut
+% 
+% by only performing dynamic shortcut for
+% whole program points.  Moreover, they analyzed 
+% 
+% , which is a modern JavaScript library
+% delivering modularity, performance, and extras.  It is the first 
+% 
+% 
+% For motivating examples, we excerpt the \jscode{concat} function in
+% Figure~\ref{fig:concat} from Lodash library~\cite{lodash} (v4.17.20), which is
+% the most popular npm package\footnote{https://www.npmjs.com/browse/depended}
+% and \inred{124,562} npm packages have dependency with it.  The \jscode{concat}
+% 
