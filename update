@@ -1,0 +1,6 @@
+#!/bin/sh
+
+git pull
+cd dynamic-shortcut && git pull && cd ..
+cd jalangi2 && git pull && cd ..
+sbt compile
