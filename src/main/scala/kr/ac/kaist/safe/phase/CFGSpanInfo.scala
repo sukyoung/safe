@@ -39,7 +39,7 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
     println("Dumped CFGSpanList to " + cfgSpanInfoJson)
 
     val fidToNameJson = "fidToName.json"
-    val json = JsObject(fidToName.map { case (k, v) => k.toString -> JsString(v) })
+    val json = JsObject(fidToName.map { case (k, v) => v -> JsString(k.toString) })
     Useful.dump(json.prettyPrint, fidToNameJson)
     println("Dumped fidToName to " + fidToNameJson)
 
