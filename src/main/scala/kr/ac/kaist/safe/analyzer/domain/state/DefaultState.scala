@@ -259,7 +259,7 @@ object DefaultState extends StateDomain {
   }
 
   def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
-    case JsString(str) if (str == "⊥") => Bot
+    case JsString(str) if (str == "__BOT__") => Bot
     case _ =>
       val fields = json.asJsObject().fields
       Elem(AbsHeap.fromJSON(fields("heap"), cfg), AbsContext.fromJSON(fields("context"), cfg), AllocLocSet.Bot)
