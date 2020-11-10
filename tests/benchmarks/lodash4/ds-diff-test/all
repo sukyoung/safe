@@ -6,7 +6,7 @@ for file in ../tests/*; do
     echo "--------------------------------------------------" | tee -a all.log
     echo "- Diff-Testing for $file" | tee -a all.log
     echo "--------------------------------------------------" | tee -a all.log
-    ./run $file 2>&1 | tee -a all.log
+    ./run $@ $file 2>&1 | tee -a all.log
     base=`basename $file`
     name="${base%.*}"
     mkdir -p result/$name

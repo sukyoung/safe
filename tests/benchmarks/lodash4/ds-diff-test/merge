@@ -1,9 +1,31 @@
 #!/bin/sh
 
+for i in "$@"
+do
+case $i in
+    -w|--wrapped)
+    WRAPPED=true
+    echo "[Merge] Wrapped mode on"
+    shift
+    ;;
+    -*)
+    echo "no option: $i"
+    exit 1
+    ;;
+esac
+done
+
 TARGET="merged.js"
 
-cat ../setting.js ../lodash.js ../test-setting.js > $TARGET
+echo > $TARGET
+if [ $WRAPPED ]; then
+  echo "(function() {" >> $TARGET
+fi
+cat ../setting.js ../lodash.js ../test-setting.js >> $TARGET
 if [ "$#" -eq 1 ]; then
   cat $1 >> $TARGET
+fi
+if [ $WRAPPED ]; then
+  echo "}.call(global));" >> $TARGET
 fi
 node $DS_HOME/parenthesize.js $TARGET $TARGET
