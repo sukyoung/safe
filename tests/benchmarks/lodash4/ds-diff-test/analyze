@@ -12,7 +12,7 @@ pid=$!
 
 echo "Analyzing with SAFE + DynamicShortcut..."
 echo > $DS_HOME/ds-jalangi.result
-timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut $DS_DIFF_TEST/merged.js > $DS_DIFF_TEST/ds-safe.result
+timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut -analyzer:exitReachable $DS_DIFF_TEST/merged.js > $DS_DIFF_TEST/ds-safe.result
 if [ $? -eq 124 ]; then
   echo "[Timeout] 5 minutes." >> $DS_DIFF_TEST/ds-safe.result
 fi
