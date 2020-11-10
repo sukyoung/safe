@@ -257,11 +257,16 @@ case class Semantics(
           var touchedFunc = func.id < 0
 
           val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id > 0) {
+            val fid = cp.block.func.id;
             dsTriedCPs += cp
             dsCount += 1
             val startTime = System.currentTimeMillis
 
-            val dump = JsObject("fid" -> JsNumber(cp.block.func.id), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
+            val dump = if (cp.block.func.id < 0) {
+              JsObject("fid" -> JsNumber(fid), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON, "code" -> JsString(fidToName(fid)))
+            } else {
+              JsObject("fid" -> JsNumber(fid), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
+            }
             val newTP = cp.tracePartition
             val exitCP = ControlPoint(func.exit, newTP)
 
