@@ -63,4 +63,10 @@ object Useful {
 
   def getPrintWriter(filename: String): PrintWriter =
     new PrintWriter(new File(filename))
+
+  def dump(data: Any, filename: String): Unit = {
+    val nf = getPrintWriter(filename)
+    nf.print(data)
+    nf.close
+  }
 }

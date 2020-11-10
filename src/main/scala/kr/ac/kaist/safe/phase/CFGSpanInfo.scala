@@ -33,14 +33,16 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
   ): Try[CFGSpanList] = {
     val (cfg, sem, initTP, heapConfig, iter) = in
     val spanList = getCFGSpanList(cfg)
-    // Pretty print to file.
-    config.outFile.map(out => {
-      val (fw, writer) = Useful.fileNameToWriters(out)
-      writer.write(spanList.toJson.prettyPrint)
-      writer.close
-      fw.close
-      println("Dumped CFGSpanList to " + out)
-    })
+
+    val cfgSpanInfoJson = "cfgSpanInfo.json"
+    Useful.dump(spanList.toJson.prettyPrint, cfgSpanInfoJson)
+    println("Dumped CFGSpanList to " + cfgSpanInfoJson)
+
+    val fidToNameJson = "fidToName.json"
+    val json = JsObject(fidToName.map { case (k, v) => k.toString -> JsString(v) })
+    Useful.dump(json.prettyPrint, fidToNameJson)
+    println("Dumped fidToName to " + fidToNameJson)
+
     Success(spanList)
   }
 
@@ -91,14 +93,11 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
   def defaultConfig: CFGSpanInfoConfig = CFGSpanInfoConfig()
   val options: List[PhaseOption[CFGSpanInfoConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
-      "messages during CFGSpanInfo are muted."),
-    ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the resulting CFGSpanList will be written to the outfile.")
+      "messages during CFGSpanInfo are muted.")
   )
 }
 
 // CFGSpanInfo phase config
 case class CFGSpanInfoConfig(
-  var silent: Boolean = false,
-  var outFile: Option[String] = None
+  var silent: Boolean = false
 ) extends Config
