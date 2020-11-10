@@ -1,17 +1,15 @@
 #!/bin/sh
 
+echo > all.log
 for file in ../tests/*; do
   if [ -f "$file" ]; then
-    echo "--------------------------------------------------"
-    echo "- Diff-Testing for $file"
-    echo "--------------------------------------------------"
-    ./run $file
+    echo "--------------------------------------------------" | tee -a all.log
+    echo "- Diff-Testing for $file" | tee -a all.log
+    echo "--------------------------------------------------" | tee -a all.log
+    ./run $file 2>&1 | tee -a all.log
     base=`basename $file`
     name="${base%.*}"
     mkdir -p result/$name
-    mv merged* result/$name
     mv *.result result/$name
-    mv log result/$name
   fi
 done
-
