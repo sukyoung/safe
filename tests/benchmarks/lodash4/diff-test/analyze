@@ -4,4 +4,8 @@ node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
   --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
   --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
   merged.js > jalangi.result
-$SAFE_HOME/bin/safe bugDetect merged.js > safe.result
+
+timeout 5m $SAFE_HOME/bin/safe bugDetect merged.js > safe.result
+if [ $? -eq 124 ]; then
+  echo "[Timeout] 5 minutes." >> safe.result
+fi
