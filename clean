@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd dynamic-shortcut && ./clean && cd $SAFE_HOME
+cd tests/benchmarks/lodash4/diff-test && ./clean && cd $SAFE_HOME
+cd tests/benchmarks/lodash4/ds-diff-test && ./clean && cd $SAFE_HOME
