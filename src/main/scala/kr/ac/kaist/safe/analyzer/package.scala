@@ -13,6 +13,7 @@ package kr.ac.kaist.safe
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.util.HashMap
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 package object analyzer {
   type Map[K, V] = HashMap[K, V]
@@ -39,4 +40,7 @@ package object analyzer {
 
   // fid to location
   var fidToName: Map[Int, String] = Map()
+
+  // CFG
+  var globalCFG: CFG = null
 }

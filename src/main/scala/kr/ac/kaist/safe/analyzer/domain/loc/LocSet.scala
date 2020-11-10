@@ -26,18 +26,14 @@ object LocSet extends AbsDomain[Loc] {
     def apply(seq: Loc*): LSet = LSet(seq.toSet)
   }
   lazy val Bot: Elem = LSet()
-
-  // TODO all location set
-  // lazy val locSet: Set[Loc] = cfg.getAllASiteSet.foldLeft(Set[Loc]()) {
-  //   case (set, asite) => set + Loc(asite, Recent) + Loc(asite, Old)
-  // }
+  var all: Set[Loc] = Set()
 
   def alpha(loc: Loc): Elem = LSet(loc)
   override def alpha(locset: Set[Loc]): Elem = LSet(locset)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Loc] = this match {
-      case Top => throw LocTopGammaError // TODO ConFin(locSet)
+      case Top => ConFin(all)
       case LSet(set) => ConFin(set)
     }
 
@@ -86,22 +82,22 @@ object LocSet extends AbsDomain[Loc] {
     }
 
     def filter(f: Loc => Boolean): Elem = this match {
-      case Top => throw LocTopGammaError // TODO LSet(locSet.filter(f))
+      case Top => LSet(all.filter(f))
       case LSet(set) => LSet(set.filter(f))
     }
 
     def foreach(f: Loc => Unit): Unit = this match {
-      case Top => throw LocTopGammaError // TODO locSet.foreach(f)
+      case Top => all.foreach(f)
       case LSet(set) => set.foreach(f)
     }
 
     def foldLeft[T](initial: T)(f: (T, Loc) => T): T = this match {
-      case Top => throw LocTopGammaError // TODO locSet.foldLeft(initial)(f)
+      case Top => all.foldLeft(initial)(f)
       case LSet(set) => set.foldLeft(initial)(f)
     }
 
     def map[T](f: Loc => T): Set[T] = this match {
-      case Top => throw LocTopGammaError // TODO locSet.map(f)
+      case Top => all.map(f)
       case LSet(set) => set.map(f)
     }
 
@@ -111,12 +107,12 @@ object LocSet extends AbsDomain[Loc] {
     }
 
     def -(loc: Loc): Elem = this match {
-      case Top => Top // TODO LSet(locSet - loc)
+      case Top => LSet(all - loc)
       case LSet(set) => LSet(set - loc)
     }
 
     def subsLoc(from: Loc, to: Loc): Elem = this match {
-      case Top => Top // TODO LSet(locSet - from + to)
+      case Top => LSet(all - from + to)
       case LSet(set) =>
         if (set contains from) LSet(set - from + to)
         else this

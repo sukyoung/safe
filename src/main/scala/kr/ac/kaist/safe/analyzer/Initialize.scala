@@ -50,6 +50,9 @@ object Initialize {
       AbsHeap(heap)
     }
 
+    // set global CFG
+    globalCFG = cfg
+
     AbsState(modeledHeap, initCtx, AllocLocSet.Empty)
   }
 

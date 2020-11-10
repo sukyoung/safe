@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.globalCFG
 import kr.ac.kaist.safe.errors.error.FIdTopGammaError
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
@@ -24,6 +25,7 @@ case object DefaultFId extends FIdDomain {
     def apply(seq: FunctionId*): FIdSet = FIdSet(seq.toSet)
   }
   lazy val Bot: Elem = FIdSet()
+  lazy val all: Set[FunctionId] = globalCFG.getAllFuncs.map(_.id).toSet
 
   def alpha(fid: FId): Elem = FIdSet(fid.id)
   override def alpha(fidset: Set[FId]): Elem = FIdSet(fidset.map(_.id))
@@ -33,7 +35,7 @@ case object DefaultFId extends FIdDomain {
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[FId] = this match {
-      case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
+      case Top => ConFin(all.map(FId(_)))
       case FIdSet(set) => ConFin(set.map(FId(_)))
     }
 
@@ -82,22 +84,22 @@ case object DefaultFId extends FIdDomain {
     }
 
     def filter(f: FunctionId => Boolean): Elem = this match {
-      case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
+      case Top => FIdSet(all.filter(f))
       case FIdSet(set) => FIdSet(set.filter(f))
     }
 
     def foreach(f: FunctionId => Unit): Unit = this match {
-      case Top => throw FIdTopGammaError // TODO fidset.foreach(f)
+      case Top => all.foreach(f)
       case FIdSet(set) => set.foreach(f)
     }
 
     def foldLeft[T](initial: T)(f: (T, FunctionId) => T): T = this match {
-      case Top => throw FIdTopGammaError // TODO fidset.foldLeft(initial)(f)
+      case Top => all.foldLeft(initial)(f)
       case FIdSet(set) => set.foldLeft(initial)(f)
     }
 
     def map[T](f: FunctionId => T): Set[T] = this match {
-      case Top => throw FIdTopGammaError // TODO fidset.map(f)
+      case Top => all.map(f)
       case FIdSet(set) => set.map(f)
     }
 
