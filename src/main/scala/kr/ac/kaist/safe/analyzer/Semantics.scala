@@ -256,7 +256,7 @@ case class Semantics(
 
           var touchedFunc = func.id < 0
 
-          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id > 0) {
+          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0) {
             val fid = cp.block.func.id;
             dsTriedCPs += cp
             dsCount += 1
