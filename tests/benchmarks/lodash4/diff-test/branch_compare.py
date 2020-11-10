@@ -22,8 +22,6 @@ def check_file():
   jalangi_alarms = open("jalangi.result", "r").readlines()
   jalangi_alarms = filter(lambda l: "branch taken at" in l, jalangi_alarms)
   safe_alarms = open("safe.result", "r").readlines()
-  total = list(filter(lambda l: l.startswith("total"), safe_alarms))[0]
-  total = int(total.split("=")[1].split()[0])
   safe_alarms = filter(lambda l: l.startswith(filename), safe_alarms)
 
   # Gather span info
