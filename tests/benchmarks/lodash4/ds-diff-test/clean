@@ -1,6 +1,0 @@
-#!/bin/sh
-
-rm -f merged*
-rm -f *.result
-rm -f log
-rm -f cfgSpanInfo.json

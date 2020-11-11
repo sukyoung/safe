@@ -1,5 +1,0 @@
-#!/bin/sh
-
-rm -f merged*
-rm -f *.result
-rm -f log
