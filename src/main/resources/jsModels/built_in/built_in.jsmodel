@@ -1684,6 +1684,7 @@ Function: {
       // d. Set index to index + 1.
       argList[index] = argArray[index];
     }
+    @Class(argList, "Arguments");
     // 9. Return the result of calling the [[Call]] internal method of func, providing thisArg as the this value and argList as the list of arguments.
     return @Call(this, thisArg, argList);
   }
