@@ -96,10 +96,6 @@ function parse_safe_alarm(alarm) {
 
   if (!found) spanNotFound(alarm, new Span(l1, c1, l2, c2));
 
-  let str = String(new Span(l1, c1, l2, c2));
-  if (l1 == '865')
-    console.log(`${str} -> ${found}`);
-
   return `${found}-${taken}`;
 }
 function read_safe(filename) {
