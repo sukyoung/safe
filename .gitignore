@@ -72,4 +72,3 @@ eval/*.result
 eval/result
 eval/log
 eval/cfgSpanInfo.json
-eval/all.log
