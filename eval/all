@@ -36,6 +36,8 @@ for file in $TEST/*; do
   fi
 done
 
+node summary.js $@
+
 TOTAL_ELAPSED_TIME=`expr $SECONDS - $TOTAL_START_TIME`
 echo "--------------------------------------------------" | tee -a all.log
 echo "Total $TOTAL_ELAPSED_TIME seconds elapsed." | tee -a all.log

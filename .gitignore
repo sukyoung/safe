@@ -68,7 +68,8 @@ __merged__.js
 **/diff-test/merged*
 **/diff-test/*.result
 eval/target*
-eval/**/*.result
+eval/*.result
+eval/result
 eval/log
 eval/cfgSpanInfo.json
 eval/all.log
