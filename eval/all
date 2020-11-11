@@ -1,0 +1,41 @@
+#!/bin/sh
+
+TOTAL_START_TIME=$SECONDS
+
+for i in "$@"
+do
+case $i in
+  -a|--abstract)
+    ABSTRACT=true
+  ;;
+esac
+done
+
+LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+if [ $ABSTRACT ]; then
+  TEST=$LODASH/tests-rewritten
+else
+  TEST=$LODASH/tests
+fi
+echo > all.log
+for file in $TEST/*; do
+  if [ -f "$file" ]; then
+    echo "--------------------------------------------------" | tee -a all.log
+    echo "- Diff-Testing for $file" | tee -a all.log
+    echo "--------------------------------------------------" | tee -a all.log
+    START_TIME=$SECONDS
+
+    ./run $@ $file 2>&1 | tee -a all.log
+    base=`basename $file`
+    name="${base%.*}"
+    mkdir -p result/$name
+    mv *.result result/$name
+
+    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    echo "$ELAPSED_TIME seconds elpased." | tee -a all.log
+  fi
+done
+
+TOTAL_ELAPSED_TIME=$(($SECONDS - $TOTAL_START_TIME))
+echo "--------------------------------------------------" | tee -a all.log
+echo "Total $TOTAL_ELAPSED_TIME seconds elapsed." | tee -a all.log

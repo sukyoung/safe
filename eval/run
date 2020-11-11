@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# automatically stop when sub shell script exits with abnormal value
+set -e
+
+for i in "$@"
+do
+case $i in
+  -ds|--dynamic-shortcut)
+    DS=true
+  ;;
+esac
+done
+
+echo "Merging files..."
+./merge $@
+
+if [ $DS ]; then
+  echo "Instrumenting..."
+  ./instrument
+fi
+
+echo "Analyzing files..."
+./analyze $@
+
+echo "Calculating diff..."
+node branch_compare.js $@

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+for i in "$@"
+do
+case $i in
+  -ds|--dynamic-shortcut)
+    DS=true
+  ;;
+esac
+done
+
+if [ $DS ]; then
+  ./ds --no-instrument
+else
+  echo "Analyzing with SAFE..."
+  timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:exitReachable target.js > safe.result
+  if [ $? -eq 124 ]; then
+    echo "[Timeout] 5 minutes." >> safe.result
+  fi
+
+  echo "Analyzing with Jalangi..."
+  node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
+    --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+    --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
+    target.js > jalangi.result
+fi
