@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# automatically stop when sub shell script exits with abnormal value
-set -e
-
 for i in "$@"
 do
 case $i in
