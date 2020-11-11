@@ -42,6 +42,10 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
   ): Try[CFG] = {
     val (cfg, _, _, semantics) = in
 
+    println(s"--------------------------------------------------")
+    println(s"[BugDetect] START")
+    println(s"--------------------------------------------------")
+
     // Bug detection for each checker
     checkers.foreach(checker => checker(cfg, semantics))
 
@@ -49,6 +53,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
 
     println(s"COUNT: $dsSuccessCount / $dsCount")
     println(s"TIME : $dsDuration ms / $totalDuration ms")
+    println(s"--------------------------------------------------")
+    println(s"[BugDetect] END")
+    println(s"--------------------------------------------------")
 
     Success(cfg)
   }

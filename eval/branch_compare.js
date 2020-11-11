@@ -108,7 +108,7 @@ function read_safe(filename) {
 // check results
 function check() {
   let safe_result = ds_mode ? 'ds-safe.result' : 'safe.result';
-  if (!read(safe_result).includes("The command 'bugDetect' took")) return false;
+  if (!read(safe_result).includes("[BugDetect] END")) return false;
 
   // read info
   info = info_filter(readJson('target_jalangi_.json'));
