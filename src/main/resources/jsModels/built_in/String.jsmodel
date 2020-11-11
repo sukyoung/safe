@@ -423,6 +423,7 @@ Function: {
   function split (separator, limit) {
     var str = @getLoc('ToString')(this);
     var sep = @ToString(separator);
+    if (limit === undefined) return @split(str, sep);
     var lim = @ToUint32(limit);
     return @split(str, sep, lim);
   }
