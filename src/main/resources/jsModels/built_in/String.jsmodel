@@ -372,6 +372,7 @@ Function: {
       args[@UInt] = @BoolTop ? (@BoolTop ? @StrTop : @NumTop) : undefined;
       newStrOrFunc.apply(global, args);
     }
+    return @StrTop;
   }
   \\],
   12: [\\

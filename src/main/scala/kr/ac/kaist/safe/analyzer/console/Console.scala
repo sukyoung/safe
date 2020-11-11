@@ -71,28 +71,7 @@ class Console(
         val duration = System.currentTimeMillis - startTime
         println(s"total: $duration ms")
       }
-      setPrompt()
-      while ({
-        println
-        val line = try reader.readLine(prompt) catch {
-          case _: EndOfFileException => "run"
-        }
-        startTime = System.currentTimeMillis
-        beforeTime = System.currentTimeMillis
-        val loop = runCmd(line) match {
-          case CmdResultContinue(o) =>
-            println(o)
-            true
-          case CmdResultBreak(o) =>
-            println(o)
-            false
-          case CmdResultRestart =>
-            prepareToRunFixpoint
-            setPrompt()
-            true
-        }
-        loop
-      }) {}
+      userInput
     } else if (showIter) {
       val curTime = System.currentTimeMillis
       val duration = curTime - beforeTime
@@ -126,14 +105,13 @@ class Console(
         setPrompt()
       }
       case _ =>
-        setPrompt(
-          tpList.zipWithIndex.map {
-            case (tp, idx) => s"[$idx] $tp" + LINE_SEP
-          }.mkString + s"select call context index > "
-        )
+        tpList.zipWithIndex.foreach {
+          case (tp, idx) => println(s"[$idx] $tp")
+        }
+        setPrompt("select call context index > ")
         while ({
           println
-          reader.readLine match {
+          reader.readLine(prompt) match {
             case null =>
               println
               println("* current control point not changed.")
@@ -150,6 +128,36 @@ class Console(
         }) {}
         setPrompt()
     }
+  }
+
+  def userInput: Unit = {
+    setPrompt()
+    while ({
+      println
+      val line = try reader.readLine(prompt) catch {
+        case _: EndOfFileException => "run"
+      }
+      startTime = System.currentTimeMillis
+      beforeTime = System.currentTimeMillis
+      val loop = runCmd(line) match {
+        case CmdResultContinue(o) =>
+          println(o)
+          true
+        case CmdResultBreak(o) =>
+          println(o)
+          false
+        case CmdResultRestart =>
+          prepareToRunFixpoint
+          setPrompt()
+          true
+      }
+      loop
+    }) {}
+  }
+
+  override def runFinished(): Unit = {
+    userInput
+    println("* analysis finished")
   }
 
   override def getPrompt: String = {
