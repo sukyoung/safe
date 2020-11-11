@@ -33,7 +33,7 @@ var timeout = [];
 var unsound = [];
 
 // argurments
-let dirname = process.argv[2] ? process.argv[2] : 'result';
+let dirname = 'result';
 let ds_mode = (
   process.argv.includes('-ds') ||
   process.argv.includes('--dynamic-shortcut')
