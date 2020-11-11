@@ -28,9 +28,13 @@ for file in $TEST/*; do
     echo "--------------------------------------------------" | tee -a $LOG
     START_TIME=$SECONDS
 
-    ./run $@ $file 2>&1 | tee -a $LOG
     base=`basename $file`
     name="${base%.*}"
+    if [ $ABSTRACT ]; then
+      ./run $@ --name=$name $file 2>&1 | tee -a $LOG
+    else
+      ./run $@ $file 2>&1 | tee -a $LOG
+    fi
     mkdir -p result/$name
     mv *.result result/$name
 

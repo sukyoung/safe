@@ -6,6 +6,9 @@ case $i in
   --no-instrument)
     NO_INSTRUMENT=true
   ;;
+  -a|--abstract)
+    ABSTRACT=true
+  ;;
 esac
 done
 
@@ -28,11 +31,13 @@ if [ $? -eq 124 ]; then
 fi
 mv $DS_HOME/ds-jalangi.result .
 
-echo "Analyzing with Jalangi..."
-node $JALANGI_HOME/src/js/commands/direct.js \
-  --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
-  --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
-  target_jalangi_.js > jalangi.result
+if ! [ $ABSTRACT ]; then
+  echo "Analyzing with Jalangi..."
+  node $JALANGI_HOME/src/js/commands/direct.js \
+    --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+    --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
+    target_jalangi_.js > jalangi.result
+fi
 
 echo "Killing the server..."
 kill -9 $pid

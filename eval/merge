@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TARGET="target.js"
+
 for i in "$@"
 do
 case $i in
@@ -7,13 +9,15 @@ case $i in
     WRAPPED=true
     shift
   ;;
+  --target=*)
+    TARGET="${i#*=}"
+    shift
+  ;;
   -*)
     shift
   ;;
 esac
 done
-
-TARGET="target.js"
 
 LODASH=$SAFE_HOME/tests/benchmarks/lodash4
 
@@ -23,7 +27,7 @@ if [ $WRAPPED ]; then
 fi
 
 cat $LODASH/setting.js $LODASH/lodash.js $LODASH/test-setting.js >> $TARGET
-if [ "$#" -eq 1 ]; then
+if [[ ! "$#" -eq 0 ]]; then
   cat $@ >> $TARGET
 fi
 

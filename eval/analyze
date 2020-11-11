@@ -6,21 +6,38 @@ case $i in
   -ds|--dynamic-shortcut)
     DS=true
   ;;
+  -a|--abstract)
+    ABSTRACT=true
+  ;;
+  --name=*)
+    NAME="${i#*=}"
+  ;;
 esac
 done
 
+LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+
 if [ $DS ]; then
-  ./ds --no-instrument
+  ./ds --no-instrument $@
+  if ! [ $ABSTRACT ]; then
+    exit
+  fi
+  ./merge --target=jalangi_target.js $LODASH/tests/$NAME.js
 else
   echo "Analyzing with SAFE..."
   timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:exitReachable target.js > safe.result
   if [ $? -eq 124 ]; then
     echo "[Timeout] 5 minutes." >> safe.result
   fi
+  cp target.js jalangi_target.js
+fi
 
+if [[ $ABSTRACT ]] && [[ ! $NAME ]]; then
+  touch jalangi.result
+else
   echo "Analyzing with Jalangi..."
   node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
     --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
     --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
-    target.js > jalangi.result
+    jalangi_target.js > jalangi.result
 fi
