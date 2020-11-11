@@ -1293,7 +1293,8 @@ Function: {
   }
   \\],
   2: [\\
-  function () {
+  function parseInt () {
+    return @NumTop;
   }
   \\],
   3: [\\
