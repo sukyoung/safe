@@ -57,10 +57,7 @@ function parse_jalangi_alarm(alarm) {
   return `${span}-${taken}`;
 }
 function read_jalangi(filename) {
-  return alarm_sort(readLines(filename)
-    .filter(jalangi_filter)
-    .map(parse_jalangi_alarm)
-  );
+  return readLines(filename).filter(jalangi_filter).map(parse_jalangi_alarm);
 }
 
 // for safe
@@ -114,6 +111,9 @@ function read_safe(filename) {
 
 // check results
 function check() {
+  let safe_result = ds_mode ? 'ds-safe.result' : 'safe.result';
+  if (!read(safe_result).includes("The command 'bugDetect' took")) return false;
+
   // read info
   info = info_filter(readJson('target_jalangi_.json'));
 
@@ -128,13 +128,12 @@ function check() {
 
   // reaad alarms
   jalangi_alarms = read_jalangi('jalangi.result');
+  jalangi_alarms = alarm_sort(jalangi_alarms);
+
   safe_alarms = [];
-  if (ds_mode)  {
-    safe_alarms = safe_alarms.concat(read_jalangi('ds-jalangi.result'));
-    safe_alarms = safe_alarms.concat(read_safe('ds-safe.result'));
-  } else {
-    safe_alarms = safe_alarms.concat(read_safe('safe.result'));
-  }
+  if (ds_mode) safe_alarms = safe_alarms.concat(read_jalangi('ds-jalangi.result'));
+  safe_alarms = safe_alarms.concat(read_safe(safe_result));
+  safe_alarms = alarm_sort(safe_alarms);
 
   // unsound
   unsound_alarms = jalangi_alarms.filter(x => !safe_alarms.includes(x));
@@ -145,6 +144,8 @@ function check() {
   over_alarms = safe_alarms.filter(x => !jalangi_alarms.includes(x));
   println(`safe overapproximate (safe - jalangi): ${over_alarms.length}`)
   over_alarms.forEach(x => println(x));
+
+  return true;
 }
 
 // ds mode check
@@ -152,5 +153,4 @@ var ds_mode = (
   process.argv.includes('-ds') ||
   process.argv.includes('--dynamic-shortcut')
 );
-check();
-write('diff.result');
+if (check()) write('diff.result');
