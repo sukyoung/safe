@@ -11,6 +11,7 @@ case $i in
 esac
 done
 
+mkdir -p result
 LOG=result/all.log
 LODASH=$SAFE_HOME/tests/benchmarks/lodash4
 if [ $ABSTRACT ]; then
