@@ -80,7 +80,7 @@ function parse_safe_alarm(alarm) {
 
   let found = undefined;
 
-  rngs = rngs_by_line[l1];
+  rngs = rngs_by_line[l1] || [];
   let min_dist = -1;
   for (let span of rngs) {
     let s = span.start.col;
