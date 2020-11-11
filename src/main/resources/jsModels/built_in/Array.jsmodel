@@ -595,7 +595,7 @@ Function: {
       for (var i = 1; i< n; i++) {
         var check = false;
         if (@SameValue(comparefn,undefined)) check = a[i-1] > a[i];
-        else check = comparefn(a[i-1],a[i]) === 1;
+        else check = comparefn(a[i],a[i-1]) < 0;
         if (check) {
           var temp = a[i-1];
           a[i-1] = a[i];
