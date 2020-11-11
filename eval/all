@@ -31,11 +31,11 @@ for file in $TEST/*; do
     mkdir -p result/$name
     mv *.result result/$name
 
-    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    ELAPSED_TIME=`expr $SECONDS - $START_TIME`
     echo "$ELAPSED_TIME seconds elpased." | tee -a all.log
   fi
 done
 
-TOTAL_ELAPSED_TIME=$(($SECONDS - $TOTAL_START_TIME))
+TOTAL_ELAPSED_TIME=`expr $SECONDS - $TOTAL_START_TIME`
 echo "--------------------------------------------------" | tee -a all.log
 echo "Total $TOTAL_ELAPSED_TIME seconds elapsed." | tee -a all.log
