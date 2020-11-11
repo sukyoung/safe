@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.console.{ Console, Interactive, WebConsole }
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
-import kr.ac.kaist.safe.errors.error.ExitNotReachable
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.web.WebServer
@@ -64,9 +63,8 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
 
     // check the exit block reachability
     val exitSt = sem.getState(exitCP)
-    if (config.exitReachable) {
-      if (exitSt.isBottom) throw ExitNotReachable
-      else println("[ExitReachable] exit block is reachable")
+    if (config.exitReachable && !exitSt.isBottom) {
+      println("[ExitReachable] exit block is reachable")
     }
 
     // dump exit state

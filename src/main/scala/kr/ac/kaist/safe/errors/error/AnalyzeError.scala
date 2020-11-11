@@ -104,7 +104,3 @@ case class StopAnalysis(msg: String) extends AnalyzeError(
 case class Timeout(timeLimit: Int) extends AnalyzeError(
   s"[Timeout] $timeLimit seconds."
 )
-
-case object ExitNotReachable extends AnalyzeError(
-  s"[ExitNotReachable] exit block is not reachable"
-)

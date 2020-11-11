@@ -29,9 +29,6 @@ object Safe {
       }
       case Nil => Failure(NoInputError)
     }) recover {
-      // SafeException: print the usage message.
-      case ex: SafeException =>
-        Console.err.println(ex.getMessage)
       // Unexpected: print the stack trace.
       case ex =>
         Console.err.println("* Unexpected error occurred.")
