@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # automatically stop when sub shell script exits with abnormal value
 set -e

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 TARGET=target.js
 REV_JSON=target_jalangi_.json

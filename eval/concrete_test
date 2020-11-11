@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 LODASH=$SAFE_HOME/tests/benchmarks/lodash4
 
