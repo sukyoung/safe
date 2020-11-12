@@ -54,6 +54,9 @@ case class AllocLocSet(mayAlloc: LocSet, mustAlloc: LocSet) {
   }
 
   /* allocate location */
+  def alloc(locset: LocSet): AllocLocSet = {
+    AllocLocSet(mayAlloc ⊔ locset, mustAlloc ⊔ locset)
+  }
   def alloc(loc: Loc): AllocLocSet = {
     AllocLocSet(mayAlloc + loc, mustAlloc + loc)
   }

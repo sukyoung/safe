@@ -41,6 +41,7 @@ trait HeapDomain extends AbsDomain[Heap] {
     def alloc(loc: Loc): Elem
 
     def getLocSet: LocSet
+    def getMerged: LocSet
 
     def domIn(loc: Loc): Boolean
 

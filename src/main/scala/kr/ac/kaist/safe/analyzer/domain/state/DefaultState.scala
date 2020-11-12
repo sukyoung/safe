@@ -244,10 +244,19 @@ object DefaultState extends StateDomain {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = json match {
+  def fromJSON(
+    json: JsValue,
+    cfg: CFG,
+    prev: AbsState
+  )(implicit uomap: UIdObjMap): Elem = json match {
     case JsString(str) if (str == "__BOT__") => Bot
     case _ =>
       val fields = json.asJsObject().fields
-      Elem(AbsHeap.fromJSON(fields("heap"), cfg), AbsContext.fromJSON(fields("context"), cfg), AllocLocSet.Bot)
+      val locset = LocSet.fromJSON(fields("allocs"), cfg)
+      Elem(
+        AbsHeap.fromJSON(fields("heap"), cfg, prev, locset),
+        AbsContext.fromJSON(fields("context"), cfg),
+        prev.allocs.alloc(locset)
+      )
   }
 }

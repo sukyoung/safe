@@ -182,6 +182,12 @@ object DefaultHeap extends HeapDomain {
       case HeapMap(map, _) => LocSet(map.keySet)
     }
 
+    def getMerged: LocSet = this match {
+      case Top => LocSet.Top
+      case Bot => LocSet.Bot
+      case HeapMap(_, merged) => merged
+    }
+
     def domIn(loc: Loc): Boolean = this match {
       case Top => true
       case Bot => false
@@ -360,14 +366,28 @@ object DefaultHeap extends HeapDomain {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
-    val fields = json.asJsObject().fields
+  def fromJSON(
+    json: JsValue,
+    cfg: CFG,
+    prev: AbsState,
+    locset: LocSet
+  )(implicit uomap: UIdObjMap): Elem = {
+    val fields = json.asJsObject.fields
     val mapFields = fields("map").asJsObject.fields
+    var merged = prev.heap.getMerged ⊔ (prev.getLocSet ⊓ locset)
     HeapMap(
       mapFields.foldLeft[LayeredMap[Loc, AbsObj]](LayeredMap())({
-        case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsObj.fromJSON(v, cfg))
+        case (acc, (k, v)) => acc + {
+          val loc = Loc.parseString(k, cfg)
+          val elems = v.asInstanceOf[JsArray].elements
+          if (elems.length > 1) merged += loc
+          val obj = elems.foldLeft(AbsObj.Bot) {
+            case (x, y) => x ⊔ AbsObj.fromJSON(y, cfg)
+          }
+          loc -> obj
+        }
       }),
-      LocSet.Bot
+      merged
     )
   }
 }

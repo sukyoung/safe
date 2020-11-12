@@ -279,7 +279,7 @@ case class Semantics(
             val fields = json.asJsObject().fields
             addTriedCPs(fields("visitedEntryControlPoints"))
 
-            val loaded = AbsState.fromJSON(fields("state"), cfg)
+            val loaded = AbsState.fromJSON(fields("state"), cfg, newSt)
             val result = if (loaded.isBottom) {
               (newSt, AbsState.Bot)
             } else {
