@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
 
 // default null abstract domain
 object DefaultNull extends NullDomain {
@@ -36,10 +37,12 @@ object DefaultNull extends NullDomain {
       case Top => "Top(null)"
     }
 
-    def toJSON: JsValue = this match {
-      case Bot => JsString("__BOT__")
-      case Top => JsString("__TOP__")
-    }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = this match {
+    //   case Bot => JsString("__BOT__")
+    //   case Top => JsString("__TOP__")
+    // }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false

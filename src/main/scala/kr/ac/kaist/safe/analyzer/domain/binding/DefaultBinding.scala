@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
 import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.util.UIdObjMap
 
 // default binding abstract domain
 object DefaultBinding extends BindingDomain {
@@ -100,14 +101,16 @@ object DefaultBinding extends BindingDomain {
       )
     }
 
-    def toJSON: JsValue = JsObject(
-      "value" -> this.value.toJSON,
-      "uninit" -> JsString(this.uninit.toString match {
-        case "⊥" => "__BOT__"
-        case _ => "__TOP__"
-      }),
-      "mutable" -> this.mutable.toJSON
-    )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = JsObject(
+    //   "value" -> this.value.toJSON,
+    //   "uninit" -> JsString(this.uninit.toString match {
+    //     case "⊥" => "__BOT__"
+    //     case _ => "__TOP__"
+    //   }),
+    //   "mutable" -> this.mutable.toJSON
+    // )
 
     def copy(
       value: AbsValue = this.value,

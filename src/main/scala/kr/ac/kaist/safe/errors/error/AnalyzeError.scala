@@ -104,3 +104,11 @@ case class StopAnalysis(msg: String) extends AnalyzeError(
 case class Timeout(timeLimit: Int) extends AnalyzeError(
   s"[Timeout] $timeLimit seconds."
 )
+
+case class WrongUId(uid: Int) extends AnalyzeError(
+  s"[WrongUId] uid $uid does not exist."
+)
+
+case object ToJSONFail extends AnalyzeError(
+  s"[ToJSONFail] fail to convert to JSON for dynamic shortcut."
+)

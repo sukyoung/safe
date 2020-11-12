@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // default data property abstract domain
@@ -102,12 +103,14 @@ object DefaultDataProp extends DataPropDomain {
       }
     }
 
-    def toJSON: JsValue = JsObject(
-      "value" -> this.value.toJSON,
-      "writable" -> this.writable.toJSON,
-      "enumerable" -> this.enumerable.toJSON,
-      "configurable" -> this.configurable.toJSON
-    )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = JsObject(
+    //   "value" -> this.value.toJSON,
+    //   "writable" -> this.writable.toJSON,
+    //   "enumerable" -> this.enumerable.toJSON,
+    //   "configurable" -> this.configurable.toJSON
+    // )
 
     def copy(
       value: AbsValue,

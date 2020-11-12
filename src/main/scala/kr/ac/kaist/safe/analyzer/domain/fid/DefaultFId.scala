@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.globalCFG
 import kr.ac.kaist.safe.errors.error.FIdTopGammaError
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.util.UIdObjMap
 
 import spray.json._
 
@@ -51,10 +52,12 @@ case object DefaultFId extends FIdDomain {
       case FIdSet(set) => set.mkString("fid(", ", ", ")")
     }
 
-    def toJSON: JsValue = this match {
-      case Top => JsString("⊤")
-      case FIdSet(set) => JsArray(set.toVector.map(JsNumber(_)))
-    }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = this match {
+    //   case Top => JsString("⊤")
+    //   case FIdSet(set) => JsArray(set.toVector.map(JsNumber(_)))
+    // }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true

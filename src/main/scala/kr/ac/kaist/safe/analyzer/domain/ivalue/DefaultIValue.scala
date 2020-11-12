@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.{ FunctionId, CFG }
+import kr.ac.kaist.safe.util.UIdObjMap
 
 import spray.json._
 
@@ -45,10 +46,12 @@ object DefaultIValue extends IValueDomain {
       }
     }
 
-    def toJSON: JsValue = JsObject(
-      "value" -> this.value.toJSON,
-      "fidset" -> this.fidset.toJSON
-    )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = JsObject(
+    //   "value" -> this.value.toJSON,
+    //   "fidset" -> this.fidset.toJSON
+    // )
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)

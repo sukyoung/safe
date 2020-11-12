@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
 
 // default primitive value abstract domain
 object DefaultPValue extends PValueDomain {
@@ -140,13 +141,15 @@ object DefaultPValue extends PValueDomain {
       }
     }
 
-    def toJSON: JsValue = JsObject(
-      "undefval" -> this.undefval.toJSON,
-      "nullval" -> this.nullval.toJSON,
-      "boolval" -> this.boolval.toJSON,
-      "numval" -> this.numval.toJSON,
-      "strval" -> this.strval.toJSON
-    )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = JsObject(
+    //   "undefval" -> this.undefval.toJSON,
+    //   "nullval" -> this.nullval.toJSON,
+    //   "boolval" -> this.boolval.toJSON,
+    //   "numval" -> this.numval.toJSON,
+    //   "strval" -> this.strval.toJSON
+    // )
 
     def StrictEquals(that: Elem): AbsBool = {
       val right = that

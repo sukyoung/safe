@@ -21,7 +21,6 @@ trait UndefDomain extends AbsDomain[Undef] {
   // abstract undefined element traits
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     def StrictEquals(that: Elem): AbsBool
-    def toJSON: JsValue
   }
 
   def fromJSON(json: JsValue): Elem

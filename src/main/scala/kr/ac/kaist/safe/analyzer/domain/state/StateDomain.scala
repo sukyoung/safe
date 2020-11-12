@@ -31,7 +31,6 @@ trait StateDomain extends AbsDomain[State] {
     def raiseException(excSet: Set[Exception]): Elem
     def oldify(loc: Loc): Elem
     def alloc(loc: Loc): Elem
-    def afterCall(info: CallInfo): Elem
     def setAllocLocSet(allocs: AllocLocSet): Elem
     def allocs: AllocLocSet
     def getLocSet: LocSet
@@ -52,11 +51,5 @@ trait StateDomain extends AbsDomain[State] {
     // toString
     def toStringAll: String
     def toStringLoc(loc: Loc): Option[String]
-
-    // delete changed info
-    def cleanChanged: Elem
-
-    // applied changed information
-    def <<(that: Elem): Elem
   }
 }

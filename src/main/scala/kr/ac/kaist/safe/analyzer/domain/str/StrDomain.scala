@@ -48,7 +48,6 @@ trait StrDomain extends AbsDomain[Str] {
 
     def ToNumber: AbsNum
     def ToBoolean: AbsBool
-    def toJSON: JsValue
   }
 
   def fromJSON(json: JsValue): Elem

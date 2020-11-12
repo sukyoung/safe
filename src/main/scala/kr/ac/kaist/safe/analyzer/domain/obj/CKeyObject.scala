@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.analyzer.model._
-import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
@@ -76,43 +75,9 @@ object CKeyObject extends ObjDomain {
       s.toString
     }
 
-    def toJSON: JsValue = JsObject(
-      "nmap" -> JsObject(
-        "map" -> JsObject(nmap.map.map {
-          case (k, v) => k -> JsObject(
-            "value" -> v.value.toJSON,
-            "absent" -> JsString(v.absent.toString match {
-              case "⊥" => "__BOT__"
-              case _ => "__TOP__"
-            })
-          )
-        }),
-        "default" -> JsObject(
-          "value" -> nmap.default.value.toJSON,
-          "absent" -> JsString(nmap.default.absent.toString match {
-            case "⊥" => "__BOT__"
-            case _ => "__TOP__"
-          })
-        )
-      ),
-      "imap" -> JsObject(
-        "map" -> JsObject(imap.map.map {
-          case (k, v) => k.toString -> JsObject(
-            "value" -> v.value.toJSON,
-            "absent" -> JsString(v.absent.toString match {
-              case "⊥" => "__BOT__"
-              case _ => "__TOP__"
-            })
-          )
-        }),
-        "default" -> JsObject(
-          "value" -> imap.default.value.toJSON,
-          "absent" -> JsString(imap.default.absent.toString match {
-            case "⊥" => "__BOT__"
-            case _ => "__TOP__"
-          })
-        )
-      )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = JsObject(
+      "nmap" -> nmap.toJSON,
+      "imap" -> imap.toJSON
     )
 
     ////////////////////////////////////////////////////////////////

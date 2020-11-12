@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
 
 // default boolean abstract domain
 object DefaultBool extends BoolDomain {
@@ -124,6 +125,8 @@ object DefaultBool extends BoolDomain {
       case (False, False) | (True, True) => False
       case _ => Top
     }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
   }
 
   def fromJSON(json: JsValue): Elem = json match {

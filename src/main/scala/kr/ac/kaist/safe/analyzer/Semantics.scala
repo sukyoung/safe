@@ -1,4 +1,4 @@
-/**
+/*
  * *****************************************************************************
  * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ NodeUtil, EJSNumber, EJSString, EJSBool, EJSNull, EJSUndef, AllocSite, Recency, Recent, Old, PredAllocSite }
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.mutable.{ Map => MMap }
 
@@ -182,10 +182,7 @@ case class Semantics(
         val call = acall.call
         val params = f1.argVars
         val info = getCallInfo(call, cp2.tracePartition)
-        val state =
-          if (RecencyMode) {
-            st.afterCall(info)
-          } else st
+        val state = st
         val (ctx1, allocs1) = (state.context, state.allocs)
         val EdgeData(allocs2, env1, thisBinding) = data.fix(allocs1)
 
@@ -204,10 +201,7 @@ case class Semantics(
         val call = acatch.call
         val params = f1.argVars
         val info = getCallInfo(call, cp2.tracePartition)
-        val state =
-          if (RecencyMode) {
-            st.afterCall(info)
-          } else st
+        val state = st
         val (ctx1, c1) = (state.context, state.allocs)
         val EdgeData(c2, envL, thisBinding) = data.fix(c1)
         val env1 = envL.record.decEnvRec
@@ -256,16 +250,25 @@ case class Semantics(
 
           var touchedFunc = func.id < 0
 
-          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0) {
+          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0) try {
             val fid = cp.block.func.id;
             dsTriedCPs += cp
             dsCount += 1
             val startTime = System.currentTimeMillis
 
-            val dump = if (cp.block.func.id < 0) {
-              JsObject("fid" -> JsNumber(fid), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON, "code" -> JsString(fidToName(fid)))
-            } else {
-              JsObject("fid" -> JsNumber(fid), "state" -> newSt.toJSON, "tracePartition" -> cp.tracePartition.toJSON)
+            // unique id mutable map
+            implicit val uomap = new UIdObjMap
+
+            val dump = {
+              val fields = Map(
+                "fid" -> JsNumber(fid),
+                "state" -> newSt.toJSON,
+                "tracePartition" -> cp.tracePartition.toJSON
+              )
+              JsObject(
+                if (cp.block.func.id < 0) fields + ("code" -> JsString(fidToName(fid)))
+                else fields
+              )
             }
             val newTP = cp.tracePartition
             val exitCP = ControlPoint(func.exit, newTP)
@@ -292,7 +295,10 @@ case class Semantics(
             dsDuration += duration
 
             result
-          } else (newSt, AbsState.Bot)
+          } catch {
+            case ToJSONFail => (newSt, AbsState.Bot)
+          }
+          else (newSt, AbsState.Bot)
 
           if (touchedFunc) touchedFuncs += func.id
 

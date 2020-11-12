@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.util.Try
+import kr.ac.kaist.safe.util.UIdObjMap
 
 import spray.json._
 
@@ -68,12 +69,14 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
       case StrSet(set) => set.map("\"" + _ + "\"").mkString(", ")
     }
 
-    def toJSON: JsValue = this match {
-      case StrSet(set) => JsArray(set.toVector.map(s => JsString(s.toString)))
-      case Top => JsString("__TOP__")
-      case Number => JsString("Number")
-      case Other => JsString("Other")
-    }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = this match {
+    //   case StrSet(set) => JsArray(set.toVector.map(s => JsString(s.toString)))
+    //   case Top => JsString("__TOP__")
+    //   case Number => JsString("Number")
+    //   case Other => JsString("Other")
+    // }
 
     def ToBoolean: AbsBool = this match {
       case StrSet(set) => set contains "" match {

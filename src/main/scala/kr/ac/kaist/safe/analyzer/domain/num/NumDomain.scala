@@ -139,7 +139,6 @@ trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
     def sin: Elem
     def sqrt: Elem
     def tan: Elem
-    def toJSON: JsValue
   }
 
   def fromJSON(json: JsValue): Elem

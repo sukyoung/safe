@@ -102,14 +102,6 @@ object DefaultState extends StateDomain {
       Elem(newHeap, newCtxt, newAllocs)
     }
 
-    def afterCall(info: CallInfo): Elem = this.prunedChanged(info.state)
-
-    // pruning based on changed locations
-    private def prunedChanged(callerSt: Elem): Elem = callerSt << this
-
-    def <<(that: Elem): Elem =
-      Elem(this.heap << that.heap, this.context << that.context, that.allocs)
-
     def setAllocLocSet(allocs: AllocLocSet): Elem = copy(allocs = allocs)
 
     def getLocSet: LocSet =
@@ -235,13 +227,10 @@ object DefaultState extends StateDomain {
       case some => some
     }
 
-    def toJSON: JsValue = {
-      JsObject(
-        "heap" -> this.heap.toJSON,
-        "context" -> this.context.toJSON,
-        "allocs" -> JsString("__BOT__")
-      )
-    }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = JsObject(
+      "heap" -> this.heap.toJSON,
+      "context" -> this.context.toJSON
+    )
 
     private def toString(all: Boolean): String = {
       "** heap **" + LINE_SEP +
@@ -253,9 +242,6 @@ object DefaultState extends StateDomain {
         "** allocated location set **" + LINE_SEP +
         allocs.toString
     }
-
-    def cleanChanged: Elem =
-      Elem(heap.cleanChanged, context.cleanChanged, allocs)
   }
 
   def fromJSON(json: JsValue, cfg: CFG): Elem = json match {

@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
+
 // simple abstract domain
 class SimpleDomain[V] extends AbsDomain[V] {
   object Top extends Elem
@@ -59,6 +62,8 @@ class SimpleDomain[V] extends AbsDomain[V] {
       case Top => "⊤"
       case Bot => "⊥"
     }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
   }
 }
 

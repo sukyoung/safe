@@ -215,18 +215,20 @@ object DefaultContext extends ContextDomain {
       buildString(_ => true).toString
     }
 
-    def toJSON: JsValue = this match {
-      case Bot => JsString("__BOT__")
-      case Top => JsString("__TOP__")
-      case CtxMap(map, merged, changed, thisBinding) => JsObject(
-        "map" -> JsObject(map.map {
-          case (k, v) => k.toString -> v.toJSON
-        }),
-        "merged" -> JsString("__BOT__"),
-        "changed" -> JsString("__BOT__"),
-        "thisBinding" -> thisBinding.toJSON
-      )
-    }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = this match {
+    //   case Bot => JsString("__BOT__")
+    //   case Top => JsString("__TOP__")
+    //   case CtxMap(map, merged, changed, thisBinding) => JsObject(
+    //     "map" -> JsObject(map.map {
+    //       case (k, v) => k.toString -> v.toJSON
+    //     }),
+    //     "merged" -> JsString("__BOT__"),
+    //     "changed" -> JsString("__BOT__"),
+    //     "thisBinding" -> thisBinding.toJSON
+    //   )
+    // }
 
     private def buildString(filter: Loc => Boolean): String = this match {
       case Bot => "⊥Elem"

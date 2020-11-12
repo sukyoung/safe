@@ -70,12 +70,14 @@ object DefaultEnvRec extends EnvRecDomain {
       lst.mkString(LINE_SEP)
     }
 
-    def toJSON: JsValue = {
-      JsObject(
-        "decEnvRec" -> this.decEnvRec.toJSON,
-        "globalEnvRec" -> this.globalEnvRec.toJSON
-      )
-    }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+
+    // def toJSON: JsValue = {
+    //   JsObject(
+    //     "decEnvRec" -> this.decEnvRec.toJSON,
+    //     "globalEnvRec" -> this.globalEnvRec.toJSON
+    //   )
+    // }
 
     // 10.2.1.2.1 HasBinding(N)
     def HasBinding(name: String)(heap: AbsHeap): AbsBool =

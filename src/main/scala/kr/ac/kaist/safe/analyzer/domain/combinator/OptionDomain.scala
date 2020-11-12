@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.util.UIdObjMap
+import spray.json._
+
 // option abstract domain
 case class OptionDomain[V, VD <: AbsDomain[V]](
     AbsV: VD
@@ -73,5 +76,8 @@ case class OptionDomain[V, VD <: AbsDomain[V]](
     }
 
     def isAbsent: Boolean = value.isBottom && absent.isTop
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue =
+      if (absent.isTop) fail else value.toJSON
   }
 }

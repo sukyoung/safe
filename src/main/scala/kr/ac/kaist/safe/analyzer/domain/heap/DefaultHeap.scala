@@ -22,17 +22,18 @@ import spray.json._
 object DefaultHeap extends HeapDomain {
   case object Top extends Elem
   case object Bot extends Elem
-  val Empty: Elem = HeapMap(LayeredMap(), LocSet.Bot, LocSet.Bot)
-  case class HeapMap(map: LayeredMap[Loc, AbsObj], merged: LocSet, changed: LocSet) extends Elem
+  val Empty: Elem = HeapMap(LayeredMap(), LocSet.Bot)
+  case class HeapMap(map: LayeredMap[Loc, AbsObj], merged: LocSet) extends Elem
 
   def alpha(heap: Heap): Elem = {
     val map = heap.map.foldLeft(Map[Loc, AbsObj]()) {
       case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
-    HeapMap(LayeredMap(map), LocSet.Bot, LocSet.Bot)
+    HeapMap(LayeredMap(map), LocSet.Bot)
   }
 
-  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem = HeapMap(LayeredMap(map), merged, LocSet.Bot)
+  def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem =
+    HeapMap(LayeredMap(map), merged)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
@@ -56,8 +57,7 @@ object DefaultHeap extends HeapDomain {
       case (left: HeapMap, right: HeapMap) =>
         val newMap = left.map.unionWithIdem(right.map)(_ ⊔ _)
         val newMerged = left.merged ⊔ right.merged
-        val newChanged = left.changed ⊔ right.changed
-        HeapMap(newMap, newMerged, newChanged)
+        HeapMap(newMap, newMerged)
     }
 
     def ⊓(that: Elem): Elem = (this, that) match {
@@ -67,14 +67,13 @@ object DefaultHeap extends HeapDomain {
       case (left: HeapMap, right: HeapMap) =>
         val newMap = left.map.intersectWithIdem(right.map)(_ ⊓ _)
         val newMerged = left.merged ⊓ right.merged
-        val newChanged = left.changed ⊓ right.changed
-        HeapMap(newMap, newMerged, newChanged)
+        HeapMap(newMap, newMerged)
     }
 
     private def buildString(filter: Loc => Boolean): String = this match {
       case Top => "Top"
       case Bot => "⊥Heap"
-      case heap @ HeapMap(map, _, _) =>
+      case heap @ HeapMap(map, _) =>
         val s = new StringBuilder
         val sortedSeq = map.keySet.toSeq.filter(filter).sorted
         sortedSeq.foreach(loc => s.append(toStringLoc(loc)).append(LINE_SEP))
@@ -86,22 +85,23 @@ object DefaultHeap extends HeapDomain {
       buildString(loc => !(AbsStr("Arguments") ⊑ this.get(loc)(IClass).value.pvalue.strval))
     }
 
-    def toJSON: JsValue = this match {
-      case Top => JsString("__TOP__")
-      case Bot => JsString("__BOT__")
-      case HeapMap(m, merged, changed) => JsObject(
-        "map" -> JsObject(m.map {
-          case (k, v) => k.toString -> v.toJSON
-        }),
-        "merged" -> JsString("__BOT__"),
-        "changed" -> JsString("__BOT__")
-      )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = this match {
+      case Top => fail
+      case Bot => fail
+      case HeapMap(m, merged) => JsObject(m.map {
+        case (loc, obj) =>
+          val k = loc.toString
+          val v =
+            if (merged contains loc) uomap.toJSON(obj)
+            else obj.toJSON
+          k -> v
+      })
     }
 
     def get(loc: Loc): AbsObj = this match {
       case Top => AbsObj.Top
       case Bot => AbsObj.Bot
-      case HeapMap(map, _, _) => map.get(loc) match {
+      case HeapMap(map, _) => map.get(loc) match {
         case Some(obj) => obj
         case None => AbsObj.Bot
       }
@@ -119,26 +119,26 @@ object DefaultHeap extends HeapDomain {
     def weakUpdate(loc: Loc, obj: AbsObj): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map, merged, changed) => HeapMap(weakUpdated(map, loc, obj), merged, changed + loc)
+      case HeapMap(map, merged) => HeapMap(weakUpdated(map, loc, obj), merged)
     }
 
     def update(loc: Loc, obj: AbsObj): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map, merged, changed) =>
+      case HeapMap(map, merged) =>
         if (isConcrete(loc)) {
           if (obj.isBottom) Bot
-          else HeapMap(map + (loc -> obj), merged, changed + loc)
+          else HeapMap(map + (loc -> obj), merged)
         } else {
           if (obj.isBottom) get(loc).fold[Elem](Bot) { _ => this }
-          else HeapMap(weakUpdated(map, loc, obj), merged, changed + loc)
+          else HeapMap(weakUpdated(map, loc, obj), merged)
         }
     }
 
     def subsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map, merged, changed) => {
+      case HeapMap(map, merged) => {
         val (newMap, newMerged) = (map.get(from) match {
           case Some(fromObj) => {
             val (newObj, newMerged) = map.get(to) match {
@@ -151,8 +151,7 @@ object DefaultHeap extends HeapDomain {
         })
         HeapMap(
           newMap.valueMap(_.subsLoc(from, to)),
-          newMerged.subsLoc(from, to),
-          changed + from + to
+          newMerged.subsLoc(from, to)
         )
       }
     }
@@ -160,35 +159,33 @@ object DefaultHeap extends HeapDomain {
     def remove(locs: Set[Loc]): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map, merged, changed) => HeapMap(
+      case HeapMap(map, merged) => HeapMap(
         (map -- locs).valueMap(_.remove(locs)),
-        merged.remove(locs),
-        changed ⊔ LocSet(locs)
+        merged.remove(locs)
       )
     }
 
     def alloc(loc: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case HeapMap(map, merged, changed) => {
+      case HeapMap(map, merged) => {
         val newMerged =
           if (map contains loc) merged + loc
           else merged
-        val newChanged = changed + loc
-        HeapMap(map, newMerged, newChanged)
+        HeapMap(map, newMerged)
       }
     }
 
     def getLocSet: LocSet = this match {
       case Top => LocSet.Top
       case Bot => LocSet.Bot
-      case HeapMap(map, _, _) => LocSet(map.keySet)
+      case HeapMap(map, _) => LocSet(map.keySet)
     }
 
     def domIn(loc: Loc): Boolean = this match {
       case Top => true
       case Bot => false
-      case HeapMap(map, _, _) => map.contains(loc)
+      case HeapMap(map, _) => map.contains(loc)
     }
 
     def toStringAll: String = {
@@ -206,7 +203,7 @@ object DefaultHeap extends HeapDomain {
     def toStringLoc(loc: Loc): Option[String] = this match {
       case Top => Some(toStringLoc(loc, AbsObj.Top, false))
       case Bot => None
-      case HeapMap(map, _, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
+      case HeapMap(map, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
     }
 
     ////////////////////////////////////////////////////////////////
@@ -350,7 +347,7 @@ object DefaultHeap extends HeapDomain {
     def getMap: Option[Map[Loc, AbsObj]] = this match {
       case Top => None
       case Bot => None
-      case HeapMap(map, _, _) => Some(Map(map.toSeq: _*))
+      case HeapMap(map, _) => Some(Map(map.toSeq: _*))
     }
 
     ////////////////////////////////////////////////////////////////
@@ -359,35 +356,7 @@ object DefaultHeap extends HeapDomain {
     def isConcrete(loc: Loc): Boolean = this match {
       case Top => false
       case Bot => true
-      case HeapMap(_, merged, _) => !(merged contains loc)
-    }
-
-    def isChanged(loc: Loc): Boolean = this match {
-      case Top => true
-      case Bot => false
-      case HeapMap(_, _, changed) => changed contains loc
-    }
-
-    // delete changed info
-    def cleanChanged: Elem = this match {
-      case HeapMap(map, merged, _) => HeapMap(map, merged, LocSet.Bot)
-      case _ => this
-    }
-
-    // applied changed information
-    def <<(that: Elem): Elem = (this, that) match {
-      case (left: HeapMap, right: HeapMap) => {
-        val newMap = right.changed.foldLeft(left.map) {
-          case (map, loc) => right.map.get(loc) match {
-            case Some(obj) => map + (loc -> obj)
-            case None => map - loc
-          }
-        }
-        val newMerged = right.merged
-        val newChanged = left.changed ⊔ right.changed
-        HeapMap(newMap, newMerged, newChanged)
-      }
-      case _ => that
+      case HeapMap(_, merged) => !(merged contains loc)
     }
   }
 
@@ -398,7 +367,6 @@ object DefaultHeap extends HeapDomain {
       mapFields.foldLeft[LayeredMap[Loc, AbsObj]](LayeredMap())({
         case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsObj.fromJSON(v, cfg))
       }),
-      LocSet.Bot,
       LocSet.Bot
     )
   }

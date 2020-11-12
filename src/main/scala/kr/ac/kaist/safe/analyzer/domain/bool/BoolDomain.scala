@@ -34,7 +34,6 @@ trait BoolDomain extends AbsDomain[Bool] {
 
     def ToNumber: AbsNum
     def ToString: AbsStr
-    def toJSON: JsValue
   }
   def fromJSON(json: JsValue): Elem
 }
