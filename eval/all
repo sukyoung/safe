@@ -2,11 +2,13 @@
 
 TOTAL_START_TIME=$SECONDS
 
+ABSTRACT=
+
 for i in "$@"
 do
 case $i in
   -a|--abstract)
-    ABSTRACT=true
+    ABSTRACT=$i
   ;;
 esac
 done
@@ -30,11 +32,7 @@ for file in $TEST/*; do
 
     base=`basename $file`
     name="${base%.*}"
-    if [ $ABSTRACT ]; then
-      ./run $@ --name=$name $file 2>&1 | tee -a $LOG
-    else
-      ./run $@ $file 2>&1 | tee -a $LOG
-    fi
+    ./run $@ --lodash --name=$name $file 2>&1 | tee -a $LOG
     mkdir -p result/$name
     mv *.result result/$name
 

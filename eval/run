@@ -1,13 +1,18 @@
 #!/bin/bash
 
+DS=
+
 for i in "$@"
 do
 case $i in
   -ds|--dynamic-shortcut)
-    DS=true
+    DS=$i
   ;;
 esac
 done
+
+echo "Clean..."
+./clean
 
 echo "Merging files..."
 ./merge $@
@@ -20,5 +25,7 @@ fi
 echo "Analyzing files..."
 ./analyze $@
 
-echo "Calculating diff..."
-node branch_compare.js $@
+if [ -f jalangi.result ]; then
+  echo "Calculating diff..."
+  node branch_compare.js $@
+fi

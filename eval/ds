@@ -1,13 +1,20 @@
 #!/bin/bash
 
+NO_INSTRUMENT=
+ABSTRACT=
+TIME_LIMIT=5m
+
 for i in "$@"
 do
 case $i in
   --no-instrument)
-    NO_INSTRUMENT=true
+    NO_INSTRUMENT=$i
   ;;
   -a|--abstract)
-    ABSTRACT=true
+    ABSTRACT=$i
+  ;;
+  -t=*|--time=*)
+    TIME_LIMIT="${i#*=}"
   ;;
 esac
 done
@@ -25,9 +32,9 @@ cd $SAFE_HOME/eval
 
 echo "Analyzing with SAFE + DynamicShortcut..."
 echo > $DS_HOME/ds-jalangi.result
-timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut -analyzer:exitReachable target.js > ds-safe.result
+timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut -analyzer:exitReachable target.js > ds-safe.result
 if [ $? -eq 124 ]; then
-  echo "[Timeout] 5 minutes." >> ds-safe.result
+  echo "[Timeout] $TIME_LIMIT" >> ds-safe.result
 fi
 mv $DS_HOME/ds-jalangi.result .
 
