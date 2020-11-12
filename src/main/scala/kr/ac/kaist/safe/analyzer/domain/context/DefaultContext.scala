@@ -26,11 +26,10 @@ object DefaultContext extends ContextDomain {
     // TODO val varEnv: LexEnv // VariableEnvironment
     val map: LayeredMap[Loc, AbsLexEnv],
     val merged: LocSet,
-    val changed: LocSet,
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
   lazy val Empty: Elem =
-    CtxMap(LayeredMap(), LocSet.Bot, LocSet.Bot, LocSet(GLOBAL_LOC))
+    CtxMap(LayeredMap(), LocSet.Bot, LocSet(GLOBAL_LOC))
 
   def alpha(ctx: Context): Elem = Top // TODO more precise
 
@@ -38,7 +37,7 @@ object DefaultContext extends ContextDomain {
     map: Map[Loc, AbsLexEnv],
     merged: LocSet,
     thisBinding: AbsValue
-  ): Elem = CtxMap(LayeredMap(map), merged, LocSet.Bot, thisBinding)
+  ): Elem = CtxMap(LayeredMap(map), merged, thisBinding)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
@@ -65,9 +64,8 @@ object DefaultContext extends ContextDomain {
       case (left: CtxMap, right: CtxMap) => {
         val newMap = left.map.unionWithIdem(right.map)(_ ⊔ _)
         val newMerged = left.merged ⊔ right.merged
-        val newChanged = left.changed ⊔ right.changed
         val newThisBinding = left.thisBinding ⊔ right.thisBinding
-        CtxMap(newMap, newMerged, newChanged, newThisBinding)
+        CtxMap(newMap, newMerged, newThisBinding)
       }
     }
 
@@ -78,16 +76,15 @@ object DefaultContext extends ContextDomain {
       case (left: CtxMap, right: CtxMap) => {
         val newMap = left.map.unionWithIdem(right.map)(_ ⊓ _)
         val newMerged = left.merged ⊓ right.merged
-        val newChanged = left.changed ⊓ right.changed
         val newThisBinding = left.thisBinding ⊓ right.thisBinding
-        CtxMap(newMap, newMerged, newChanged, newThisBinding)
+        CtxMap(newMap, newMerged, newThisBinding)
       }
     }
 
     def apply(loc: Loc): Option[AbsLexEnv] = this match {
       case Bot => None
       case Top => Some(AbsLexEnv.Top)
-      case CtxMap(map, _, _, _) => map.get(loc)
+      case CtxMap(map, _, _) => map.get(loc)
     }
 
     def apply(locSet: Set[Loc]): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
@@ -120,18 +117,18 @@ object DefaultContext extends ContextDomain {
     def weakUpdate(loc: Loc, env: AbsLexEnv): Elem = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, merged, changed, thisBinding) =>
-        CtxMap(weakUpdated(map, loc, env), merged, changed + loc, thisBinding)
+      case CtxMap(map, merged, thisBinding) =>
+        CtxMap(weakUpdated(map, loc, env), merged, thisBinding)
     }
 
     def update(loc: Loc, env: AbsLexEnv): Elem = this match {
       case Bot => Bot
       case Top => Top
-      case cmap @ CtxMap(map, _, changed, _) => {
+      case cmap @ CtxMap(map, _, _) => {
         if (isConcrete(loc)) {
-          cmap.copy(map = map + (loc -> env), changed = changed + loc)
+          cmap.copy(map = map + (loc -> env))
         } else {
-          cmap.copy(map = weakUpdated(map, loc, env), changed = changed + loc)
+          cmap.copy(map = weakUpdated(map, loc, env))
         }
       }
     }
@@ -139,7 +136,7 @@ object DefaultContext extends ContextDomain {
     def subsLoc(from: Loc, to: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case CtxMap(map, merged, changed, thisBinding) => {
+      case CtxMap(map, merged, thisBinding) => {
         val (newMap, newMerged) = (map.get(from) match {
           case Some(fromEnv) => {
             val (newEnv, newMerged) = map.get(to) match {
@@ -153,7 +150,6 @@ object DefaultContext extends ContextDomain {
         CtxMap(
           newMap.valueMap(_.subsLoc(from, to)),
           newMerged.subsLoc(from, to),
-          changed + from + to,
           thisBinding.subsLoc(from, to)
         )
       }
@@ -162,10 +158,9 @@ object DefaultContext extends ContextDomain {
     def remove(locs: Set[Loc]): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case CtxMap(map, merged, changed, thisBinding) => CtxMap(
+      case CtxMap(map, merged, thisBinding) => CtxMap(
         (map -- locs).valueMap(_.remove(locs)),
         merged.remove(locs),
-        changed ⊔ LocSet(locs),
         thisBinding.remove(locs)
       )
     }
@@ -173,67 +168,69 @@ object DefaultContext extends ContextDomain {
     def alloc(loc: Loc): Elem = this match {
       case Top => Top
       case Bot => Bot
-      case CtxMap(map, merged, changed, thisBinding) => {
+      case CtxMap(map, merged, thisBinding) => {
         val newMerged =
           if (map contains loc) merged + loc
           else merged
-        CtxMap(map, newMerged, changed + loc, thisBinding)
+        CtxMap(map, newMerged, thisBinding)
       }
     }
 
     def getLocSet: LocSet = this match {
       case Top => LocSet.Top
       case Bot => LocSet.Bot
-      case CtxMap(map, _, _, _) => LocSet(map.keySet)
+      case CtxMap(map, _, _) => LocSet(map.keySet)
     }
 
     def domIn(loc: Loc): Boolean = this match {
       case Bot => false
       case Top => true
-      case CtxMap(map, _, _, _) => map.contains(loc)
+      case CtxMap(map, _, _) => map.contains(loc)
     }
 
     def setThisBinding(thisBinding: AbsValue): Elem = this match {
       case Bot => Bot
       case Top => Top
-      case cmap @ CtxMap(_, _, _, _) => cmap.copy(thisBinding = thisBinding)
+      case cmap @ CtxMap(_, _, _) => cmap.copy(thisBinding = thisBinding)
     }
 
     def getMap: Map[Loc, AbsLexEnv] = this match {
       case Bot => Map()
       case Top => Map() // TODO it is not sound
-      case CtxMap(map, _, _, _) => Map(map.toSeq: _*)
+      case CtxMap(map, _, _) => Map(map.toSeq: _*)
     }
 
     def thisBinding: AbsValue = this match {
       case Bot => AbsValue.Bot
       case Top => AbsValue.Top
-      case CtxMap(_, _, _, thisBinding) => thisBinding
+      case CtxMap(_, _, thisBinding) => thisBinding
     }
 
     override def toString: String = {
       buildString(_ => true).toString
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Bot => JsString("__BOT__")
-    //   case Top => JsString("__TOP__")
-    //   case CtxMap(map, merged, changed, thisBinding) => JsObject(
-    //     "map" -> JsObject(map.map {
-    //       case (k, v) => k.toString -> v.toJSON
-    //     }),
-    //     "merged" -> JsString("__BOT__"),
-    //     "changed" -> JsString("__BOT__"),
-    //     "thisBinding" -> thisBinding.toJSON
-    //   )
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = this match {
+      case Bot => fail
+      case Top => fail
+      case CtxMap(map, merged, thisBinding) => JsObject(
+        "map" -> JsObject(map.map {
+          case (loc, env) =>
+            val k = loc.toString
+            val v =
+              if (merged contains loc) uomap.toJSON(env)
+              else env.toJSON
+            k -> v
+        }),
+        "merged" -> JsString("__BOT__"),
+        "thisBinding" -> thisBinding.toJSON
+      )
+    }
 
     private def buildString(filter: Loc => Boolean): String = this match {
       case Bot => "⊥Elem"
       case Top => "Top"
-      case CtxMap(map, _, _, thisBinding) => {
+      case CtxMap(map, _, thisBinding) => {
         val s = new StringBuilder
         val sortedSeq = map.keySet.toSeq.filter(filter).sorted
         sortedSeq.foreach(loc => s.append(toStringLoc(loc)).append(LINE_SEP))
@@ -245,7 +242,7 @@ object DefaultContext extends ContextDomain {
     def toStringLoc(loc: Loc): Option[String] = this match {
       case Bot => None
       case Top => Some(toStringLoc(loc, AbsLexEnv.Top, true))
-      case CtxMap(map, _, _, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
+      case CtxMap(map, _, _) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
     }
 
     private def toStringLoc(loc: Loc, env: AbsLexEnv, con: Boolean): String = {
@@ -287,37 +284,7 @@ object DefaultContext extends ContextDomain {
     def isConcrete(loc: Loc): Boolean = this match {
       case Top => false
       case Bot => true
-      case CtxMap(_, merged, _, _) => !(merged contains loc)
-    }
-
-    def isChanged(loc: Loc): Boolean = this match {
-      case Top => true
-      case Bot => false
-      case CtxMap(_, _, changed, _) => changed contains loc
-    }
-
-    // delete changed info
-    def cleanChanged: Elem = this match {
-      case CtxMap(map, merged, _, thisBinding) =>
-        CtxMap(map, merged, LocSet(PURE_LOCAL), thisBinding)
-      case _ => this
-    }
-
-    // applied changed information
-    def <<(that: Elem): Elem = (this, that) match {
-      case (left: CtxMap, right: CtxMap) => {
-        val newMap = right.changed.foldLeft(left.map) {
-          case (map, loc) => right.map.get(loc) match {
-            case Some(env) => map + (loc -> env)
-            case None => map - loc
-          }
-        }
-        val newMerged = right.merged
-        val newChanged = left.changed ⊔ right.changed
-        val newThisBinding = right.thisBinding
-        CtxMap(newMap, newMerged, newChanged, newThisBinding)
-      }
-      case _ => that
+      case CtxMap(_, merged, _) => !(merged contains loc)
     }
   }
 
@@ -328,7 +295,6 @@ object DefaultContext extends ContextDomain {
       mapFields.foldLeft[LayeredMap[Loc, AbsLexEnv]](LayeredMap())({
         case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
       }),
-      LocSet.Bot,
       LocSet.Bot,
       AbsValue.fromJSON(fields("thisBinding"), cfg)
     )

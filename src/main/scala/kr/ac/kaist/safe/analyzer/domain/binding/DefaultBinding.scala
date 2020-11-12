@@ -101,16 +101,13 @@ object DefaultBinding extends BindingDomain {
       )
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = JsObject(
-    //   "value" -> this.value.toJSON,
-    //   "uninit" -> JsString(this.uninit.toString match {
-    //     case "⊥" => "__BOT__"
-    //     case _ => "__TOP__"
-    //   }),
-    //   "mutable" -> this.mutable.toJSON
-    // )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = mutable.getSingle match {
+      case ConOne(b) => JsObject(
+        "value" -> value.toJSON,
+        "mutable" -> b.toJSON
+      )
+      case _ => fail
+    }
 
     def copy(
       value: AbsValue = this.value,

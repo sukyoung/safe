@@ -145,7 +145,7 @@ object DefaultDesc extends DescDomain {
     def IsGenericDescriptor: AbsBool =
       IsDataDescriptor.negate
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+    def toJSON(implicit uomap: UIdObjMap): JsValue = fail
   }
 
   def ToPropertyDescriptor(obj: AbsObj, h: AbsHeap): Elem = {

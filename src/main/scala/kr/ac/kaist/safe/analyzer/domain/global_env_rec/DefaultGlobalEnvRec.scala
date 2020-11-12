@@ -55,12 +55,10 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
       case Top => "Top(global environment record)"
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Bot => JsString("__BOT__")
-    //   case Top => JsString("__TOP__")
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = this match {
+      case Bot => JsNull
+      case Top => JsObject("global" -> JsNull)
+    }
 
     // 10.2.1.2.1 HasBinding(N)
     def HasBinding(name: String)(heap: AbsHeap): AbsBool = {

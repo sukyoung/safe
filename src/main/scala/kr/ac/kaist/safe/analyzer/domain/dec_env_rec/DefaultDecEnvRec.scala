@@ -142,35 +142,15 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       }
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Bot => JsString("__BOT__")
-    //   case LBindMap(map) => JsObject(
-    //     "type" -> JsString("LBindMap"),
-    //     "map" -> JsObject(map.map {
-    //       case (k, (binding, absent)) => k -> JsObject(
-    //         "binding" -> binding.toJSON,
-    //         "absent" -> JsString(absent.toString match {
-    //           case "⊥" => "__BOT__"
-    //           case _ => "__TOP__"
-    //         })
-    //       )
-    //     })
-    //   )
-    //   case UBindMap(map) => JsObject(
-    //     "type" -> JsString("UBindMap"),
-    //     "map" -> JsObject(map.map {
-    //       case (k, (binding, absent)) => k -> JsObject(
-    //         "binding" -> binding.toJSON,
-    //         "absent" -> JsString(absent.toString match {
-    //           case "⊥" => "__BOT__"
-    //           case _ => "__TOP__"
-    //         })
-    //       )
-    //     })
-    //   )
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = this match {
+      case Bot => JsNull
+      case LBindMap(map) => JsObject(map.map {
+        case (k, (binding, absent)) =>
+          if (absent.isTop) fail
+          else k -> binding.toJSON
+      })
+      case _ => fail
+    }
 
     // 10.2.1.1.1 HasBinding(N)
     def HasBinding(name: String): AbsBool = get(name) match {

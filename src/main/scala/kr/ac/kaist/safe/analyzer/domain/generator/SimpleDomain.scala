@@ -63,7 +63,7 @@ class SimpleDomain[V] extends AbsDomain[V] {
       case Bot => "⊥"
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+    def toJSON(implicit uomap: UIdObjMap): JsValue = fail
   }
 }
 

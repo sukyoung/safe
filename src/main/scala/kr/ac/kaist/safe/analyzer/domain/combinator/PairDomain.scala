@@ -86,6 +86,6 @@ case class PairDomain[L, R, LD <: AbsDomain[L], RD <: AbsDomain[R]](
       case Pair(left, right) => s"($left, $right)"
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
+    def toJSON(implicit uomap: UIdObjMap): JsValue = fail
   }
 }

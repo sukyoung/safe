@@ -46,12 +46,12 @@ object DefaultIValue extends IValueDomain {
       }
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = JsObject(
-    //   "value" -> this.value.toJSON,
-    //   "fidset" -> this.fidset.toJSON
-    // )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     def ⊑(that: Elem): Boolean = {
       val (left, right) = (this, that)
