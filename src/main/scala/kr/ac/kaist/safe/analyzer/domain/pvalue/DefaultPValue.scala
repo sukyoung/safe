@@ -141,15 +141,12 @@ object DefaultPValue extends PValueDomain {
       }
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = JsObject(
-    //   "undefval" -> this.undefval.toJSON,
-    //   "nullval" -> this.nullval.toJSON,
-    //   "boolval" -> this.boolval.toJSON,
-    //   "numval" -> this.numval.toJSON,
-    //   "strval" -> this.strval.toJSON
-    // )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     def StrictEquals(that: Elem): AbsBool = {
       val right = that

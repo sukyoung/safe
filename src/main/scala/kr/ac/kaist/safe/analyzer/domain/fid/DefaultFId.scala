@@ -52,12 +52,12 @@ case object DefaultFId extends FIdDomain {
       case FIdSet(set) => set.mkString("fid(", ", ", ")")
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Top => JsString("⊤")
-    //   case FIdSet(set) => JsArray(set.toVector.map(JsNumber(_)))
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true

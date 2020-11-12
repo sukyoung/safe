@@ -95,12 +95,12 @@ object DefaultValue extends ValueDomain {
       }
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = JsObject(
-    //   "pvalue" -> this.pvalue.toJSON,
-    //   "locset" -> this.locset.toJSON
-    // )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     def subsLoc(from: Loc, to: Loc): Elem =
       Elem(this.pvalue, this.locset.subsLoc(from, to))

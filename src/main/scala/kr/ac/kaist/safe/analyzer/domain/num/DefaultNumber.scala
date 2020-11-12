@@ -210,21 +210,12 @@ object DefaultNumber extends NumDomain {
       }
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Bot => JsString("__BOT__")
-    //   case NaN => JsString("NaN")
-    //   case PosInf => JsString("+∞")
-    //   case NegInf => JsString("-∞")
-    //   case Inf => JsString("∞")
-    //   case NUIntConst(0) => JsString("-0")
-    //   case UIntConst(n) => JsNumber(n)
-    //   case NUIntConst(n) => JsNumber(n)
-    //   case UInt => JsString("UInt")
-    //   case NUInt => JsString("NUInt")
-    //   case Top => JsString("__TOP__")
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     // 9.8.1 ToString Applied to the Number Type
     override def ToString: AbsStr = this match {

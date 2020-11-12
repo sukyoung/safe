@@ -37,12 +37,12 @@ object DefaultUndef extends UndefDomain {
       case Top => "Top(undefined)"
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Bot => JsString("__BOT__")
-    //   case Top => JsString("__TOP__")
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (Top, Bot) => false

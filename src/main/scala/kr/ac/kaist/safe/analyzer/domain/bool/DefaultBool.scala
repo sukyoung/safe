@@ -45,11 +45,11 @@ object DefaultBool extends BoolDomain {
       case Top => "Top(boolean)"
     }
 
-    def toJSON: JsValue = this match {
-      case Bot => JsString("__BOT__")
-      case True => JsBoolean(true)
-      case False => JsBoolean(false)
-      case Top => JsString("__TOP__")
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
     }
 
     def ToString: AbsStr = this match {
@@ -125,8 +125,6 @@ object DefaultBool extends BoolDomain {
       case (False, False) | (True, True) => False
       case _ => Top
     }
-
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
   }
 
   def fromJSON(json: JsValue): Elem = json match {

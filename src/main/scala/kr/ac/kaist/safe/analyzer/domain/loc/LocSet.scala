@@ -49,12 +49,12 @@ object LocSet extends AbsDomain[Loc] {
       case LSet(set) => set.mkString(", ")
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = this match {
-    //   case Top => JsString("__TOP__")
-    //   case LSet(set) => JsArray(set.toVector.map(l => JsString(l.toString)))
-    // }
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (_, Top) => true

@@ -75,10 +75,10 @@ object CKeyObject extends ObjDomain {
       s.toString
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = JsObject(
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve(JsObject(
       "nmap" -> nmap.toJSON,
       "imap" -> imap.toJSON
-    )
+    ))
 
     ////////////////////////////////////////////////////////////////
     // Additional untility functions

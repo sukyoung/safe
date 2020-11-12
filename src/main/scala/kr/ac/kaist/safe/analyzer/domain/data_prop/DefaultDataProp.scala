@@ -103,14 +103,19 @@ object DefaultDataProp extends DataPropDomain {
       }
     }
 
-    def toJSON(implicit uomap: UIdObjMap): JsValue = ???
-
-    // def toJSON: JsValue = JsObject(
-    //   "value" -> this.value.toJSON,
-    //   "writable" -> this.writable.toJSON,
-    //   "enumerable" -> this.enumerable.toJSON,
-    //   "configurable" -> this.configurable.toJSON
-    // )
+    def toJSON(implicit uomap: UIdObjMap): JsValue = (
+      writable.getSingle,
+      enumerable.getSingle,
+      configurable.getSingle
+    ) match {
+        case (ConOne(w), ConOne(e), ConOne(c)) => JsObject(
+          "value" -> value.toJSON,
+          "writable" -> JsBoolean(w),
+          "enumerable" -> JsBoolean(e),
+          "configurable" -> JsBoolean(c)
+        )
+        case _ => fail
+      }
 
     def copy(
       value: AbsValue,
