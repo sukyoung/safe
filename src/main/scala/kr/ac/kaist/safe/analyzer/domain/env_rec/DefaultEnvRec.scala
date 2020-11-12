@@ -136,8 +136,8 @@ object DefaultEnvRec extends EnvRecDomain {
       Elem(decEnvRec.remove(locs), globalEnvRec)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
     val fields = json.asJsObject().fields
     Elem(AbsDecEnvRec.fromJSON(fields("decEnvRec"), cfg), AbsGlobalEnvRec.fromJSON(fields("globalEnvRec")))
-  }
+  })
 }

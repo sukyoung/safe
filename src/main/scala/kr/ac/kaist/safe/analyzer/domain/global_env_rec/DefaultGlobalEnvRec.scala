@@ -193,7 +193,7 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
       heap.get(GLOBAL_LOC)
   }
 
-  def fromJSON(json: JsValue): Elem = json match {
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
     case JsString(str) if (str == "⊤") => Top
     case _ => Bot
   }

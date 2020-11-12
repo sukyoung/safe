@@ -86,8 +86,8 @@ object DefaultIValue extends IValueDomain {
     ): Elem = Elem(value, fidset)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
     val fields = json.asJsObject().fields
     Elem(AbsValue.fromJSON(fields("value"), cfg), AbsFId.fromJSON(fields("fidset")))
-  }
+  })
 }

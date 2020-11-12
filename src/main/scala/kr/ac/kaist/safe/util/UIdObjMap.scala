@@ -29,14 +29,26 @@ class UIdObjMap {
     uid
   }
 
+  // unique string
+  private val UNIQUE = "____SYMBOL"
+
   def size: Int = count
   def keySet: Set[Int] = map.keySet.toSet
   def toJSON(obj: Object): JsValue = {
     val uid = getUId
-    val json = JsObject("____SYMBOL" -> JsNumber(uid))
+    val json = JsObject(UNIQUE -> JsNumber(uid))
     map(uid) = obj
     json
   }
   def apply[T](uid: Int): T =
     map.getOrElse(uid, throw WrongUId(uid)).asInstanceOf[T]
+  def symbolCheck[T](
+    json: JsValue,
+    f: => T
+  ): T = json match {
+    case JsObject(fields) if fields contains UNIQUE =>
+      val uid = fields(UNIQUE).asInstanceOf[JsNumber].value.toInt
+      apply(uid)
+    case _ => f
+  }
 }

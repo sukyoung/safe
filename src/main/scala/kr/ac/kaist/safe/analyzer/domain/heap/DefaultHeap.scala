@@ -360,7 +360,7 @@ object DefaultHeap extends HeapDomain {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
     val fields = json.asJsObject().fields
     val mapFields = fields("map").asJsObject.fields
     HeapMap(

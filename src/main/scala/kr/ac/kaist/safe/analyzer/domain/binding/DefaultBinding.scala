@@ -116,7 +116,7 @@ object DefaultBinding extends BindingDomain {
     ): Elem = Elem(value, uninit, mutable)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
     val fields = json.asJsObject().fields
     Elem(
       AbsValue.fromJSON(fields("value"), cfg),

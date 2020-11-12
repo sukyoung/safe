@@ -245,7 +245,7 @@ object DefaultLexEnv extends LexEnvDomain {
     Elem(envRec, outer, AbsAbsent.Bot)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
     val fields = json.asJsObject().fields
     Elem(
       AbsEnvRec.fromJSON(fields("record"), cfg),

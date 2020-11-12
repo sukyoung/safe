@@ -197,7 +197,7 @@ object DefaultPValue extends PValueDomain {
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
   }
 
-  def fromJSON(json: JsValue): Elem = {
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = {
     val fields = json.asJsObject().fields
     Elem(
       AbsUndef.fromJSON(fields("undefval")),

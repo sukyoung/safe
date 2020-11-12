@@ -817,7 +817,7 @@ object DefaultNumber extends NumDomain {
 
   private def isNegZero(v: Double): Boolean = 1 / v == Double.NegativeInfinity
 
-  def fromJSON(json: JsValue): Elem = json match {
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
     case JsNumber(n) =>
       val num = n.toDouble
       val uint = num.toLong

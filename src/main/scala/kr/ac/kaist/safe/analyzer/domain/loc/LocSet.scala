@@ -133,7 +133,7 @@ object LocSet extends AbsDomain[Loc] {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = json match {
     case JsArray(vector) => LocSet(vector.collect({
       case JsString(str) => Loc.parseString(str, cfg)
     }).toSet)

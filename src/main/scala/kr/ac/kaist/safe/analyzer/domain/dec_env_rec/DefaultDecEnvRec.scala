@@ -403,7 +403,7 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = json match {
     case JsString(str) => Bot
     case _ =>
       val fields = json.asJsObject().fields

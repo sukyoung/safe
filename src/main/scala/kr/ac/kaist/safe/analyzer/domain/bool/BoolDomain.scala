@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
 
 // boolean abstract domain
 trait BoolDomain extends AbsDomain[Bool] {
@@ -35,5 +36,5 @@ trait BoolDomain extends AbsDomain[Bool] {
     def ToNumber: AbsNum
     def ToString: AbsStr
   }
-  def fromJSON(json: JsValue): Elem
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem
 }

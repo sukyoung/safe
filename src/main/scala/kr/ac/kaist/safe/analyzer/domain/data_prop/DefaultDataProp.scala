@@ -125,7 +125,7 @@ object DefaultDataProp extends DataPropDomain {
     ): Elem = Elem(value, writable, enumerable, configurable)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
     val fields = json.asJsObject().fields
     Elem(AbsValue.fromJSON(fields("value"), cfg), AbsBool.fromJSON(fields("writable")), AbsBool.fromJSON(fields("enumerable")), AbsBool.fromJSON(fields("configurable")))
   }

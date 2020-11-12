@@ -244,7 +244,7 @@ object DefaultState extends StateDomain {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = json match {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = json match {
     case JsString(str) if (str == "__BOT__") => Bot
     case _ =>
       val fields = json.asJsObject().fields

@@ -117,7 +117,7 @@ case object DefaultFId extends FIdDomain {
     }
   }
 
-  def fromJSON(json: JsValue): Elem = json match {
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
     case JsArray(vector) => FIdSet(vector.collect({
       case JsNumber(fid) => fid.toInt
     }).toSet)

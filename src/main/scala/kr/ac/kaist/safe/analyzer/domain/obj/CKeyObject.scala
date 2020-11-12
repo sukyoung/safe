@@ -773,7 +773,7 @@ object CKeyObject extends ObjDomain {
     (obj4, excSet1 ++ excSet2 ++ excSet3 ++ excSet4)
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
     val fields = json.asJsObject().fields
     val nmap = fields("nmap").asJsObject.fields
     val nmapMap = nmap("map").asJsObject.fields
@@ -802,5 +802,5 @@ object CKeyObject extends ObjDomain {
         default = idv
       )
     )
-  }
+  })
 }

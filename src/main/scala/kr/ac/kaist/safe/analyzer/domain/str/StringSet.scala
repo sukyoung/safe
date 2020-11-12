@@ -346,7 +346,7 @@ case class StringSet(maxSetSize: Int) extends StrDomain {
   private def isNumber(str: String): Boolean =
     numRegexp.matcher(str).matches()
 
-  def fromJSON(json: JsValue): Elem = json match {
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
     case JsArray(vector) => StrSet(vector.collect({
       case JsString(str) => str
     }).toSet)

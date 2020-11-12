@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
 
 // undefined abstract domain
 trait UndefDomain extends AbsDomain[Undef] {
@@ -23,5 +24,5 @@ trait UndefDomain extends AbsDomain[Undef] {
     def StrictEquals(that: Elem): AbsBool
   }
 
-  def fromJSON(json: JsValue): Elem
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem
 }

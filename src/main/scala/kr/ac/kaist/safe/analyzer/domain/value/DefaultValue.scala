@@ -138,8 +138,8 @@ object DefaultValue extends ValueDomain {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG): Elem = {
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
     val fields = json.asJsObject().fields
     Elem(AbsPValue.fromJSON(fields("pvalue")), LocSet.fromJSON(fields("locset"), cfg))
-  }
+  })
 }
