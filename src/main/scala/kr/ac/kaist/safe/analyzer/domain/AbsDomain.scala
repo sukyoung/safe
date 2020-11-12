@@ -55,8 +55,8 @@ trait AbsDomain[V] extends Domain {
 
     def toJSON(implicit uomap: UIdObjMap): JsValue
     def resolve(f: => JsValue)(implicit uomap: UIdObjMap): JsValue = try f catch {
-      case ToJSONFail => uomap.toJSON(this)
+      case e: ToJSONFail => uomap.toJSON(this)
     }
-    def fail: Nothing = throw ToJSONFail
+    def fail: Nothing = throw new ToJSONFail(toString)
   }
 }

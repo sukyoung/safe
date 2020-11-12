@@ -109,6 +109,6 @@ case class WrongUId(uid: Int) extends AnalyzeError(
   s"[WrongUId] uid $uid does not exist."
 )
 
-case object ToJSONFail extends AnalyzeError(
+case class ToJSONFail(target: String) extends AnalyzeError(
   s"[ToJSONFail] fail to convert to JSON for dynamic shortcut."
 )

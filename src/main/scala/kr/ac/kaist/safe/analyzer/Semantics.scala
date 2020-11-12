@@ -296,7 +296,12 @@ case class Semantics(
 
             result
           } catch {
-            case ToJSONFail => (newSt, AbsState.Bot)
+            case e: ToJSONFail =>
+              println(s"[WARNING] toJSON Failed @ ${e.getStackTrace.toList.mkString("\n")}")
+              println
+              println(s"[Target] ${e.target}")
+              println
+              (newSt, AbsState.Bot)
           }
           else (newSt, AbsState.Bot)
 

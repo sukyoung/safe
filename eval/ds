@@ -3,6 +3,7 @@
 NO_INSTRUMENT=
 ABSTRACT=
 TIME_LIMIT=5m
+SAFE_CONSOLE=
 
 for i in "$@"
 do
@@ -15,6 +16,9 @@ case $i in
   ;;
   -t=*|--time=*)
     TIME_LIMIT="${i#*=}"
+  ;;
+  -c|--console)
+    SAFE_CONSOLE="-analyzer:console"
   ;;
 esac
 done
@@ -32,7 +36,11 @@ cd $SAFE_HOME/eval
 
 echo "Analyzing with SAFE + DynamicShortcut..."
 echo > $DS_HOME/ds-jalangi.result
-timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut -analyzer:exitReachable target.js > ds-safe.result
+if [ $SAFE_CONSOLE ]; then
+  $SAFE_HOME/bin/safe bugDetect $SAFE_CONSOLE -analyzer:dynamicShortcut -analyzer:exitReachable target.js | tee ds-safe.result
+else
+  timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect $SAFE_CONSOLE -analyzer:dynamicShortcut -analyzer:exitReachable target.js > ds-safe.result
+fi
 if [ $? -eq 124 ]; then
   echo "[Timeout] $TIME_LIMIT" >> ds-safe.result
 fi
