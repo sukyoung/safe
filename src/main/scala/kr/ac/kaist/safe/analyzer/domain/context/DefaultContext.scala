@@ -24,12 +24,12 @@ object DefaultContext extends ContextDomain {
   case object Top extends Elem
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
-    val map: LayeredMap[Loc, AbsLexEnv],
+    val map: Map[Loc, AbsLexEnv],
     val merged: LocSet,
     override val thisBinding: AbsValue // ThisBinding
   ) extends Elem
   lazy val Empty: Elem =
-    CtxMap(LayeredMap(), LocSet.Bot, LocSet(GLOBAL_LOC))
+    CtxMap(Map(), LocSet.Bot, LocSet(GLOBAL_LOC))
 
   def alpha(ctx: Context): Elem = Top // TODO more precise
 
@@ -37,7 +37,7 @@ object DefaultContext extends ContextDomain {
     map: Map[Loc, AbsLexEnv],
     merged: LocSet,
     thisBinding: AbsValue
-  ): Elem = CtxMap(LayeredMap(map), merged, thisBinding)
+  ): Elem = CtxMap(map, merged, thisBinding)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Context] = ConInf // TODO more precise
@@ -108,7 +108,7 @@ object DefaultContext extends ContextDomain {
       }
     }
 
-    private def weakUpdated(m: LayeredMap[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): LayeredMap[Loc, AbsLexEnv] =
+    private def weakUpdated(m: Map[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): Map[Loc, AbsLexEnv] =
       m.get(loc) match {
         case Some(oldEnv) => m + (loc -> (oldEnv ⊔ newEnv))
         case None => m + (loc -> newEnv)
@@ -148,7 +148,7 @@ object DefaultContext extends ContextDomain {
           case None => (map, merged)
         })
         CtxMap(
-          newMap.valueMap(_.subsLoc(from, to)),
+          newMap.map { case (k, v) => k -> v.subsLoc(from, to) },
           newMerged.subsLoc(from, to),
           thisBinding.subsLoc(from, to)
         )
@@ -159,7 +159,7 @@ object DefaultContext extends ContextDomain {
       case Top => Top
       case Bot => Bot
       case CtxMap(map, merged, thisBinding) => CtxMap(
-        (map -- locs).valueMap(_.remove(locs)),
+        (map -- locs).map { case (k, v) => k -> v.remove(locs) },
         merged.remove(locs),
         thisBinding.remove(locs)
       )
@@ -292,7 +292,7 @@ object DefaultContext extends ContextDomain {
     val fields = json.asJsObject().fields
     val mapFields = fields("map").asJsObject.fields
     CtxMap(
-      mapFields.foldLeft[LayeredMap[Loc, AbsLexEnv]](LayeredMap())({
+      mapFields.foldLeft[Map[Loc, AbsLexEnv]](Map())({
         case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
       }),
       LocSet.Bot,

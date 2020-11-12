@@ -22,18 +22,18 @@ import spray.json._
 object DefaultHeap extends HeapDomain {
   case object Top extends Elem
   case object Bot extends Elem
-  val Empty: Elem = HeapMap(LayeredMap(), LocSet.Bot)
-  case class HeapMap(map: LayeredMap[Loc, AbsObj], merged: LocSet) extends Elem
+  val Empty: Elem = HeapMap(Map(), LocSet.Bot)
+  case class HeapMap(map: Map[Loc, AbsObj], merged: LocSet) extends Elem
 
   def alpha(heap: Heap): Elem = {
     val map = heap.map.foldLeft(Map[Loc, AbsObj]()) {
       case (map, (loc, obj)) => map + (loc -> AbsObj(obj))
     }
-    HeapMap(LayeredMap(map), LocSet.Bot)
+    HeapMap(map, LocSet.Bot)
   }
 
   def apply(map: Map[Loc, AbsObj], merged: LocSet): Elem =
-    HeapMap(LayeredMap(map), merged)
+    HeapMap(map, merged)
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[Heap] = ConInf // TODO more precise
@@ -111,7 +111,7 @@ object DefaultHeap extends HeapDomain {
       case (obj, loc) => obj ⊔ get(loc)
     }
 
-    private def weakUpdated(m: LayeredMap[Loc, AbsObj], loc: Loc, newObj: AbsObj): LayeredMap[Loc, AbsObj] = m.get(loc) match {
+    private def weakUpdated(m: Map[Loc, AbsObj], loc: Loc, newObj: AbsObj): Map[Loc, AbsObj] = m.get(loc) match {
       case Some(oldObj) => m + (loc -> (oldObj ⊔ newObj))
       case None => m + (loc -> newObj)
     }
@@ -150,7 +150,7 @@ object DefaultHeap extends HeapDomain {
           case None => (map, merged)
         })
         HeapMap(
-          newMap.valueMap(_.subsLoc(from, to)),
+          newMap.map { case (k, v) => k -> v.subsLoc(from, to) },
           newMerged.subsLoc(from, to)
         )
       }
@@ -160,7 +160,7 @@ object DefaultHeap extends HeapDomain {
       case Top => Top
       case Bot => Bot
       case HeapMap(map, merged) => HeapMap(
-        (map -- locs).valueMap(_.remove(locs)),
+        (map -- locs).map { case (k, v) => k -> v.remove(locs) },
         merged.remove(locs)
       )
     }
@@ -376,7 +376,7 @@ object DefaultHeap extends HeapDomain {
     val mapFields = fields("map").asJsObject.fields
     var merged = prev.heap.getMerged ⊔ (prev.getLocSet ⊓ locset)
     HeapMap(
-      mapFields.foldLeft[LayeredMap[Loc, AbsObj]](LayeredMap())({
+      mapFields.foldLeft[Map[Loc, AbsObj]](Map())({
         case (acc, (k, v)) => acc + {
           val loc = Loc.parseString(k, cfg)
           val elems = v.asInstanceOf[JsArray].elements
