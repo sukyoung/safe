@@ -16,20 +16,21 @@ esac
 done
 
 LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+JALANGI_TARGET=target.js
 
 if [ $DS ]; then
   ./ds --no-instrument $@
   if ! [ $ABSTRACT ]; then
     exit
   fi
-  ./merge --target=jalangi_target.js $LODASH/tests/$NAME.js
+  JALANGI_TARGET=jalangi_target.js
+  ./merge --target=JALANGI_TARGET $LODASH/tests/$NAME.js
 else
   echo "Analyzing with SAFE..."
   timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:exitReachable target.js > safe.result
   if [ $? -eq 124 ]; then
     echo "[Timeout] 5 minutes." >> safe.result
   fi
-  cp target.js jalangi_target.js
 fi
 
 if [[ $ABSTRACT ]] && [[ ! $NAME ]]; then
@@ -39,5 +40,5 @@ else
   node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
     --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
     --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
-    jalangi_target.js > jalangi.result
+    $JALANGI_TARGET > jalangi.result
 fi
