@@ -33,7 +33,7 @@ class UIdObjMap {
   def keySet: Set[Int] = map.keySet.toSet
   def toJSON(obj: Object): JsValue = {
     val uid = getUId
-    val json = JsObject("symbol" -> JsNumber(uid))
+    val json = JsObject("____SYMBOL" -> JsNumber(uid))
     map(uid) = obj
     json
   }
