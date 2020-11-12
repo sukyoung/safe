@@ -67,7 +67,7 @@ paper/*/main.pdf
 __merged__.js
 **/diff-test/merged*
 **/diff-test/*.result
-eval/target*
+eval/*target*
 eval/*.result
 eval/result
 eval/log

@@ -1,26 +1,62 @@
 #!/bin/bash
 
+DS=
+ABSTRACT=
+WRAPPED=
+NAME=
+TIME_LIMIT=5m
+LODASH=
+
 for i in "$@"
 do
 case $i in
+  -w|--wrapped)
+    WRAPPED=$i
+  ;;
   -ds|--dynamic-shortcut)
-    DS=true
+    DS=$i
+  ;;
+  -a|--abstract)
+    ABSTRACT=$i
+  ;;
+  --name=*)
+    NAME="${i#*=}"
+  ;;
+  -t=*|--time=*)
+    TIME_LIMIT="${i#*=}"
+  ;;
+  -l|--lodash)
+    LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+    shift
   ;;
 esac
 done
 
 if [ $DS ]; then
-  ./ds --no-instrument
+  ./ds --no-instrument $@
+  if ! [ $ABSTRACT ]; then
+    exit
+  fi
 else
   echo "Analyzing with SAFE..."
-  timeout 5m $SAFE_HOME/bin/safe bugDetect -analyzer:exitReachable target.js > safe.result
+  timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect -analyzer:exitReachable target.js > safe.result
   if [ $? -eq 124 ]; then
-    echo "[Timeout] 5 minutes." >> safe.result
+    echo "[Timeout] $TIME_LIMIT" >> safe.result
   fi
+fi
+
+if [ $ABSTRACT ]; then
+  if [[ ! $NAME ]] || [[ ! $LODASH ]]; then
+    exit
+  fi
+  JALANGI_TARGET=jalangi_target.js
+  ./merge --target=$JALANGI_TARGET --lodash $WRAPPED $LODASH/tests/$NAME.js
+else
+  JALANGI_TARGET=target.js
 fi
 
 echo "Analyzing with Jalangi..."
 node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
   --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
   --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
-  target.js > jalangi.result
+  $JALANGI_TARGET > jalangi.result

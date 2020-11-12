@@ -1,10 +1,22 @@
 #!/bin/bash
 
+WRAPPED=
+LODASH=
+TARGET=target.js
+
 for i in "$@"
 do
 case $i in
   -w|--wrapped)
-    WRAPPED=true
+    WRAPPED=$i
+    shift
+  ;;
+  -l|--lodash)
+    LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+    shift
+  ;;
+  --target=*)
+    TARGET="${i#*=}"
     shift
   ;;
   -*)
@@ -13,21 +25,19 @@ case $i in
 esac
 done
 
-TARGET="target.js"
-
-LODASH=$SAFE_HOME/tests/benchmarks/lodash4
-
 echo > $TARGET
 if [ $WRAPPED ]; then
   echo "(function() {" >> $TARGET
 fi
-
-cat $LODASH/setting.js $LODASH/lodash.js $LODASH/test-setting.js >> $TARGET
-if [ "$#" -eq 1 ]; then
+if [ $LODASH ]; then
+  cat $LODASH/setting.js $LODASH/lodash.js $LODASH/test-setting.js >> $TARGET
+fi
+if [[ ! "$#" -eq 0 ]]; then
   cat $@ >> $TARGET
 fi
 
 if [ $WRAPPED ]; then
   echo "}.call(global));" >> $TARGET
 fi
+
 node $DS_HOME/parenthesize.js $TARGET $TARGET

@@ -1003,8 +1003,11 @@ case class Semantics(
         ) match {
             case (ConFin(strset), ConFin(sepset)) => {
               val arrs = {
-                for (s <- strset; p <- sepset)
-                  yield s.str.split(p.str)
+                for (s <- strset; p <- sepset) yield {
+                  val arr = (s.str + " ").split(p.str)
+                  if (arr.last == " ") arr(arr.length - 1) = ""
+                  arr
+                }
               }
               (AbsObj.Bot /: arrs) {
                 case (obj, arr) => obj ⊔ ((AbsObj.newArrayObject(AbsNum(arr.length)) /: arr.zipWithIndex) {
