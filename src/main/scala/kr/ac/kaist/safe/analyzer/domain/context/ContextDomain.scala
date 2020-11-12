@@ -47,6 +47,7 @@ trait ContextDomain extends AbsDomain[Context] {
     def alloc(loc: Loc): Elem
 
     def getLocSet: LocSet
+    def getMerged: LocSet
 
     def domIn(loc: Loc): Boolean
 

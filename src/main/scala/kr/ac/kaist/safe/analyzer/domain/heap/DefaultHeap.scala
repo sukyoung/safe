@@ -374,7 +374,7 @@ object DefaultHeap extends HeapDomain {
   )(implicit uomap: UIdObjMap): Elem = {
     val fields = json.asJsObject.fields
     val mapFields = fields("map").asJsObject.fields
-    var merged = prev.heap.getMerged ⊔ (prev.getLocSet ⊓ locset)
+    var merged = prev.heap.getMerged ⊔ (prev.heap.getLocSet ⊓ locset)
     HeapMap(
       mapFields.foldLeft[Map[Loc, AbsObj]](Map())({
         case (acc, (k, v)) => acc + {

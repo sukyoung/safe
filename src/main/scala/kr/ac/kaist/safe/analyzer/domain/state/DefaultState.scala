@@ -255,7 +255,7 @@ object DefaultState extends StateDomain {
       val locset = LocSet.fromJSON(fields("allocs"), cfg)
       Elem(
         AbsHeap.fromJSON(fields("heap"), cfg, prev, locset),
-        AbsContext.fromJSON(fields("context"), cfg),
+        AbsContext.fromJSON(fields("context"), cfg, prev, locset),
         prev.allocs.alloc(locset)
       )
   }

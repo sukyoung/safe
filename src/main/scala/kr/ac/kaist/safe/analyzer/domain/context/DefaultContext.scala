@@ -182,6 +182,12 @@ object DefaultContext extends ContextDomain {
       case CtxMap(map, _, _) => LocSet(map.keySet)
     }
 
+    def getMerged: LocSet = this match {
+      case Top => LocSet.Top
+      case Bot => LocSet.Bot
+      case CtxMap(_, merged, _) => merged
+    }
+
     def domIn(loc: Loc): Boolean = this match {
       case Bot => false
       case Top => true
@@ -288,14 +294,28 @@ object DefaultContext extends ContextDomain {
     }
   }
 
-  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
-    val fields = json.asJsObject().fields
+  def fromJSON(
+    json: JsValue,
+    cfg: CFG,
+    prev: AbsState,
+    locset: LocSet
+  )(implicit uomap: UIdObjMap): Elem = {
+    val fields = json.asJsObject.fields
     val mapFields = fields("map").asJsObject.fields
+    var merged = prev.context.getMerged ⊔ (prev.context.getLocSet ⊓ locset)
     CtxMap(
       mapFields.foldLeft[Map[Loc, AbsLexEnv]](Map())({
-        case (acc, (k, v)) => acc + (Loc.parseString(k, cfg) -> AbsLexEnv.fromJSON(v, cfg))
+        case (acc, (k, v)) => acc + {
+          val loc = Loc.parseString(k, cfg)
+          val elems = v.asInstanceOf[JsArray].elements
+          if (elems.length > 1) merged += loc
+          val env = elems.foldLeft(AbsLexEnv.Bot) {
+            case (x, y) => x ⊔ AbsLexEnv.fromJSON(y, cfg)
+          }
+          loc -> env
+        }
       }),
-      LocSet.Bot,
+      merged,
       AbsValue.fromJSON(fields("thisBinding"), cfg)
     )
   }
