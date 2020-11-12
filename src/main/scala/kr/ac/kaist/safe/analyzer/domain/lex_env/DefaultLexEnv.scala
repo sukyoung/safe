@@ -238,8 +238,8 @@ object DefaultLexEnv extends LexEnvDomain {
 
   def newPureLocal(outer: LocSet): Elem = {
     val envRec = AbsDecEnvRec(Map(
-      "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
-      "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
+      "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot),
+      "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot),
       "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)
     ))
     Elem(envRec, outer, AbsAbsent.Bot)

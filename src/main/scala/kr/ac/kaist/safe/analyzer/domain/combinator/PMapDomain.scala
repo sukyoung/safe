@@ -137,7 +137,7 @@ case class PMapDomain[K, V, VD <: AbsDomain[V]](
     def contains(f: AbsV => Boolean)(k: K): AbsBool = this(k).exists(f)
 
     def toJSON(implicit uomap: UIdObjMap): JsValue = {
-      if (default.isAbsent) fail
+      if (!default.isAbsent) fail
       else JsObject(map.map {
         case (k, v) => k.toString -> v.toJSON
       })

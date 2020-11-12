@@ -34,7 +34,12 @@ object DefaultIValue extends IValueDomain {
   case class Elem(value: AbsValue, fidset: AbsFId) extends ElemTrait {
     def gamma: ConSet[IValue] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[IValue] = ConMany
+    def getSingle: ConSingle[IValue] = (value.getSingle, fidset.getSingle) match {
+      case (ConZero, ConZero) => ConZero
+      case (ConOne(v), ConZero) => ConOne(v)
+      case (ConZero, ConOne(v)) => ConOne(v)
+      case _ => ConMany
+    }
 
     override def toString: String = {
       if (isBottom) "⊥Elem"
