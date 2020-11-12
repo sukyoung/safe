@@ -54,14 +54,15 @@ if [ $ABSTRACT ]; then
   if [[ ! $NAME ]] || [[ ! $LODASH ]]; then
     exit
   fi
-  JALANGI_TARGET=jalangi_target.js
-  ./merge --target=$JALANGI_TARGET --lodash $WRAPPED $LODASH/tests/$NAME.js
+  JALANGI_TARGET=jalangi_target
+  ./merge --target=$JALANGI_TARGET.js --lodash $WRAPPED $LODASH/tests/$NAME.js
 else
-  JALANGI_TARGET=target.js
+  JALANGI_TARGET=target
 fi
 
 echo "Analyzing with Jalangi..."
 node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
   --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
   --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
-  $JALANGI_TARGET > jalangi.result
+  $JALANGI_TARGET.js > jalangi.result
+cp ${JALANGI_TARGET}_jalangi_.json target_jalangi_.json
