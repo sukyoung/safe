@@ -73,7 +73,7 @@ object DefaultEnvRec extends EnvRecDomain {
     def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
       (decEnvRec.toJSON, globalEnvRec.toJSON) match {
         case (dec: JsObject, JsNull) => dec
-        case (JsNull, global: JsObject) => global
+        case (JsNull, global: JsObject) => JsNull
         case _ => fail
       }
     }
