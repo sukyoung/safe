@@ -234,7 +234,8 @@ object DefaultLexEnv extends LexEnvDomain {
   }
 
   def NewDeclarativeEnvironment(outer: LocSet): Elem =
-    Elem(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
+    if (outer.isBottom) Elem(AbsDecEnvRec.Empty, LocSet.Bot, AbsAbsent.Top)
+    else Elem(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
 
   def newPureLocal(outer: LocSet): Elem = {
     val envRec = AbsDecEnvRec(Map(
