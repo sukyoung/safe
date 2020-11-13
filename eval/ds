@@ -39,7 +39,7 @@ echo > $DS_HOME/ds-jalangi.result
 if [ $SAFE_CONSOLE ]; then
   $SAFE_HOME/bin/safe bugDetect $SAFE_CONSOLE -analyzer:dynamicShortcut -analyzer:exitReachable target.js | tee ds-safe.result
 else
-  timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect $SAFE_CONSOLE -analyzer:dynamicShortcut -analyzer:exitReachable target.js > ds-safe.result
+  timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect -analyzer:dynamicShortcut -analyzer:exitReachable target.js > ds-safe.result
 fi
 if [ $? -eq 124 ]; then
   echo "[Timeout] $TIME_LIMIT" >> ds-safe.result
