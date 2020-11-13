@@ -40,9 +40,13 @@ case class Semantics(
       case JsObject(fields) => fields("fid") match {
         case JsNumber(d) =>
           val fid = d.toInt
-          val tp = TracePartition(fields("tracePartition").toString)(cfg)
-          val cp = ControlPoint(cfg.getFunc(fid).get.entry, tp)
-          dsTriedCPs += cp
+          fields("tracePartition") match {
+            case JsString(str) =>
+              val tp = TracePartition(str)(cfg)
+              val cp = ControlPoint(cfg.getFunc(fid).get.entry, tp)
+              dsTriedCPs += cp
+            case _ =>
+          }
         case _ =>
       }
       case _ =>
