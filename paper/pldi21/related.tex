@@ -23,11 +23,11 @@ our sealed symbolic execution.  However, it supports only a special
 preserves the precision of complex abstract domains~\cite{revisit-recency,
 regex, weaklySPE} frequently used in JavaScript static analysis.  On the other
 hand, the sealed symbolic execution automatically detects whether the abstract
-semantics for abstract values.  Finally, \concerto preserves the soundness when
-the program satisfies the \textit{state separation hypothesis}.  They assume
-that states of application and framework parts do not interrogated or
-manipulated by each other.  While it is reasonable for static analysis of Java
-applications using external libraries, the assumption is not satisfied for
+semantics are required for abstract values.  Finally, \concerto preserves the
+soundness when the program satisfies the \textit{state separation hypothesis}.
+They assume that states of application and framework parts do not interrogated
+or manipulated by each other.  While it is reasonable for static analysis of
+Java applications using external libraries, the assumption is not satisfied for
 JavaScript programs in general.  Unlike their approach, our approach does not
 have any assumption between static and dynamic analysis parts.
 
