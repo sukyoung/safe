@@ -1,3 +1,16 @@
 \section{Conclusion}\label{sec:conclusion}
 
-\todo
+We have presented a novel technique \textit{dynamic shortcut} for JavaScript
+static analysis.  It could significantly accelerate the JavaScript static
+analysis by freely leveraging high performance of dynamic analysis for the
+concretely executable program parts.  To maximize the usage of dynamic analysis,
+we augmented the concrete execution to \textit{sealed symbolic execution} with
+symbolic values for abstract values required abstract semantics.  We formally
+defined the static analysis with dynamic shortcut using sealed symbolic execution
+and proved its soundness on the formalization.  We developed $\tool$ as a
+prototype implementation of the dynamic shortcut by combining state-of-the-art
+static and dynamic analyzers SAFE and Jalangi.  Our tool accelerates the speed
+of static analysis \inred{X.X}x for original tests and \inred{X.X}x for
+abstracted tests of Lodash 4 library.  Moreover, it improves \inred{XX.XX}\% of
+analysis precision by using dynamic analysis instead of static analysis for
+\inred{XX.X} opaque functions on average.
