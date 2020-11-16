@@ -2,42 +2,45 @@
 
 TOTAL_START_TIME=$SECONDS
 
-ABSTRACT=
+mkdir -p result
+LOG=result/all.log
+LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+TEST=$LODASH/tests
 
 for i in "$@"
 do
 case $i in
   -a|--abstract)
-    ABSTRACT=$i
+    TEST=$LODASH/tests-rewritten
+  ;;
+  -a=*|--abstract=*)
+    TEST=$LODASH/tests-rewritten-${i#*=}
   ;;
 esac
 done
 
-mkdir -p result
-LOG=result/all.log
-LODASH=$SAFE_HOME/tests/benchmarks/lodash4
-if [ $ABSTRACT ]; then
-  TEST=$LODASH/tests-rewritten
-else
-  TEST=$LODASH/tests
-fi
-
 echo > $LOG
+echo "$TEST"
 for file in $TEST/*; do
   if [ -f "$file" ]; then
-    echo "--------------------------------------------------" | tee -a $LOG
-    echo "- Diff-Testing for $file" | tee -a $LOG
-    echo "--------------------------------------------------" | tee -a $LOG
-    START_TIME=$SECONDS
-
     base=`basename $file`
     name="${base%.*}"
-    ./run $@ --lodash --name=$name $file 2>&1 | tee -a $LOG
-    mkdir -p result/$name
-    mv *.result result/$name
+    excluded=`grep \"$name\" $LODASH/excluded.json`
 
-    ELAPSED_TIME=`expr $SECONDS - $START_TIME`
-    echo "$ELAPSED_TIME seconds elpased." | tee -a $LOG
+    if [ "$excluded" == "" ]; then
+      echo "--------------------------------------------------" | tee -a $LOG
+      echo "- Diff-Testing for $file" | tee -a $LOG
+      echo "--------------------------------------------------" | tee -a $LOG
+
+      START_TIME=$SECONDS
+
+      ./run $@ --lodash --name=$name $file 2>&1 | tee -a $LOG
+      mkdir -p result/$name
+      mv *.result result/$name
+
+      ELAPSED_TIME=`expr $SECONDS - $START_TIME`
+      echo "$ELAPSED_TIME seconds elpased." | tee -a $LOG
+    fi
   fi
 done
 
