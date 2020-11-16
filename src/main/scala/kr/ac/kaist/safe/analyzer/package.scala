@@ -39,7 +39,8 @@ package object analyzer {
   var touchedFuncs: Set[Int] = Set()
 
   // fid to location
-  var fidToName: Map[Int, String] = Map()
+  case class FidNameCase(isCall: Boolean, name: String)
+  var fidToName: Map[Int, FidNameCase] = Map()
 
   // CFG
   var globalCFG: CFG = null

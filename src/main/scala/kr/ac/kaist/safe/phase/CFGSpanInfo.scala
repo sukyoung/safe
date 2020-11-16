@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
 import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.{ Useful, BoolOption }
 import spray.json._
 import DefaultJsonProtocol._
 import kr.ac.kaist.safe.analyzer._
@@ -39,7 +39,14 @@ case object CFGSpanInfo extends PhaseObj[(CFG, Semantics, TracePartition, HeapBu
     println("Dumped CFGSpanList to " + cfgSpanInfoJson)
 
     val fidToNameJson = "fidToName.json"
-    val json = JsObject(fidToName.map { case (k, v) => v -> JsString(k.toString) })
+    var fidToNameMap: Map[String, Map[String, JsValue]] = Map()
+    fidToName.foreach {
+      case (k, FidNameCase(isFunc, name)) =>
+        val subName = if (isFunc) "call" else "construct"
+        val subMap = fidToNameMap.getOrElse(name, Map())
+        fidToNameMap += name -> (subMap + (subName -> JsNumber(k)))
+    }
+    val json = JsObject(fidToNameMap.map { case (k, v) => k -> JsObject(v) })
     Useful.dump(json.prettyPrint, fidToNameJson)
     println("Dumped fidToName to " + fidToNameJson)
 

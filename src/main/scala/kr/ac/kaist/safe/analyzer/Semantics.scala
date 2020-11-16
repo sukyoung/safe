@@ -272,7 +272,10 @@ case class Semantics(
                 "tracePartition" -> cp.tracePartition.toJSON
               )
               JsObject(
-                if (cp.block.func.id < 0) fields + ("code" -> JsString(fidToName(fid)))
+                if (cp.block.func.id < 0) fields + ("code" -> JsObject(
+                  "isCall" -> JsBoolean(fidToName(fid).isCall),
+                  "name" -> JsString(fidToName(fid).name)
+                ))
                 else fields
               )
             }
