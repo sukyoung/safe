@@ -34,7 +34,7 @@ for file in $TEST/*; do
 
       START_TIME=$SECONDS
 
-      ./run $@ --lodash --name=$name $file 2>&1 | tee -a $LOG
+      ./run $@ --lodash $file 2>&1 | tee -a $LOG
       mkdir -p result/$name
       mv *.result result/$name
 

@@ -1,12 +1,18 @@
 #!/bin/bash
 
 DS=
+BASE=
+NAME=
 
 for i in "$@"
 do
 case $i in
   -ds|--dynamic-shortcut)
     DS=$i
+  ;;
+  [^-]*)
+    BASE=`basename $i`
+    NAME="--name=${BASE%.*}"
   ;;
 esac
 done
@@ -23,7 +29,8 @@ if [ $DS ]; then
 fi
 
 echo "Analyzing files..."
-./analyze $@
+echo $NAME
+./analyze $@ $NAME
 
 if [ -f jalangi.result ]; then
   echo "Calculating diff..."
