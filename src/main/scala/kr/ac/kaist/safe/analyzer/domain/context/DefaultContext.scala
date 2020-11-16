@@ -253,7 +253,7 @@ object DefaultContext extends ContextDomain {
 
     private def toStringLoc(loc: Loc, env: AbsLexEnv, con: Boolean): String = {
       val s = new StringBuilder
-      val keyStr = loc.toString + " -> "
+      val keyStr = loc.toString + (if (con) " -> " else " => ")
       s.append(keyStr)
       Useful.indentation(s, env.toString, keyStr.length)
       s.toString
