@@ -206,6 +206,145 @@ where $\identity$ denotes the identity function.
   \label{fig:dynamic-shortcut}
 \end{figure}
 
+\begin{figure*}[t]
+  \centering
+
+  \fbox{$\st \trans \st$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \expr\\
+      \referrule{\st}{\refer}{\loc}\\
+      \exprrule{\st}{\expr}{\val}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\labnext(\lab), \mem[\loc \mapsto \val], \ctxt, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \kwobj\\
+      \referrule{\st}{\refer}{\loc}\\
+      \addr' = \text{(a fresh object address)}
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\labnext(\lab), \mem[\loc \mapsto \addr'], \ctxt, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \expr_f ( \expr_a )\\
+      \referrule{\st}{\refer}{\loc}\\
+      \exprrule{\st}{\expr_f}{\fval{x}{\lab_b}}\\
+      \exprrule{\st}{\expr_a}{\val_a}\\
+      \addr' = \text{(a fresh environment address)}
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\lab_b, \mem[(\addr', x) \mapsto \val_a], \ctxt[\addr' \mapsto (\addr,
+      \labnext(\lab), \loc)], \addr')
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwret \; \expr\\
+      \exprrule{\st}{\expr}{\val}\\
+      \ctxt(\addr) = (\addr', \lab', \loc)
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\lab', \mem[\loc \mapsto \val], \ctxt, \addr')
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \exprrule{\st}{\expr}{\kwtrue}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\lab', \mem, \ctxt, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \exprrule{\st}{\expr}{\kwfalse}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\labnext(\lab), \mem, \ctxt, \addr)
+    }
+  \end{mathpar}
+
+  \fbox{$\referrule{\st}{\refer}{\loc}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \referrule{\st = (\lab, \mem, \ctxt, \addr)}{x}{(\addr, x)}\\
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprrule{\st}{\expr_0}{\addr_0}\\
+      \exprrule{\st}{\expr_1}{\val_1}\\
+      \val_1 \in \strset\\
+    }
+    {
+      \referrule{\st = (\lab, \mem, \ctxt, \addr)}{\expr_0 [ \expr_1
+      ]}{(\addr_0, \val_1)}
+    }
+  \end{mathpar}
+
+  \fbox{$\exprrule{\st}{\expr}{\val}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}{\pval}{\pval}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt,
+      \addr)}{\fval{x}{\lab'}}{\fval{x}{\lab'}}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \referrule{\st}{\refer}{\loc}\\
+      \loc \in \Dom(\mem)
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}{\refer}{\mem(\loc)}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprrule{\st}{\expr_1}{\val_1}\\
+      \cdots\\
+      \exprrule{\st}{\expr_n}{\val_n}
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}
+      {\op(\expr_1, \cdots, \expr_n)}{\op(\val_1, \cdots, \val_n)}
+    }
+  \end{mathpar}
+
+  \caption{The transition relation for the core language of JavaScript}
+  \label{fig:core-trans-rel}
+\end{figure*}
+
 We define the the abstract interpretation with \textit{dynamic shortcut}, which
 is a concrete semantics on sealed symbolic execution.  With dynamic shortcut,
 we use the powerset of symbolic states as the domain $\combdom =
