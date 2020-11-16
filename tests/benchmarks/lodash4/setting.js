@@ -78,10 +78,11 @@
   var self = this;
   var origRandom = this.Math.random;
   function random() {
-    if("__num_top__" in self) {
-      return self.__num_top__;
+    try {
+      return __num_top__;
+    } catch(e) {
+      return origRandom.call(this);
     }
-    return origRandom.call(this);
   }
   this.Math.random = random;
 
