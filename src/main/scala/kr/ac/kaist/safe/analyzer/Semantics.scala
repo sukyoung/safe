@@ -612,7 +612,7 @@ case class Semantics(
         println(s"        exceptions: $excSet")
         println(s"        pvalue    : ${v.pvalue}")
         println(s"        objects:")
-        v.locset.foreach(loc => println(st.heap.toStringLoc(loc).get))
+        v.locset.foreach(loc => println(st.heap.toStringLoc(loc).getOrElse(s"[LocNotFound] $loc")))
         (st, excSt)
       }
       case (NodeUtil.INTERNAL_NOT_YET_IMPLEMENTED, List(expr), None) => {
