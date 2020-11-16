@@ -235,4 +235,7 @@ package object domain {
 
   type Map[K, V] = HashMap[K, V]
   val Map = HashMap
+
+  // cache for JSON of GLOBAL_LOC
+  var globalLocJSON: JsValue = null
 }

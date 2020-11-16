@@ -30,7 +30,7 @@ class UIdObjMap {
   }
 
   // unique string
-  private val UNIQUE = "____SYMBOL"
+  val UNIQUE = "____SYMBOL"
 
   def size: Int = count
   def keySet: Set[Int] = map.keySet.toSet

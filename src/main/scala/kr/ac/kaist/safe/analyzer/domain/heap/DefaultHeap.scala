@@ -93,6 +93,7 @@ object DefaultHeap extends HeapDomain {
           val k = loc.toString
           val v =
             if (merged contains loc) uomap.toJSON(obj)
+            else if (loc == GLOBAL_LOC) globalLocJSON
             else obj.toJSON
           k -> v
       })

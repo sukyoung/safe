@@ -257,12 +257,14 @@ case class Semantics(
           val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0) try {
             val fid = cp.block.func.id;
             dsTriedCPs += cp
-            dsCount += 1
             val startTime = System.currentTimeMillis
 
             // unique id mutable map
             implicit val uomap = new UIdObjMap
 
+            globalLocJSON = newSt.heap.get(GLOBAL_LOC).toJSON
+            if (globalLocJSON.asJsObject.fields contains uomap.UNIQUE)
+              throw new ToJSONFail("GLOBAL_LOC")
             val dump = {
               val fields = Map(
                 "fid" -> JsNumber(fid),
@@ -274,6 +276,9 @@ case class Semantics(
                 else fields
               )
             }
+
+            dsCount += 1
+
             val newTP = cp.tracePartition
             val exitCP = ControlPoint(func.exit, newTP)
 
