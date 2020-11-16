@@ -5,8 +5,8 @@ QUnit.module('lodash.sumBy');
             __num_top__,
             __num_top__
         ], objects = [
-            { 'a': __num_top__ },
-            { 'a': __num_top__ },
+            { 'a': 2 },
+            { 'a': 3 },
             { 'a': __num_top__ }
         ];
     QUnit.test('should work with an `iteratee`', function (assert) {
@@ -29,9 +29,9 @@ QUnit.module('lodash.sumBy');
         var arrays = [
             [2],
             [3],
-            [1]
+            [__num_top__]
         ];
-        assert.strictEqual(_.sumBy(arrays, 0), 6);
+        assert.strictEqual(_.sumBy(arrays, 0), __num_top__);
         assert.strictEqual(_.sumBy(objects, __str_top__), __num_top__);
     });
 }());

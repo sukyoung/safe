@@ -52,7 +52,7 @@ QUnit.module('lodash.isObject');
             assert.strictEqual(_.isObject(realm.regexp), __bool_top__);
             assert.strictEqual(_.isObject(realm.string), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 7);
         }
     });
 }());

@@ -1,15 +1,15 @@
 QUnit.module('lodash.takeRight');
 (function () {
     var array = [
-        __num_top__,
+        1,
         2,
         3
     ];
     QUnit.test('should take the last two elements', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.takeRight(array, 2), [
-            __num_top__,
-            __num_top__
+            2,
+            3
         ]);
     });
     QUnit.test('should treat falsey `n` values, except `undefined`, as `0`', function (assert) {
@@ -26,7 +26,7 @@ QUnit.module('lodash.takeRight');
         assert.expect(3);
         lodashStable.each([
             0,
-            -1,
+            -__num_top__,
             -Infinity
         ], function (n) {
             assert.deepEqual(_.takeRight(array, n), []);
@@ -36,8 +36,8 @@ QUnit.module('lodash.takeRight');
         assert.expect(4);
         lodashStable.each([
             3,
-            __num_top__,
-            Math.pow(2, 32),
+            4,
+            Math.pow(2, __num_top__),
             Infinity
         ], function (n) {
             assert.deepEqual(_.takeRight(array, n), array);
@@ -52,8 +52,8 @@ QUnit.module('lodash.takeRight');
                     3
                 ],
                 [
+                    4,
                     __num_top__,
-                    5,
                     6
                 ],
                 [
@@ -63,9 +63,9 @@ QUnit.module('lodash.takeRight');
                 ]
             ], actual = lodashStable.map(array, _.takeRight);
         assert.deepEqual(actual, [
-            [__num_top__],
+            [3],
             [6],
-            [9]
+            [__num_top__]
         ]);
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -74,19 +74,19 @@ QUnit.module('lodash.takeRight');
             var array = lodashStable.range(LARGE_ARRAY_SIZE), predicate = function (value) {
                     values.push(value);
                     return isEven(value);
-                }, values = [], actual = _(array).takeRight(__num_top__).takeRight().value();
+                }, values = [], actual = _(array).takeRight(2).takeRight().value();
             assert.deepEqual(actual, _.takeRight(_.takeRight(array)));
             actual = _(array).filter(predicate).takeRight(2).takeRight().value();
             assert.deepEqual(values, array);
-            assert.deepEqual(actual, _.takeRight(_.takeRight(_.filter(array, predicate), 2)));
-            actual = _(array).takeRight(6).take(4).takeRight(2).take().value();
-            assert.deepEqual(actual, _.take(_.takeRight(_.take(_.takeRight(array, 6), __num_top__), 2)));
+            assert.deepEqual(actual, _.takeRight(_.takeRight(_.filter(array, predicate), __num_top__)));
+            actual = _(array).takeRight(6).take(4).takeRight(__num_top__).take().value();
+            assert.deepEqual(actual, _.take(_.takeRight(_.take(_.takeRight(array, 6), __num_top__), __num_top__)));
             values = [];
-            actual = _(array).filter(predicate).takeRight(__num_top__).take(4).takeRight(2).take().value();
+            actual = _(array).filter(predicate).takeRight(__num_top__).take(4).takeRight(__num_top__).take().value();
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.take(_.takeRight(_.take(_.takeRight(_.filter(array, predicate), 6), 4), 2)));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

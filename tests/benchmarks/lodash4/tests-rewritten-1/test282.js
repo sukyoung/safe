@@ -8,7 +8,7 @@ QUnit.module('lodash.without');
             2,
             3
         ], 1, 2);
-        assert.deepEqual(actual, [3]);
+        assert.deepEqual(actual, [__num_top__]);
     });
     QUnit.test('should use strict equality to determine the values to reject', function (assert) {
         assert.expect(2);
@@ -16,7 +16,7 @@ QUnit.module('lodash.without');
                 object1,
                 object2
             ];
-        assert.deepEqual(_.without(array, { 'a': __num_top__ }), array);
+        assert.deepEqual(_.without(array, { 'a': 1 }), array);
         assert.deepEqual(_.without(array, object1), [object2]);
     });
     QUnit.test('should remove all occurrences of each value from an array', function (assert) {

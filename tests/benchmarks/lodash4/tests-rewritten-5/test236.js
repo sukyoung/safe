@@ -2,8 +2,8 @@ QUnit.module('lodash.sumBy');
 (function () {
     var array = [
             6,
-            __num_top__,
-            2
+            4,
+            __num_top__
         ], objects = [
             { 'a': 2 },
             { 'a': __num_top__ },
@@ -14,7 +14,7 @@ QUnit.module('lodash.sumBy');
         var actual = _.sumBy(objects, function (object) {
             return object.a;
         });
-        assert.deepEqual(actual, 6);
+        assert.deepEqual(actual, __num_top__);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);
@@ -31,7 +31,7 @@ QUnit.module('lodash.sumBy');
             [__num_top__],
             [1]
         ];
-        assert.strictEqual(_.sumBy(arrays, __num_top__), __num_top__);
-        assert.strictEqual(_.sumBy(objects, 'a'), 6);
+        assert.strictEqual(_.sumBy(arrays, 0), 6);
+        assert.strictEqual(_.sumBy(objects, __str_top__), 6);
     });
 }());

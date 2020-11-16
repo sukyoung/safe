@@ -12,10 +12,10 @@ QUnit.module('lodash.times');
     });
     QUnit.test('should coerce `n` to an integer', function (assert) {
         assert.expect(1);
-        var actual = _.times(__num_top__, _.identity);
+        var actual = _.times(2.6, _.identity);
         assert.deepEqual(actual, [
-            0,
-            1
+            __num_top__,
+            __num_top__
         ]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
@@ -44,9 +44,9 @@ QUnit.module('lodash.times');
     });
     QUnit.test('should return an array of the results of each `iteratee` execution', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.times(__num_top__, doubled), [
-            0,
+        assert.deepEqual(_.times(3, doubled), [
             __num_top__,
+            2,
             __num_top__
         ]);
     });
@@ -62,9 +62,9 @@ QUnit.module('lodash.times');
         assert.expect(1);
         if (!isNpm) {
             assert.deepEqual(_(__num_top__).times(), [
-                __num_top__,
-                __num_top__,
-                2
+                0,
+                1,
+                __num_top__
             ]);
         } else {
             skipAssert(assert);
@@ -73,7 +73,7 @@ QUnit.module('lodash.times');
     QUnit.test('should return a wrapped value when explicitly chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            assert.ok(_(3).chain().times() instanceof _);
+            assert.ok(_(__num_top__).chain().times() instanceof _);
         } else {
             skipAssert(assert);
         }

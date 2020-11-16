@@ -69,7 +69,7 @@ QUnit.module('clone methods');
                 { 'b': 1 }
             ], actual = _.clone(array);
         assert.deepEqual(actual, array);
-        assert.ok(actual !== array && actual[__num_top__] === array[0]);
+        assert.ok(actual !== array && actual[0] === array[0]);
     });
     QUnit.test('`_.cloneDeep` should deep clone objects with circular references', function (assert) {
         assert.expect(1);
@@ -86,9 +86,9 @@ QUnit.module('clone methods');
         assert.expect(2);
         var cyclical = {};
         lodashStable.times(LARGE_ARRAY_SIZE + 1, function (index) {
-            cyclical['v' + index] = [index ? cyclical['v' + (index - 1)] : cyclical];
+            cyclical['v' + index] = [index ? cyclical['v' + (index - __num_top__)] : cyclical];
         });
-        var clone = _.cloneDeep(cyclical), actual = clone['v' + LARGE_ARRAY_SIZE][0];
+        var clone = _.cloneDeep(cyclical), actual = clone['v' + LARGE_ARRAY_SIZE][__num_top__];
         assert.strictEqual(actual, clone['v' + (LARGE_ARRAY_SIZE - 1)]);
         assert.notStrictEqual(actual, cyclical['v' + (LARGE_ARRAY_SIZE - 1)]);
     });
@@ -137,8 +137,8 @@ QUnit.module('clone methods');
                 assert.strictEqual(actual.byteLength, buffer.byteLength);
                 assert.strictEqual(actual.inspect(), buffer.inspect());
                 assert.notStrictEqual(actual, buffer);
-                buffer[0] = 2;
-                assert.strictEqual(actual[__num_top__], isDeep ? 2 : 1);
+                buffer[__num_top__] = 2;
+                assert.strictEqual(actual[0], isDeep ? 2 : 1);
             } else {
                 skipAssert(assert, 4);
             }
@@ -155,11 +155,11 @@ QUnit.module('clone methods');
             regexp.exec('abcde');
             assert.strictEqual(func(regexp).lastIndex, 3);
         });
-        QUnit.test('`_.' + methodName + '` should clone expando properties', function (assert) {
+        QUnit.test('`_.' + methodName + __str_top__, function (assert) {
             assert.expect(1);
             var values = lodashStable.map([
                 false,
-                __bool_top__,
+                true,
                 1,
                 'a'
             ], function (value) {
@@ -218,7 +218,7 @@ QUnit.module('clone methods');
             if (Symbol) {
                 var symbol2 = Symbol('b');
                 Foo.prototype[symbol2] = 2;
-                var symbol3 = Symbol(__str_top__);
+                var symbol3 = Symbol('c');
                 defineProperty(Foo.prototype, symbol3, {
                     'configurable': true,
                     'enumerable': false,
@@ -291,7 +291,7 @@ QUnit.module('clone methods');
                 var Ctor = object.constructor, result = func(object);
                 return result !== object && (result instanceof Ctor || !(new Ctor() instanceof Ctor));
             });
-            assert.deepEqual(actual, expected, props.join(', '));
+            assert.deepEqual(actual, expected, props.join(__str_top__));
         });
         QUnit.test('`_.' + methodName + '` should perform a ' + (isDeep ? 'deep' : 'shallow') + ' clone when used as an iteratee for methods like `_.map`', function (assert) {
             assert.expect(2);
@@ -374,7 +374,7 @@ QUnit.module('clone methods');
         });
         QUnit.test('`_.' + methodName + '` should handle cloning when `customizer` returns `undefined`', function (assert) {
             assert.expect(1);
-            var actual = func({ 'a': { 'b': __str_top__ } }, noop);
+            var actual = func({ 'a': { 'b': 'c' } }, noop);
             assert.deepEqual(actual, { 'a': { 'b': 'c' } });
         });
         lodashStable.forOwn(uncloneable, function (value, key) {

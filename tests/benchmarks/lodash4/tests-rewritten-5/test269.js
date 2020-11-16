@@ -5,11 +5,11 @@ QUnit.module('lodash.unionWith');
         var objects = [
                 {
                     'x': __num_top__,
-                    'y': __num_top__
+                    'y': 2
                 },
                 {
                     'x': 2,
-                    'y': 1
+                    'y': __num_top__
                 }
             ], others = [
                 {
@@ -17,14 +17,14 @@ QUnit.module('lodash.unionWith');
                     'y': 1
                 },
                 {
-                    'x': 1,
-                    'y': __num_top__
+                    'x': __num_top__,
+                    'y': 2
                 }
             ], actual = _.unionWith(objects, others, lodashStable.isEqual);
         assert.deepEqual(actual, [
             objects[0],
-            objects[1],
-            others[0]
+            objects[__num_top__],
+            others[__num_top__]
         ]);
     });
     QUnit.test('should output values from the first possible array', function (assert) {
@@ -33,7 +33,7 @@ QUnit.module('lodash.unionWith');
                     'x': 1,
                     'y': 1
                 }], others = [{
-                    'x': __num_top__,
+                    'x': 1,
                     'y': 2
                 }];
         var actual = _.unionWith(objects, others, function (a, b) {
@@ -41,7 +41,7 @@ QUnit.module('lodash.unionWith');
         });
         assert.deepEqual(actual, [{
                 'x': 1,
-                'y': __num_top__
+                'y': 1
             }]);
     });
 }());

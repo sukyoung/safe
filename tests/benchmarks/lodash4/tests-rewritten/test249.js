@@ -70,7 +70,7 @@ QUnit.module('lodash.toArray');
             actual = _(object).toArray().slice(__num_top__).map(String).value();
             assert.deepEqual(actual, _.map(_.toArray(object).slice(__num_top__), String));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

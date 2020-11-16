@@ -8,11 +8,11 @@ QUnit.module('lodash.truncate');
     QUnit.test('should not truncate if `string` is <= `length`', function (assert) {
         assert.expect(2);
         assert.strictEqual(_.truncate(string, { 'length': string.length }), string);
-        assert.strictEqual(_.truncate(string, { 'length': string.length + __num_top__ }), string);
+        assert.strictEqual(_.truncate(string, { 'length': string.length + 2 }), string);
     });
     QUnit.test('should truncate string the given length', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.truncate(string, { 'length': 24 }), 'hi-diddly-ho there, n...');
+        assert.strictEqual(_.truncate(string, { 'length': __num_top__ }), 'hi-diddly-ho there, n...');
     });
     QUnit.test('should support a `omission` option', function (assert) {
         assert.expect(1);

@@ -7,7 +7,7 @@ QUnit.module('lodash.noConflict');
             assert.notStrictEqual(root._, oldDash);
             root._ = oldDash;
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should restore `_` only if `lodash` is the current `_` value', function (assert) {
@@ -19,7 +19,7 @@ QUnit.module('lodash.noConflict');
             assert.strictEqual(root._, object);
             root._ = oldDash;
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work with a `root` of `this`', function (assert) {
@@ -33,7 +33,7 @@ QUnit.module('lodash.noConflict');
             assert.strictEqual(context._, expected);
             assert.ok(context.lodash);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

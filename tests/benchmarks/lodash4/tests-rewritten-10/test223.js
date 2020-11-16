@@ -11,7 +11,7 @@ lodashStable.each([
     }
     var objects = [
         {
-            'a': 'x',
+            'a': __str_top__,
             'b': 3
         },
         {
@@ -24,43 +24,43 @@ lodashStable.each([
         },
         {
             'a': 'y',
-            'b': __num_top__
+            'b': 2
         }
     ];
     var stableArray = [
         new Pair(1, 1, 1),
         new Pair(1, 2, 1),
-        new Pair(1, 1, 1),
-        new Pair(__num_top__, 2, 1),
-        new Pair(1, 3, 1),
+        new Pair(__num_top__, 1, 1),
+        new Pair(1, 2, 1),
+        new Pair(1, __num_top__, 1),
         new Pair(1, 4, 1),
         new Pair(1, 5, 1),
-        new Pair(1, 6, 1),
+        new Pair(1, 6, __num_top__),
         new Pair(2, 1, 2),
         new Pair(2, 2, 2),
-        new Pair(2, 3, 2),
+        new Pair(__num_top__, 3, 2),
         new Pair(2, 4, 2),
         new Pair(2, 5, 2),
         new Pair(2, 6, 2),
         new Pair(undefined, 1, 1),
         new Pair(undefined, 2, 1),
-        new Pair(undefined, 3, 1),
-        new Pair(undefined, 4, 1),
-        new Pair(undefined, 5, 1),
+        new Pair(undefined, 3, __num_top__),
+        new Pair(undefined, 4, __num_top__),
+        new Pair(undefined, 5, __num_top__),
         new Pair(undefined, 6, 1)
     ];
-    var stableObject = lodashStable.zipObject('abcdefghijklmnopqrst'.split(__str_top__), stableArray);
+    var stableObject = lodashStable.zipObject('abcdefghijklmnopqrst'.split(''), stableArray);
     QUnit.test('`_.' + methodName + '` should sort multiple properties in ascending order', function (assert) {
         assert.expect(1);
         var actual = func(objects, [
-            __str_top__,
+            'a',
             'b'
         ]);
         assert.deepEqual(actual, [
             objects[2],
             objects[0],
             objects[3],
-            objects[__num_top__]
+            objects[1]
         ]);
     });
     QUnit.test('`_.' + methodName + '` should support iteratees', function (assert) {
@@ -86,7 +86,7 @@ lodashStable.each([
         ], function (value, index) {
             var actual = func(value, [
                 'a',
-                __str_top__
+                'c'
             ]);
             assert.deepEqual(actual, stableArray, index ? 'object' : 'array');
         });
@@ -104,7 +104,7 @@ lodashStable.each([
             objects[2],
             objects[0],
             objects[3],
-            objects[1],
+            objects[__num_top__],
             null,
             undefined
         ]);
@@ -114,10 +114,10 @@ lodashStable.each([
         var objects = [
             {
                 'a': 'x',
-                '0': __num_top__
+                '0': 3
             },
             {
-                'a': __str_top__,
+                'a': 'y',
                 '0': 4
             },
             {
@@ -134,9 +134,9 @@ lodashStable.each([
             lodashStable.partialRight(func, 'bogus')
         ];
         lodashStable.each([
-            __str_top__,
+            'a',
             0,
-            [__num_top__]
+            [0]
         ], function (props, index) {
             var expected = lodashStable.map(funcs, lodashStable.constant(index ? [
                 objects[2],
@@ -145,7 +145,7 @@ lodashStable.each([
                 objects[1]
             ] : [
                 objects[0],
-                objects[2],
+                objects[__num_top__],
                 objects[1],
                 objects[3]
             ]));

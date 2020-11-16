@@ -1,7 +1,7 @@
 QUnit.module('xor methods');
 lodashStable.each([
     'xor',
-    __str_top__,
+    'xorBy',
     'xorWith'
 ], function (methodName) {
     var func = _[methodName];
@@ -9,7 +9,7 @@ lodashStable.each([
         assert.expect(1);
         var actual = func([
             2,
-            1
+            __num_top__
         ], [
             2,
             3

@@ -11,7 +11,7 @@ QUnit.module('lodash.merge');
         var ages = {
             'characters': [
                 { 'age': 36 },
-                { 'age': __num_top__ }
+                { 'age': 40 }
             ]
         };
         var heights = {
@@ -135,7 +135,7 @@ QUnit.module('lodash.merge');
                 0,
                 0
             ], array3 = [
-                0,
+                __num_top__,
                 0,
                 0,
                 0

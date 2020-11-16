@@ -5,33 +5,33 @@ QUnit.module('lodash.findLast');
         'an `arguments` object': args,
         'an array': [
             1,
-            2,
+            __num_top__,
             3
         ]
     }, function (collection, key) {
         var values = lodashStable.toArray(collection);
-        QUnit.test('should work with ' + key + __str_top__, function (assert) {
+        QUnit.test('should work with ' + key + ' and a positive `fromIndex`', function (assert) {
             assert.expect(1);
             var expected = [
                 values[1],
                 undefined
             ];
             var actual = [
-                _.findLast(collection, resolve(values[1]), __num_top__),
-                _.findLast(collection, resolve(values[2]), 1)
+                _.findLast(collection, resolve(values[__num_top__]), 1),
+                _.findLast(collection, resolve(values[__num_top__]), 1)
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test(__str_top__ + key + __str_top__, function (assert) {
+        QUnit.test(__str_top__ + key + ' and a `fromIndex` >= `length`', function (assert) {
             assert.expect(1);
             var indexes = [
                 4,
                 6,
-                Math.pow(__num_top__, 32),
+                Math.pow(2, 32),
                 Infinity
             ];
             var expected = lodashStable.map(indexes, lodashStable.constant([
-                values[0],
+                values[__num_top__],
                 undefined,
                 undefined
             ]));
@@ -44,7 +44,7 @@ QUnit.module('lodash.findLast');
             });
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('should work with ' + key + ' and treat falsey `fromIndex` values correctly', function (assert) {
+        QUnit.test('should work with ' + key + __str_top__, function (assert) {
             assert.expect(1);
             var expected = lodashStable.map(falsey, function (value) {
                 return value === undefined ? values[3] : undefined;
@@ -54,7 +54,7 @@ QUnit.module('lodash.findLast');
             });
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('should work with ' + key + ' and coerce `fromIndex` to an integer', function (assert) {
+        QUnit.test('should work with ' + key + __str_top__, function (assert) {
             assert.expect(1);
             var expected = [
                 values[0],
@@ -62,9 +62,9 @@ QUnit.module('lodash.findLast');
                 undefined
             ];
             var actual = [
-                _.findLast(collection, resolve(values[0]), __num_top__),
-                _.findLast(collection, resolve(values[__num_top__]), NaN),
-                _.findLast(collection, resolve(values[2]), '1')
+                _.findLast(collection, resolve(values[__num_top__]), 0.1),
+                _.findLast(collection, resolve(values[0]), NaN),
+                _.findLast(collection, resolve(values[2]), __str_top__)
             ];
             assert.deepEqual(actual, expected);
         });
@@ -76,14 +76,14 @@ QUnit.module('lodash.findLast');
             ];
             var actual = [
                 _.findLast(collection, resolve(values[1]), -2),
-                _.findLast(collection, resolve(values[__num_top__]), -__num_top__)
+                _.findLast(collection, resolve(values[2]), -2)
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('should work with ' + key + ' and a negative `fromIndex` <= `-length`', function (assert) {
+        QUnit.test(__str_top__ + key + ' and a negative `fromIndex` <= `-length`', function (assert) {
             assert.expect(1);
             var indexes = [
-                    -__num_top__,
+                    -4,
                     -6,
                     -Infinity
                 ], expected = lodashStable.map(indexes, lodashStable.constant(values[0]));

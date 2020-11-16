@@ -24,7 +24,7 @@ QUnit.module('lodash.isNumber');
         assert.strictEqual(_.isNumber(true), false);
         assert.strictEqual(_.isNumber(new Date()), false);
         assert.strictEqual(_.isNumber(new Error()), false);
-        assert.strictEqual(_.isNumber(_), __bool_top__);
+        assert.strictEqual(_.isNumber(_), false);
         assert.strictEqual(_.isNumber(slice), false);
         assert.strictEqual(_.isNumber({ 'a': 1 }), false);
         assert.strictEqual(_.isNumber(/x/), false);
@@ -34,7 +34,7 @@ QUnit.module('lodash.isNumber');
     QUnit.test('should work with numbers from another realm', function (assert) {
         assert.expect(1);
         if (realm.number) {
-            assert.strictEqual(_.isNumber(realm.number), true);
+            assert.strictEqual(_.isNumber(realm.number), __bool_top__);
         } else {
             skipAssert(assert);
         }

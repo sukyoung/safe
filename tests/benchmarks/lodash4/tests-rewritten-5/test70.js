@@ -15,12 +15,12 @@ lodashStable.each([
         assert.expect(1);
         assert.notStrictEqual(func(noop), noop);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return an identity function when no arguments are given', function (assert) {
         assert.expect(6);
         _.times(2, function (index) {
             try {
                 var combined = index ? func([]) : func();
-                assert.strictEqual(combined('a'), __str_top__);
+                assert.strictEqual(combined('a'), 'a');
             } catch (e) {
                 assert.ok(false, e.message);
             }
@@ -44,9 +44,9 @@ lodashStable.each([
                 return isEven(value);
             };
         lodashStable.times(2, function (index) {
-            var filter1 = _.filter, filter2 = _.curry(_.rearg(_.ary(_.filter, 2), __num_top__, 0), 2), filter3 = (_.filter = index ? filter2 : filter1, filter2(predicate));
-            var map1 = _.map, map2 = _.curry(_.rearg(_.ary(_.map, 2), 1, 0), 2), map3 = (_.map = index ? map2 : map1, map2(iteratee));
-            var take1 = _.take, take2 = _.curry(_.rearg(_.ary(_.take, 2), 1, 0), 2), take3 = (_.take = index ? take2 : take1, take2(2));
+            var filter1 = _.filter, filter2 = _.curry(_.rearg(_.ary(_.filter, 2), 1, __num_top__), 2), filter3 = (_.filter = index ? filter2 : filter1, filter2(predicate));
+            var map1 = _.map, map2 = _.curry(_.rearg(_.ary(_.map, 2), 1, __num_top__), 2), map3 = (_.map = index ? map2 : map1, map2(iteratee));
+            var take1 = _.take, take2 = _.curry(_.rearg(_.ary(_.take, 2), 1, 0), 2), take3 = (_.take = index ? take2 : take1, take2(__num_top__));
             var combined = isFlow ? func(map3, filter3, _.compact, take3) : func(take3, _.compact, filter3, map3);
             filterCount = mapCount = 0;
             assert.deepEqual(combined(array), [
@@ -69,7 +69,7 @@ lodashStable.each([
         var curried = _.curry(_.ary(_.map, 2), 2), getProp = curried(curried.placeholder, 'a'), objects = [
                 { 'a': 1 },
                 { 'a': 2 },
-                { 'a': 1 }
+                { 'a': __num_top__ }
             ];
         var combined = isFlow ? func(getProp, _.uniq) : func(_.uniq, getProp);
         assert.deepEqual(combined(objects), [
@@ -77,7 +77,7 @@ lodashStable.each([
             2
         ]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return a wrapped value when chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
             var wrapped = _(noop)[methodName]();

@@ -3,26 +3,26 @@ QUnit.module('lodash(...) methods that return new wrapped values');
     var funcs = [
         'castArray',
         'concat',
-        'difference',
+        __str_top__,
         'differenceBy',
         'differenceWith',
         'intersection',
         'intersectionBy',
-        'intersectionWith',
+        __str_top__,
         'pull',
         'pullAll',
-        'pullAt',
+        __str_top__,
         'sampleSize',
         'shuffle',
         'slice',
-        __str_top__,
+        'splice',
         'split',
         'toArray',
-        __str_top__,
+        'union',
         'unionBy',
         'unionWith',
         'uniq',
-        __str_top__,
+        'uniqBy',
         'uniqWith',
         'words',
         'xor',
@@ -33,15 +33,15 @@ QUnit.module('lodash(...) methods that return new wrapped values');
         QUnit.test('`_(...).' + methodName + '` should return a new wrapped value', function (assert) {
             assert.expect(2);
             if (!isNpm) {
-                var value = methodName == 'split' ? __str_top__ : [
-                        1,
-                        2,
+                var value = methodName == 'split' ? 'abc' : [
+                        __num_top__,
+                        __num_top__,
                         3
                     ], wrapped = _(value), actual = wrapped[methodName]();
                 assert.ok(actual instanceof _);
                 assert.notStrictEqual(actual, wrapped);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 2);
             }
         });
     });

@@ -417,7 +417,7 @@ QUnit.module('lodash.matchesProperty');
             actual = lodashStable.filter(objects, _.matchesProperty(__str_top__, map));
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should partial match sets', function (assert) {
@@ -441,7 +441,7 @@ QUnit.module('lodash.matchesProperty');
             actual = lodashStable.filter(objects, _.matchesProperty(__str_top__, set));
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should match `undefined` values', function (assert) {

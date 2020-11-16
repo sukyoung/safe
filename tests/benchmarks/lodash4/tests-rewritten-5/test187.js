@@ -2,7 +2,7 @@ QUnit.module('lodash.pick');
 (function () {
     var args = toArgs([
             'a',
-            __str_top__
+            'c'
         ]), object = {
             'a': 1,
             'b': 2,
@@ -32,7 +32,7 @@ QUnit.module('lodash.pick');
     });
     QUnit.test('should support deep paths', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.pick(nested, 'b.c'), { 'b': { 'c': 2 } });
+        assert.deepEqual(_.pick(nested, __str_top__), { 'b': { 'c': 2 } });
     });
     QUnit.test('should support path arrays', function (assert) {
         assert.expect(1);
@@ -46,10 +46,10 @@ QUnit.module('lodash.pick');
         assert.expect(2);
         var object = {
             'a.b': 1,
-            'a': { 'b': 2 }
+            'a': { 'b': __num_top__ }
         };
         lodashStable.each([
-            'a.b',
+            __str_top__,
             ['a.b']
         ], function (path) {
             assert.deepEqual(_.pick(object, path), { 'a.b': 1 });
@@ -58,9 +58,9 @@ QUnit.module('lodash.pick');
     QUnit.test('should coerce `paths` to strings', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.pick({
-            '0': __str_top__,
+            '0': 'a',
             '1': 'b'
-        }, 0), { '0': __str_top__ });
+        }, 0), { '0': 'a' });
     });
     QUnit.test('should return an empty object when `object` is nullish', function (assert) {
         assert.expect(2);

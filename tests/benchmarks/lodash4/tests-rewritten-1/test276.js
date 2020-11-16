@@ -36,7 +36,7 @@ QUnit.module('lodash.unzipWith');
             [
                 2,
                 4,
-                6
+                __num_top__
             ]
         ], function () {
             args || (args = slice.call(arguments));
@@ -50,7 +50,7 @@ QUnit.module('lodash.unzipWith');
         assert.expect(1);
         var array = [
                 [
-                    __num_top__,
+                    1,
                     3
                 ],
                 [

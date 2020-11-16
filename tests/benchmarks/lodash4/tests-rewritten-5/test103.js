@@ -11,26 +11,26 @@ QUnit.module('lodash.isDate');
             return index ? _.isDate(value) : _.isDate();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isDate(args), __bool_top__);
+        assert.strictEqual(_.isDate(args), false);
         assert.strictEqual(_.isDate([
             1,
             2,
             3
-        ]), false);
-        assert.strictEqual(_.isDate(true), __bool_top__);
-        assert.strictEqual(_.isDate(new Error()), __bool_top__);
-        assert.strictEqual(_.isDate(_), false);
-        assert.strictEqual(_.isDate(slice), __bool_top__);
+        ]), __bool_top__);
+        assert.strictEqual(_.isDate(true), false);
+        assert.strictEqual(_.isDate(new Error()), false);
+        assert.strictEqual(_.isDate(_), __bool_top__);
+        assert.strictEqual(_.isDate(slice), false);
         assert.strictEqual(_.isDate({ 'a': 1 }), false);
         assert.strictEqual(_.isDate(1), false);
         assert.strictEqual(_.isDate(/x/), false);
-        assert.strictEqual(_.isDate(__str_top__), false);
+        assert.strictEqual(_.isDate('a'), __bool_top__);
         assert.strictEqual(_.isDate(symbol), false);
     });
     QUnit.test('should work with a date object from another realm', function (assert) {
         assert.expect(1);
         if (realm.date) {
-            assert.strictEqual(_.isDate(realm.date), true);
+            assert.strictEqual(_.isDate(realm.date), __bool_top__);
         } else {
             skipAssert(assert);
         }

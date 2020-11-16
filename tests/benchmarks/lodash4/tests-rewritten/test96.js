@@ -138,7 +138,7 @@ QUnit.module('lodash.invokeMap');
                 __str_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should support shortcut fusion', function (assert) {
@@ -158,7 +158,7 @@ QUnit.module('lodash.invokeMap');
             assert.strictEqual(count, __num_top__);
             assert.deepEqual(actual, [__num_top__]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

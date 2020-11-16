@@ -29,14 +29,14 @@ QUnit.module('lodash.repeat');
     });
     QUnit.test('should coerce `string` to a string', function (assert) {
         assert.expect(2);
-        assert.strictEqual(_.repeat(Object(string), 2), 'abcabc');
+        assert.strictEqual(_.repeat(Object(string), 2), __str_top__);
         assert.strictEqual(_.repeat({ 'toString': lodashStable.constant('*') }, 3), '***');
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
         var actual = lodashStable.map([
             'a',
-            __str_top__,
+            'b',
             'c'
         ], _.repeat);
         assert.deepEqual(actual, [

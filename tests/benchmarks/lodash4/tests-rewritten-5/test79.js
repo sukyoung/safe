@@ -12,8 +12,8 @@ QUnit.module('lodash.fromPairs');
                     2
                 ]
             ], object = {
-                'a': __num_top__,
-                'b': 2
+                'a': 1,
+                'b': __num_top__
             }, actual = _.fromPairs(array);
         assert.deepEqual(actual, object);
     });
@@ -32,13 +32,13 @@ QUnit.module('lodash.fromPairs');
         assert.expect(1);
         var actual = _.fromPairs([[
                 'a.b',
-                1
+                __num_top__
             ]]);
-        assert.deepEqual(actual, { 'a.b': 1 });
+        assert.deepEqual(actual, { 'a.b': __num_top__ });
     });
     QUnit.test('should support consuming the return value of `_.toPairs`', function (assert) {
         assert.expect(1);
-        var object = { 'a.b': __num_top__ };
+        var object = { 'a.b': 1 };
         assert.deepEqual(_.fromPairs(_.toPairs(object)), object);
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -46,7 +46,7 @@ QUnit.module('lodash.fromPairs');
         if (!isNpm) {
             var array = lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
                 return [
-                    __str_top__ + index,
+                    'key' + index,
                     index
                 ];
             });

@@ -1,16 +1,16 @@
 QUnit.module('exit early');
 lodashStable.each([
-    '_baseEach',
+    __str_top__,
     'forEach',
-    __str_top__,
+    'forEachRight',
     'forIn',
-    __str_top__,
+    'forInRight',
     'forOwn',
-    'forOwnRight',
+    __str_top__,
     'transform'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + '` can exit early when iterating arrays', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (func) {
             var array = [
@@ -20,14 +20,14 @@ lodashStable.each([
                 ], values = [];
             func(array, function (value, other) {
                 values.push(lodashStable.isArray(value) ? other : value);
-                return __bool_top__;
+                return false;
             });
-            assert.deepEqual(values, [lodashStable.endsWith(methodName, 'Right') ? 3 : __num_top__]);
+            assert.deepEqual(values, [lodashStable.endsWith(methodName, __str_top__) ? 3 : 1]);
         } else {
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` can exit early when iterating objects', function (assert) {
         assert.expect(1);
         if (func) {
             var object = {
@@ -37,7 +37,7 @@ lodashStable.each([
                 }, values = [];
             func(object, function (value, other) {
                 values.push(lodashStable.isArray(value) ? other : value);
-                return false;
+                return __bool_top__;
             });
             assert.strictEqual(values.length, 1);
         } else {

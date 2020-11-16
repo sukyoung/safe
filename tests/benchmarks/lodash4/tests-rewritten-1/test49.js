@@ -59,7 +59,7 @@ QUnit.module('lodash.dropRight');
                     3
                 ],
                 [
-                    4,
+                    __num_top__,
                     5,
                     6
                 ],
@@ -95,7 +95,7 @@ QUnit.module('lodash.dropRight');
             actual = _(array).filter(predicate).dropRight(2).dropRight().value();
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.dropRight(_.dropRight(_.filter(array, predicate), 2)));
-            actual = _(array).dropRight(__num_top__).drop().dropRight().drop(2).value();
+            actual = _(array).dropRight(2).drop().dropRight().drop(2).value();
             assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(array, 2))), 2));
             values = [];
             actual = _(array).dropRight().filter(predicate).dropRight(2).drop().dropRight().drop(2).value();

@@ -27,7 +27,7 @@ lodashStable.each([
         Foo.prototype.b = 2;
         var expected = isAssign ? { 'a': 1 } : {
             'a': 1,
-            'b': __num_top__
+            'b': 2
         };
         assert.deepEqual(func({}, new Foo()), expected);
     });
@@ -133,7 +133,7 @@ lodashStable.each([
             NaN
         ], function (value) {
             var object = {}, pass = true;
-            defineProperty(object, __str_top__, {
+            defineProperty(object, 'a', {
                 'configurable': true,
                 'enumerable': true,
                 'get': lodashStable.constant(value),
@@ -149,10 +149,10 @@ lodashStable.each([
 lodashStable.each([
     'assignWith',
     'assignInWith',
-    'mergeWith'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], isMergeWith = methodName == 'mergeWith';
-    QUnit.test('`_.' + methodName + '` should provide correct `customizer` arguments', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(3);
         var args, object = { 'a': 1 }, source = { 'a': 2 }, expected = lodashStable.map([
                 1,
@@ -164,10 +164,10 @@ lodashStable.each([
         func(object, source, function () {
             args || (args = lodashStable.map(slice.call(arguments, 0, 5), lodashStable.cloneDeep));
         });
-        assert.deepEqual(args, expected, 'primitive values');
+        assert.deepEqual(args, expected, __str_top__);
         var argsList = [], objectValue = [
                 1,
-                __num_top__
+                2
             ], sourceValue = { 'b': 2 };
         object = { 'a': objectValue };
         source = { 'a': sourceValue };
@@ -182,7 +182,7 @@ lodashStable.each([
             expected.push(lodashStable.map([
                 undefined,
                 2,
-                'b',
+                __str_top__,
                 objectValue,
                 sourceValue
             ], lodashStable.cloneDeep));
@@ -202,9 +202,9 @@ lodashStable.each([
             source
         ], lodashStable.cloneDeep);
         func(object, source, function () {
-            args || (args = lodashStable.map(slice.call(arguments, 0, __num_top__), lodashStable.cloneDeep));
+            args || (args = lodashStable.map(slice.call(arguments, 0, 5), lodashStable.cloneDeep));
         });
-        assert.deepEqual(args, expected, 'undefined properties');
+        assert.deepEqual(args, expected, __str_top__);
     });
     QUnit.test('`_.' + methodName + '` should not treat the second argument as a `customizer` callback', function (assert) {
         assert.expect(2);
@@ -216,7 +216,7 @@ lodashStable.each([
             'a': 1,
             'b': 2
         });
-        actual = func({ 'a': __num_top__ }, callback, { 'c': 3 });
+        actual = func({ 'a': 1 }, callback, { 'c': 3 });
         assert.deepEqual(actual, {
             'a': 1,
             'b': 2,

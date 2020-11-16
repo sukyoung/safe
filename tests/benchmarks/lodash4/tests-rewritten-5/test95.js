@@ -2,7 +2,7 @@ QUnit.module('lodash.invoke');
 (function () {
     QUnit.test('should invoke a method on `object`', function (assert) {
         assert.expect(1);
-        var object = { 'a': lodashStable.constant('A') }, actual = _.invoke(object, 'a');
+        var object = { 'a': lodashStable.constant(__str_top__) }, actual = _.invoke(object, 'a');
         assert.strictEqual(actual, 'A');
     });
     QUnit.test('should support invoking with arguments', function (assert) {
@@ -17,7 +17,7 @@ QUnit.module('lodash.invoke');
             }, actual = _.invoke(object, 'a', 1, 2);
         assert.deepEqual(actual, [
             1,
-            2
+            __num_top__
         ]);
     });
     QUnit.test('should not error on nullish elements', function (assert) {
@@ -28,7 +28,7 @@ QUnit.module('lodash.invoke');
             ], expected = lodashStable.map(values, noop);
         var actual = lodashStable.map(values, function (value) {
             try {
-                return _.invoke(value, 'a.b', 1, 2);
+                return _.invoke(value, __str_top__, 1, 2);
             } catch (e) {
             }
         });
@@ -41,7 +41,7 @@ QUnit.module('lodash.invoke');
                 '0': stubB
             }, props = [
                 -0,
-                Object(-0),
+                Object(-__num_top__),
                 0,
                 Object(0)
             ];
@@ -49,8 +49,8 @@ QUnit.module('lodash.invoke');
             return _.invoke(object, key);
         });
         assert.deepEqual(actual, [
-            __str_top__,
-            __str_top__,
+            'a',
+            'a',
             'b',
             'b'
         ]);
@@ -74,9 +74,9 @@ QUnit.module('lodash.invoke');
                 'b'
             ]
         ], function (path) {
-            var actual = _.invoke(object, path, __num_top__, 2);
+            var actual = _.invoke(object, path, 1, 2);
             assert.deepEqual(actual, [
-                __num_top__,
+                1,
                 2
             ]);
         });
@@ -105,7 +105,7 @@ QUnit.module('lodash.invoke');
         assert.expect(1);
         if (!isNpm) {
             var object = { 'a': stubOne };
-            assert.strictEqual(_(object).invoke('a'), 1);
+            assert.strictEqual(_(object).invoke(__str_top__), 1);
         } else {
             skipAssert(assert);
         }
@@ -114,7 +114,7 @@ QUnit.module('lodash.invoke');
         assert.expect(1);
         if (!isNpm) {
             var object = { 'a': stubOne };
-            assert.ok(_(object).chain().invoke(__str_top__) instanceof _);
+            assert.ok(_(object).chain().invoke('a') instanceof _);
         } else {
             skipAssert(assert);
         }

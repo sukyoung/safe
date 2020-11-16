@@ -10,12 +10,7 @@ if (( ${sample} > -1 )); then
   dir="tests-rewritten-$sample"
 fi
 
-if test -f "$dir"; then
-  echo "$dir exists."
-  exit
-else
-  mkdir $dir
-fi
+mkdir -p $dir
 
 echo $sample
 

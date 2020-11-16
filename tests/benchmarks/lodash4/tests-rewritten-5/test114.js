@@ -42,7 +42,7 @@ QUnit.module('lodash.isMatchWith');
             [
                 object1.b,
                 object2.b,
-                __str_top__,
+                'b',
                 object1,
                 object2
             ],
@@ -54,7 +54,7 @@ QUnit.module('lodash.isMatchWith');
                 object2.b
             ],
             [
-                object1.b.a[__num_top__],
+                object1.b.a[0],
                 object2.b.a[0],
                 0,
                 object1.b.a,
@@ -89,7 +89,7 @@ QUnit.module('lodash.isMatchWith');
         var customizer = function (value) {
             return _.isString(value) || undefined;
         };
-        assert.strictEqual(_.isMatchWith(['a'], ['b'], customizer), true);
+        assert.strictEqual(_.isMatchWith([__str_top__], ['b'], customizer), true);
         assert.strictEqual(_.isMatchWith({ '0': 'a' }, { '0': 'b' }, customizer), true);
     });
     QUnit.test('should not handle comparisons when `customizer` returns `false`', function (assert) {
@@ -97,7 +97,7 @@ QUnit.module('lodash.isMatchWith');
         var customizer = function (value) {
             return _.isString(value) ? false : undefined;
         };
-        assert.strictEqual(_.isMatchWith(['a'], ['a'], customizer), false);
+        assert.strictEqual(_.isMatchWith(['a'], [__str_top__], customizer), false);
         assert.strictEqual(_.isMatchWith({ '0': 'a' }, { '0': 'a' }, customizer), false);
     });
     QUnit.test('should return a boolean value even when `customizer` does not', function (assert) {
@@ -159,16 +159,16 @@ QUnit.module('lodash.isMatchWith');
                 var argsList = [], array = lodashStable.toArray(pair[0]), object1 = { 'a': pair[0] }, object2 = { 'a': pair[1] };
                 var expected = [
                     [
-                        pair[0],
                         pair[__num_top__],
+                        pair[1],
                         'a',
                         object1,
                         object2
                     ],
                     [
                         array[0],
-                        array[0],
-                        0,
+                        array[__num_top__],
+                        __num_top__,
                         array,
                         array
                     ],
@@ -188,9 +188,9 @@ QUnit.module('lodash.isMatchWith');
                     ]
                 ];
                 if (index) {
-                    expected.length = __num_top__;
+                    expected.length = 2;
                 }
-                _.isMatchWith({ 'a': pair[__num_top__] }, { 'a': pair[1] }, function () {
+                _.isMatchWith({ 'a': pair[0] }, { 'a': pair[1] }, function () {
                     argsList.push(slice.call(arguments, 0, -1));
                 });
                 assert.deepEqual(argsList, expected, index ? 'Set' : 'Map');

@@ -17,9 +17,9 @@ QUnit.module('lodash.escape');
     });
     lodashStable.each([
         '`',
-        __str_top__
+        '/'
     ], function (chr) {
-        QUnit.test('should not escape the "' + chr + '" character', function (assert) {
+        QUnit.test('should not escape the "' + chr + __str_top__, function (assert) {
             assert.expect(1);
             assert.strictEqual(_.escape(chr), chr);
         });

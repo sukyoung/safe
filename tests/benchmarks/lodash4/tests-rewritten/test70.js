@@ -57,7 +57,7 @@ lodashStable.each([
                 assert.strictEqual(filterCount, __num_top__, __str_top__);
                 assert.strictEqual(mapCount, __num_top__, __str_top__);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 2);
             }
             _.filter = filter1;
             _.map = map1;

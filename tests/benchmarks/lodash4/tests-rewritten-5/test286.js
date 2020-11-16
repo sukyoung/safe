@@ -3,11 +3,11 @@ QUnit.module('lodash.xorBy');
     QUnit.test('should accept an `iteratee`', function (assert) {
         assert.expect(2);
         var actual = _.xorBy([
-            __num_top__,
+            2.1,
             __num_top__
         ], [
             2.3,
-            __num_top__
+            3.4
         ], Math.floor);
         assert.deepEqual(actual, [
             1.2,
@@ -16,21 +16,21 @@ QUnit.module('lodash.xorBy');
         actual = _.xorBy([{ 'x': 1 }], [
             { 'x': 2 },
             { 'x': 1 }
-        ], __str_top__);
+        ], 'x');
         assert.deepEqual(actual, [{ 'x': 2 }]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);
         var args;
         _.xorBy([
-            2.1,
-            1.2
+            __num_top__,
+            __num_top__
         ], [
-            2.3,
-            3.4
+            __num_top__,
+            __num_top__
         ], function () {
             args || (args = slice.call(arguments));
         });
-        assert.deepEqual(args, [__num_top__]);
+        assert.deepEqual(args, [2.3]);
     });
 }());

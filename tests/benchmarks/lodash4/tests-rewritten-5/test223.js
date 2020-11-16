@@ -15,7 +15,7 @@ lodashStable.each([
             'b': 3
         },
         {
-            'a': __str_top__,
+            'a': 'y',
             'b': 4
         },
         {
@@ -23,26 +23,26 @@ lodashStable.each([
             'b': 1
         },
         {
-            'a': 'y',
+            'a': __str_top__,
             'b': 2
         }
     ];
     var stableArray = [
         new Pair(1, 1, 1),
         new Pair(1, 2, 1),
-        new Pair(__num_top__, 1, 1),
-        new Pair(1, __num_top__, 1),
+        new Pair(1, 1, 1),
+        new Pair(1, 2, 1),
         new Pair(1, 3, 1),
         new Pair(1, 4, 1),
         new Pair(1, 5, 1),
         new Pair(1, 6, 1),
         new Pair(2, 1, 2),
         new Pair(2, 2, 2),
-        new Pair(2, 3, 2),
+        new Pair(__num_top__, __num_top__, 2),
         new Pair(2, 4, 2),
         new Pair(2, 5, 2),
         new Pair(2, 6, 2),
-        new Pair(undefined, 1, __num_top__),
+        new Pair(undefined, 1, 1),
         new Pair(undefined, 2, 1),
         new Pair(undefined, 3, 1),
         new Pair(undefined, 4, 1),
@@ -53,7 +53,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should sort multiple properties in ascending order', function (assert) {
         assert.expect(1);
         var actual = func(objects, [
-            'a',
+            __str_top__,
             'b'
         ]);
         assert.deepEqual(actual, [
@@ -91,7 +91,7 @@ lodashStable.each([
             assert.deepEqual(actual, stableArray, index ? 'object' : 'array');
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should not error on nullish elements', function (assert) {
+    QUnit.test('`_.' + methodName + '` should not error on nullish elements', function (assert) {
         assert.expect(1);
         try {
             var actual = func(objects.concat(null, undefined), [
@@ -117,7 +117,7 @@ lodashStable.each([
                 '0': 3
             },
             {
-                'a': 'y',
+                'a': __str_top__,
                 '0': 4
             },
             {

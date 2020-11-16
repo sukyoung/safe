@@ -49,7 +49,7 @@ QUnit.module('lodash.dropRightWhile');
     QUnit.test('should work with `_.matchesProperty` shorthands', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.dropRightWhile(objects, [
-            __str_top__,
+            'b',
             2
         ]), objects.slice(0, 2));
     });
@@ -65,7 +65,7 @@ QUnit.module('lodash.dropRightWhile');
             });
             assert.ok(wrapped instanceof _);
             assert.deepEqual(wrapped.value(), [
-                1,
+                __num_top__,
                 2
             ]);
         } else {

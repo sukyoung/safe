@@ -30,7 +30,7 @@ QUnit.module('lodash.bindAll');
     QUnit.test('should accept individual method names', function (assert) {
         assert.expect(1);
         var object = lodashStable.cloneDeep(source);
-        _.bindAll(object, __str_top__, 'b');
+        _.bindAll(object, 'a', 'b');
         var actual = lodashStable.map([
             'a',
             'b',
@@ -70,7 +70,7 @@ QUnit.module('lodash.bindAll');
         assert.expect(1);
         var props = [
             -0,
-            Object(-0),
+            Object(-__num_top__),
             0,
             Object(0)
         ];

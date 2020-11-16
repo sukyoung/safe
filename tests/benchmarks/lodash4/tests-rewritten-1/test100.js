@@ -13,7 +13,7 @@ QUnit.module('lodash.isArrayLike');
                     '0': 'a',
                     'length': 1
                 },
-                __str_top__
+                'a'
             ], expected = lodashStable.map(values, stubTrue), actual = lodashStable.map(values, _.isArrayLike);
         assert.deepEqual(actual, expected);
     });

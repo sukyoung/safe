@@ -1,8 +1,8 @@
 QUnit.module('lodash.initial');
 (function () {
     var array = [
-        __num_top__,
-        __num_top__,
+        1,
+        2,
         3
     ];
     QUnit.test('should accept a falsey `array`', function (assert) {
@@ -20,7 +20,7 @@ QUnit.module('lodash.initial');
         assert.expect(1);
         assert.deepEqual(_.initial(array), [
             1,
-            __num_top__
+            2
         ]);
     });
     QUnit.test('should return an empty when querying empty arrays', function (assert) {
@@ -31,25 +31,25 @@ QUnit.module('lodash.initial');
         assert.expect(1);
         var array = [
                 [
-                    __num_top__,
+                    1,
                     2,
                     3
                 ],
                 [
-                    4,
+                    __num_top__,
                     5,
-                    6
+                    __num_top__
                 ],
                 [
                     7,
-                    8,
-                    9
+                    __num_top__,
+                    __num_top__
                 ]
             ], actual = lodashStable.map(array, _.initial);
         assert.deepEqual(actual, [
             [
                 1,
-                2
+                __num_top__
             ],
             [
                 4,
@@ -67,7 +67,7 @@ QUnit.module('lodash.initial');
             var array = lodashStable.range(LARGE_ARRAY_SIZE), values = [];
             var actual = _(array).initial().filter(function (value) {
                 values.push(value);
-                return __bool_top__;
+                return false;
             }).value();
             assert.deepEqual(actual, []);
             assert.deepEqual(values, _.initial(array));

@@ -219,7 +219,7 @@ QUnit.module('lodash.merge');
             assert.strictEqual(actual[__num_top__], buffer[__num_top__]);
             assert.notStrictEqual(actual, buffer);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should deep clone array/typed-array/plain-object source values', function (assert) {

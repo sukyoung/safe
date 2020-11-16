@@ -79,7 +79,7 @@ QUnit.module('lodash.initial');
             assert.deepEqual(actual, _.initial(lodashStable.filter(array, isEven)));
             assert.deepEqual(values, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
 }());

@@ -16,21 +16,21 @@ QUnit.module('lodash.isUndefined');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isUndefined(args), __bool_top__);
         assert.strictEqual(_.isUndefined([
-            __num_top__,
+            1,
             __num_top__,
             __num_top__
-        ]), false);
-        assert.strictEqual(_.isUndefined(true), __bool_top__);
+        ]), __bool_top__);
+        assert.strictEqual(_.isUndefined(__bool_top__), __bool_top__);
         assert.strictEqual(_.isUndefined(new Date()), false);
-        assert.strictEqual(_.isUndefined(new Error()), __bool_top__);
+        assert.strictEqual(_.isUndefined(new Error()), false);
         assert.strictEqual(_.isUndefined(_), false);
-        assert.strictEqual(_.isUndefined(slice), __bool_top__);
-        assert.strictEqual(_.isUndefined({ 'a': 1 }), __bool_top__);
+        assert.strictEqual(_.isUndefined(slice), false);
+        assert.strictEqual(_.isUndefined({ 'a': 1 }), false);
         assert.strictEqual(_.isUndefined(1), false);
-        assert.strictEqual(_.isUndefined(/x/), __bool_top__);
-        assert.strictEqual(_.isUndefined('a'), false);
+        assert.strictEqual(_.isUndefined(/x/), false);
+        assert.strictEqual(_.isUndefined(__str_top__), __bool_top__);
         if (Symbol) {
-            assert.strictEqual(_.isUndefined(symbol), false);
+            assert.strictEqual(_.isUndefined(symbol), __bool_top__);
         } else {
             skipAssert(assert);
         }

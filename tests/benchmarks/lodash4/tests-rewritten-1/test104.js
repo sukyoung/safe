@@ -44,9 +44,9 @@ QUnit.module('lodash.isElement');
         assert.strictEqual(_.isElement({ 'nodeType': 1 }), false);
         assert.strictEqual(_.isElement({ 'nodeType': Object(1) }), false);
         assert.strictEqual(_.isElement({ 'nodeType': true }), false);
-        assert.strictEqual(_.isElement({ 'nodeType': [__num_top__] }), false);
+        assert.strictEqual(_.isElement({ 'nodeType': [1] }), false);
         assert.strictEqual(_.isElement({ 'nodeType': '1' }), false);
-        assert.strictEqual(_.isElement({ 'nodeType': '001' }), false);
+        assert.strictEqual(_.isElement({ 'nodeType': __str_top__ }), false);
     });
     QUnit.test('should work with a DOM element from another realm', function (assert) {
         assert.expect(1);

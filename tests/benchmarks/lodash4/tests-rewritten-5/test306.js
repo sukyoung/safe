@@ -15,7 +15,7 @@ QUnit.module('lodash methods');
         'delay',
         'flip',
         'flow',
-        'flowRight',
+        __str_top__,
         'memoize',
         'negate',
         'once',
@@ -29,7 +29,7 @@ QUnit.module('lodash methods');
     ];
     var noBinding = [
         'flip',
-        'memoize',
+        __str_top__,
         'negate',
         __str_top__,
         'overArgs',
@@ -45,7 +45,7 @@ QUnit.module('lodash methods');
     ].concat(checkFuncs);
     var returnArrays = [
         'at',
-        __str_top__,
+        'chunk',
         'compact',
         'difference',
         'drop',
@@ -68,14 +68,14 @@ QUnit.module('lodash methods');
         'shuffle',
         'sortBy',
         'tail',
-        __str_top__,
-        __str_top__,
-        __str_top__,
+        'take',
+        'times',
+        'toArray',
         'toPairs',
         'toPairsIn',
         'union',
         'uniq',
-        'values',
+        __str_top__,
         'without',
         'xor',
         'zip'
@@ -91,7 +91,7 @@ QUnit.module('lodash methods');
             });
             if (methodName == 'noConflict') {
                 root._ = oldDash;
-            } else if (methodName == 'pull' || methodName == 'pullAll') {
+            } else if (methodName == 'pull' || methodName == __str_top__) {
                 expected = falsey;
             }
             if (lodashStable.includes(returnArrays, methodName) && methodName != 'sample') {

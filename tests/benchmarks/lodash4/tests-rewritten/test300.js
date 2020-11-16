@@ -25,7 +25,7 @@ QUnit.module('lodash(...).value');
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should return the `valueOf` result of the wrapped value', function (assert) {
@@ -57,7 +57,7 @@ QUnit.module('lodash(...).value');
             assert.strictEqual(_.prototype.toJSON, expected);
             assert.strictEqual(_.prototype.valueOf, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

@@ -3,9 +3,9 @@ QUnit.module('map caches');
     var keys = [
         null,
         undefined,
-        __bool_top__,
+        false,
         true,
-        1,
+        __num_top__,
         -Infinity,
         NaN,
         {},
@@ -13,14 +13,14 @@ QUnit.module('map caches');
         symbol || noop
     ];
     var pairs = lodashStable.map(keys, function (key, index) {
-        var lastIndex = keys.length - __num_top__;
+        var lastIndex = keys.length - 1;
         return [
             key,
             keys[lastIndex - index]
         ];
     });
     function createCaches(pairs) {
-        var largeStack = new mapCaches.Stack(pairs), length = pairs ? pairs.length : __num_top__;
+        var largeStack = new mapCaches.Stack(pairs), length = pairs ? pairs.length : 0;
         lodashStable.times(LARGE_ARRAY_SIZE - length, function () {
             largeStack.set({}, {});
         });
@@ -34,14 +34,14 @@ QUnit.module('map caches');
     }
     lodashStable.forOwn(createCaches(pairs), function (cache, kind) {
         var isLarge = /^large/.test(kind);
-        QUnit.test('should implement a `Map` interface for ' + kind, function (assert) {
+        QUnit.test(__str_top__ + kind, function (assert) {
             assert.expect(83);
             lodashStable.each(keys, function (key, index) {
-                var value = pairs[index][1];
+                var value = pairs[index][__num_top__];
                 assert.deepEqual(cache.get(key), value);
                 assert.strictEqual(cache.has(key), __bool_top__);
-                assert.strictEqual(cache.delete(key), true);
-                assert.strictEqual(cache.has(key), __bool_top__);
+                assert.strictEqual(cache.delete(key), __bool_top__);
+                assert.strictEqual(cache.has(key), false);
                 assert.strictEqual(cache.get(key), undefined);
                 assert.strictEqual(cache.delete(key), __bool_top__);
                 assert.strictEqual(cache.set(key, value), cache);
@@ -58,7 +58,7 @@ QUnit.module('map caches');
         QUnit.test(__str_top__ + kind, function (assert) {
             assert.expect(10);
             lodashStable.each(keys, function (key) {
-                cache.set(key, 1).set(key, __num_top__);
+                cache.set(key, __num_top__).set(key, 2);
                 assert.strictEqual(cache.get(key), 2);
             });
         });

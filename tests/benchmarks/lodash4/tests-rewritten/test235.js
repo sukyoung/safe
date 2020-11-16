@@ -63,7 +63,7 @@ lodashStable.each([
             assert.deepEqual(func(__num_top__, symbol), NaN);
             assert.deepEqual(func(symbol, __num_top__), NaN);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {

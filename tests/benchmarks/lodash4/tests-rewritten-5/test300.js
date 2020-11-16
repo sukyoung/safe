@@ -3,24 +3,24 @@ QUnit.module('lodash(...).value');
     QUnit.test('should execute the chained sequence and extract the unwrapped value', function (assert) {
         assert.expect(4);
         if (!isNpm) {
-            var array = [1], wrapped = _(array).push(2).push(3);
-            assert.deepEqual(array, [__num_top__]);
+            var array = [__num_top__], wrapped = _(array).push(2).push(3);
+            assert.deepEqual(array, [1]);
             assert.deepEqual(wrapped.value(), [
-                __num_top__,
+                1,
                 2,
-                __num_top__
+                3
             ]);
             assert.deepEqual(wrapped.value(), [
                 1,
                 2,
                 3,
-                __num_top__,
+                2,
                 3
             ]);
             assert.deepEqual(array, [
-                1,
+                __num_top__,
                 2,
-                3,
+                __num_top__,
                 2,
                 3
             ]);
@@ -31,7 +31,7 @@ QUnit.module('lodash(...).value');
     QUnit.test('should return the `valueOf` result of the wrapped value', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            var wrapped = _(__num_top__);
+            var wrapped = _(123);
             assert.strictEqual(Number(wrapped), 123);
         } else {
             skipAssert(assert);
@@ -41,11 +41,11 @@ QUnit.module('lodash(...).value');
         assert.expect(1);
         if (!isNpm && JSON) {
             var wrapped = _([
-                1,
+                __num_top__,
                 2,
                 3
             ]);
-            assert.strictEqual(JSON.stringify(wrapped), '[1,2,3]');
+            assert.strictEqual(JSON.stringify(wrapped), __str_top__);
         } else {
             skipAssert(assert);
         }

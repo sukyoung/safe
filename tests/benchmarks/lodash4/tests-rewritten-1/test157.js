@@ -23,7 +23,7 @@ QUnit.module('lodash.mergeWith');
     });
     QUnit.test('should clone sources when `customizer` returns `undefined`', function (assert) {
         assert.expect(1);
-        var source1 = { 'a': { 'b': { 'c': __num_top__ } } }, source2 = { 'a': { 'b': { 'd': 2 } } };
+        var source1 = { 'a': { 'b': { 'c': 1 } } }, source2 = { 'a': { 'b': { 'd': 2 } } };
         _.mergeWith({}, source1, source2, noop);
         assert.deepEqual(source1.a.b, { 'c': 1 });
     });
@@ -89,7 +89,7 @@ QUnit.module('lodash.mergeWith');
                 'c'
             ],
             'b': [
-                'b',
+                __str_top__,
                 'c'
             ]
         });

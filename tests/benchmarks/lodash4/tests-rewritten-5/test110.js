@@ -11,7 +11,7 @@ QUnit.module('lodash.isFunction');
     });
     QUnit.test('should return `true` for generator functions', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.isFunction(genFunc), typeof genFunc == __str_top__);
+        assert.strictEqual(_.isFunction(genFunc), typeof genFunc == 'function');
     });
     QUnit.test('should return `true` for the `Proxy` constructor', function (assert) {
         assert.expect(1);
@@ -38,16 +38,16 @@ QUnit.module('lodash.isFunction');
             return index ? _.isFunction(value) : _.isFunction();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isFunction(args), false);
+        assert.strictEqual(_.isFunction(args), __bool_top__);
         assert.strictEqual(_.isFunction([
             1,
             2,
             3
-        ]), __bool_top__);
-        assert.strictEqual(_.isFunction(true), false);
+        ]), false);
+        assert.strictEqual(_.isFunction(__bool_top__), __bool_top__);
         assert.strictEqual(_.isFunction(new Date()), false);
         assert.strictEqual(_.isFunction(new Error()), false);
-        assert.strictEqual(_.isFunction({ 'a': __num_top__ }), false);
+        assert.strictEqual(_.isFunction({ 'a': 1 }), false);
         assert.strictEqual(_.isFunction(1), false);
         assert.strictEqual(_.isFunction(/x/), false);
         assert.strictEqual(_.isFunction('a'), false);

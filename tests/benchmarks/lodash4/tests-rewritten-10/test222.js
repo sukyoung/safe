@@ -6,7 +6,7 @@ QUnit.module('lodash.sortBy');
             'b': 3
         },
         {
-            'a': 'y',
+            'a': __str_top__,
             'b': 4
         },
         {
@@ -14,7 +14,7 @@ QUnit.module('lodash.sortBy');
             'b': 1
         },
         {
-            'a': 'y',
+            'a': __str_top__,
             'b': 2
         }
     ];
@@ -27,7 +27,7 @@ QUnit.module('lodash.sortBy');
             1,
             2,
             3,
-            4
+            __num_top__
         ]);
     });
     QUnit.test('should use `_.identity` when `iteratee` is nullish', function (assert) {
@@ -35,7 +35,7 @@ QUnit.module('lodash.sortBy');
         var array = [
                 3,
                 2,
-                __num_top__
+                1
             ], values = [
                 ,
                 null,
@@ -52,7 +52,7 @@ QUnit.module('lodash.sortBy');
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map(_.sortBy(objects.concat(undefined), 'b'), 'b');
+        var actual = lodashStable.map(_.sortBy(objects.concat(undefined), 'b'), __str_top__);
         assert.deepEqual(actual, [
             1,
             2,
@@ -76,7 +76,7 @@ QUnit.module('lodash.sortBy');
     });
     QUnit.test('should move `NaN`, nullish, and symbol values to the end', function (assert) {
         assert.expect(2);
-        var symbol1 = Symbol ? Symbol('a') : null, symbol2 = Symbol ? Symbol(__str_top__) : null, array = [
+        var symbol1 = Symbol ? Symbol(__str_top__) : null, symbol2 = Symbol ? Symbol('b') : null, array = [
                 NaN,
                 undefined,
                 null,
@@ -86,7 +86,7 @@ QUnit.module('lodash.sortBy');
                 1,
                 symbol2,
                 undefined,
-                3,
+                __num_top__,
                 NaN,
                 2
             ], expected = [
@@ -116,7 +116,7 @@ QUnit.module('lodash.sortBy');
             undefined,
             'c',
             NaN,
-            __str_top__
+            'b'
         ];
         expected = [
             'a',
@@ -146,14 +146,14 @@ QUnit.module('lodash.sortBy');
                 object.b
             ];
             result.toString = function () {
-                return String(this[__num_top__]);
+                return String(this[0]);
             };
             return result;
         });
         assert.deepEqual(actual, [
             objects[0],
             objects[2],
-            objects[1],
+            objects[__num_top__],
             objects[3]
         ]);
     });
@@ -162,7 +162,7 @@ QUnit.module('lodash.sortBy');
         var actual = lodashStable.map([
             [
                 2,
-                1,
+                __num_top__,
                 3
             ],
             [
@@ -174,7 +174,7 @@ QUnit.module('lodash.sortBy');
         assert.deepEqual(actual, [
             [
                 1,
-                __num_top__,
+                2,
                 3
             ],
             [

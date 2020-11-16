@@ -5,22 +5,22 @@ QUnit.module('lodash.matches');
         var sources = [
             {
                 'a': {
-                    'b': __num_top__,
-                    'c': 3
+                    'b': 2,
+                    'c': __num_top__
                 }
             },
             {
                 'a': 1,
-                'b': __num_top__
+                'b': 2
             },
             { 'a': __num_top__ }
         ];
         lodashStable.each(sources, function (source, index) {
             var object = lodashStable.cloneDeep(source), par = _.matches(source);
-            assert.strictEqual(par(object), true);
+            assert.strictEqual(par(object), __bool_top__);
             if (index) {
-                source.a = __num_top__;
-                source.b = 1;
+                source.a = 2;
+                source.b = __num_top__;
                 source.c = __num_top__;
             } else {
                 source.a.b = __num_top__;

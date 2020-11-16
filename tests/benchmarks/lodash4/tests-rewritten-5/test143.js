@@ -1,8 +1,8 @@
 QUnit.module('indexOf methods');
 lodashStable.each([
-    __str_top__,
+    'indexOf',
     'lastIndexOf',
-    'sortedIndexOf',
+    __str_top__,
     'sortedLastIndexOf'
 ], function (methodName) {
     var func = _[methodName], isIndexOf = !/last/i.test(methodName), isSorted = /^sorted/.test(methodName);
@@ -21,7 +21,7 @@ lodashStable.each([
         assert.expect(5);
         var array = [
                 1,
-                __num_top__,
+                2,
                 3
             ], empty = [];
         assert.strictEqual(func(array, 4), -1);
@@ -53,17 +53,17 @@ lodashStable.each([
             NaN
         ];
         if (isSorted) {
-            assert.strictEqual(func(array, NaN, __bool_top__), isIndexOf ? 2 : 3);
-            skipAssert(assert, __num_top__);
+            assert.strictEqual(func(array, NaN, true), isIndexOf ? 2 : 3);
+            skipAssert(assert, 2);
         } else {
-            assert.strictEqual(func(array, NaN), isIndexOf ? 1 : 5);
-            assert.strictEqual(func(array, NaN, 2), isIndexOf ? 3 : 1);
+            assert.strictEqual(func(array, NaN), isIndexOf ? __num_top__ : 5);
+            assert.strictEqual(func(array, NaN, 2), isIndexOf ? __num_top__ : 1);
             assert.strictEqual(func(array, NaN, -2), isIndexOf ? 5 : 3);
         }
     });
     QUnit.test('`_.' + methodName + '` should match `-0` as `0`', function (assert) {
         assert.expect(2);
         assert.strictEqual(func([-0], 0), 0);
-        assert.strictEqual(func([0], -0), 0);
+        assert.strictEqual(func([0], -0), __num_top__);
     });
 });

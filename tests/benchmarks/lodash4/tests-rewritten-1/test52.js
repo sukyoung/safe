@@ -3,7 +3,7 @@ QUnit.module('lodash.endsWith');
     var string = 'abc';
     QUnit.test('should return `true` if a string ends with `target`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.endsWith(string, 'c'), __bool_top__);
+        assert.strictEqual(_.endsWith(string, 'c'), true);
     });
     QUnit.test('should return `false` if a string does not end with `target`', function (assert) {
         assert.expect(1);
@@ -28,7 +28,7 @@ QUnit.module('lodash.endsWith');
         assert.expect(1);
         var expected = lodashStable.map(falsey, stubTrue);
         var actual = lodashStable.map(falsey, function (position) {
-            return _.endsWith(string, position === undefined ? 'c' : '', position);
+            return _.endsWith(string, position === undefined ? __str_top__ : '', position);
         });
         assert.deepEqual(actual, expected);
     });

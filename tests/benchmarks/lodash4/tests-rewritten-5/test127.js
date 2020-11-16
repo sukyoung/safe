@@ -7,7 +7,7 @@ QUnit.module('lodash.isTypedArray');
         });
         var actual = lodashStable.map(typedArrays, function (type) {
             var Ctor = root[type];
-            return Ctor ? _.isTypedArray(new Ctor(new ArrayBuffer(__num_top__))) : false;
+            return Ctor ? _.isTypedArray(new Ctor(new ArrayBuffer(8))) : false;
         });
         assert.deepEqual(actual, expected);
     });
@@ -24,15 +24,15 @@ QUnit.module('lodash.isTypedArray');
             2,
             3
         ]), false);
-        assert.strictEqual(_.isTypedArray(true), false);
+        assert.strictEqual(_.isTypedArray(true), __bool_top__);
         assert.strictEqual(_.isTypedArray(new Date()), false);
-        assert.strictEqual(_.isTypedArray(new Error()), false);
+        assert.strictEqual(_.isTypedArray(new Error()), __bool_top__);
         assert.strictEqual(_.isTypedArray(_), __bool_top__);
         assert.strictEqual(_.isTypedArray(slice), false);
-        assert.strictEqual(_.isTypedArray({ 'a': 1 }), false);
-        assert.strictEqual(_.isTypedArray(__num_top__), false);
-        assert.strictEqual(_.isTypedArray(/x/), __bool_top__);
-        assert.strictEqual(_.isTypedArray('a'), false);
+        assert.strictEqual(_.isTypedArray({ 'a': __num_top__ }), false);
+        assert.strictEqual(_.isTypedArray(1), false);
+        assert.strictEqual(_.isTypedArray(/x/), false);
+        assert.strictEqual(_.isTypedArray('a'), __bool_top__);
         assert.strictEqual(_.isTypedArray(symbol), false);
     });
     QUnit.test('should work with typed arrays from another realm', function (assert) {

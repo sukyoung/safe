@@ -18,13 +18,13 @@ QUnit.module('lodash.isTypedArray');
             return index ? _.isTypedArray(value) : _.isTypedArray();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isTypedArray(args), __bool_top__);
+        assert.strictEqual(_.isTypedArray(args), false);
         assert.strictEqual(_.isTypedArray([
             1,
             2,
             3
         ]), false);
-        assert.strictEqual(_.isTypedArray(true), false);
+        assert.strictEqual(_.isTypedArray(__bool_top__), false);
         assert.strictEqual(_.isTypedArray(new Date()), false);
         assert.strictEqual(_.isTypedArray(new Error()), false);
         assert.strictEqual(_.isTypedArray(_), false);

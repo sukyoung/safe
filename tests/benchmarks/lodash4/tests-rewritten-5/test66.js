@@ -5,8 +5,8 @@ QUnit.module('lodash.flatMapDepth');
         [
             2,
             [
-                3,
-                [4]
+                __num_top__,
+                [__num_top__]
             ],
             5
         ]
@@ -14,8 +14,8 @@ QUnit.module('lodash.flatMapDepth');
     QUnit.test('should use a default `depth` of `1`', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.flatMapDepth(array, identity), [
-            __num_top__,
-            __num_top__,
+            1,
+            2,
             [
                 3,
                 [4]
@@ -34,7 +34,7 @@ QUnit.module('lodash.flatMapDepth');
                 2,
                 [
                     3,
-                    [__num_top__]
+                    [4]
                 ],
                 5
             ]));
@@ -50,7 +50,7 @@ QUnit.module('lodash.flatMapDepth');
             0
         ], function (depth) {
             assert.deepEqual(_.flatMapDepth(array, identity, depth), [
-                1,
+                __num_top__,
                 [
                     2,
                     [
@@ -66,8 +66,8 @@ QUnit.module('lodash.flatMapDepth');
         assert.expect(1);
         assert.deepEqual(_.flatMapDepth(array, identity, 2.2), [
             1,
-            2,
             __num_top__,
+            3,
             [__num_top__],
             5
         ]);

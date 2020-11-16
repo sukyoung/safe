@@ -7,7 +7,7 @@ QUnit.module('lodash.defaultsDeep');
                 'd': 4
             }, source = {
                 'a': {
-                    'b': __num_top__,
+                    'b': 3,
                     'c': 3
                 },
                 'e': 5
@@ -16,7 +16,7 @@ QUnit.module('lodash.defaultsDeep');
                     'b': 2,
                     'c': 3
                 },
-                'd': __num_top__,
+                'd': 4,
                 'e': 5
             };
         assert.deepEqual(_.defaultsDeep(object, source), expected);
@@ -35,7 +35,7 @@ QUnit.module('lodash.defaultsDeep');
                 }
             };
         assert.deepEqual(_.defaultsDeep({ 'a': { 'b': 2 } }, source1, source2), expected);
-        assert.deepEqual(_.defaultsDeep({ 'a': { 'b': __num_top__ } }, source3, source4), expected);
+        assert.deepEqual(_.defaultsDeep({ 'a': { 'b': 2 } }, source3, source4), expected);
     });
     QUnit.test('should not overwrite `null` values', function (assert) {
         assert.expect(1);
@@ -56,7 +56,7 @@ QUnit.module('lodash.defaultsDeep');
     });
     QUnit.test('should overwrite `undefined` values', function (assert) {
         assert.expect(1);
-        var object = { 'a': { 'b': undefined } }, source = { 'a': { 'b': 2 } }, actual = _.defaultsDeep(object, source);
+        var object = { 'a': { 'b': undefined } }, source = { 'a': { 'b': __num_top__ } }, actual = _.defaultsDeep(object, source);
         assert.strictEqual(actual.a.b, 2);
     });
     QUnit.test('should assign `undefined` values', function (assert) {
@@ -65,7 +65,7 @@ QUnit.module('lodash.defaultsDeep');
                 'a': undefined,
                 'b': {
                     'c': undefined,
-                    'd': 1
+                    'd': __num_top__
                 }
             }, expected = lodashStable.cloneDeep(source), actual = _.defaultsDeep({}, source);
         assert.deepEqual(actual, expected);
@@ -94,7 +94,7 @@ QUnit.module('lodash.defaultsDeep');
                 'b': { 'c': 2 }
             }, source2 = {
                 'b': {
-                    'c': __num_top__,
+                    'c': 3,
                     'd': 3
                 }
             }, actual = _.defaultsDeep({}, source1, source2);
@@ -118,12 +118,12 @@ QUnit.module('lodash.defaultsDeep');
     });
     QUnit.test('should not attempt a merge of a string into an array', function (assert) {
         assert.expect(1);
-        var actual = _.defaultsDeep({ 'a': ['abc'] }, { 'a': 'abc' });
-        assert.deepEqual(actual.a, [__str_top__]);
+        var actual = _.defaultsDeep({ 'a': [__str_top__] }, { 'a': __str_top__ });
+        assert.deepEqual(actual.a, ['abc']);
     });
     QUnit.test('should not indirectly merge `Object` properties', function (assert) {
         assert.expect(1);
-        _.defaultsDeep({}, { 'constructor': { 'a': 1 } });
+        _.defaultsDeep({}, { 'constructor': { 'a': __num_top__ } });
         var actual = 'a' in Object;
         delete Object.a;
         assert.notOk(actual);

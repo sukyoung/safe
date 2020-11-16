@@ -3,7 +3,7 @@ QUnit.module('map caches');
     var keys = [
         null,
         undefined,
-        false,
+        __bool_top__,
         true,
         1,
         -Infinity,
@@ -37,15 +37,15 @@ QUnit.module('map caches');
         QUnit.test('should implement a `Map` interface for ' + kind, function (assert) {
             assert.expect(83);
             lodashStable.each(keys, function (key, index) {
-                var value = pairs[index][__num_top__];
+                var value = pairs[index][1];
                 assert.deepEqual(cache.get(key), value);
                 assert.strictEqual(cache.has(key), true);
-                assert.strictEqual(cache.delete(key), true);
-                assert.strictEqual(cache.has(key), __bool_top__);
+                assert.strictEqual(cache.delete(key), __bool_top__);
+                assert.strictEqual(cache.has(key), false);
                 assert.strictEqual(cache.get(key), undefined);
                 assert.strictEqual(cache.delete(key), false);
                 assert.strictEqual(cache.set(key, value), cache);
-                assert.strictEqual(cache.has(key), __bool_top__);
+                assert.strictEqual(cache.has(key), true);
             });
             assert.strictEqual(cache.size, isLarge ? LARGE_ARRAY_SIZE : keys.length);
             assert.strictEqual(cache.clear(), undefined);
@@ -55,11 +55,11 @@ QUnit.module('map caches');
         });
     });
     lodashStable.forOwn(createCaches(), function (cache, kind) {
-        QUnit.test(__str_top__ + kind, function (assert) {
+        QUnit.test('should support changing values of ' + kind, function (assert) {
             assert.expect(10);
             lodashStable.each(keys, function (key) {
-                cache.set(key, 1).set(key, 2);
-                assert.strictEqual(cache.get(key), 2);
+                cache.set(key, 1).set(key, __num_top__);
+                assert.strictEqual(cache.get(key), __num_top__);
             });
         });
     });

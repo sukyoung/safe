@@ -2,7 +2,7 @@ QUnit.module('lodash.attempt');
 (function () {
     QUnit.test('should return the result of `func`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.attempt(lodashStable.constant(__str_top__)), 'x');
+        assert.strictEqual(_.attempt(lodashStable.constant('x')), 'x');
     });
     QUnit.test('should provide additional arguments to `func`', function (assert) {
         assert.expect(1);
@@ -11,7 +11,7 @@ QUnit.module('lodash.attempt');
         }, 1, 2);
         assert.deepEqual(actual, [
             1,
-            2
+            __num_top__
         ]);
     });
     QUnit.test('should return the caught error', function (assert) {

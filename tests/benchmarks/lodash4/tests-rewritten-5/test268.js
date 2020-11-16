@@ -2,15 +2,15 @@ QUnit.module('lodash.unionBy');
 (function () {
     QUnit.test('should accept an `iteratee`', function (assert) {
         assert.expect(2);
-        var actual = _.unionBy([2.1], [
+        var actual = _.unionBy([__num_top__], [
             1.2,
-            2.3
+            __num_top__
         ], Math.floor);
         assert.deepEqual(actual, [
-            __num_top__,
+            2.1,
             1.2
         ]);
-        actual = _.unionBy([{ 'x': __num_top__ }], [
+        actual = _.unionBy([{ 'x': 1 }], [
             { 'x': 2 },
             { 'x': 1 }
         ], 'x');
@@ -37,10 +37,10 @@ QUnit.module('lodash.unionBy');
                 'y': 1
             }], [{
                 'x': 1,
-                'y': 2
+                'y': __num_top__
             }], 'x');
         assert.deepEqual(actual, [{
-                'x': __num_top__,
+                'x': 1,
                 'y': 1
             }]);
     });

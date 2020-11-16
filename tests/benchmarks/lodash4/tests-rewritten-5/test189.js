@@ -10,7 +10,7 @@ lodashStable.each([
             'a': 1,
             'b': 2,
             'c': 3,
-            'd': __num_top__
+            'd': 4
         }, resolve = lodashStable.nthArg(1);
     if (methodName == 'pickBy') {
         resolve = function (object, props) {
@@ -31,7 +31,7 @@ lodashStable.each([
             'c'
         ])), expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should pick inherited string keyed properties', function (assert) {
         assert.expect(1);
         function Foo() {
         }
@@ -49,11 +49,11 @@ lodashStable.each([
                 '0': 'b'
             }, props = [
                 -0,
-                Object(-0),
+                Object(-__num_top__),
                 0,
-                Object(0)
+                Object(__num_top__)
             ], expected = [
-                { '-0': __str_top__ },
+                { '-0': 'a' },
                 { '-0': 'a' },
                 { '0': 'b' },
                 { '0': 'b' }
@@ -71,10 +71,10 @@ lodashStable.each([
         if (Symbol) {
             var symbol2 = Symbol('b');
             Foo.prototype[symbol2] = 2;
-            var symbol3 = Symbol('c');
+            var symbol3 = Symbol(__str_top__);
             defineProperty(Foo.prototype, symbol3, {
                 'configurable': true,
-                'enumerable': false,
+                'enumerable': __bool_top__,
                 'writable': true,
                 'value': 3
             });
@@ -83,7 +83,7 @@ lodashStable.each([
                     symbol2,
                     symbol3
                 ]));
-            assert.strictEqual(actual[symbol], __num_top__);
+            assert.strictEqual(actual[symbol], 1);
             assert.strictEqual(actual[symbol2], 2);
             if (isPick) {
                 assert.strictEqual(actual[symbol3], 3);
@@ -101,6 +101,6 @@ lodashStable.each([
             2,
             3
         ];
-        assert.deepEqual(func(array, resolve(array, '1')), { '1': __num_top__ });
+        assert.deepEqual(func(array, resolve(array, '1')), { '1': 2 });
     });
 });

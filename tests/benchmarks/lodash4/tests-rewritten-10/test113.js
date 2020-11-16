@@ -18,18 +18,18 @@ QUnit.module('lodash.isMap');
         assert.strictEqual(_.isMap(args), false);
         assert.strictEqual(_.isMap([
             __num_top__,
-            2,
+            __num_top__,
             __num_top__
         ]), false);
-        assert.strictEqual(_.isMap(true), __bool_top__);
-        assert.strictEqual(_.isMap(new Date()), false);
-        assert.strictEqual(_.isMap(new Error()), __bool_top__);
-        assert.strictEqual(_.isMap(_), false);
-        assert.strictEqual(_.isMap(slice), false);
+        assert.strictEqual(_.isMap(__bool_top__), __bool_top__);
+        assert.strictEqual(_.isMap(new Date()), __bool_top__);
+        assert.strictEqual(_.isMap(new Error()), false);
+        assert.strictEqual(_.isMap(_), __bool_top__);
+        assert.strictEqual(_.isMap(slice), __bool_top__);
         assert.strictEqual(_.isMap({ 'a': 1 }), __bool_top__);
-        assert.strictEqual(_.isMap(__num_top__), __bool_top__);
+        assert.strictEqual(_.isMap(__num_top__), false);
         assert.strictEqual(_.isMap(/x/), false);
-        assert.strictEqual(_.isMap(__str_top__), false);
+        assert.strictEqual(_.isMap('a'), false);
         assert.strictEqual(_.isMap(symbol), false);
         assert.strictEqual(_.isMap(weakMap), false);
     });
@@ -47,7 +47,7 @@ QUnit.module('lodash.isMap');
     QUnit.test('should work with maps from another realm', function (assert) {
         assert.expect(1);
         if (realm.map) {
-            assert.strictEqual(_.isMap(realm.map), __bool_top__);
+            assert.strictEqual(_.isMap(realm.map), true);
         } else {
             skipAssert(assert);
         }

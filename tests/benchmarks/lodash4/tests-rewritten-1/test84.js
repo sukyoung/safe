@@ -3,7 +3,7 @@ lodashStable.each([
     'has',
     'hasIn'
 ], function (methodName) {
-    var func = _[methodName], isHas = methodName == 'has', sparseArgs = toArgs([1]), sparseArray = Array(1), sparseString = Object(__str_top__);
+    var func = _[methodName], isHas = methodName == 'has', sparseArgs = toArgs([1]), sparseArray = Array(1), sparseString = Object('a');
     delete sparseArgs[0];
     delete sparseString[0];
     QUnit.test('`_.' + methodName + '` should check for own properties', function (assert) {
@@ -184,7 +184,7 @@ lodashStable.each([
         assert.expect(2);
         function Foo() {
         }
-        Foo.prototype.a = { 'b': 1 };
+        Foo.prototype.a = { 'b': __num_top__ };
         lodashStable.each([
             'a.b',
             [

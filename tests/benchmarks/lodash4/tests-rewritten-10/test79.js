@@ -13,7 +13,7 @@ QUnit.module('lodash.fromPairs');
                 ]
             ], object = {
                 'a': __num_top__,
-                'b': __num_top__
+                'b': 2
             }, actual = _.fromPairs(array);
         assert.deepEqual(actual, object);
     });
@@ -46,7 +46,7 @@ QUnit.module('lodash.fromPairs');
         if (!isNpm) {
             var array = lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
                 return [
-                    'key' + index,
+                    __str_top__ + index,
                     index
                 ];
             });

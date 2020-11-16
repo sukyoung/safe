@@ -17,12 +17,12 @@ QUnit.module('lodash.unset');
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var props = [
-                -0,
+                -__num_top__,
                 Object(-0),
                 0,
-                Object(__num_top__)
+                Object(0)
             ], expected = lodashStable.map(props, lodashStable.constant([
-                __bool_top__,
+                true,
                 false
             ]));
         var actual = lodashStable.map(props, function (key) {
@@ -70,7 +70,7 @@ QUnit.module('lodash.unset');
                 'a',
                 '-1.23',
                 '["b"]',
-                __str_top__,
+                'c',
                 '[\'d\']',
                 '\ne\n',
                 'f',
@@ -133,7 +133,7 @@ QUnit.module('lodash.unset');
                 [
                     'constructor',
                     'prototype',
-                    'a'
+                    __str_top__
                 ]
             ];
         lodashStable.each(paths, function (path) {

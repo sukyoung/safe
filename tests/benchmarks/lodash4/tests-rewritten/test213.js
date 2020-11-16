@@ -27,7 +27,7 @@ QUnit.module('lodash.runInContext');
             assert.strictEqual(id, __str_top__);
             assert.ok(id < oldId);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
 }());

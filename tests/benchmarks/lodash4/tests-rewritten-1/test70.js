@@ -15,7 +15,7 @@ lodashStable.each([
         assert.expect(1);
         assert.notStrictEqual(func(noop), noop);
     });
-    QUnit.test('`_.' + methodName + '` should return an identity function when no arguments are given', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return an identity function when no arguments are given', function (assert) {
         assert.expect(6);
         _.times(2, function (index) {
             try {
@@ -64,7 +64,7 @@ lodashStable.each([
             _.take = take1;
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should work with curried functions with placeholders', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with curried functions with placeholders', function (assert) {
         assert.expect(1);
         var curried = _.curry(_.ary(_.map, 2), 2), getProp = curried(curried.placeholder, 'a'), objects = [
                 { 'a': 1 },

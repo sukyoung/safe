@@ -31,7 +31,7 @@ QUnit.module('clone methods');
         'date objects': new Date(),
         'Foo instances': new Foo(),
         'objects': {
-            'a': 0,
+            'a': __num_top__,
             'b': 1,
             'c': 2
         },
@@ -360,7 +360,7 @@ QUnit.module('clone methods');
             assert.expect(1);
             var argsList = [], object = new Foo();
             func(object, function () {
-                var length = arguments.length, args = slice.call(arguments, __num_top__, length - (length > 1 ? 1 : 0));
+                var length = arguments.length, args = slice.call(arguments, 0, length - (length > 1 ? 1 : 0));
                 argsList.push(args);
             });
             assert.deepEqual(argsList, isDeep ? [

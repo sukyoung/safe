@@ -5,16 +5,16 @@ QUnit.module('lodash.mergeWith');
         var actual = _.mergeWith({
             'a': {
                 'b': [
-                    1,
-                    __num_top__
+                    __num_top__,
+                    1
                 ]
             }
-        }, { 'a': { 'b': [0] } }, noop);
+        }, { 'a': { 'b': [__num_top__] } }, noop);
         assert.deepEqual(actual, {
             'a': {
                 'b': [
-                    __num_top__,
-                    __num_top__
+                    0,
+                    1
                 ]
             }
         });
@@ -25,7 +25,7 @@ QUnit.module('lodash.mergeWith');
         assert.expect(1);
         var source1 = { 'a': { 'b': { 'c': __num_top__ } } }, source2 = { 'a': { 'b': { 'd': 2 } } };
         _.mergeWith({}, source1, source2, noop);
-        assert.deepEqual(source1.a.b, { 'c': 1 });
+        assert.deepEqual(source1.a.b, { 'c': __num_top__ });
     });
     QUnit.test('should defer to `customizer` for non `undefined` results', function (assert) {
         assert.expect(1);
@@ -33,17 +33,17 @@ QUnit.module('lodash.mergeWith');
             'a': {
                 'b': [
                     __num_top__,
-                    __num_top__
+                    1
                 ]
             }
-        }, { 'a': { 'b': [__num_top__] } }, function (a, b) {
+        }, { 'a': { 'b': [2] } }, function (a, b) {
             return lodashStable.isArray(a) ? a.concat(b) : undefined;
         });
         assert.deepEqual(actual, {
             'a': {
                 'b': [
-                    0,
-                    1,
+                    __num_top__,
+                    __num_top__,
                     2
                 ]
             }
@@ -53,12 +53,12 @@ QUnit.module('lodash.mergeWith');
         assert.expect(4);
         var actual = [];
         _.mergeWith({}, {
-            'z': 1,
+            'z': __num_top__,
             'a': { 'b': 2 }
         }, function () {
             actual.push(_.last(arguments));
         });
-        assert.strictEqual(actual.length, __num_top__);
+        assert.strictEqual(actual.length, 3);
         _.each(actual, function (a) {
             assert.ok(isNpm ? a.constructor.name == 'Stack' : a instanceof mapCaches.Stack);
         });
@@ -75,7 +75,7 @@ QUnit.module('lodash.mergeWith');
         var array = [
                 'b',
                 'c'
-            ], object = { 'a': ['a'] }, source = {
+            ], object = { 'a': [__str_top__] }, source = {
                 'a': array,
                 'b': array
             };
@@ -85,7 +85,7 @@ QUnit.module('lodash.mergeWith');
         assert.deepEqual(actual, {
             'a': [
                 'a',
-                __str_top__,
+                'b',
                 'c'
             ],
             'b': [

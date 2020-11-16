@@ -29,7 +29,7 @@ QUnit.module('lodash.fill');
         assert.expect(1);
         var array = [
             1,
-            2,
+            __num_top__,
             3
         ];
         assert.deepEqual(_.fill(array, 'a', 1), [
@@ -100,7 +100,7 @@ QUnit.module('lodash.fill');
                 2,
                 3
             ];
-            assert.deepEqual(_.fill(array, __str_top__, start), [
+            assert.deepEqual(_.fill(array, 'a', start), [
                 'a',
                 'a',
                 'a'

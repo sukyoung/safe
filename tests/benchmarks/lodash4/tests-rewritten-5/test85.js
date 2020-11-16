@@ -2,8 +2,8 @@ QUnit.module('lodash.head');
 (function () {
     var array = [
         1,
-        2,
         __num_top__,
+        3,
         4
     ];
     QUnit.test('should return the first element', function (assert) {
@@ -21,23 +21,23 @@ QUnit.module('lodash.head');
         var array = [
                 [
                     1,
-                    2,
+                    __num_top__,
                     3
                 ],
                 [
-                    __num_top__,
+                    4,
                     5,
                     6
                 ],
                 [
                     7,
-                    8,
-                    9
+                    __num_top__,
+                    __num_top__
                 ]
             ], actual = lodashStable.map(array, _.head);
         assert.deepEqual(actual, [
             1,
-            __num_top__,
+            4,
             7
         ]);
     });
@@ -50,7 +50,7 @@ QUnit.module('lodash.head');
         if (!isNpm) {
             var wrapped = _(array);
             assert.strictEqual(wrapped.head(), __num_top__);
-            assert.strictEqual(wrapped.first(), __num_top__);
+            assert.strictEqual(wrapped.first(), 1);
         } else {
             skipAssert(assert, 2);
         }

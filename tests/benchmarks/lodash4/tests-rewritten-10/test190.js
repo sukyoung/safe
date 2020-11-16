@@ -9,7 +9,7 @@ QUnit.module('lodash.property');
         ], function (path) {
             var prop = _.property(path);
             assert.strictEqual(prop.length, 1);
-            assert.strictEqual(prop(object), __num_top__);
+            assert.strictEqual(prop(object), 1);
         });
     });
     QUnit.test('should pluck deep property values', function (assert) {
@@ -32,7 +32,7 @@ QUnit.module('lodash.property');
         }
         Foo.prototype.a = 1;
         lodashStable.each([
-            'a',
+            __str_top__,
             ['a']
         ], function (path) {
             var prop = _.property(path);
@@ -42,16 +42,16 @@ QUnit.module('lodash.property');
     QUnit.test('should work with a non-string `path`', function (assert) {
         assert.expect(2);
         var array = [
-            1,
+            __num_top__,
             __num_top__,
             __num_top__
         ];
         lodashStable.each([
             1,
-            [1]
+            [__num_top__]
         ], function (path) {
             var prop = _.property(path);
-            assert.strictEqual(prop(array), 2);
+            assert.strictEqual(prop(array), __num_top__);
         });
     });
     QUnit.test('should preserve the sign of `0`', function (assert) {
@@ -80,15 +80,15 @@ QUnit.module('lodash.property');
         assert.expect(2);
         function fn() {
         }
-        fn.toString = lodashStable.constant('fn');
+        fn.toString = lodashStable.constant(__str_top__);
         var expected = [
                 1,
                 2,
                 3,
-                4
+                __num_top__
             ], object = {
-                'null': __num_top__,
-                'undefined': __num_top__,
+                'null': 1,
+                'undefined': 2,
                 'fn': 3,
                 '[object Object]': 4
             }, paths = [
@@ -97,7 +97,7 @@ QUnit.module('lodash.property');
                 fn,
                 {}
             ];
-        lodashStable.times(__num_top__, function (index) {
+        lodashStable.times(2, function (index) {
             var actual = lodashStable.map(paths, function (path) {
                 var prop = _.property(index ? [path] : path);
                 return prop(object);
@@ -112,7 +112,7 @@ QUnit.module('lodash.property');
             'a': { 'b': 2 }
         };
         lodashStable.each([
-            'a.b',
+            __str_top__,
             ['a.b']
         ], function (path) {
             var prop = _.property(path);
@@ -128,7 +128,7 @@ QUnit.module('lodash.property');
             ], expected = lodashStable.map(values, noop);
         lodashStable.each([
             'constructor',
-            [__str_top__]
+            ['constructor']
         ], function (path) {
             var prop = _.property(path);
             var actual = lodashStable.map(values, function (value, index) {
@@ -165,7 +165,7 @@ QUnit.module('lodash.property');
         lodashStable.each([
             'a',
             'a[1].b.c',
-            [__str_top__],
+            ['a'],
             [
                 'a',
                 '1',

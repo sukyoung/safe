@@ -9,53 +9,8 @@ lodashStable.each([
             return _.conformsTo(object, source);
         };
     }
-    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should check if `object` conforms to `source`', function (assert) {
         assert.expect(2);
-        var objects = [
-            {
-                'a': 1,
-                'b': 8
-            },
-            {
-                'a': 2,
-                'b': 4
-            },
-            {
-                'a': 3,
-                'b': 16
-            }
-        ];
-        var par = conforms({
-            'b': function (value) {
-                return value > 4;
-            }
-        });
-        var actual = lodashStable.filter(objects, par);
-        assert.deepEqual(actual, [
-            objects[0],
-            objects[2]
-        ]);
-        par = conforms({
-            'b': function (value) {
-                return value > 8;
-            },
-            'a': function (value) {
-                return value > 1;
-            }
-        });
-        actual = lodashStable.filter(objects, par);
-        assert.deepEqual(actual, [objects[2]]);
-    });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
-        assert.expect(1);
-        function Foo() {
-            this.a = function (value) {
-                return value > 1;
-            };
-        }
-        Foo.prototype.b = function (value) {
-            return value > __num_top__;
-        };
         var objects = [
             {
                 'a': 1,
@@ -70,9 +25,54 @@ lodashStable.each([
                 'b': 16
             }
         ];
+        var par = conforms({
+            'b': function (value) {
+                return value > __num_top__;
+            }
+        });
+        var actual = lodashStable.filter(objects, par);
+        assert.deepEqual(actual, [
+            objects[0],
+            objects[2]
+        ]);
+        par = conforms({
+            'b': function (value) {
+                return value > 8;
+            },
+            'a': function (value) {
+                return value > __num_top__;
+            }
+        });
+        actual = lodashStable.filter(objects, par);
+        assert.deepEqual(actual, [objects[2]]);
+    });
+    QUnit.test('`_.' + methodName + '` should not match by inherited `source` properties', function (assert) {
+        assert.expect(1);
+        function Foo() {
+            this.a = function (value) {
+                return value > 1;
+            };
+        }
+        Foo.prototype.b = function (value) {
+            return value > 8;
+        };
+        var objects = [
+            {
+                'a': 1,
+                'b': 8
+            },
+            {
+                'a': 2,
+                'b': 4
+            },
+            {
+                'a': 3,
+                'b': 16
+            }
+        ];
         var par = conforms(new Foo()), actual = lodashStable.filter(objects, par);
         assert.deepEqual(actual, [
-            objects[__num_top__],
+            objects[1],
             objects[2]
         ]);
     });
@@ -85,17 +85,17 @@ lodashStable.each([
                 return true;
             }
         });
-        assert.strictEqual(par({}), false);
+        assert.strictEqual(par({}), __bool_top__);
         assert.strictEqual(count, 0);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with a function for `object`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a function for `object`', function (assert) {
         assert.expect(2);
         function Foo() {
         }
         Foo.a = 1;
         function Bar() {
         }
-        Bar.a = 2;
+        Bar.a = __num_top__;
         var par = conforms({
             'a': function (value) {
                 return value > 1;
@@ -117,20 +117,20 @@ lodashStable.each([
             ], actual = lodashStable.filter(objects, conforms(Foo));
         assert.deepEqual(actual, [objects[1]]);
     });
-    QUnit.test('`_.' + methodName + '` should work with a non-plain `object`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with a non-plain `object`', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = 1;
+            this.a = __num_top__;
         }
-        Foo.prototype.b = 2;
+        Foo.prototype.b = __num_top__;
         var par = conforms({
             'b': function (value) {
-                return value > __num_top__;
+                return value > 1;
             }
         });
         assert.strictEqual(par(new Foo()), true);
     });
-    QUnit.test(__str_top__ + methodName + '` should return `false` when `object` is nullish', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `false` when `object` is nullish', function (assert) {
         assert.expect(1);
         var values = [
                 ,

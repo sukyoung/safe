@@ -5,12 +5,12 @@ QUnit.module('lodash(...).sort');
         if (!isNpm) {
             var array = [
                     3,
-                    __num_top__,
+                    1,
                     2
                 ], wrapped = _(array).sort(), actual = wrapped.value();
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, [
-                1,
+                __num_top__,
                 2,
                 3
             ]);

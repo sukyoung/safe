@@ -1,6 +1,6 @@
 QUnit.module('lodash.debounce and lodash.throttle');
 lodashStable.each([
-    __str_top__,
+    'debounce',
     'throttle'
 ], function (methodName) {
     var func = _[methodName], isDebounce = methodName == 'debounce';
@@ -73,11 +73,11 @@ lodashStable.each([
         assert.expect(1);
         var done = assert.async();
         if (!isModularize) {
-            var callCount = 0, dateCount = __num_top__;
+            var callCount = 0, dateCount = 0;
             var lodash = _.runInContext({
                 'Date': {
                     'now': function () {
-                        return ++dateCount == 4 ? +new Date(2012, __num_top__, 23, 23, 27, 18) : +new Date();
+                        return ++dateCount == 4 ? +new Date(__num_top__, 3, 23, 23, 27, 18) : +new Date();
                     }
                 }
             });
@@ -95,10 +95,10 @@ lodashStable.each([
             done();
         }
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should support cancelling delayed calls', function (assert) {
         assert.expect(1);
         var done = assert.async();
-        var callCount = 0;
+        var callCount = __num_top__;
         var funced = func(function () {
             callCount++;
         }, 32, { 'leading': false });
@@ -123,15 +123,15 @@ lodashStable.each([
         setTimeout(function () {
             assert.strictEqual(callCount, 3);
             done();
-        }, 64);
+        }, __num_top__);
     });
-    QUnit.test('`_.' + methodName + '` should support flushing delayed calls', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         var done = assert.async();
         var callCount = 0;
         var funced = func(function () {
             return ++callCount;
-        }, 32, { 'leading': false });
+        }, __num_top__, { 'leading': false });
         funced();
         assert.strictEqual(funced.flush(), 1);
         setTimeout(function () {
@@ -142,7 +142,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should noop `cancel` and `flush` when nothing is queued', function (assert) {
         assert.expect(2);
         var done = assert.async();
-        var callCount = __num_top__, funced = func(function () {
+        var callCount = 0, funced = func(function () {
                 callCount++;
             }, 32);
         funced.cancel();

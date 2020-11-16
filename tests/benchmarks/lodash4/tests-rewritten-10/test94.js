@@ -1,8 +1,8 @@
 QUnit.module('lodash.invertBy');
 (function () {
     var object = {
-        'a': __num_top__,
-        'b': __num_top__,
+        'a': 1,
+        'b': 2,
         'c': __num_top__
     };
     QUnit.test('should transform keys by `iteratee`', function (assert) {
@@ -15,7 +15,7 @@ QUnit.module('lodash.invertBy');
             'group2': ['b']
         };
         var actual = _.invertBy(object, function (value) {
-            return 'group' + value;
+            return __str_top__ + value;
         });
         assert.deepEqual(actual, expected);
     });
@@ -27,10 +27,10 @@ QUnit.module('lodash.invertBy');
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant({
                 '1': [
-                    'a',
+                    __str_top__,
                     'c'
                 ],
-                '2': [__str_top__]
+                '2': ['b']
             }));
         var actual = lodashStable.map(values, function (value, index) {
             return index ? _.invertBy(object, value) : _.invertBy(object);
@@ -40,10 +40,10 @@ QUnit.module('lodash.invertBy');
     QUnit.test('should only add multiple values to own, not inherited, properties', function (assert) {
         assert.expect(1);
         var object = {
-                'a': 'hasOwnProperty',
-                'b': __str_top__
+                'a': __str_top__,
+                'b': 'constructor'
             }, expected = {
-                'hasOwnProperty': ['a'],
+                'hasOwnProperty': [__str_top__],
                 'constructor': [__str_top__]
             };
         assert.ok(lodashStable.isEqual(_.invertBy(object), expected));
@@ -55,10 +55,10 @@ QUnit.module('lodash.invertBy');
             assert.ok(wrapped instanceof _);
             assert.deepEqual(wrapped.value(), {
                 '1': [
-                    __str_top__,
+                    'a',
                     __str_top__
                 ],
-                '2': ['b']
+                '2': [__str_top__]
             });
         } else {
             skipAssert(assert, 2);

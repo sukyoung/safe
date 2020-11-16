@@ -6,7 +6,7 @@ lodashStable.each([
     function chain(value) {
         return implicit ? _(value) : _.chain(value);
     }
-    var chainType = 'in an ' + (implicit ? 'implicit' : 'explict') + ' chain';
+    var chainType = 'in an ' + (implicit ? 'implicit' : 'explict') + __str_top__;
     QUnit.test('should follow the iterator protocol ' + chainType, function (assert) {
         assert.expect(3);
         if (!isNpm) {
@@ -16,7 +16,7 @@ lodashStable.each([
             ]);
             assert.deepEqual(wrapped.next(), {
                 'done': false,
-                'value': __num_top__
+                'value': 1
             });
             assert.deepEqual(wrapped.next(), {
                 'done': false,

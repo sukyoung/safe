@@ -26,9 +26,9 @@ QUnit.module('lodash.isError');
             3
         ]), false);
         assert.strictEqual(_.isError(true), false);
-        assert.strictEqual(_.isError(new Date()), __bool_top__);
+        assert.strictEqual(_.isError(new Date()), false);
         assert.strictEqual(_.isError(_), false);
-        assert.strictEqual(_.isError(slice), false);
+        assert.strictEqual(_.isError(slice), __bool_top__);
         assert.strictEqual(_.isError({ 'a': 1 }), false);
         assert.strictEqual(_.isError(1), false);
         assert.strictEqual(_.isError(/x/), false);

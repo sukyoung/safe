@@ -1,6 +1,6 @@
 QUnit.module('lodash.random');
 (function () {
-    var array = Array(__num_top__);
+    var array = Array(1000);
     QUnit.test('should return `0` or `1` when no arguments are given', function (assert) {
         assert.expect(1);
         var actual = lodashStable.uniq(lodashStable.map(array, function () {
@@ -21,7 +21,7 @@ QUnit.module('lodash.random');
     });
     QUnit.test('should support not providing a `max`', function (assert) {
         assert.expect(1);
-        var min = 0, max = 5;
+        var min = 0, max = __num_top__;
         assert.ok(lodashStable.some(array, function () {
             var result = _.random(max);
             return result >= min && result <= max;
@@ -41,7 +41,7 @@ QUnit.module('lodash.random');
     });
     QUnit.test('should support large integer values', function (assert) {
         assert.expect(2);
-        var min = Math.pow(2, 31), max = Math.pow(2, __num_top__);
+        var min = Math.pow(__num_top__, 31), max = Math.pow(2, 62);
         assert.ok(lodashStable.every(array, function () {
             var result = _.random(min, max);
             return result >= min && result <= max;
@@ -65,17 +65,17 @@ QUnit.module('lodash.random');
     });
     QUnit.test('should support floats', function (assert) {
         assert.expect(2);
-        var min = 1.5, max = 1.6, actual = _.random(min, max);
+        var min = __num_top__, max = 1.6, actual = _.random(min, max);
         assert.ok(actual % 1);
         assert.ok(actual >= min && actual <= max);
     });
     QUnit.test('should support providing a `floating`', function (assert) {
         assert.expect(3);
         var actual = _.random(true);
-        assert.ok(actual % 1 && actual >= __num_top__ && actual <= __num_top__);
+        assert.ok(actual % 1 && actual >= 0 && actual <= 1);
         actual = _.random(2, true);
         assert.ok(actual % 1 && actual >= 0 && actual <= 2);
-        actual = _.random(2, __num_top__, true);
+        actual = _.random(__num_top__, __num_top__, true);
         assert.ok(actual % 1 && actual >= 2 && actual <= 4);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {

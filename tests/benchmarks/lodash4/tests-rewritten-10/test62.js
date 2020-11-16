@@ -1,9 +1,9 @@
 QUnit.module('lodash.find and lodash.includes');
 lodashStable.each([
-    'includes',
-    'find'
+    __str_top__,
+    __str_top__
 ], function (methodName) {
-    var func = _[methodName], isIncludes = methodName == __str_top__, resolve = methodName == 'find' ? lodashStable.curry(lodashStable.eq) : identity;
+    var func = _[methodName], isIncludes = methodName == 'includes', resolve = methodName == 'find' ? lodashStable.curry(lodashStable.eq) : identity;
     lodashStable.each({
         'an `arguments` object': args,
         'an array': [
@@ -17,11 +17,11 @@ lodashStable.each([
             assert.expect(1);
             var expected = [
                 isIncludes || values[2],
-                isIncludes ? __bool_top__ : undefined
+                isIncludes ? false : undefined
             ];
             var actual = [
                 func(collection, resolve(values[2]), 2),
-                func(collection, resolve(values[1]), 2)
+                func(collection, resolve(values[1]), __num_top__)
             ];
             assert.deepEqual(actual, expected);
         });
@@ -29,7 +29,7 @@ lodashStable.each([
             assert.expect(1);
             var indexes = [
                 4,
-                6,
+                __num_top__,
                 Math.pow(2, 32),
                 Infinity
             ];
@@ -43,14 +43,14 @@ lodashStable.each([
             });
             var actual = lodashStable.map(indexes, function (fromIndex) {
                 return [
-                    func(collection, resolve(__num_top__), fromIndex),
+                    func(collection, resolve(1), fromIndex),
                     func(collection, resolve(undefined), fromIndex),
-                    func(collection, resolve(''), fromIndex)
+                    func(collection, resolve(__str_top__), fromIndex)
                 ];
             });
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and treat falsey `fromIndex` values as `0`', function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + __str_top__, function (assert) {
             assert.expect(1);
             var expected = lodashStable.map(falsey, lodashStable.constant(isIncludes || values[0]));
             var actual = lodashStable.map(falsey, function (fromIndex) {
@@ -58,33 +58,33 @@ lodashStable.each([
             });
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and coerce `fromIndex` to an integer', function (assert) {
+        QUnit.test(__str_top__ + methodName + '` should work with ' + key + ' and coerce `fromIndex` to an integer', function (assert) {
             assert.expect(1);
             var expected = [
-                isIncludes || values[__num_top__],
-                isIncludes || values[__num_top__],
+                isIncludes || values[0],
+                isIncludes || values[0],
                 isIncludes ? false : undefined
             ];
             var actual = [
                 func(collection, resolve(values[0]), 0.1),
                 func(collection, resolve(values[__num_top__]), NaN),
-                func(collection, resolve(values[__num_top__]), '1')
+                func(collection, resolve(values[0]), '1')
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test(__str_top__ + methodName + '` should work with ' + key + ' and a negative `fromIndex`', function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and a negative `fromIndex`', function (assert) {
             assert.expect(1);
             var expected = [
-                isIncludes || values[2],
+                isIncludes || values[__num_top__],
                 isIncludes ? false : undefined
             ];
             var actual = [
-                func(collection, resolve(values[2]), -1),
-                func(collection, resolve(values[1]), -__num_top__)
+                func(collection, resolve(values[2]), -__num_top__),
+                func(collection, resolve(values[1]), -1)
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test(__str_top__ + methodName + '` should work with ' + key + ' and a negative `fromIndex` <= `-length`', function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and a negative `fromIndex` <= `-length`', function (assert) {
             assert.expect(1);
             var indexes = [
                     -4,

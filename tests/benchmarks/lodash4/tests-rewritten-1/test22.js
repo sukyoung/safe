@@ -56,7 +56,7 @@ QUnit.module('lodash.chain');
                         'n': 6,
                         'o': 3,
                         'r': 2,
-                        's': __num_top__,
+                        's': 2,
                         't': 5,
                         'u': 1,
                         'v': 4,
@@ -74,7 +74,7 @@ QUnit.module('lodash.chain');
                 array = [
                     1,
                     2,
-                    3,
+                    __num_top__,
                     4,
                     5,
                     6

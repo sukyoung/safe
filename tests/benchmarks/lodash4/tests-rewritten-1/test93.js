@@ -22,7 +22,7 @@ QUnit.module('lodash.invert');
             'b': 'constructor'
         };
         assert.deepEqual(_.invert(object), {
-            'hasOwnProperty': __str_top__,
+            'hasOwnProperty': 'a',
             'constructor': 'b'
         });
     });
@@ -49,7 +49,7 @@ QUnit.module('lodash.invert');
             assert.ok(wrapped instanceof _);
             assert.deepEqual(wrapped.value(), {
                 '1': 'a',
-                '2': 'b'
+                '2': __str_top__
             });
         } else {
             skipAssert(assert, 2);

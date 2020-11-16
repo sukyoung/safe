@@ -699,7 +699,7 @@ QUnit.module('lodash.isEqual');
             assert.strictEqual(_.isEqual(buffer, new Uint8Array([__num_top__]).buffer), __bool_top__);
             assert.strictEqual(_.isEqual(buffer, new ArrayBuffer(__num_top__)), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should compare array views', function (assert) {
@@ -742,7 +742,7 @@ QUnit.module('lodash.isEqual');
             assert.strictEqual(_.isEqual(buffer, new Buffer([__num_top__])), __bool_top__);
             assert.strictEqual(_.isEqual(buffer, new Uint8Array([__num_top__])), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should compare date objects', function (assert) {
@@ -826,7 +826,7 @@ QUnit.module('lodash.isEqual');
                 map2.clear();
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 8);
         }
     });
     QUnit.test('should compare maps with circular references', function (assert) {
@@ -840,7 +840,7 @@ QUnit.module('lodash.isEqual');
             map2.set(__str_top__, __num_top__);
             assert.strictEqual(_.isEqual(map1, map2), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should compare promises by reference', function (assert) {
@@ -861,7 +861,7 @@ QUnit.module('lodash.isEqual');
                 assert.strictEqual(_.isEqual(promise1, promise1), __bool_top__);
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should compare regexes', function (assert) {
@@ -906,7 +906,7 @@ QUnit.module('lodash.isEqual');
                 set2.clear();
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 8);
         }
     });
     QUnit.test('should compare sets with circular references', function (assert) {
@@ -920,7 +920,7 @@ QUnit.module('lodash.isEqual');
             set2.add(__num_top__);
             assert.strictEqual(_.isEqual(set1, set2), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should compare symbol properties', function (assert) {
@@ -942,7 +942,7 @@ QUnit.module('lodash.isEqual');
             object2[Symbol(__str_top__)] = { 'a': { 'b': __num_top__ } };
             assert.strictEqual(_.isEqual(object1, object2), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should compare wrapped values', function (assert) {
@@ -1020,7 +1020,7 @@ QUnit.module('lodash.isEqual');
                 assert.strictEqual(actual, __bool_top__);
                 assert.strictEqual(_.isEqual(_(actual), _(__bool_top__)), __bool_top__);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 4);
             }
         });
     });
@@ -1047,7 +1047,7 @@ QUnit.module('lodash.isEqual');
             assert.strictEqual(object1.isEqual(object2), __bool_top__);
             assert.strictEqual(_.isEqual(object1, object2), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should work as an iteratee for `_.every`', function (assert) {
@@ -1080,7 +1080,7 @@ QUnit.module('lodash.isEqual');
             assert.strictEqual(_.isEqual({ 'a': __num_top__ }, realm.object), __bool_top__);
             assert.strictEqual(_.isEqual({ 'a': __num_top__ }, realm.object), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should return `false` for objects with custom `toString` methods', function (assert) {

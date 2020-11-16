@@ -5,10 +5,10 @@ QUnit.module('lodash.unionWith');
         var objects = [
                 {
                     'x': 1,
-                    'y': __num_top__
+                    'y': 2
                 },
                 {
-                    'x': 2,
+                    'x': __num_top__,
                     'y': 1
                 }
             ], others = [

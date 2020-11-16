@@ -51,7 +51,7 @@ QUnit.module('lodash.memoize');
         var memoized = _.memoize(function (a, b, c) {
             return a + b + c;
         });
-        assert.strictEqual(memoized(1, 2, 3), 6);
+        assert.strictEqual(memoized(__num_top__, 2, __num_top__), 6);
         assert.strictEqual(memoized(1, 3, 5), 6);
     });
     QUnit.test('should support a `resolver`', function (assert) {
@@ -60,7 +60,7 @@ QUnit.module('lodash.memoize');
                 return a + b + c;
             }, memoized = _.memoize(fn, fn);
         assert.strictEqual(memoized(1, 2, 3), 6);
-        assert.strictEqual(memoized(1, 3, 5), 9);
+        assert.strictEqual(memoized(1, 3, 5), __num_top__);
     });
     QUnit.test('should use `this` binding of function for `resolver`', function (assert) {
         assert.expect(2);
@@ -70,7 +70,7 @@ QUnit.module('lodash.memoize');
         var object = {
             'memoized': memoized,
             'b': 2,
-            'c': __num_top__
+            'c': 3
         };
         assert.strictEqual(object.memoized(1), 6);
         object.b = 3;
@@ -140,9 +140,9 @@ QUnit.module('lodash.memoize');
         var memoized = _.memoize(function (object) {
             return object.id;
         });
-        var cache = memoized.cache, key1 = { 'id': __str_top__ }, key2 = { 'id': 'b' };
+        var cache = memoized.cache, key1 = { 'id': 'a' }, key2 = { 'id': 'b' };
         assert.strictEqual(memoized(key1), 'a');
-        assert.strictEqual(cache.has(key1), __bool_top__);
+        assert.strictEqual(cache.has(key1), true);
         assert.strictEqual(memoized(key2), 'b');
         assert.strictEqual(cache.has(key2), true);
         _.memoize.Cache = oldCache;
@@ -154,7 +154,7 @@ QUnit.module('lodash.memoize');
         var memoized = _.memoize(function (object) {
             return object.id;
         });
-        var key1 = { 'id': 'a' }, key2 = { 'id': __str_top__ };
+        var key1 = { 'id': 'a' }, key2 = { 'id': 'b' };
         memoized(key1);
         memoized(key2);
         var cache = memoized.cache;

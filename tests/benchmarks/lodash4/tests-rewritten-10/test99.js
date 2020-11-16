@@ -3,7 +3,7 @@ QUnit.module('lodash.isArrayBuffer');
     QUnit.test('should return `true` for array buffers', function (assert) {
         assert.expect(1);
         if (ArrayBuffer) {
-            assert.strictEqual(_.isArrayBuffer(arrayBuffer), true);
+            assert.strictEqual(_.isArrayBuffer(arrayBuffer), __bool_top__);
         } else {
             skipAssert(assert);
         }
@@ -15,23 +15,23 @@ QUnit.module('lodash.isArrayBuffer');
             return index ? _.isArrayBuffer(value) : _.isArrayBuffer();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isArrayBuffer(args), false);
+        assert.strictEqual(_.isArrayBuffer(args), __bool_top__);
         assert.strictEqual(_.isArrayBuffer([__num_top__]), __bool_top__);
-        assert.strictEqual(_.isArrayBuffer(__bool_top__), false);
-        assert.strictEqual(_.isArrayBuffer(new Date()), false);
-        assert.strictEqual(_.isArrayBuffer(new Error()), false);
-        assert.strictEqual(_.isArrayBuffer(_), __bool_top__);
-        assert.strictEqual(_.isArrayBuffer(slice), false);
-        assert.strictEqual(_.isArrayBuffer({ 'a': __num_top__ }), __bool_top__);
+        assert.strictEqual(_.isArrayBuffer(true), __bool_top__);
+        assert.strictEqual(_.isArrayBuffer(new Date()), __bool_top__);
+        assert.strictEqual(_.isArrayBuffer(new Error()), __bool_top__);
+        assert.strictEqual(_.isArrayBuffer(_), false);
+        assert.strictEqual(_.isArrayBuffer(slice), __bool_top__);
+        assert.strictEqual(_.isArrayBuffer({ 'a': 1 }), __bool_top__);
         assert.strictEqual(_.isArrayBuffer(1), false);
         assert.strictEqual(_.isArrayBuffer(/x/), false);
-        assert.strictEqual(_.isArrayBuffer(__str_top__), __bool_top__);
+        assert.strictEqual(_.isArrayBuffer('a'), false);
         assert.strictEqual(_.isArrayBuffer(symbol), __bool_top__);
     });
     QUnit.test('should work with array buffers from another realm', function (assert) {
         assert.expect(1);
         if (realm.arrayBuffer) {
-            assert.strictEqual(_.isArrayBuffer(realm.arrayBuffer), __bool_top__);
+            assert.strictEqual(_.isArrayBuffer(realm.arrayBuffer), true);
         } else {
             skipAssert(assert);
         }

@@ -4,7 +4,7 @@ QUnit.module('lodash.method');
         assert.expect(4);
         var object = { 'a': stubOne };
         lodashStable.each([
-            __str_top__,
+            'a',
             ['a']
         ], function (path) {
             var method = _.method(path);
@@ -28,7 +28,7 @@ QUnit.module('lodash.method');
     });
     QUnit.test('should work with a non-string `path`', function (assert) {
         assert.expect(2);
-        var array = lodashStable.times(3, _.constant);
+        var array = lodashStable.times(__num_top__, _.constant);
         lodashStable.each([
             1,
             [1]
@@ -41,7 +41,7 @@ QUnit.module('lodash.method');
         assert.expect(2);
         function fn() {
         }
-        fn.toString = lodashStable.constant('fn');
+        fn.toString = lodashStable.constant(__str_top__);
         var expected = [
                 1,
                 2,
@@ -138,7 +138,7 @@ QUnit.module('lodash.method');
         var object = {};
         lodashStable.each([
             'a',
-            'a[1].b.c',
+            __str_top__,
             ['a'],
             [
                 'a',
@@ -177,13 +177,13 @@ QUnit.module('lodash.method');
                 'b': function () {
                     return this.c;
                 },
-                'c': __num_top__
+                'c': 1
             }
         };
         lodashStable.each([
             'a.b',
             [
-                __str_top__,
+                'a',
                 'b'
             ]
         ], function (path) {

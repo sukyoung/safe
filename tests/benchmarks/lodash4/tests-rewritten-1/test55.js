@@ -7,7 +7,7 @@ QUnit.module('lodash.escapeRegExp');
     });
     QUnit.test('should handle strings with nothing to escape', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.escapeRegExp('abc'), 'abc');
+        assert.strictEqual(_.escapeRegExp(__str_top__), 'abc');
     });
     QUnit.test('should return an empty string for empty values', function (assert) {
         assert.expect(1);

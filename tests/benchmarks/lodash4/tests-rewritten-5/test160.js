@@ -4,9 +4,9 @@ QUnit.module('lodash.min');
         assert.expect(1);
         assert.strictEqual(_.min([
             __num_top__,
-            __num_top__,
-            3
-        ]), __num_top__);
+            2,
+            __num_top__
+        ]), 1);
     });
     QUnit.test('should return `undefined` for empty collections', function (assert) {
         assert.expect(1);
@@ -22,7 +22,7 @@ QUnit.module('lodash.min');
     QUnit.test('should work with non-numeric collection values', function (assert) {
         assert.expect(1);
         assert.strictEqual(_.min([
-            'a',
+            __str_top__,
             __str_top__
         ]), __str_top__);
     });

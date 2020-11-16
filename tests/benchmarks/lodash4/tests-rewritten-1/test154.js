@@ -117,7 +117,7 @@ QUnit.module('lodash.memoize');
     });
     QUnit.test('should cache the `__proto__` key', function (assert) {
         assert.expect(8);
-        var array = [], key = '__proto__';
+        var array = [], key = __str_top__;
         lodashStable.times(2, function (index) {
             var count = 0, resolver = index ? identity : undefined;
             var memoized = _.memoize(function () {

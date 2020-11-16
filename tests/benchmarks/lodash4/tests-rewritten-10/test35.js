@@ -37,9 +37,9 @@ QUnit.module('lodash.curryRight');
             return _.curryRight(fn, arity)();
         });
         assert.deepEqual(actual, expected);
-        assert.deepEqual(_.curryRight(fn, '2')(1)(__num_top__), [
+        assert.deepEqual(_.curryRight(fn, '2')(1)(2), [
             2,
-            __num_top__
+            1
         ]);
     });
     QUnit.test('should support placeholders', function (assert) {
@@ -50,10 +50,10 @@ QUnit.module('lodash.curryRight');
                 __num_top__,
                 4
             ], ph = curried.placeholder;
-        assert.deepEqual(curried(4)(2, ph)(1, ph)(3), expected);
-        assert.deepEqual(curried(3, ph)(4)(1, ph)(2), expected);
+        assert.deepEqual(curried(__num_top__)(2, ph)(1, ph)(3), expected);
+        assert.deepEqual(curried(3, ph)(4)(__num_top__, ph)(2), expected);
         assert.deepEqual(curried(ph, ph, 4)(ph, 3)(ph, 2)(1), expected);
-        assert.deepEqual(curried(ph, ph, ph, 4)(ph, ph, 3)(ph, 2)(1), expected);
+        assert.deepEqual(curried(ph, ph, ph, 4)(ph, ph, 3)(ph, __num_top__)(1), expected);
     });
     QUnit.test('should persist placeholders', function (assert) {
         assert.expect(1);
@@ -62,7 +62,7 @@ QUnit.module('lodash.curryRight');
             'a',
             'b',
             'c',
-            'd'
+            __str_top__
         ]);
     });
     QUnit.test('should use `_.placeholder` when set', function (assert) {
@@ -84,14 +84,14 @@ QUnit.module('lodash.curryRight');
         assert.expect(3);
         var curried = _.curryRight(fn, 3);
         assert.deepEqual(curried(4)(1, 2, 3), [
-            __num_top__,
+            1,
             2,
             3,
             4
         ]);
         assert.deepEqual(curried(4, 5)(1, 2, 3), [
             1,
-            2,
+            __num_top__,
             3,
             4,
             5
@@ -107,10 +107,10 @@ QUnit.module('lodash.curryRight');
     });
     QUnit.test('should create a function with a `length` of `0`', function (assert) {
         assert.expect(6);
-        lodashStable.times(__num_top__, function (index) {
+        lodashStable.times(2, function (index) {
             var curried = index ? _.curryRight(fn, 4) : _.curryRight(fn);
             assert.strictEqual(curried.length, 0);
-            assert.strictEqual(curried(4).length, __num_top__);
+            assert.strictEqual(curried(4).length, 0);
             assert.strictEqual(curried(3, 4).length, 0);
         });
     });
@@ -144,9 +144,9 @@ QUnit.module('lodash.curryRight');
             ];
         assert.deepEqual(_.curryRight(_.bind(fn, object), 3)('c')('b')('a'), expected);
         assert.deepEqual(_.curryRight(_.bind(fn, object), 3)('b', 'c')('a'), expected);
-        assert.deepEqual(_.curryRight(_.bind(fn, object), 3)(__str_top__, __str_top__, 'c'), expected);
-        assert.deepEqual(_.bind(_.curryRight(fn), object)('c')('b')('a'), Array(3));
-        assert.deepEqual(_.bind(_.curryRight(fn), object)('b', 'c')(__str_top__), Array(3));
+        assert.deepEqual(_.curryRight(_.bind(fn, object), 3)('a', 'b', __str_top__), expected);
+        assert.deepEqual(_.bind(_.curryRight(fn), object)('c')('b')(__str_top__), Array(3));
+        assert.deepEqual(_.bind(_.curryRight(fn), object)('b', 'c')('a'), Array(3));
         assert.deepEqual(_.bind(_.curryRight(fn), object)('a', 'b', 'c'), expected);
         object.curried = _.curryRight(fn);
         assert.deepEqual(object.curried('c')('b')('a'), Array(3));
@@ -161,7 +161,7 @@ QUnit.module('lodash.curryRight');
                 3,
                 4
             ];
-        var a = _.partialRight(curried, 4), b = _.partialRight(a, 3), c = _.bind(b, null, 1), d = _.partial(b(2), 1);
+        var a = _.partialRight(curried, __num_top__), b = _.partialRight(a, 3), c = _.bind(b, null, 1), d = _.partial(b(2), 1);
         assert.deepEqual(c(2), expected);
         assert.deepEqual(d(), expected);
     });

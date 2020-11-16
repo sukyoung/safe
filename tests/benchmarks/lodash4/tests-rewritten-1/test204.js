@@ -47,7 +47,7 @@ lodashStable.each([
             });
             assert.deepEqual(actual.value(), isFilter ? [
                 3,
-                __num_top__
+                4
             ] : [
                 1,
                 2
@@ -98,7 +98,7 @@ lodashStable.each([
             }).value();
             assert.deepEqual(args, expected);
             args = undefined;
-            _(array).slice(1).map(square)[methodName](function (value, index) {
+            _(array).slice(__num_top__).map(square)[methodName](function (value, index) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, expected);

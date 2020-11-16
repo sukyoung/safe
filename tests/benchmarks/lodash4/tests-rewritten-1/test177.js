@@ -70,7 +70,7 @@ QUnit.module('lodash.overSome');
         ]);
         assert.strictEqual(over({
             'a': 0,
-            'b': __num_top__
+            'b': 2
         }), true);
         assert.strictEqual(over({
             'a': 0,
@@ -94,7 +94,7 @@ QUnit.module('lodash.overSome');
         assert.strictEqual(over({
             'a': 0,
             '1': 1
-        }), true);
+        }), __bool_top__);
         over = _.overSome([[
                 'a',
                 1

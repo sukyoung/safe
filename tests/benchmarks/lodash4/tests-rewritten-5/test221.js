@@ -6,7 +6,7 @@ QUnit.module('lodash.some');
             false,
             1,
             ''
-        ], identity), __bool_top__);
+        ], identity), true);
         assert.strictEqual(_.some([
             null,
             'a',
@@ -40,7 +40,7 @@ QUnit.module('lodash.some');
     QUnit.test('should return `false` if `predicate` returns falsey for all elements', function (assert) {
         assert.expect(2);
         assert.strictEqual(_.some([
-            false,
+            __bool_top__,
             false,
             false
         ], identity), false);
@@ -88,26 +88,26 @@ QUnit.module('lodash.some');
             }
         ];
         assert.strictEqual(_.some(objects, 'a'), false);
-        assert.strictEqual(_.some(objects, 'b'), __bool_top__);
+        assert.strictEqual(_.some(objects, 'b'), true);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(2);
         var objects = [
             {
                 'a': 0,
-                'b': 0
+                'b': __num_top__
             },
             {
                 'a': 1,
-                'b': __num_top__
+                'b': 1
             }
         ];
-        assert.strictEqual(_.some(objects, { 'a': 0 }), true);
+        assert.strictEqual(_.some(objects, { 'a': 0 }), __bool_top__);
         assert.strictEqual(_.some(objects, { 'b': 2 }), false);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map([[__num_top__]], _.some);
+        var actual = lodashStable.map([[1]], _.some);
         assert.deepEqual(actual, [true]);
     });
 }());

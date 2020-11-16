@@ -4,8 +4,8 @@ QUnit.module('lodash.partialRight');
         assert.expect(1);
         var object = { 'a': { 'b': 2 } }, source = {
                 'a': {
-                    'b': 3,
-                    'c': __num_top__
+                    'b': __num_top__,
+                    'c': 3
                 }
             }, expected = {
                 'a': {

@@ -19,7 +19,7 @@ QUnit.module('lodash.mapKeys');
         assert.expect(1);
         var actual = _.mapKeys(array, String);
         assert.deepEqual(actual, {
-            '1': 1,
+            '1': __num_top__,
             '2': 2
         });
     });
@@ -39,7 +39,7 @@ QUnit.module('lodash.mapKeys');
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant({
                 '1': 1,
-                '2': __num_top__
+                '2': 2
             }));
         var actual = lodashStable.map(values, function (value, index) {
             return index ? _.mapKeys(object, value) : _.mapKeys(object);

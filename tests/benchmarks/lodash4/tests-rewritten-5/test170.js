@@ -2,9 +2,9 @@ QUnit.module('lodash.nthArg');
 (function () {
     var args = [
         'a',
-        __str_top__,
+        'b',
         'c',
-        'd'
+        __str_top__
     ];
     QUnit.test('should create a function that returns its nth argument', function (assert) {
         assert.expect(1);
@@ -16,15 +16,15 @@ QUnit.module('lodash.nthArg');
     });
     QUnit.test('should work with a negative `n`', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map(lodashStable.range(__num_top__, args.length + 1), function (n) {
+        var actual = lodashStable.map(lodashStable.range(1, args.length + 1), function (n) {
             var func = _.nthArg(-n);
             return func.apply(undefined, args);
         });
         assert.deepEqual(actual, [
             'd',
-            'c',
             __str_top__,
-            __str_top__
+            __str_top__,
+            'a'
         ]);
     });
     QUnit.test('should coerce `n` to an integer', function (assert) {
@@ -36,8 +36,8 @@ QUnit.module('lodash.nthArg');
         });
         assert.deepEqual(actual, expected);
         values = [
-            '1',
-            1.6
+            __str_top__,
+            __num_top__
         ];
         expected = lodashStable.map(values, stubB);
         actual = lodashStable.map(values, function (n) {
@@ -48,7 +48,7 @@ QUnit.module('lodash.nthArg');
     });
     QUnit.test('should return `undefined` for empty arrays', function (assert) {
         assert.expect(1);
-        var func = _.nthArg(__num_top__);
+        var func = _.nthArg(1);
         assert.strictEqual(func(), undefined);
     });
     QUnit.test('should return `undefined` for non-indexes', function (assert) {

@@ -7,13 +7,13 @@ QUnit.module('lodash.dropRight');
     ];
     QUnit.test('should drop the last two elements', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.dropRight(array, 2), [__num_top__]);
+        assert.deepEqual(_.dropRight(array, 2), [1]);
     });
     QUnit.test('should treat falsey `n` values, except `undefined`, as `0`', function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(falsey, function (value) {
             return value === undefined ? [
-                1,
+                __num_top__,
                 2
             ] : array;
         });
@@ -25,8 +25,8 @@ QUnit.module('lodash.dropRight');
     QUnit.test('should return all elements when `n` < `1`', function (assert) {
         assert.expect(3);
         lodashStable.each([
-            0,
-            -__num_top__,
+            __num_top__,
+            -1,
             -Infinity
         ], function (n) {
             assert.deepEqual(_.dropRight(array, n), array);
@@ -35,7 +35,7 @@ QUnit.module('lodash.dropRight');
     QUnit.test('should return an empty array when `n` >= `length`', function (assert) {
         assert.expect(4);
         lodashStable.each([
-            3,
+            __num_top__,
             4,
             Math.pow(2, 32),
             Infinity
@@ -56,7 +56,7 @@ QUnit.module('lodash.dropRight');
                 [
                     1,
                     2,
-                    3
+                    __num_top__
                 ],
                 [
                     4,
@@ -71,7 +71,7 @@ QUnit.module('lodash.dropRight');
             ], actual = lodashStable.map(array, _.dropRight);
         assert.deepEqual(actual, [
             [
-                __num_top__,
+                1,
                 2
             ],
             [
@@ -79,8 +79,8 @@ QUnit.module('lodash.dropRight');
                 5
             ],
             [
-                __num_top__,
-                8
+                7,
+                __num_top__
             ]
         ]);
     });
@@ -96,7 +96,7 @@ QUnit.module('lodash.dropRight');
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.dropRight(_.dropRight(_.filter(array, predicate), 2)));
             actual = _(array).dropRight(2).drop().dropRight().drop(2).value();
-            assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(array, __num_top__))), 2));
+            assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(array, 2))), 2));
             values = [];
             actual = _(array).dropRight().filter(predicate).dropRight(2).drop().dropRight().drop(2).value();
             assert.deepEqual(values, array.slice(0, -1));

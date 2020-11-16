@@ -1,6 +1,6 @@
 QUnit.module('lodash.findIndex and lodash.indexOf');
 lodashStable.each([
-    __str_top__,
+    'findIndex',
     'indexOf'
 ], function (methodName) {
     var array = [
@@ -15,7 +15,7 @@ lodashStable.each([
         assert.expect(1);
         assert.strictEqual(func(array, resolve(3)), 2);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a positive `fromIndex`', function (assert) {
         assert.expect(1);
         assert.strictEqual(func(array, resolve(1), 2), 3);
     });
@@ -24,7 +24,7 @@ lodashStable.each([
         var values = [
                 6,
                 8,
-                Math.pow(2, 32),
+                Math.pow(__num_top__, 32),
                 Infinity
             ], expected = lodashStable.map(values, lodashStable.constant([
                 -1,
@@ -35,14 +35,14 @@ lodashStable.each([
             return [
                 func(array, resolve(undefined), fromIndex),
                 func(array, resolve(1), fromIndex),
-                func(array, resolve(''), fromIndex)
+                func(array, resolve(__str_top__), fromIndex)
             ];
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('`_.' + methodName + '` should work with a negative `fromIndex`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(func(array, resolve(2), -3), 4);
+        assert.strictEqual(func(array, resolve(2), -__num_top__), 4);
     });
     QUnit.test('`_.' + methodName + '` should work with a negative `fromIndex` <= `-length`', function (assert) {
         assert.expect(1);
@@ -64,7 +64,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should coerce `fromIndex` to an integer', function (assert) {
         assert.expect(1);
         assert.strictEqual(func(array, resolve(2), 1.2), 1);
     });

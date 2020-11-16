@@ -45,7 +45,7 @@ QUnit.module('lodash.unset');
             assert.strictEqual(_.unset(object, symbol), __bool_top__);
             assert.notOk(symbol in object);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should unset deep property values', function (assert) {

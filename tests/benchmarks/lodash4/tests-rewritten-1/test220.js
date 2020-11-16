@@ -99,7 +99,7 @@ QUnit.module('lodash.slice');
     QUnit.test('should work with a negative `end` <= negative `length`', function (assert) {
         assert.expect(3);
         lodashStable.each([
-            -__num_top__,
+            -3,
             -4,
             -Infinity
         ], function (end) {
@@ -124,7 +124,7 @@ QUnit.module('lodash.slice');
             ['1'],
             [
                 NaN,
-                1
+                __num_top__
             ],
             [
                 1,

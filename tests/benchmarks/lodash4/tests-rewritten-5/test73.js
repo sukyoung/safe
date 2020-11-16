@@ -1,13 +1,13 @@
 QUnit.module('forIn methods');
 lodashStable.each([
-    __str_top__,
+    'forIn',
     'forInRight'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
         Foo.prototype.b = __num_top__;
         var keys = [];
@@ -15,7 +15,7 @@ lodashStable.each([
             keys.push(key);
         });
         assert.deepEqual(keys.sort(), [
-            'a',
+            __str_top__,
             __str_top__
         ]);
     });

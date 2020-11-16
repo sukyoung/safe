@@ -77,11 +77,11 @@ QUnit.module('lodash.overEvery');
         assert.strictEqual(over({
             'a': 1,
             '1': 1
-        }), __bool_top__);
+        }), true);
         assert.strictEqual(over({
             'a': 1,
             '1': 0
-        }), false);
+        }), __bool_top__);
         assert.strictEqual(over({
             'a': 0,
             '1': 1

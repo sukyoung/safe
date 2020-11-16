@@ -66,14 +66,14 @@ QUnit.module('lodash.random');
     QUnit.test('should support floats', function (assert) {
         assert.expect(2);
         var min = 1.5, max = 1.6, actual = _.random(min, max);
-        assert.ok(actual % __num_top__);
+        assert.ok(actual % 1);
         assert.ok(actual >= min && actual <= max);
     });
     QUnit.test('should support providing a `floating`', function (assert) {
         assert.expect(3);
         var actual = _.random(true);
         assert.ok(actual % 1 && actual >= 0 && actual <= 1);
-        actual = _.random(2, true);
+        actual = _.random(__num_top__, true);
         assert.ok(actual % 1 && actual >= 0 && actual <= 2);
         actual = _.random(2, 4, true);
         assert.ok(actual % 1 && actual >= 2 && actual <= 4);

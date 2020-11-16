@@ -10,7 +10,7 @@ QUnit.module('lodash.runInContext');
             });
             var pass = false;
             lodash.delay(function () {
-                pass = true;
+                pass = __bool_top__;
             }, 32);
             assert.ok(pass);
         } else {
@@ -27,7 +27,7 @@ QUnit.module('lodash.runInContext');
             assert.strictEqual(id, '1');
             assert.ok(id < oldId);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
 }());

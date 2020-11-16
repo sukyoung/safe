@@ -6,7 +6,7 @@ QUnit.module('lodash.overArgs');
     QUnit.test('should transform each argument', function (assert) {
         assert.expect(1);
         var over = _.overArgs(fn, doubled, square);
-        assert.deepEqual(over(5, 10), [
+        assert.deepEqual(over(__num_top__, 10), [
             10,
             100
         ]);
@@ -48,7 +48,7 @@ QUnit.module('lodash.overArgs');
             ]
         ]);
         assert.deepEqual(over({ 'b': 2 }, { 'a': 1 }), [
-            __bool_top__,
+            false,
             true
         ]);
     });

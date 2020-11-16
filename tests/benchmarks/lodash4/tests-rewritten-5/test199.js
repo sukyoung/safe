@@ -10,7 +10,7 @@ QUnit.module('lodash.rearg');
             0,
             1
         ]);
-        assert.deepEqual(rearged('b', 'c', 'a'), [
+        assert.deepEqual(rearged('b', 'c', __str_top__), [
             'a',
             'b',
             'c'
@@ -20,7 +20,7 @@ QUnit.module('lodash.rearg');
         assert.expect(1);
         var rearged = _.rearg(fn, [
             1,
-            1,
+            __num_top__,
             1
         ]);
         assert.deepEqual(rearged('c', 'a', 'b'), [
@@ -35,7 +35,7 @@ QUnit.module('lodash.rearg');
             1,
             4
         ]);
-        assert.deepEqual(rearged(__str_top__, 'a', 'c'), [
+        assert.deepEqual(rearged('b', 'a', 'c'), [
             'a',
             undefined,
             'c'
@@ -45,7 +45,7 @@ QUnit.module('lodash.rearg');
         assert.expect(1);
         var values = lodashStable.reject(empties, function (value) {
             return value === 0 || lodashStable.isArray(value);
-        }).concat(-1, __num_top__);
+        }).concat(-1, 1.1);
         var expected = lodashStable.map(values, lodashStable.constant([
             undefined,
             'b',
@@ -60,13 +60,13 @@ QUnit.module('lodash.rearg');
     QUnit.test('should not rearrange arguments when no indexes are given', function (assert) {
         assert.expect(2);
         var rearged = _.rearg(fn);
-        assert.deepEqual(rearged(__str_top__, 'b', 'c'), [
+        assert.deepEqual(rearged('a', 'b', 'c'), [
             'a',
             'b',
             'c'
         ]);
         rearged = _.rearg(fn, [], []);
-        assert.deepEqual(rearged('a', 'b', 'c'), [
+        assert.deepEqual(rearged('a', 'b', __str_top__), [
             'a',
             'b',
             'c'
@@ -74,11 +74,11 @@ QUnit.module('lodash.rearg');
     });
     QUnit.test('should accept multiple index arguments', function (assert) {
         assert.expect(1);
-        var rearged = _.rearg(fn, 2, __num_top__, 1);
+        var rearged = _.rearg(fn, 2, 0, __num_top__);
         assert.deepEqual(rearged('b', 'c', 'a'), [
             'a',
             'b',
-            __str_top__
+            'c'
         ]);
     });
     QUnit.test('should accept multiple arrays of indexes', function (assert) {
@@ -107,7 +107,7 @@ QUnit.module('lodash.rearg');
     });
     QUnit.test('should work on functions that have been rearged', function (assert) {
         assert.expect(1);
-        var rearged1 = _.rearg(fn, 2, 1, 0), rearged2 = _.rearg(rearged1, 1, 0, 2);
+        var rearged1 = _.rearg(fn, 2, 1, 0), rearged2 = _.rearg(rearged1, 1, 0, __num_top__);
         assert.deepEqual(rearged2('b', 'c', 'a'), [
             'a',
             'b',

@@ -3,7 +3,7 @@ lodashStable.each([
     'indexOf',
     'lastIndexOf',
     'sortedIndexOf',
-    'sortedLastIndexOf'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], isIndexOf = !/last/i.test(methodName), isSorted = /^sorted/.test(methodName);
     QUnit.test('`_.' + methodName + '` should accept a falsey `array`', function (assert) {
@@ -27,7 +27,7 @@ lodashStable.each([
         assert.strictEqual(func(array, 4), -1);
         assert.strictEqual(func(array, 4, true), -1);
         assert.strictEqual(func(array, undefined, true), -1);
-        assert.strictEqual(func(empty, undefined), -__num_top__);
+        assert.strictEqual(func(empty, undefined), -1);
         assert.strictEqual(func(empty, undefined, true), -1);
     });
     QUnit.test('`_.' + methodName + '` should not match values on empty arrays', function (assert) {

@@ -1,14 +1,14 @@
 QUnit.module('uncommon symbols');
 (function () {
-    var flag = '\uD83C\uDDFA\uD83C\uDDF8', heart = '\u2764' + emojiVar, hearts = '\uD83D\uDC95', comboGlyph = '\uD83D\uDC68‍' + heart + '‍\uD83D\uDC8B‍\uD83D\uDC68', hashKeycap = '#' + emojiVar + '\u20E3', leafs = '\uD83C\uDF42', mic = '\uD83C\uDF99', noMic = mic + '\u20E0', raisedHand = '\u270B' + emojiVar, rocket = '\uD83D\uDE80', thumbsUp = '\uD83D\uDC4D';
+    var flag = '\uD83C\uDDFA\uD83C\uDDF8', heart = '\u2764' + emojiVar, hearts = '\uD83D\uDC95', comboGlyph = '\uD83D\uDC68‍' + heart + __str_top__, hashKeycap = '#' + emojiVar + '\u20E3', leafs = '\uD83C\uDF42', mic = '\uD83C\uDF99', noMic = mic + '\u20E0', raisedHand = '\u270B' + emojiVar, rocket = '\uD83D\uDE80', thumbsUp = '\uD83D\uDC4D';
     QUnit.test('should account for astral symbols', function (assert) {
         assert.expect(34);
-        var allHearts = _.repeat(hearts, 10), chars = hearts + comboGlyph, string = __str_top__ + leafs + ', ' + comboGlyph + ', and ' + rocket, trimChars = comboGlyph + hearts, trimString = trimChars + string + trimChars;
+        var allHearts = _.repeat(hearts, 10), chars = hearts + comboGlyph, string = 'A ' + leafs + ', ' + comboGlyph + ', and ' + rocket, trimChars = comboGlyph + hearts, trimString = trimChars + string + trimChars;
         assert.strictEqual(_.camelCase(hearts + ' the ' + leafs), hearts + 'The' + leafs);
         assert.strictEqual(_.camelCase(string), 'a' + leafs + comboGlyph + 'And' + rocket);
         assert.strictEqual(_.capitalize(rocket), rocket);
         assert.strictEqual(_.pad(string, 16), ' ' + string + '  ');
-        assert.strictEqual(_.padStart(string, __num_top__), '   ' + string);
+        assert.strictEqual(_.padStart(string, 16), '   ' + string);
         assert.strictEqual(_.padEnd(string, 16), string + '   ');
         assert.strictEqual(_.pad(string, 16, chars), hearts + string + chars);
         assert.strictEqual(_.padStart(string, 16, chars), chars + hearts + string);
@@ -45,7 +45,7 @@ QUnit.module('uncommon symbols');
             rocket
         ];
         assert.deepEqual(_.split(string, ''), expected);
-        assert.deepEqual(_.split(string, '', 6), expected.slice(0, __num_top__));
+        assert.deepEqual(_.split(string, '', 6), expected.slice(0, 6));
         assert.deepEqual(_.toArray(string), expected);
         assert.strictEqual(_.trim(trimString, chars), string);
         assert.strictEqual(_.trimStart(trimString, chars), string + trimChars);
@@ -63,13 +63,13 @@ QUnit.module('uncommon symbols');
         assert.deepEqual(_.toArray(noMic), [noMic]);
         lodashStable.times(2, function (index) {
             var separator = index ? RegExp(hearts) : hearts, options = {
-                    'length': __num_top__,
+                    'length': 4,
                     'separator': separator
                 }, actual = _.truncate(string, options);
             assert.strictEqual(actual, 'A...');
             assert.strictEqual(actual.length, 4);
             actual = _.truncate(allHearts, options);
-            assert.strictEqual(actual, hearts + '...');
+            assert.strictEqual(actual, hearts + __str_top__);
             assert.strictEqual(actual.length, 5);
         });
     });
@@ -117,7 +117,7 @@ QUnit.module('uncommon symbols');
     });
     QUnit.test('should account for regional symbols', function (assert) {
         assert.expect(6);
-        var pair = flag.match(/\ud83c[\udde6-\uddff]/g), regionals = pair.join(' ');
+        var pair = flag.match(/\ud83c[\udde6-\uddff]/g), regionals = pair.join(__str_top__);
         assert.strictEqual(_.size(flag), 1);
         assert.strictEqual(_.size(regionals), 3);
         assert.deepEqual(_.toArray(flag), [flag]);
@@ -134,7 +134,7 @@ QUnit.module('uncommon symbols');
     });
     QUnit.test('should account for variation selectors', function (assert) {
         assert.expect(3);
-        assert.strictEqual(_.size(heart), 1);
+        assert.strictEqual(_.size(heart), __num_top__);
         assert.deepEqual(_.toArray(heart), [heart]);
         assert.deepEqual(_.words(heart), [heart]);
     });
@@ -161,7 +161,7 @@ QUnit.module('uncommon symbols');
     });
     QUnit.test('should match lone surrogates', function (assert) {
         assert.expect(3);
-        var pair = hearts.split(''), surrogates = pair[0] + ' ' + pair[1];
+        var pair = hearts.split(''), surrogates = pair[__num_top__] + ' ' + pair[1];
         assert.strictEqual(_.size(surrogates), 3);
         assert.deepEqual(_.toArray(surrogates), [
             pair[0],

@@ -8,43 +8,43 @@ QUnit.module('lodash.last');
     ];
     QUnit.test('should return the last element', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.last(array), 4);
+        assert.strictEqual(_.last(array), __num_top__);
     });
     QUnit.test('should return `undefined` when querying empty arrays', function (assert) {
         assert.expect(1);
         var array = [];
-        array['-1'] = 1;
+        array[__str_top__] = 1;
         assert.strictEqual(_.last([]), undefined);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
         var array = [
                 [
-                    __num_top__,
+                    1,
                     2,
-                    3
+                    __num_top__
                 ],
                 [
                     4,
-                    5,
+                    __num_top__,
                     6
                 ],
                 [
                     7,
                     8,
-                    __num_top__
+                    9
                 ]
             ], actual = lodashStable.map(array, _.last);
         assert.deepEqual(actual, [
             3,
-            6,
-            __num_top__
+            __num_top__,
+            9
         ]);
     });
     QUnit.test('should return an unwrapped value when implicitly chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            assert.strictEqual(_(array).last(), __num_top__);
+            assert.strictEqual(_(array).last(), 4);
         } else {
             skipAssert(assert);
         }
@@ -75,7 +75,7 @@ QUnit.module('lodash.last');
                 assert.strictEqual(wrapped.last(), _.last(_.filter(array, isEven)));
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

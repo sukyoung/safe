@@ -12,7 +12,7 @@ lodashStable.each([
         assert.expect(1);
         assert.strictEqual(func(array), 12);
     });
-    QUnit.test(__str_top__ + methodName + '` should return `0` when passing empty `array` values', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `0` when passing empty `array` values', function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(empties, stubZero);
         var actual = lodashStable.map(empties, function (value) {
@@ -39,6 +39,6 @@ lodashStable.each([
         assert.strictEqual(func([
             '1',
             '2'
-        ]), '12');
+        ]), __str_top__);
     });
 });

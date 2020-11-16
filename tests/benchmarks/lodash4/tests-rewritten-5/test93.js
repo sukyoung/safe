@@ -4,10 +4,10 @@ QUnit.module('lodash.invert');
         assert.expect(2);
         var object = {
                 'a': 1,
-                'b': __num_top__
+                'b': 2
             }, actual = _.invert(object);
         assert.deepEqual(actual, {
-            '1': __str_top__,
+            '1': 'a',
             '2': 'b'
         });
         assert.deepEqual(_.invert(actual), {
@@ -23,7 +23,7 @@ QUnit.module('lodash.invert');
         };
         assert.deepEqual(_.invert(object), {
             'hasOwnProperty': 'a',
-            'constructor': __str_top__
+            'constructor': 'b'
         });
     });
     QUnit.test('should work with an object that has a `length` property', function (assert) {
@@ -34,7 +34,7 @@ QUnit.module('lodash.invert');
             'length': 2
         };
         assert.deepEqual(_.invert(object), {
-            'a': '0',
+            'a': __str_top__,
             'b': '1',
             '2': 'length'
         });
@@ -43,12 +43,12 @@ QUnit.module('lodash.invert');
         assert.expect(2);
         if (!isNpm) {
             var object = {
-                    'a': 1,
+                    'a': __num_top__,
                     'b': __num_top__
                 }, wrapped = _(object).invert();
             assert.ok(wrapped instanceof _);
             assert.deepEqual(wrapped.value(), {
-                '1': 'a',
+                '1': __str_top__,
                 '2': 'b'
             });
         } else {

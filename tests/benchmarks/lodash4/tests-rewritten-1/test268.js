@@ -10,7 +10,7 @@ QUnit.module('lodash.unionBy');
             2.1,
             1.2
         ]);
-        actual = _.unionBy([{ 'x': 1 }], [
+        actual = _.unionBy([{ 'x': __num_top__ }], [
             { 'x': 2 },
             { 'x': 1 }
         ], 'x');
@@ -38,7 +38,7 @@ QUnit.module('lodash.unionBy');
             }], [{
                 'x': 1,
                 'y': 2
-            }], __str_top__);
+            }], 'x');
         assert.deepEqual(actual, [{
                 'x': 1,
                 'y': 1

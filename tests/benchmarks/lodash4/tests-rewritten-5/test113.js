@@ -17,27 +17,27 @@ QUnit.module('lodash.isMap');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isMap(args), false);
         assert.strictEqual(_.isMap([
-            1,
-            2,
+            __num_top__,
+            __num_top__,
             3
         ]), false);
         assert.strictEqual(_.isMap(true), false);
-        assert.strictEqual(_.isMap(new Date()), false);
-        assert.strictEqual(_.isMap(new Error()), false);
+        assert.strictEqual(_.isMap(new Date()), __bool_top__);
+        assert.strictEqual(_.isMap(new Error()), __bool_top__);
         assert.strictEqual(_.isMap(_), false);
-        assert.strictEqual(_.isMap(slice), __bool_top__);
+        assert.strictEqual(_.isMap(slice), false);
         assert.strictEqual(_.isMap({ 'a': 1 }), false);
         assert.strictEqual(_.isMap(1), false);
         assert.strictEqual(_.isMap(/x/), false);
-        assert.strictEqual(_.isMap('a'), __bool_top__);
+        assert.strictEqual(_.isMap('a'), false);
         assert.strictEqual(_.isMap(symbol), false);
-        assert.strictEqual(_.isMap(weakMap), false);
+        assert.strictEqual(_.isMap(weakMap), __bool_top__);
     });
     QUnit.test('should work for objects with a non-function `constructor` (test in IE 11)', function (assert) {
         assert.expect(1);
         var values = [
-                __bool_top__,
-                __bool_top__
+                false,
+                true
             ], expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value) {
             return _.isMap({ 'constructor': value });

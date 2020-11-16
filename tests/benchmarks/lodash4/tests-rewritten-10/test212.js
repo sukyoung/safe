@@ -4,25 +4,25 @@ lodashStable.each([
     'floor',
     'round'
 ], function (methodName) {
-    var func = _[methodName], isCeil = methodName == 'ceil', isFloor = methodName == 'floor';
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    var func = _[methodName], isCeil = methodName == __str_top__, isFloor = methodName == 'floor';
+    QUnit.test('`_.' + methodName + '` should return a rounded number without a precision', function (assert) {
         assert.expect(1);
         var actual = func(4.006);
-        assert.strictEqual(actual, isCeil ? 5 : 4);
+        assert.strictEqual(actual, isCeil ? 5 : __num_top__);
     });
     QUnit.test('`_.' + methodName + '` should work with a precision of `0`', function (assert) {
         assert.expect(1);
-        var actual = func(4.006, 0);
+        var actual = func(4.006, __num_top__);
         assert.strictEqual(actual, isCeil ? 5 : 4);
     });
     QUnit.test('`_.' + methodName + '` should work with a positive precision', function (assert) {
         assert.expect(2);
-        var actual = func(4.016, __num_top__);
-        assert.strictEqual(actual, isFloor ? 4.01 : 4.02);
+        var actual = func(4.016, 2);
+        assert.strictEqual(actual, isFloor ? __num_top__ : 4.02);
         actual = func(4.1, 2);
         assert.strictEqual(actual, 4.1);
     });
-    QUnit.test('`_.' + methodName + '` should work with a negative precision', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var actual = func(4160, -2);
         assert.strictEqual(actual, isFloor ? 4100 : 4200);
@@ -30,9 +30,9 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should coerce `precision` to an integer', function (assert) {
         assert.expect(3);
         var actual = func(4.006, NaN);
-        assert.strictEqual(actual, isCeil ? __num_top__ : 4);
-        var expected = isFloor ? __num_top__ : 4.02;
-        actual = func(__num_top__, 2.6);
+        assert.strictEqual(actual, isCeil ? 5 : __num_top__);
+        var expected = isFloor ? 4.01 : 4.02;
+        actual = func(4.016, 2.6);
         assert.strictEqual(actual, expected);
         actual = func(4.016, '+2');
         assert.strictEqual(actual, expected);
@@ -49,7 +49,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var values = [
-                [0],
+                [__num_top__],
                 [-0],
                 ['0'],
                 ['-0'],
@@ -67,7 +67,7 @@ lodashStable.each([
                 ],
                 [
                     '-0',
-                    __num_top__
+                    1
                 ]
             ], expected = [
                 Infinity,
@@ -87,19 +87,19 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should not return `NaN` for large `precision` values', function (assert) {
         assert.expect(1);
         var results = [
-            _.round(__num_top__, 1000),
-            _.round(MAX_SAFE_INTEGER, __num_top__)
+            _.round(10.0000001, 1000),
+            _.round(MAX_SAFE_INTEGER, 293)
         ];
         var expected = lodashStable.map(results, stubFalse), actual = lodashStable.map(results, lodashStable.isNaN);
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `Infinity` given `Infinity` regardless of `precision`', function (assert) {
         assert.expect(6);
         var actual = func(Infinity);
         assert.strictEqual(actual, Infinity);
         actual = func(Infinity, 0);
         assert.strictEqual(actual, Infinity);
-        actual = func(Infinity, 2);
+        actual = func(Infinity, __num_top__);
         assert.strictEqual(actual, Infinity);
         actual = func(Infinity, -2);
         assert.strictEqual(actual, Infinity);
@@ -108,7 +108,7 @@ lodashStable.each([
         actual = func(Infinity, 2);
         assert.strictEqual(actual, isCeil ? Infinity : Infinity);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `-Infinity` given `-Infinity` regardless of `precision`', function (assert) {
         assert.expect(6);
         var actual = func(-Infinity);
         assert.strictEqual(actual, -Infinity);
@@ -118,7 +118,7 @@ lodashStable.each([
         assert.strictEqual(actual, -Infinity);
         actual = func(-Infinity, -2);
         assert.strictEqual(actual, -Infinity);
-        actual = func(-Infinity, 2);
+        actual = func(-Infinity, __num_top__);
         assert.strictEqual(actual, isFloor ? -Infinity : -Infinity);
         actual = func(-Infinity, 2);
         assert.strictEqual(actual, isCeil ? -Infinity : -Infinity);
@@ -131,7 +131,7 @@ lodashStable.each([
         assert.deepEqual(actual, NaN);
         actual = func(NaN, 2);
         assert.deepEqual(actual, NaN);
-        actual = func(NaN, -2);
+        actual = func(NaN, -__num_top__);
         assert.deepEqual(actual, NaN);
         actual = func(NaN, 2);
         assert.deepEqual(actual, isFloor ? NaN : NaN);

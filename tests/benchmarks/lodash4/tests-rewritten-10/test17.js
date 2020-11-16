@@ -3,15 +3,15 @@ QUnit.module('lodash.bindKey');
     QUnit.test('should work when the target function is overwritten', function (assert) {
         assert.expect(2);
         var object = {
-            'user': __str_top__,
+            'user': 'fred',
             'greet': function (greeting) {
-                return this.user + __str_top__ + greeting;
+                return this.user + ' says: ' + greeting;
             }
         };
         var bound = _.bindKey(object, 'greet', 'hi');
-        assert.strictEqual(bound(), 'fred says: hi');
+        assert.strictEqual(bound(), __str_top__);
         object.greet = function (greeting) {
-            return this.user + ' says: ' + greeting + '!';
+            return this.user + ' says: ' + greeting + __str_top__;
         };
         assert.strictEqual(bound(), 'fred says: hi!');
     });
@@ -23,20 +23,20 @@ QUnit.module('lodash.bindKey');
             }
         };
         var ph = _.bindKey.placeholder, bound = _.bindKey(object, 'fn', ph, 'b', ph);
-        assert.deepEqual(bound('a', 'c'), [
+        assert.deepEqual(bound(__str_top__, 'c'), [
             'a',
-            __str_top__,
+            'b',
             'c'
         ]);
-        assert.deepEqual(bound(__str_top__), [
+        assert.deepEqual(bound('a'), [
             'a',
             __str_top__,
             undefined
         ]);
         assert.deepEqual(bound(__str_top__, 'c', __str_top__), [
             'a',
-            'b',
             __str_top__,
+            'c',
             'd'
         ]);
         assert.deepEqual(bound(), [
@@ -53,10 +53,10 @@ QUnit.module('lodash.bindKey');
                     return slice.call(arguments);
                 }
             };
-            var _ph = _.placeholder = {}, ph = _.bindKey.placeholder, bound = _.bindKey(object, 'fn', _ph, 'b', ph);
-            assert.deepEqual(bound('a', 'c'), [
+            var _ph = _.placeholder = {}, ph = _.bindKey.placeholder, bound = _.bindKey(object, 'fn', _ph, __str_top__, ph);
+            assert.deepEqual(bound(__str_top__, 'c'), [
                 'a',
-                __str_top__,
+                'b',
                 ph,
                 'c'
             ]);
@@ -70,8 +70,8 @@ QUnit.module('lodash.bindKey');
         function Foo(value) {
             return value && object;
         }
-        var object = { 'Foo': Foo }, bound = _.bindKey(object, __str_top__);
+        var object = { 'Foo': Foo }, bound = _.bindKey(object, 'Foo');
         assert.ok(new bound() instanceof Foo);
-        assert.strictEqual(new bound(true), object);
+        assert.strictEqual(new bound(__bool_top__), object);
     });
 }());

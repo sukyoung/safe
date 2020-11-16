@@ -5,7 +5,7 @@ QUnit.module('lodash.delay');
         var done = assert.async();
         var pass = __bool_top__;
         _.delay(function () {
-            pass = __bool_top__;
+            pass = true;
         }, __num_top__);
         setTimeout(function () {
             assert.notOk(pass);
@@ -13,7 +13,7 @@ QUnit.module('lodash.delay');
         setTimeout(function () {
             assert.ok(pass);
             done();
-        }, __num_top__);
+        }, 64);
     });
     QUnit.test('should provide additional arguments to `func`', function (assert) {
         assert.expect(1);
@@ -21,19 +21,19 @@ QUnit.module('lodash.delay');
         var args;
         _.delay(function () {
             args = slice.call(arguments);
-        }, 32, 1, 2);
+        }, 32, __num_top__, 2);
         setTimeout(function () {
             assert.deepEqual(args, [
-                __num_top__,
-                __num_top__
+                1,
+                2
             ]);
             done();
-        }, 64);
+        }, __num_top__);
     });
     QUnit.test('should use a default `wait` of `0`', function (assert) {
         assert.expect(2);
         var done = assert.async();
-        var pass = false;
+        var pass = __bool_top__;
         _.delay(function () {
             pass = __bool_top__;
         });
@@ -48,18 +48,18 @@ QUnit.module('lodash.delay');
         var done = assert.async();
         var pass = true, timerId = _.delay(function () {
                 pass = false;
-            }, __num_top__);
+            }, 32);
         clearTimeout(timerId);
         setTimeout(function () {
             assert.ok(pass);
             done();
-        }, 64);
+        }, __num_top__);
     });
     QUnit.test('should work with mocked `setTimeout`', function (assert) {
         assert.expect(1);
         if (!isPhantom) {
             var pass = __bool_top__, setTimeout = root.setTimeout;
-            setProperty(root, 'setTimeout', function (func) {
+            setProperty(root, __str_top__, function (func) {
                 func();
             });
             _.delay(function () {

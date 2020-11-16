@@ -4,7 +4,7 @@ QUnit.module('lodash.methodOf');
         assert.expect(4);
         var object = { 'a': stubOne };
         lodashStable.each([
-            __str_top__,
+            'a',
             ['a']
         ], function (path) {
             var methodOf = _.methodOf(object);
@@ -16,9 +16,9 @@ QUnit.module('lodash.methodOf');
         assert.expect(2);
         var object = { 'a': { 'b': stubTwo } };
         lodashStable.each([
-            'a.b',
+            __str_top__,
             [
-                __str_top__,
+                'a',
                 'b'
             ]
         ], function (path) {
@@ -43,7 +43,7 @@ QUnit.module('lodash.methodOf');
         }
         fn.toString = lodashStable.constant('fn');
         var expected = [
-                __num_top__,
+                1,
                 2,
                 3,
                 4
@@ -90,7 +90,7 @@ QUnit.module('lodash.methodOf');
             ['a.b']
         ], function (path) {
             var methodOf = _.methodOf(object);
-            assert.strictEqual(methodOf(path), 1);
+            assert.strictEqual(methodOf(path), __num_top__);
         });
     });
     QUnit.test('should return `undefined` when `object` is nullish', function (assert) {
@@ -121,9 +121,9 @@ QUnit.module('lodash.methodOf');
         lodashStable.each([
             'constructor.prototype.valueOf',
             [
-                __str_top__,
+                'constructor',
                 'prototype',
-                'valueOf'
+                __str_top__
             ]
         ], function (path) {
             var actual = lodashStable.map(values, function (value, index) {
@@ -138,12 +138,12 @@ QUnit.module('lodash.methodOf');
         var object = {}, methodOf = _.methodOf(object);
         lodashStable.each([
             'a',
-            __str_top__,
+            'a[1].b.c',
             ['a'],
             [
                 'a',
                 '1',
-                'b',
+                __str_top__,
                 'c'
             ]
         ], function (path) {
@@ -157,15 +157,15 @@ QUnit.module('lodash.methodOf');
                 return slice.call(arguments);
             }
         };
-        var methodOf = _.methodOf(object, 1, __num_top__, 3);
+        var methodOf = _.methodOf(object, 1, 2, __num_top__);
         lodashStable.each([
             'fn',
             ['fn']
         ], function (path) {
             assert.deepEqual(methodOf(path), [
                 1,
-                __num_top__,
-                3
+                2,
+                __num_top__
             ]);
         });
     });
@@ -176,13 +176,13 @@ QUnit.module('lodash.methodOf');
                     'b': function () {
                         return this.c;
                     },
-                    'c': __num_top__
+                    'c': 1
                 }
             }, methodOf = _.methodOf(object);
         lodashStable.each([
-            'a.b',
+            __str_top__,
             [
-                'a',
+                __str_top__,
                 'b'
             ]
         ], function (path) {

@@ -65,7 +65,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, lodashStable.map(burredLetters, stubTrue));
     });
-    QUnit.test('`_.' + methodName + '` should remove contraction apostrophes', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should remove contraction apostrophes', function (assert) {
         assert.expect(2);
         var postfixes = [
             'd',
@@ -130,7 +130,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should return a wrapped value when explicitly chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            assert.ok(_(__str_top__).chain()[methodName]() instanceof _);
+            assert.ok(_('foo bar').chain()[methodName]() instanceof _);
         } else {
             skipAssert(assert);
         }

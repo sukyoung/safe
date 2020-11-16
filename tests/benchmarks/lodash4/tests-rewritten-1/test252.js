@@ -1,6 +1,6 @@
 QUnit.module('lodash.slice and lodash.toArray');
 lodashStable.each([
-    __str_top__,
+    'slice',
     'toArray'
 ], function (methodName) {
     var array = [
@@ -32,7 +32,7 @@ lodashStable.each([
         assert.deepEqual(actual, array);
         assert.notStrictEqual(actual, array);
     });
-    QUnit.test('`_.' + methodName + '` should work with a node list for `collection`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (document) {
             try {

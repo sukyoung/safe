@@ -9,18 +9,18 @@ lodashStable.each([
         var object = { 'a': 1 };
         lodashStable.each([
             'a',
-            ['a']
+            [__str_top__]
         ], function (path) {
             assert.strictEqual(func(object, path), 1);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should preserve the sign of `0`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var object = {
                 '-0': 'a',
                 '0': 'b'
             }, props = [
-                -0,
+                -__num_top__,
                 Object(-0),
                 0,
                 Object(0)
@@ -29,7 +29,7 @@ lodashStable.each([
             return func(object, key);
         });
         assert.deepEqual(actual, [
-            'a',
+            __str_top__,
             'a',
             'b',
             'b'
@@ -40,12 +40,12 @@ lodashStable.each([
         if (Symbol) {
             var object = {};
             object[symbol] = 1;
-            assert.strictEqual(func(object, symbol), 1);
+            assert.strictEqual(func(object, symbol), __num_top__);
         } else {
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + '` should get deep property values', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should get deep property values', function (assert) {
         assert.expect(2);
         var object = { 'a': { 'b': 2 } };
         lodashStable.each([
@@ -58,7 +58,7 @@ lodashStable.each([
             assert.strictEqual(func(object, path), 2);
         });
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should get a key over a path', function (assert) {
         assert.expect(2);
         var object = {
             'a.b': 1,
@@ -66,12 +66,12 @@ lodashStable.each([
         };
         lodashStable.each([
             'a.b',
-            ['a.b']
+            [__str_top__]
         ], function (path) {
             assert.strictEqual(func(object, path), 1);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should not coerce array paths to strings', function (assert) {
+    QUnit.test('`_.' + methodName + '` should not coerce array paths to strings', function (assert) {
         assert.expect(1);
         var object = {
             'a,b,c': 3,
@@ -79,7 +79,7 @@ lodashStable.each([
         };
         assert.strictEqual(func(object, [
             'a',
-            'b',
+            __str_top__,
             'c'
         ]), 4);
     });
@@ -101,7 +101,7 @@ lodashStable.each([
             ]
         ], function (pair) {
             assert.strictEqual(func({}, pair[0]), undefined);
-            assert.strictEqual(func({ '': 3 }, pair[1]), 3);
+            assert.strictEqual(func({ '': 3 }, pair[1]), __num_top__);
         });
     });
     QUnit.test('`_.' + methodName + '` should handle complex paths', function (assert) {
@@ -113,7 +113,7 @@ lodashStable.each([
                 'a',
                 '-1.23',
                 '["b"]',
-                __str_top__,
+                'c',
                 '[\'d\']',
                 '\ne\n',
                 'f',
@@ -142,7 +142,7 @@ lodashStable.each([
             ], expected = lodashStable.map(values, noop), paths = [
                 'constructor.prototype.valueOf',
                 [
-                    __str_top__,
+                    'constructor',
                     'prototype',
                     'valueOf'
                 ]
@@ -163,7 +163,7 @@ lodashStable.each([
             ]
         };
         lodashStable.each([
-            __str_top__,
+            'a[1].b.c',
             [
                 'a',
                 '1',
@@ -180,7 +180,7 @@ lodashStable.each([
         lodashStable.each([
             'a.b',
             [
-                __str_top__,
+                'a',
                 'b'
             ]
         ], function (path) {
@@ -198,7 +198,7 @@ lodashStable.each([
         ];
         lodashStable.each(paths, function (path) {
             numberProto.a = { 'b': 2 };
-            assert.strictEqual(func(__num_top__, path), 2);
+            assert.strictEqual(func(0, path), 2);
             delete numberProto.a;
         });
     });
@@ -214,7 +214,7 @@ lodashStable.each([
             'a.b',
             [
                 'a',
-                __str_top__
+                'b'
             ]
         ], function (path) {
             var actual = lodashStable.map(values, function (value) {

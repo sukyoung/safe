@@ -1,17 +1,17 @@
 QUnit.module('lodash.mapValues');
 (function () {
     var array = [
-            __num_top__,
-            __num_top__
+            1,
+            2
         ], object = {
             'a': 1,
-            'b': __num_top__
+            'b': 2
         };
     QUnit.test('should map values in `object` to a new object', function (assert) {
         assert.expect(1);
         var actual = _.mapValues(object, String);
         assert.deepEqual(actual, {
-            'a': '1',
+            'a': __str_top__,
             'b': '2'
         });
     });
@@ -19,19 +19,19 @@ QUnit.module('lodash.mapValues');
         assert.expect(1);
         var actual = _.mapValues(array, String);
         assert.deepEqual(actual, {
-            '0': '1',
-            '1': __str_top__
+            '0': __str_top__,
+            '1': '2'
         });
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         var actual = _.mapValues({ 'a': { 'b': 2 } }, __str_top__);
-        assert.deepEqual(actual, { 'a': 2 });
+        assert.deepEqual(actual, { 'a': __num_top__ });
     });
     QUnit.test('should use `_.identity` when `iteratee` is nullish', function (assert) {
         assert.expect(1);
         var object = {
-                'a': 1,
+                'a': __num_top__,
                 'b': 2
             }, values = [
                 ,

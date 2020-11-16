@@ -264,7 +264,7 @@ QUnit.module('iteration methods');
                 assert.ok(actual instanceof _);
                 assert.notStrictEqual(actual, wrapped);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 2);
             }
         });
     });
@@ -331,7 +331,7 @@ QUnit.module('iteration methods');
                 assert.ok(isIteratedAsObject(Foo));
                 assert.notOk(isIteratedAsObject({ 'length': __num_top__ }));
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 3);
             }
         });
     });

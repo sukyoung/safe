@@ -66,7 +66,7 @@ lodashStable.each([
             ]);
         } else {
             par = func(fn, ph, 'c', ph);
-            assert.deepEqual(par('a', 'b', __str_top__), [
+            assert.deepEqual(par('a', 'b', 'd'), [
                 'a',
                 'b',
                 'c',
@@ -96,7 +96,7 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + '` creates a function with a `length` of `0`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` creates a function with a `length` of `0`', function (assert) {
         assert.expect(1);
         var fn = function (a, b, c) {
             }, par = func(fn, 'a');

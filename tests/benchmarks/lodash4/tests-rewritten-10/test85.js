@@ -1,18 +1,18 @@
 QUnit.module('lodash.head');
 (function () {
     var array = [
-        1,
+        __num_top__,
         2,
         3,
         4
     ];
     QUnit.test('should return the first element', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.head(array), __num_top__);
+        assert.strictEqual(_.head(array), 1);
     });
     QUnit.test('should return `undefined` when querying empty arrays', function (assert) {
         assert.expect(1);
-        arrayProto[0] = 1;
+        arrayProto[__num_top__] = 1;
         assert.strictEqual(_.head([]), undefined);
         arrayProto.length = __num_top__;
     });
@@ -22,23 +22,23 @@ QUnit.module('lodash.head');
                 [
                     1,
                     __num_top__,
-                    3
-                ],
-                [
-                    4,
-                    5,
                     __num_top__
                 ],
                 [
                     __num_top__,
-                    8,
-                    __num_top__
+                    __num_top__,
+                    6
+                ],
+                [
+                    7,
+                    __num_top__,
+                    9
                 ]
             ], actual = lodashStable.map(array, _.head);
         assert.deepEqual(actual, [
-            1,
+            __num_top__,
             4,
-            __num_top__
+            7
         ]);
     });
     QUnit.test('should be aliased', function (assert) {
@@ -72,7 +72,7 @@ QUnit.module('lodash.head');
             assert.strictEqual(wrapped.head().__wrapped__, array);
             assert.strictEqual(wrapped.first().__wrapped__, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -83,7 +83,7 @@ QUnit.module('lodash.head');
                 __str_top__,
                 'first'
             ], function (methodName) {
-                lodashStable.times(__num_top__, function (index) {
+                lodashStable.times(2, function (index) {
                     var array = index ? largeArray : smallArray, actual = _(array).filter(isEven)[methodName]();
                     assert.strictEqual(actual, _[methodName](_.filter(array, isEven)));
                 });

@@ -2,7 +2,7 @@ QUnit.module('lodash.dropWhile');
 (function () {
     var array = [
         1,
-        2,
+        __num_top__,
         3,
         4
     ];
@@ -17,7 +17,7 @@ QUnit.module('lodash.dropWhile');
         },
         {
             'a': 0,
-            'b': 0
+            'b': __num_top__
         }
     ];
     QUnit.test('should drop elements while `predicate` returns truthy', function (assert) {
@@ -27,7 +27,7 @@ QUnit.module('lodash.dropWhile');
         });
         assert.deepEqual(actual, [
             3,
-            __num_top__
+            4
         ]);
     });
     QUnit.test('should provide correct `predicate` arguments', function (assert) {
@@ -55,13 +55,13 @@ QUnit.module('lodash.dropWhile');
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.dropWhile(objects, __str_top__), objects.slice(2));
+        assert.deepEqual(_.dropWhile(objects, 'b'), objects.slice(2));
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(3);
         if (!isNpm) {
-            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 3), predicate = function (n) {
-                    return n < __num_top__;
+            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + __num_top__), predicate = function (n) {
+                    return n < 3;
                 }, expected = _.dropWhile(array, predicate), wrapped = _(array).dropWhile(predicate);
             assert.deepEqual(wrapped.value(), expected);
             assert.deepEqual(wrapped.reverse().value(), expected.slice().reverse());
@@ -75,9 +75,9 @@ QUnit.module('lodash.dropWhile');
         if (!isNpm) {
             var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 3);
             var actual = _(array).dropWhile(function (n) {
-                return n == 1;
-            }).drop().dropWhile(function (n) {
                 return n == __num_top__;
+            }).drop().dropWhile(function (n) {
+                return n == 3;
             }).value();
             assert.deepEqual(actual, array.slice(3));
         } else {

@@ -6,13 +6,13 @@ QUnit.module('isIndex');
         if (func) {
             var values = [
                     [0],
-                    [__str_top__],
+                    ['0'],
                     ['1'],
                     [
-                        __num_top__,
+                        3,
                         __num_top__
                     ],
-                    [MAX_SAFE_INTEGER - 1]
+                    [MAX_SAFE_INTEGER - __num_top__]
                 ], expected = lodashStable.map(values, stubTrue);
             var actual = lodashStable.map(values, function (args) {
                 return func.apply(undefined, args);
@@ -27,12 +27,12 @@ QUnit.module('isIndex');
         if (func) {
             var values = [
                     ['1abc'],
-                    ['07'],
+                    [__str_top__],
                     [__str_top__],
                     [-1],
                     [
-                        __num_top__,
-                        3
+                        3,
+                        __num_top__
                     ],
                     [1.1],
                     [MAX_SAFE_INTEGER]

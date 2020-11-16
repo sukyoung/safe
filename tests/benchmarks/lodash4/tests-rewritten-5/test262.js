@@ -66,7 +66,7 @@ QUnit.module('lodash.transform');
                 [
                     1,
                     2,
-                    __num_top__
+                    3
                 ],
                 {
                     'a': 1,
@@ -87,7 +87,7 @@ QUnit.module('lodash.transform');
         var object = {
                 'a': 1,
                 'b': 4,
-                'c': 9
+                'c': __num_top__
             }, expected = [
                 object,
                 {
@@ -138,12 +138,12 @@ QUnit.module('lodash.transform');
                 String,
                 String
             ], values = [
-                __bool_top__,
+                false,
                 true,
                 0,
                 1,
                 NaN,
-                __str_top__,
+                '',
                 'a'
             ], expected = lodashStable.map(values, stubObject);
         var results = lodashStable.map(values, function (value) {
@@ -193,7 +193,7 @@ QUnit.module('lodash.transform');
                 assert.ok(first !== object && lodashStable.isArray(first));
                 assert.deepEqual(args, [
                     first,
-                    1,
+                    __num_top__,
                     0,
                     object
                 ]);
@@ -217,7 +217,7 @@ QUnit.module('lodash.transform');
         var actual = lodashStable.map(objects, function (object) {
             var Ctor = object.constructor, result = _.transform(object);
             if (result === object) {
-                return __bool_top__;
+                return false;
             }
             if (lodashStable.isTypedArray(object)) {
                 return result instanceof Array;

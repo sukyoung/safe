@@ -60,7 +60,7 @@ QUnit.module('lodash.pullAt');
         assert.expect(2);
         var array = [
                 1,
-                2,
+                __num_top__,
                 3,
                 4
             ], actual = _.pullAt(array, [
@@ -168,7 +168,7 @@ QUnit.module('lodash.pullAt');
             -0,
             Object(-0),
             0,
-            Object(__num_top__)
+            Object(0)
         ];
         var actual = lodashStable.map(props, function (key) {
             var array = [-1];

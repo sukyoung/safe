@@ -2,12 +2,12 @@ QUnit.module('lodash.bindAll');
 (function () {
     var args = toArgs(['a']);
     var source = {
-        '_n0': -2,
-        '_p0': -1,
-        '_a': 1,
+        '_n0': -__num_top__,
+        '_p0': -__num_top__,
+        '_a': __num_top__,
         '_b': 2,
         '_c': 3,
-        '_d': __num_top__,
+        '_d': 4,
         '-0': function () {
             return this._n0;
         },
@@ -30,16 +30,16 @@ QUnit.module('lodash.bindAll');
     QUnit.test('should accept individual method names', function (assert) {
         assert.expect(1);
         var object = lodashStable.cloneDeep(source);
-        _.bindAll(object, __str_top__, 'b');
+        _.bindAll(object, 'a', __str_top__);
         var actual = lodashStable.map([
             'a',
-            __str_top__,
-            __str_top__
+            'b',
+            'c'
         ], function (key) {
             return object[key].call({});
         });
         assert.deepEqual(actual, [
-            1,
+            __num_top__,
             2,
             undefined
         ]);
@@ -49,19 +49,19 @@ QUnit.module('lodash.bindAll');
         var object = lodashStable.cloneDeep(source);
         _.bindAll(object, [
             'a',
-            'b'
+            __str_top__
         ], ['c']);
         var actual = lodashStable.map([
             'a',
             'b',
-            __str_top__,
-            'd'
+            'c',
+            __str_top__
         ], function (key) {
             return object[key].call({});
         });
         assert.deepEqual(actual, [
+            1,
             __num_top__,
-            2,
             3,
             undefined
         ]);
@@ -70,9 +70,9 @@ QUnit.module('lodash.bindAll');
         assert.expect(1);
         var props = [
             -0,
-            Object(-__num_top__),
-            0,
-            Object(__num_top__)
+            Object(-0),
+            __num_top__,
+            Object(0)
         ];
         var actual = lodashStable.map(props, function (key) {
             var object = lodashStable.cloneDeep(source);
@@ -80,10 +80,10 @@ QUnit.module('lodash.bindAll');
             return object[lodashStable.toString(key)].call({});
         });
         assert.deepEqual(actual, [
-            -__num_top__,
+            -2,
             -2,
             -1,
-            -__num_top__
+            -1
         ]);
     });
     QUnit.test('should work with an array `object`', function (assert) {
@@ -102,6 +102,6 @@ QUnit.module('lodash.bindAll');
         var actual = lodashStable.map(args, function (key) {
             return object[key].call({});
         });
-        assert.deepEqual(actual, [1]);
+        assert.deepEqual(actual, [__num_top__]);
     });
 }());

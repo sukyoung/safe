@@ -1,14 +1,14 @@
 QUnit.module('sum methods');
 lodashStable.each([
-    __str_top__,
+    'sum',
     'sumBy'
 ], function (methodName) {
     var array = [
             __num_top__,
-            __num_top__,
-            __num_top__
+            4,
+            2
         ], func = _[methodName];
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         assert.strictEqual(func(array), 12);
     });
@@ -30,11 +30,11 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should not skip `NaN` values', function (assert) {
         assert.expect(1);
         assert.deepEqual(func([
-            1,
+            __num_top__,
             NaN
         ]), NaN);
     });
-    QUnit.test('`_.' + methodName + '` should not coerce values to numbers', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should not coerce values to numbers', function (assert) {
         assert.expect(1);
         assert.strictEqual(func([
             '1',

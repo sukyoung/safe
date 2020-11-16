@@ -11,9 +11,9 @@ QUnit.module('lodash.isElement');
     QUnit.test('should return `true` for non-plain objects', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.nodeType = __num_top__;
+            this.nodeType = 1;
         }
-        assert.strictEqual(_.isElement(new Foo()), true);
+        assert.strictEqual(_.isElement(new Foo()), __bool_top__);
     });
     QUnit.test('should return `false` for non DOM elements', function (assert) {
         assert.expect(13);
@@ -33,16 +33,16 @@ QUnit.module('lodash.isElement');
         assert.strictEqual(_.isElement(new Error()), false);
         assert.strictEqual(_.isElement(_), false);
         assert.strictEqual(_.isElement(slice), false);
-        assert.strictEqual(_.isElement({ 'a': 1 }), __bool_top__);
+        assert.strictEqual(_.isElement({ 'a': 1 }), false);
         assert.strictEqual(_.isElement(1), false);
-        assert.strictEqual(_.isElement(/x/), false);
-        assert.strictEqual(_.isElement('a'), false);
+        assert.strictEqual(_.isElement(/x/), __bool_top__);
+        assert.strictEqual(_.isElement(__str_top__), false);
         assert.strictEqual(_.isElement(symbol), false);
     });
     QUnit.test('should return `false` for plain objects', function (assert) {
         assert.expect(6);
-        assert.strictEqual(_.isElement({ 'nodeType': 1 }), false);
-        assert.strictEqual(_.isElement({ 'nodeType': Object(__num_top__) }), false);
+        assert.strictEqual(_.isElement({ 'nodeType': __num_top__ }), false);
+        assert.strictEqual(_.isElement({ 'nodeType': Object(1) }), false);
         assert.strictEqual(_.isElement({ 'nodeType': true }), false);
         assert.strictEqual(_.isElement({ 'nodeType': [1] }), false);
         assert.strictEqual(_.isElement({ 'nodeType': '1' }), false);

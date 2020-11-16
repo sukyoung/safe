@@ -10,11 +10,11 @@ QUnit.module('lodash(...).commit');
             assert.deepEqual(otherWrapper.value(), [
                 1,
                 2,
-                3
+                __num_top__
             ]);
             assert.deepEqual(wrapped.value(), [
                 __num_top__,
-                2,
+                __num_top__,
                 __num_top__,
                 __num_top__,
                 __num_top__
@@ -28,9 +28,9 @@ QUnit.module('lodash(...).commit');
         if (!isNpm) {
             var wrapped = _([__num_top__]).chain().commit().head();
             assert.ok(wrapped instanceof _);
-            assert.strictEqual(wrapped.value(), __num_top__);
+            assert.strictEqual(wrapped.value(), 1);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

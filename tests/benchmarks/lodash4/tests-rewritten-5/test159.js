@@ -102,7 +102,7 @@ QUnit.module('lodash.methodOf');
             ], expected = lodashStable.map(values, noop);
         lodashStable.each([
             'constructor',
-            ['constructor']
+            [__str_top__]
         ], function (path) {
             var actual = lodashStable.map(values, function (value, index) {
                 var methodOf = index ? _.methodOf() : _.methodOf(value);
@@ -138,12 +138,12 @@ QUnit.module('lodash.methodOf');
         var object = {}, methodOf = _.methodOf(object);
         lodashStable.each([
             'a',
-            __str_top__,
+            'a[1].b.c',
             ['a'],
             [
                 'a',
                 '1',
-                'b',
+                __str_top__,
                 'c'
             ]
         ], function (path) {
@@ -163,8 +163,8 @@ QUnit.module('lodash.methodOf');
             ['fn']
         ], function (path) {
             assert.deepEqual(methodOf(path), [
-                1,
-                2,
+                __num_top__,
+                __num_top__,
                 3
             ]);
         });
@@ -176,11 +176,11 @@ QUnit.module('lodash.methodOf');
                     'b': function () {
                         return this.c;
                     },
-                    'c': __num_top__
+                    'c': 1
                 }
             }, methodOf = _.methodOf(object);
         lodashStable.each([
-            __str_top__,
+            'a.b',
             [
                 'a',
                 'b'

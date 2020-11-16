@@ -24,10 +24,10 @@ QUnit.module('lodash.meanBy');
         assert.expect(2);
         var arrays = [
             [2],
-            [__num_top__],
+            [3],
             [1]
         ];
-        assert.strictEqual(_.meanBy(arrays, 0), 2);
+        assert.strictEqual(_.meanBy(arrays, __num_top__), 2);
         assert.strictEqual(_.meanBy(objects, 'a'), 2);
     });
 }());

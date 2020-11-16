@@ -3,10 +3,10 @@ lodashStable.each([
     'debounce',
     'throttle'
 ], function (methodName) {
-    var func = _[methodName], isDebounce = methodName == __str_top__;
+    var func = _[methodName], isDebounce = methodName == 'debounce';
     QUnit.test('`_.' + methodName + '` should not error for non-object `options` values', function (assert) {
         assert.expect(1);
-        func(noop, __num_top__, 1);
+        func(noop, 32, 1);
         assert.ok(true);
     });
     QUnit.test('`_.' + methodName + '` should use a default `wait` of `0`', function (assert) {
@@ -18,7 +18,7 @@ lodashStable.each([
         funced();
         setTimeout(function () {
             funced();
-            assert.strictEqual(callCount, isDebounce ? 1 : 2);
+            assert.strictEqual(callCount, isDebounce ? __num_top__ : 2);
             done();
         }, 32);
     });
@@ -58,16 +58,16 @@ lodashStable.each([
             actual.push(current);
             var next = queue.shift();
             if (next) {
-                funced.call(next[0], next[1]);
+                funced.call(next[__num_top__], next[1]);
             }
-        }, 32);
+        }, __num_top__);
         var next = queue.shift();
         funced.call(next[0], next[1]);
-        assert.deepEqual(actual, expected.slice(0, isDebounce ? 0 : 1));
+        assert.deepEqual(actual, expected.slice(__num_top__, isDebounce ? 0 : 1));
         setTimeout(function () {
             assert.deepEqual(actual, expected.slice(0, actual.length));
             done();
-        }, __num_top__);
+        }, 256);
     });
     QUnit.test('`_.' + methodName + '` should work if the system time is set backwards', function (assert) {
         assert.expect(1);
@@ -77,17 +77,17 @@ lodashStable.each([
             var lodash = _.runInContext({
                 'Date': {
                     'now': function () {
-                        return ++dateCount == 4 ? +new Date(2012, 3, 23, 23, 27, 18) : +new Date();
+                        return ++dateCount == 4 ? +new Date(__num_top__, 3, 23, 23, 27, 18) : +new Date();
                     }
                 }
             });
             var funced = lodash[methodName](function () {
                 callCount++;
-            }, 32);
+            }, __num_top__);
             funced();
             setTimeout(function () {
                 funced();
-                assert.strictEqual(callCount, isDebounce ? 1 : __num_top__);
+                assert.strictEqual(callCount, isDebounce ? 1 : 2);
                 done();
             }, 64);
         } else {
@@ -98,7 +98,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var done = assert.async();
-        var callCount = __num_top__;
+        var callCount = 0;
         var funced = func(function () {
             callCount++;
         }, 32, { 'leading': false });
@@ -112,7 +112,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should reset `lastCalled` after cancelling', function (assert) {
         assert.expect(3);
         var done = assert.async();
-        var callCount = __num_top__;
+        var callCount = 0;
         var funced = func(function () {
             return ++callCount;
         }, 32, { 'leading': true });
@@ -121,9 +121,9 @@ lodashStable.each([
         assert.strictEqual(funced(), 2);
         funced();
         setTimeout(function () {
-            assert.strictEqual(callCount, 3);
+            assert.strictEqual(callCount, __num_top__);
             done();
-        }, __num_top__);
+        }, 64);
     });
     QUnit.test('`_.' + methodName + '` should support flushing delayed calls', function (assert) {
         assert.expect(2);
@@ -131,7 +131,7 @@ lodashStable.each([
         var callCount = 0;
         var funced = func(function () {
             return ++callCount;
-        }, 32, { 'leading': false });
+        }, 32, { 'leading': __bool_top__ });
         funced();
         assert.strictEqual(funced.flush(), 1);
         setTimeout(function () {
@@ -148,7 +148,7 @@ lodashStable.each([
         funced.cancel();
         assert.strictEqual(funced.flush(), undefined);
         setTimeout(function () {
-            assert.strictEqual(callCount, __num_top__);
+            assert.strictEqual(callCount, 0);
             done();
         }, 64);
     });

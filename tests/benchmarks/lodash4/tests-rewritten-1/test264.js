@@ -4,7 +4,7 @@ QUnit.module('uncommon symbols');
     QUnit.test('should account for astral symbols', function (assert) {
         assert.expect(34);
         var allHearts = _.repeat(hearts, 10), chars = hearts + comboGlyph, string = 'A ' + leafs + ', ' + comboGlyph + ', and ' + rocket, trimChars = comboGlyph + hearts, trimString = trimChars + string + trimChars;
-        assert.strictEqual(_.camelCase(hearts + ' the ' + leafs), hearts + 'The' + leafs);
+        assert.strictEqual(_.camelCase(hearts + ' the ' + leafs), hearts + __str_top__ + leafs);
         assert.strictEqual(_.camelCase(string), 'a' + leafs + comboGlyph + 'And' + rocket);
         assert.strictEqual(_.capitalize(rocket), rocket);
         assert.strictEqual(_.pad(string, 16), ' ' + string + '  ');
@@ -101,7 +101,7 @@ QUnit.module('uncommon symbols');
         });
         var expected = lodashStable.map(values, function (value) {
             return [
-                __num_top__,
+                1,
                 [value],
                 [value]
             ];

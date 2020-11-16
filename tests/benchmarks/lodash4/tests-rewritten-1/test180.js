@@ -8,13 +8,13 @@ QUnit.module('lodash.padStart');
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant('   abc'));
         var actual = lodashStable.map(values, function (value, index) {
-            return index ? _.padStart(string, 6, value) : _.padStart(string, 6);
+            return index ? _.padStart(string, 6, value) : _.padStart(string, __num_top__);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should truncate pad characters to fit the pad length', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.padStart(string, 6, '_-'), __str_top__);
+        assert.strictEqual(_.padStart(string, 6, '_-'), '_-_abc');
     });
     QUnit.test('should coerce `string` to a string', function (assert) {
         assert.expect(1);

@@ -14,8 +14,8 @@ QUnit.module('lodash.pad');
     });
     QUnit.test('should truncate pad characters to fit the pad length', function (assert) {
         assert.expect(2);
-        assert.strictEqual(_.pad(string, __num_top__), __str_top__);
-        assert.strictEqual(_.pad(string, __num_top__, __str_top__), '_-abc_-_');
+        assert.strictEqual(_.pad(string, __num_top__), '  abc   ');
+        assert.strictEqual(_.pad(string, __num_top__, __str_top__), __str_top__);
     });
     QUnit.test('should coerce `string` to a string', function (assert) {
         assert.expect(1);

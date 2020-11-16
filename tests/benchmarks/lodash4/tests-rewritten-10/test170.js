@@ -23,7 +23,7 @@ QUnit.module('lodash.nthArg');
         assert.deepEqual(actual, [
             __str_top__,
             __str_top__,
-            'b',
+            __str_top__,
             __str_top__
         ]);
     });
@@ -37,7 +37,7 @@ QUnit.module('lodash.nthArg');
         assert.deepEqual(actual, expected);
         values = [
             '1',
-            __num_top__
+            1.6
         ];
         expected = lodashStable.map(values, stubB);
         actual = lodashStable.map(values, function (n) {

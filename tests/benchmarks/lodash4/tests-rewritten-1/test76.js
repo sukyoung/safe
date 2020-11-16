@@ -22,7 +22,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should assign own ' + (isAssign ? '' : 'and inherited ') + 'string keyed source properties', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = 1;
+            this.a = __num_top__;
         }
         Foo.prototype.b = 2;
         var expected = isAssign ? { 'a': 1 } : {
@@ -206,7 +206,7 @@ lodashStable.each([
         });
         assert.deepEqual(args, expected, 'undefined properties');
     });
-    QUnit.test(__str_top__ + methodName + '` should not treat the second argument as a `customizer` callback', function (assert) {
+    QUnit.test('`_.' + methodName + '` should not treat the second argument as a `customizer` callback', function (assert) {
         assert.expect(2);
         function callback() {
         }

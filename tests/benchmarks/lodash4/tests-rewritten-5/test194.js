@@ -12,8 +12,8 @@ QUnit.module('lodash.pullAllWith');
                     'y': __num_top__
                 },
                 {
-                    'x': 3,
-                    'y': __num_top__
+                    'x': __num_top__,
+                    'y': 3
                 }
             ], expected = [
                 objects[0],

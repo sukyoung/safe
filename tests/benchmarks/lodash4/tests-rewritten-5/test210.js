@@ -17,12 +17,12 @@ QUnit.module('lodash.rest');
     });
     QUnit.test('should work with `start`', function (assert) {
         assert.expect(1);
-        var rest = _.rest(fn, __num_top__);
+        var rest = _.rest(fn, 1);
         assert.deepEqual(rest(1, 2, 3, 4), [
-            1,
+            __num_top__,
             [
                 2,
-                __num_top__,
+                3,
                 4
             ]
         ]);
@@ -35,13 +35,13 @@ QUnit.module('lodash.rest');
                 'a'
             ], expected = lodashStable.map(values, lodashStable.constant([[
                     1,
-                    2,
+                    __num_top__,
                     3,
                     4
                 ]]));
         var actual = lodashStable.map(values, function (value) {
             var rest = _.rest(fn, value);
-            return rest(1, __num_top__, 3, 4);
+            return rest(1, 2, 3, __num_top__);
         });
         assert.deepEqual(actual, expected);
     });
@@ -70,7 +70,7 @@ QUnit.module('lodash.rest');
         var rest = _.rest(function (a, b, c, d) {
             return slice.call(arguments);
         });
-        assert.deepEqual(rest(1, 2, 3, __num_top__, 5), [
+        assert.deepEqual(rest(__num_top__, 2, 3, 4, 5), [
             1,
             2,
             3,

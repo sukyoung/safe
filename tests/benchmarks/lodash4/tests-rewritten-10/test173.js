@@ -1,15 +1,15 @@
 QUnit.module('omit methods');
 lodashStable.each([
-    __str_top__,
+    'omit',
     'omitBy'
 ], function (methodName) {
     var expected = {
-            'b': 2,
+            'b': __num_top__,
             'd': 4
         }, func = _[methodName], object = {
             'a': 1,
             'b': 2,
-            'c': __num_top__,
+            'c': 3,
             'd': 4
         }, resolve = lodashStable.nthArg(1);
     if (methodName == __str_top__) {
@@ -45,16 +45,16 @@ lodashStable.each([
             'c'
         ])), expected);
     });
-    QUnit.test('`_.' + methodName + '` should preserve the sign of `0`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var object = {
-                '-0': 'a',
+                '-0': __str_top__,
                 '0': 'b'
             }, props = [
                 -0,
                 Object(-0),
                 0,
-                Object(0)
+                Object(__num_top__)
             ], expected = [
                 { '0': __str_top__ },
                 { '0': 'b' },
@@ -69,12 +69,12 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should include symbols', function (assert) {
         assert.expect(3);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 0;
             this[symbol] = 1;
         }
         if (Symbol) {
-            var symbol2 = Symbol(__str_top__);
-            Foo.prototype[symbol2] = 2;
+            var symbol2 = Symbol('b');
+            Foo.prototype[symbol2] = __num_top__;
             var symbol3 = Symbol('c');
             defineProperty(Foo.prototype, symbol3, {
                 'configurable': true,
@@ -83,7 +83,7 @@ lodashStable.each([
                 'value': 3
             });
             var foo = new Foo(), actual = func(foo, resolve(foo, 'a'));
-            assert.strictEqual(actual[symbol], 1);
+            assert.strictEqual(actual[symbol], __num_top__);
             assert.strictEqual(actual[symbol2], 2);
             assert.notOk(symbol3 in actual);
         } else {
@@ -107,12 +107,12 @@ lodashStable.each([
                 'value': 3
             });
             var foo = new Foo(), actual = func(foo, resolve(foo, symbol));
-            assert.strictEqual(actual.a, 0);
+            assert.strictEqual(actual.a, __num_top__);
             assert.notOk(symbol in actual);
-            assert.strictEqual(actual[symbol2], __num_top__);
+            assert.strictEqual(actual[symbol2], 2);
             assert.notOk(symbol3 in actual);
             actual = func(foo, resolve(foo, symbol2));
-            assert.strictEqual(actual.a, __num_top__);
+            assert.strictEqual(actual.a, 0);
             assert.strictEqual(actual[symbol], 1);
             assert.notOk(symbol2 in actual);
             assert.notOk(symbol3 in actual);
@@ -120,16 +120,16 @@ lodashStable.each([
             skipAssert(assert, 8);
         }
     });
-    QUnit.test('`_.' + methodName + '` should work with an array `object`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var array = [
             1,
-            __num_top__,
+            2,
             3
         ];
         assert.deepEqual(func(array, resolve(array, [
             '0',
-            __str_top__
+            '2'
         ])), { '1': 2 });
     });
 });

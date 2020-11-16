@@ -1,6 +1,6 @@
 QUnit.module('lodash.unescape');
 (function () {
-    var escaped = '&amp;&lt;&gt;&quot;&#39;/', unescaped = __str_top__;
+    var escaped = '&amp;&lt;&gt;&quot;&#39;/', unescaped = '&<>"\'/';
     escaped += escaped;
     unescaped += unescaped;
     QUnit.test('should unescape entities in order', function (assert) {
@@ -21,7 +21,7 @@ QUnit.module('lodash.unescape');
     });
     lodashStable.each([
         '&#96;',
-        '&#x2F;'
+        __str_top__
     ], function (entity) {
         QUnit.test('should not unescape the "' + entity + '" entity', function (assert) {
             assert.expect(1);

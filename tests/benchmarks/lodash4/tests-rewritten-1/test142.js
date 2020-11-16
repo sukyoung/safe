@@ -9,7 +9,7 @@ lodashStable.each([
             3,
             1,
             2,
-            3
+            __num_top__
         ], func = _[methodName], resolve = methodName == 'findLastIndex' ? lodashStable.curry(lodashStable.eq) : identity;
     QUnit.test('`_.' + methodName + '` should return the index of the last matched value', function (assert) {
         assert.expect(1);
@@ -44,7 +44,7 @@ lodashStable.each([
         assert.expect(1);
         assert.strictEqual(func(array, resolve(2), -3), 1);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with a negative `fromIndex` <= `-length`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a negative `fromIndex` <= `-length`', function (assert) {
         assert.expect(1);
         var values = [
                 -6,

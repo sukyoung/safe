@@ -7,15 +7,15 @@ lodashStable.each([
         return implicit ? _(value) : _.chain(value);
     }
     var chainType = 'in an ' + (implicit ? 'implicit' : 'explict') + ' chain';
-    QUnit.test(__str_top__ + chainType, function (assert) {
+    QUnit.test('should follow the iterator protocol ' + chainType, function (assert) {
         assert.expect(3);
         if (!isNpm) {
             var wrapped = chain([
-                1,
-                __num_top__
+                __num_top__,
+                2
             ]);
             assert.deepEqual(wrapped.next(), {
-                'done': false,
+                'done': __bool_top__,
                 'value': 1
             });
             assert.deepEqual(wrapped.next(), {
@@ -23,7 +23,7 @@ lodashStable.each([
                 'value': 2
             });
             assert.deepEqual(wrapped.next(), {
-                'done': true,
+                'done': __bool_top__,
                 'value': undefined
             });
         } else {
@@ -35,7 +35,7 @@ lodashStable.each([
         if (!isNpm && Symbol && Symbol.iterator) {
             var array = [
                     1,
-                    __num_top__
+                    2
                 ], wrapped = chain(array);
             assert.strictEqual(wrapped[Symbol.iterator](), wrapped);
             assert.deepEqual(lodashStable.toArray(wrapped), array);
@@ -59,7 +59,7 @@ lodashStable.each([
             skipAssert(assert, 3);
         }
     });
-    QUnit.test(__str_top__ + chainType, function (assert) {
+    QUnit.test('should reset the iterator correctly ' + chainType, function (assert) {
         assert.expect(4);
         if (!isNpm && Symbol && Symbol.iterator) {
             var array = [
@@ -69,7 +69,7 @@ lodashStable.each([
             assert.deepEqual(lodashStable.toArray(wrapped), array);
             assert.deepEqual(lodashStable.toArray(wrapped), [], 'produces an empty array for exhausted iterator');
             var other = wrapped.filter();
-            assert.deepEqual(lodashStable.toArray(other), array, 'reset for new chain segments');
+            assert.deepEqual(lodashStable.toArray(other), array, __str_top__);
             assert.deepEqual(lodashStable.toArray(wrapped), [], 'iterator is still exhausted');
         } else {
             skipAssert(assert, 4);

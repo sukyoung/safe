@@ -4,7 +4,7 @@ QUnit.module('lodash.remove');
         assert.expect(2);
         var array = [
                 1,
-                __num_top__,
+                2,
                 3,
                 4
             ], actual = _.remove(array, isEven);
@@ -13,8 +13,8 @@ QUnit.module('lodash.remove');
             3
         ]);
         assert.deepEqual(actual, [
-            2,
-            __num_top__
+            __num_top__,
+            4
         ]);
     });
     QUnit.test('should provide correct `predicate` arguments', function (assert) {
@@ -26,7 +26,7 @@ QUnit.module('lodash.remove');
             ], clone = array.slice();
         _.remove(array, function (n, index) {
             var args = slice.call(arguments);
-            args[2] = args[2].slice();
+            args[2] = args[__num_top__].slice();
             argsList.push(args);
             return isEven(index);
         });
@@ -38,12 +38,12 @@ QUnit.module('lodash.remove');
             ],
             [
                 2,
-                __num_top__,
+                1,
                 clone
             ],
             [
                 3,
-                2,
+                __num_top__,
                 clone
             ]
         ]);
@@ -56,13 +56,13 @@ QUnit.module('lodash.remove');
                 'b': 1
             },
             {
-                'a': 1,
+                'a': __num_top__,
                 'b': 2
             }
         ];
         _.remove(objects, { 'a': 1 });
         assert.deepEqual(objects, [{
-                'a': 0,
+                'a': __num_top__,
                 'b': 1
             }]);
     });
@@ -70,11 +70,11 @@ QUnit.module('lodash.remove');
         assert.expect(1);
         var objects = [
             {
-                'a': __num_top__,
-                'b': 1
+                'a': 0,
+                'b': __num_top__
             },
             {
-                'a': __num_top__,
+                'a': 1,
                 'b': 2
             }
         ];
@@ -84,7 +84,7 @@ QUnit.module('lodash.remove');
         ]);
         assert.deepEqual(objects, [{
                 'a': 0,
-                'b': __num_top__
+                'b': 1
             }]);
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
@@ -94,15 +94,15 @@ QUnit.module('lodash.remove');
             { 'a': 1 }
         ];
         _.remove(objects, 'a');
-        assert.deepEqual(objects, [{ 'a': 0 }]);
+        assert.deepEqual(objects, [{ 'a': __num_top__ }]);
     });
     QUnit.test('should preserve holes in arrays', function (assert) {
         assert.expect(2);
         var array = [
-            1,
             __num_top__,
+            2,
             3,
-            __num_top__
+            4
         ];
         delete array[1];
         delete array[3];
@@ -110,7 +110,7 @@ QUnit.module('lodash.remove');
             return n === 1;
         });
         assert.notOk('0' in array);
-        assert.notOk(__str_top__ in array);
+        assert.notOk('2' in array);
     });
     QUnit.test('should treat holes as `undefined`', function (assert) {
         assert.expect(1);
@@ -124,7 +124,7 @@ QUnit.module('lodash.remove');
             return n == null;
         });
         assert.deepEqual(array, [
-            1,
+            __num_top__,
             3
         ]);
     });
@@ -133,11 +133,11 @@ QUnit.module('lodash.remove');
         var array = [
             1,
             2,
-            3
+            __num_top__
         ];
         _.remove(array, function (n, index) {
             return isEven(index);
         });
-        assert.deepEqual(array, [__num_top__]);
+        assert.deepEqual(array, [2]);
     });
 }());

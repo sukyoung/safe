@@ -2,13 +2,13 @@ QUnit.module('xor methods');
 lodashStable.each([
     'xor',
     'xorBy',
-    'xorWith'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName];
     QUnit.test('`_.' + methodName + '` should return the symmetric difference of two arrays', function (assert) {
         assert.expect(1);
         var actual = func([
-            2,
+            __num_top__,
             1
         ], [
             2,
@@ -33,7 +33,7 @@ lodashStable.each([
         ]);
         assert.deepEqual(actual, [
             1,
-            __num_top__
+            4
         ]);
         actual = func([
             1,
@@ -47,7 +47,7 @@ lodashStable.each([
         ]);
         assert.deepEqual(actual, []);
     });
-    QUnit.test(__str_top__ + methodName + '` should return an empty array when comparing the same array', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return an empty array when comparing the same array', function (assert) {
         assert.expect(1);
         var array = [1], actual = func(array, array, array);
         assert.deepEqual(actual, []);
@@ -60,13 +60,13 @@ lodashStable.each([
             2,
             5
         ], [
-            2,
+            __num_top__,
             2,
             3,
             5
         ], [
             3,
-            __num_top__,
+            4,
             5,
             5
         ]);
@@ -75,8 +75,8 @@ lodashStable.each([
             4
         ]);
         actual = func([
-            1,
-            __num_top__
+            __num_top__,
+            1
         ]);
         assert.deepEqual(actual, [1]);
     });
@@ -85,16 +85,16 @@ lodashStable.each([
         var array = [1];
         assert.notStrictEqual(func(array), array);
     });
-    QUnit.test(__str_top__ + methodName + '` should ignore individual secondary arguments', function (assert) {
+    QUnit.test('`_.' + methodName + '` should ignore individual secondary arguments', function (assert) {
         assert.expect(1);
-        var array = [0];
+        var array = [__num_top__];
         assert.deepEqual(func(array, 3, null, { '0': 1 }), array);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should ignore values that are not arrays or `arguments` objects', function (assert) {
         assert.expect(3);
         var array = [
             1,
-            __num_top__
+            2
         ];
         assert.deepEqual(func(array, 3, { '0': 1 }, null), array);
         assert.deepEqual(func(null, array, null, [
@@ -124,15 +124,15 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + '` should work when in a lazy sequence before `head` or `last`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            var array = lodashStable.range(LARGE_ARRAY_SIZE + 1), wrapped = _(array).slice(1)[methodName]([
+            var array = lodashStable.range(LARGE_ARRAY_SIZE + 1), wrapped = _(array).slice(__num_top__)[methodName]([
                     LARGE_ARRAY_SIZE,
                     LARGE_ARRAY_SIZE + 1
                 ]);
             var actual = lodashStable.map([
-                __str_top__,
+                'head',
                 'last'
             ], function (methodName) {
                 return wrapped[methodName]();

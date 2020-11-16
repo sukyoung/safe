@@ -5,12 +5,12 @@ QUnit.module('lodash.includes');
         'an array': [
             1,
             2,
-            __num_top__,
+            3,
             4
         ],
         'an object': {
-            'a': 1,
-            'b': __num_top__,
+            'a': __num_top__,
+            'b': 2,
             'c': 3,
             'd': 4
         },
@@ -18,15 +18,15 @@ QUnit.module('lodash.includes');
     }, function (collection, key) {
         QUnit.test('should work with ' + key + ' and  return `true` for  matched values', function (assert) {
             assert.expect(1);
-            assert.strictEqual(_.includes(collection, __num_top__), true);
+            assert.strictEqual(_.includes(collection, 3), true);
         });
-        QUnit.test('should work with ' + key + ' and  return `false` for unmatched values', function (assert) {
+        QUnit.test(__str_top__ + key + ' and  return `false` for unmatched values', function (assert) {
             assert.expect(1);
             assert.strictEqual(_.includes(collection, 5), false);
         });
-        QUnit.test('should work with ' + key + ' and floor `position` values', function (assert) {
+        QUnit.test('should work with ' + key + __str_top__, function (assert) {
             assert.expect(1);
-            assert.strictEqual(_.includes(collection, 2, 1.2), __bool_top__);
+            assert.strictEqual(_.includes(collection, 2, 1.2), true);
         });
         QUnit.test('should work with ' + key + ' and return an unwrapped value implicitly when chaining', function (assert) {
             assert.expect(1);
@@ -36,7 +36,7 @@ QUnit.module('lodash.includes');
                 skipAssert(assert);
             }
         });
-        QUnit.test('should work with ' + key + __str_top__, function (assert) {
+        QUnit.test('should work with ' + key + ' and return a wrapped value when explicitly chaining', function (assert) {
             assert.expect(1);
             if (!isNpm) {
                 assert.ok(_(collection).chain().includes(3) instanceof _);
@@ -47,12 +47,12 @@ QUnit.module('lodash.includes');
     });
     lodashStable.each({
         'literal': 'abc',
-        'object': Object('abc')
+        'object': Object(__str_top__)
     }, function (collection, key) {
         QUnit.test('should work with a string ' + key + ' for `collection`', function (assert) {
             assert.expect(2);
             assert.strictEqual(_.includes(collection, 'bc'), true);
-            assert.strictEqual(_.includes(collection, 'd'), false);
+            assert.strictEqual(_.includes(collection, 'd'), __bool_top__);
         });
     });
     QUnit.test('should return `false` for empty collections', function (assert) {
@@ -69,14 +69,14 @@ QUnit.module('lodash.includes');
     QUnit.test('should work with a string and a `fromIndex` >= `length`', function (assert) {
         assert.expect(1);
         var string = '1234', length = string.length, indexes = [
-                4,
+                __num_top__,
                 6,
-                Math.pow(__num_top__, __num_top__),
+                Math.pow(2, 32),
                 Infinity
             ];
         var expected = lodashStable.map(indexes, function (index) {
             return [
-                __bool_top__,
+                false,
                 false,
                 index == length
             ];
@@ -101,14 +101,14 @@ QUnit.module('lodash.includes');
     QUnit.test('should match `-0` as `0`', function (assert) {
         assert.expect(2);
         assert.strictEqual(_.includes([-0], 0), true);
-        assert.strictEqual(_.includes([0], -__num_top__), true);
+        assert.strictEqual(_.includes([0], -0), true);
     });
     QUnit.test('should work as an iteratee for methods like `_.every`', function (assert) {
         assert.expect(1);
         var array = [
                 2,
-                3,
-                1
+                __num_top__,
+                __num_top__
             ], values = [
                 1,
                 2,
@@ -116,4 +116,4 @@ QUnit.module('lodash.includes');
             ];
         assert.ok(lodashStable.every(values, lodashStable.partial(_.includes, array)));
     });
-}(1, 2, __num_top__, 4));
+}(__num_top__, __num_top__, 3, 4));

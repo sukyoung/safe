@@ -30,7 +30,7 @@ QUnit.module('lodash.throttle');
         setTimeout(function () {
             var results = [
                 throttled('c'),
-                throttled(__str_top__)
+                throttled('d')
             ];
             assert.notEqual(results[0], 'a');
             assert.notStrictEqual(results[0], undefined);
@@ -43,7 +43,7 @@ QUnit.module('lodash.throttle');
         assert.expect(1);
         var done = assert.async();
         if (!isModularize) {
-            var callCount = 0, dateCount = __num_top__;
+            var callCount = 0, dateCount = 0;
             var lodash = _.runInContext({
                 'Date': {
                     'now': function () {
@@ -57,7 +57,7 @@ QUnit.module('lodash.throttle');
             throttled();
             throttled();
             setTimeout(function () {
-                assert.strictEqual(callCount, 2);
+                assert.strictEqual(callCount, __num_top__);
                 done();
             }, 64);
         } else {
@@ -84,7 +84,7 @@ QUnit.module('lodash.throttle');
             var done = assert.async();
             var callCount = 0, limit = argv || isPhantom ? 1000 : 320, options = index ? { 'leading': false } : {}, throttled = _.throttle(function () {
                     callCount++;
-                }, 32, options);
+                }, __num_top__, options);
             var start = +new Date();
             while (new Date() - start < limit) {
                 throttled();
@@ -102,7 +102,7 @@ QUnit.module('lodash.throttle');
         var callCount = 0;
         var throttled = _.throttle(function () {
             callCount++;
-        }, 128, { 'leading': __bool_top__ });
+        }, 128, { 'leading': false });
         throttled();
         setTimeout(function () {
             assert.strictEqual(callCount, 1);
@@ -124,16 +124,16 @@ QUnit.module('lodash.throttle');
             }, 32, {});
         throttled();
         throttled();
-        assert.strictEqual(callCount, __num_top__);
+        assert.strictEqual(callCount, 1);
         setTimeout(function () {
             assert.strictEqual(callCount, 2);
             done();
-        }, __num_top__);
+        }, 128);
     });
     QUnit.test('should support a `leading` option', function (assert) {
         assert.expect(2);
-        var withLeading = _.throttle(identity, 32, { 'leading': true });
-        assert.strictEqual(withLeading(__str_top__), 'a');
+        var withLeading = _.throttle(identity, 32, { 'leading': __bool_top__ });
+        assert.strictEqual(withLeading(__str_top__), __str_top__);
         var withoutLeading = _.throttle(identity, 32, { 'leading': false });
         assert.strictEqual(withoutLeading('a'), undefined);
     });
@@ -149,13 +149,13 @@ QUnit.module('lodash.throttle');
             withoutCount++;
             return value;
         }, 64, { 'trailing': false });
-        assert.strictEqual(withTrailing('a'), 'a');
+        assert.strictEqual(withTrailing(__str_top__), 'a');
         assert.strictEqual(withTrailing('b'), 'a');
-        assert.strictEqual(withoutTrailing('a'), 'a');
+        assert.strictEqual(withoutTrailing('a'), __str_top__);
         assert.strictEqual(withoutTrailing('b'), 'a');
         setTimeout(function () {
             assert.strictEqual(withCount, 2);
-            assert.strictEqual(withoutCount, __num_top__);
+            assert.strictEqual(withoutCount, 1);
             done();
         }, 256);
     });
@@ -173,7 +173,7 @@ QUnit.module('lodash.throttle');
             throttled();
         }, 96);
         setTimeout(function () {
-            assert.ok(callCount > __num_top__);
+            assert.ok(callCount > 1);
             done();
         }, 192);
     });
@@ -194,18 +194,18 @@ QUnit.module('lodash.throttle');
                 return value;
             }, 32);
             var results = [
-                throttled('a'),
+                throttled(__str_top__),
                 throttled('b'),
                 throttled('c')
             ];
             assert.deepEqual(results, [
-                __str_top__,
+                'a',
                 'a',
                 'a'
             ]);
             assert.strictEqual(callCount, 1);
             setTimeout(function () {
-                assert.strictEqual(callCount, 2);
+                assert.strictEqual(callCount, __num_top__);
                 done();
             }, 64);
         } else {

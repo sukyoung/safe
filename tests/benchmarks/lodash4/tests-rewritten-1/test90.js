@@ -113,7 +113,7 @@ lodashStable.each([
         assert.expect(1);
         var values = [
                 -0,
-                __num_top__
+                0
             ], expected = lodashStable.map(values, lodashStable.constant(['0']));
         var actual = lodashStable.map(values, function (value) {
             var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, lodashStable.constant(value));
@@ -121,7 +121,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays of `NaN`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubNaN);
         assert.deepEqual(func([

@@ -15,8 +15,8 @@ QUnit.module('lodash.isDate');
         assert.strictEqual(_.isDate([
             1,
             2,
-            __num_top__
-        ]), false);
+            3
+        ]), __bool_top__);
         assert.strictEqual(_.isDate(true), false);
         assert.strictEqual(_.isDate(new Error()), false);
         assert.strictEqual(_.isDate(_), false);

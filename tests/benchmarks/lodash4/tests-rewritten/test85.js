@@ -52,7 +52,7 @@ QUnit.module('lodash.head');
             assert.strictEqual(wrapped.head(), __num_top__);
             assert.strictEqual(wrapped.first(), __num_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should return a wrapped value when explicitly chaining', function (assert) {
@@ -62,7 +62,7 @@ QUnit.module('lodash.head');
             assert.ok(wrapped.head() instanceof _);
             assert.ok(wrapped.first() instanceof _);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should not execute immediately when explicitly chaining', function (assert) {
@@ -72,7 +72,7 @@ QUnit.module('lodash.head');
             assert.strictEqual(wrapped.head().__wrapped__, array);
             assert.strictEqual(wrapped.first().__wrapped__, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -89,7 +89,7 @@ QUnit.module('lodash.head');
                 });
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
 }());

@@ -1,8 +1,8 @@
 QUnit.module('flatMap methods');
 lodashStable.each([
     __str_top__,
-    'flatMapDeep',
-    __str_top__
+    __str_top__,
+    'flatMapDepth'
 ], function (methodName) {
     var func = _[methodName], array = [
             1,
@@ -32,12 +32,12 @@ lodashStable.each([
             },
             {
                 'a': [
-                    __num_top__,
+                    3,
                     4
                 ]
             }
         ];
-        assert.deepEqual(func(objects, 'a'), array);
+        assert.deepEqual(func(objects, __str_top__), array);
     });
     QUnit.test('`_.' + methodName + '` should iterate over own string keyed properties of objects', function (assert) {
         assert.expect(1);
@@ -48,30 +48,30 @@ lodashStable.each([
             ];
         }
         Foo.prototype.b = [
-            3,
+            __num_top__,
             4
         ];
         var actual = func(new Foo(), identity);
         assert.deepEqual(actual, [
             1,
-            2
+            __num_top__
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should use `_.identity` when `iteratee` is nullish', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should use `_.identity` when `iteratee` is nullish', function (assert) {
         assert.expect(2);
         var array = [
                 [
-                    1,
+                    __num_top__,
                     2
                 ],
                 [
                     3,
-                    __num_top__
+                    4
                 ]
             ], object = {
                 'a': [
                     1,
-                    2
+                    __num_top__
                 ],
                 'b': [
                     3,
@@ -83,8 +83,8 @@ lodashStable.each([
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant([
                 1,
-                __num_top__,
-                __num_top__,
+                2,
+                3,
                 4
             ]));
         lodashStable.each([
@@ -117,11 +117,11 @@ lodashStable.each([
         var object = {
             'length': [
                 1,
-                __num_top__
+                2
             ]
         };
         assert.deepEqual(func(object, identity), [
-            __num_top__,
+            1,
             2
         ]);
     });

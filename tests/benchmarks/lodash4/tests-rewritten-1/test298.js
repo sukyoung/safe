@@ -7,14 +7,14 @@ QUnit.module('lodash(...).splice');
                     1,
                     2
                 ], wrapped = _(array);
-            assert.deepEqual(wrapped.splice(1, 1, 3).value(), [2]);
+            assert.deepEqual(wrapped.splice(1, 1, 3).value(), [__num_top__]);
             assert.deepEqual(wrapped.value(), [
                 1,
                 3
             ]);
             assert.deepEqual(wrapped.splice(0, 2).value(), [
                 1,
-                __num_top__
+                3
             ]);
             var actual = wrapped.value();
             assert.strictEqual(actual, array);

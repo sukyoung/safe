@@ -82,7 +82,7 @@ QUnit.module('lodash.throttle');
         QUnit.test('should trigger a call when invoked repeatedly' + (index ? ' and `leading` is `false`' : ''), function (assert) {
             assert.expect(1);
             var done = assert.async();
-            var callCount = 0, limit = argv || isPhantom ? 1000 : 320, options = index ? { 'leading': __bool_top__ } : {}, throttled = _.throttle(function () {
+            var callCount = 0, limit = argv || isPhantom ? 1000 : 320, options = index ? { 'leading': false } : {}, throttled = _.throttle(function () {
                     callCount++;
                 }, 32, options);
             var start = +new Date();
@@ -134,7 +134,7 @@ QUnit.module('lodash.throttle');
         assert.expect(2);
         var withLeading = _.throttle(identity, 32, { 'leading': true });
         assert.strictEqual(withLeading('a'), 'a');
-        var withoutLeading = _.throttle(identity, 32, { 'leading': false });
+        var withoutLeading = _.throttle(identity, 32, { 'leading': __bool_top__ });
         assert.strictEqual(withoutLeading('a'), undefined);
     });
     QUnit.test('should support a `trailing` option', function (assert) {

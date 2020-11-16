@@ -41,7 +41,7 @@ QUnit.module('lodash(...) methods that return new wrapped values');
                 assert.ok(actual instanceof _);
                 assert.notStrictEqual(actual, wrapped);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 2);
             }
         });
     });

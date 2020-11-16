@@ -5,7 +5,7 @@ lodashStable.each([
 ], function (methodName) {
     var func = _[methodName], fn = function (a, b) {
             return slice.call(arguments);
-        }, isCurry = methodName == 'curry';
+        }, isCurry = methodName == __str_top__;
     QUnit.test('`_.' + methodName + '` should not error on functions with the same name as lodash methods', function (assert) {
         assert.expect(1);
         function run(a, b) {
@@ -16,9 +16,9 @@ lodashStable.each([
             var actual = curried(1)(2);
         } catch (e) {
         }
-        assert.strictEqual(actual, __num_top__);
+        assert.strictEqual(actual, 3);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work for function names that shadow those on `Object.prototype`', function (assert) {
         assert.expect(1);
         var curried = _.curry(function hasOwnProperty(a, b, c) {
             return [
@@ -51,13 +51,13 @@ lodashStable.each([
         ], function (collection) {
             var curries = lodashStable.map(collection, func), expected = lodashStable.map(collection, lodashStable.constant(isCurry ? [
                     'a',
-                    'b'
+                    __str_top__
                 ] : [
-                    __str_top__,
+                    'b',
                     __str_top__
                 ]));
             var actual = lodashStable.map(curries, function (curried) {
-                return curried('a')('b');
+                return curried('a')(__str_top__);
             });
             assert.deepEqual(actual, expected);
         });

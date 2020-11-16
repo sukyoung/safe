@@ -12,7 +12,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should use a default `wait` of `0`', function (assert) {
         assert.expect(1);
         var done = assert.async();
-        var callCount = 0, funced = func(function () {
+        var callCount = __num_top__, funced = func(function () {
                 callCount++;
             });
         funced();
@@ -137,7 +137,7 @@ lodashStable.each([
         setTimeout(function () {
             assert.strictEqual(callCount, 1);
             done();
-        }, __num_top__);
+        }, 64);
     });
     QUnit.test('`_.' + methodName + '` should noop `cancel` and `flush` when nothing is queued', function (assert) {
         assert.expect(2);

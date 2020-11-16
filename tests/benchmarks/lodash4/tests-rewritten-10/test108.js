@@ -4,13 +4,13 @@ QUnit.module('lodash.isError');
         assert.expect(1);
         var expected = lodashStable.map(errors, stubTrue);
         var actual = lodashStable.map(errors, function (error) {
-            return _.isError(error) === __bool_top__;
+            return _.isError(error) === true;
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should return `true` for subclassed values', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.isError(new CustomError(__str_top__)), __bool_top__);
+        assert.strictEqual(_.isError(new CustomError('x')), true);
     });
     QUnit.test('should return `false` for non error objects', function (assert) {
         assert.expect(12);
@@ -19,20 +19,20 @@ QUnit.module('lodash.isError');
             return index ? _.isError(value) : _.isError();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isError(args), false);
+        assert.strictEqual(_.isError(args), __bool_top__);
         assert.strictEqual(_.isError([
             __num_top__,
             2,
-            __num_top__
-        ]), false);
+            3
+        ]), __bool_top__);
         assert.strictEqual(_.isError(true), false);
         assert.strictEqual(_.isError(new Date()), false);
         assert.strictEqual(_.isError(_), __bool_top__);
         assert.strictEqual(_.isError(slice), false);
-        assert.strictEqual(_.isError({ 'a': __num_top__ }), false);
+        assert.strictEqual(_.isError({ 'a': __num_top__ }), __bool_top__);
         assert.strictEqual(_.isError(1), false);
-        assert.strictEqual(_.isError(/x/), false);
-        assert.strictEqual(_.isError(__str_top__), false);
+        assert.strictEqual(_.isError(/x/), __bool_top__);
+        assert.strictEqual(_.isError('a'), false);
         assert.strictEqual(_.isError(symbol), false);
     });
     QUnit.test('should return `false` for plain objects', function (assert) {
@@ -40,7 +40,7 @@ QUnit.module('lodash.isError');
         assert.strictEqual(_.isError({
             'name': __str_top__,
             'message': ''
-        }), false);
+        }), __bool_top__);
     });
     QUnit.test('should work with an error object from another realm', function (assert) {
         assert.expect(1);

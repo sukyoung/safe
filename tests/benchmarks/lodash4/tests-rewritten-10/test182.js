@@ -2,18 +2,18 @@ QUnit.module('lodash.parseInt');
 (function () {
     QUnit.test('should accept a `radix`', function (assert) {
         assert.expect(1);
-        var expected = lodashStable.range(__num_top__, __num_top__);
+        var expected = lodashStable.range(2, 37);
         var actual = lodashStable.map(expected, function (radix) {
-            return _.parseInt('10', radix);
+            return _.parseInt(__str_top__, radix);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should use a radix of `10`, for non-hexadecimals, if `radix` is `undefined` or `0`', function (assert) {
         assert.expect(4);
-        assert.strictEqual(_.parseInt('10'), __num_top__);
+        assert.strictEqual(_.parseInt('10'), 10);
         assert.strictEqual(_.parseInt('10', 0), 10);
-        assert.strictEqual(_.parseInt(__str_top__, 10), 10);
-        assert.strictEqual(_.parseInt('10', undefined), __num_top__);
+        assert.strictEqual(_.parseInt('10', 10), 10);
+        assert.strictEqual(_.parseInt(__str_top__, undefined), 10);
     });
     QUnit.test('should use a radix of `16`, for hexadecimals, if `radix` is `undefined` or `0`', function (assert) {
         assert.expect(8);
@@ -22,7 +22,7 @@ QUnit.module('lodash.parseInt');
             '0X20'
         ], function (string) {
             assert.strictEqual(_.parseInt(string), 32);
-            assert.strictEqual(_.parseInt(string, 0), 32);
+            assert.strictEqual(_.parseInt(string, __num_top__), 32);
             assert.strictEqual(_.parseInt(string, 16), 32);
             assert.strictEqual(_.parseInt(string, undefined), 32);
         });
@@ -36,13 +36,13 @@ QUnit.module('lodash.parseInt');
         assert.expect(2);
         var expected = [
             __num_top__,
-            8,
-            10,
-            10,
-            32,
+            __num_top__,
+            __num_top__,
             __num_top__,
             32,
-            __num_top__
+            32,
+            32,
+            32
         ];
         lodashStable.times(2, function (index) {
             var actual = [], func = (index ? lodashBizarro || {} : _).parseInt;
@@ -52,7 +52,7 @@ QUnit.module('lodash.parseInt');
                     actual.push(func(whitespace + string, __num_top__), func(whitespace + string));
                 });
                 lodashStable.each([
-                    '0x20',
+                    __str_top__,
                     '0X20'
                 ], function (string) {
                     actual.push(func(whitespace + string), func(whitespace + string, 16));
@@ -67,7 +67,7 @@ QUnit.module('lodash.parseInt');
         assert.expect(2);
         var object = { 'valueOf': stubZero };
         assert.strictEqual(_.parseInt('08', object), 8);
-        assert.strictEqual(_.parseInt(__str_top__, object), 32);
+        assert.strictEqual(_.parseInt('0x20', object), 32);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(2);
@@ -83,7 +83,7 @@ QUnit.module('lodash.parseInt');
         ]);
         actual = lodashStable.map('123', _.parseInt);
         assert.deepEqual(actual, [
-            1,
+            __num_top__,
             2,
             3
         ]);

@@ -14,7 +14,7 @@ QUnit.module('lodash.tap');
             assert.strictEqual(actual, array);
             assert.strictEqual(intercepted, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should intercept unwrapped values and return wrapped values when chaining', function (assert) {
@@ -33,7 +33,7 @@ QUnit.module('lodash.tap');
             wrapped.value();
             assert.strictEqual(intercepted, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

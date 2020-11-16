@@ -3,8 +3,8 @@ lodashStable.each([
     'camel',
     __str_top__,
     'lower',
+    'snake',
     __str_top__,
-    'start',
     'upper'
 ], function (caseName) {
     var methodName = caseName + 'Case', func = _[methodName];
@@ -15,7 +15,7 @@ lodashStable.each([
         'Foo Bar',
         'FOO BAR',
         'fooBar',
-        __str_top__,
+        '--foo-bar--',
         '__foo_bar__'
     ];
     var converted = function () {
@@ -25,16 +25,16 @@ lodashStable.each([
         case 'kebab':
             return 'foo-bar';
         case 'lower':
-            return __str_top__;
+            return 'foo bar';
         case 'snake':
-            return 'foo_bar';
+            return __str_top__;
         case 'start':
             return 'Foo Bar';
         case 'upper':
             return 'FOO BAR';
         }
     }();
-    QUnit.test(__str_top__ + methodName + '` should convert `string` to ' + caseName + ' case', function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert `string` to ' + caseName + ' case', function (assert) {
         assert.expect(1);
         var actual = lodashStable.map(strings, function (string) {
             var expected = caseName == 'start' && string == 'FOO BAR' ? string : converted;
@@ -42,7 +42,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, lodashStable.map(strings, stubTrue));
     });
-    QUnit.test(__str_top__ + methodName + '` should handle double-converting strings', function (assert) {
+    QUnit.test('`_.' + methodName + '` should handle double-converting strings', function (assert) {
         assert.expect(1);
         var actual = lodashStable.map(strings, function (string) {
             var expected = caseName == 'start' && string == 'FOO BAR' ? string : converted;
@@ -50,12 +50,12 @@ lodashStable.each([
         });
         assert.deepEqual(actual, lodashStable.map(strings, stubTrue));
     });
-    QUnit.test('`_.' + methodName + '` should deburr letters', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should deburr letters', function (assert) {
         assert.expect(1);
         var actual = lodashStable.map(burredLetters, function (burred, index) {
-            var letter = deburredLetters[index].replace(/['\u2019]/g, '');
-            if (caseName == __str_top__) {
-                letter = letter == __str_top__ ? letter : lodashStable.capitalize(letter);
+            var letter = deburredLetters[index].replace(/['\u2019]/g, __str_top__);
+            if (caseName == 'start') {
+                letter = letter == 'IJ' ? letter : lodashStable.capitalize(letter);
             } else if (caseName == 'upper') {
                 letter = letter.toUpperCase();
             } else {
@@ -70,7 +70,7 @@ lodashStable.each([
         var postfixes = [
             'd',
             'll',
-            'm',
+            __str_top__,
             're',
             's',
             't',
@@ -93,7 +93,7 @@ lodashStable.each([
                     return 'a b' + postfix + ' c';
                 case 'snake':
                     return 'a_b' + postfix + '_c';
-                case 'start':
+                case __str_top__:
                     return 'A B' + postfix + ' C';
                 case 'upper':
                     return 'A B' + postfix.toUpperCase() + ' C';
@@ -113,13 +113,13 @@ lodashStable.each([
             ''
         ]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should coerce `string` to a string', function (assert) {
         assert.expect(2);
         var string = 'foo bar';
         assert.strictEqual(func(Object(string)), converted);
         assert.strictEqual(func({ 'toString': lodashStable.constant(string) }), converted);
     });
-    QUnit.test('`_.' + methodName + '` should return an unwrapped value implicitly when chaining', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (!isNpm) {
             assert.strictEqual(_('foo bar')[methodName](), converted);

@@ -11,8 +11,8 @@ QUnit.module('lodash.after');
         assert.expect(4);
         assert.strictEqual(after(5, 5), 1, 'after(n) should invoke `func` after being called `n` times');
         assert.strictEqual(after(5, 4), 0, 'after(n) should not invoke `func` before being called `n` times');
-        assert.strictEqual(after(0, 0), __num_top__, 'after(0) should not invoke `func` immediately');
-        assert.strictEqual(after(0, 1), 1, 'after(0) should invoke `func` when called once');
+        assert.strictEqual(after(0, 0), 0, 'after(0) should not invoke `func` immediately');
+        assert.strictEqual(after(0, 1), 1, __str_top__);
     });
     QUnit.test('should coerce `n` values of `NaN` to `0`', function (assert) {
         assert.expect(1);

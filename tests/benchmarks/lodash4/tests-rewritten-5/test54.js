@@ -9,7 +9,7 @@ QUnit.module('lodash.escape');
     });
     QUnit.test('should handle strings with nothing to escape', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.escape(__str_top__), 'abc');
+        assert.strictEqual(_.escape('abc'), __str_top__);
     });
     QUnit.test('should escape the same characters unescaped by `_.unescape`', function (assert) {
         assert.expect(1);
@@ -19,7 +19,7 @@ QUnit.module('lodash.escape');
         '`',
         __str_top__
     ], function (chr) {
-        QUnit.test(__str_top__ + chr + '" character', function (assert) {
+        QUnit.test('should not escape the "' + chr + __str_top__, function (assert) {
             assert.expect(1);
             assert.strictEqual(_.escape(chr), chr);
         });

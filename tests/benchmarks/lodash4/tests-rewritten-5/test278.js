@@ -1,19 +1,19 @@
 QUnit.module('update methods');
 lodashStable.each([
     'update',
-    __str_top__
+    'updateWith'
 ], function (methodName) {
-    var func = _[methodName], oldValue = __num_top__;
-    QUnit.test('`_.' + methodName + '` should invoke `updater` with the value on `path` of `object`', function (assert) {
+    var func = _[methodName], oldValue = 1;
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(4);
-        var object = { 'a': [{ 'b': { 'c': oldValue } }] }, expected = oldValue + 1;
+        var object = { 'a': [{ 'b': { 'c': oldValue } }] }, expected = oldValue + __num_top__;
         lodashStable.each([
             'a[0].b.c',
             [
                 'a',
-                __str_top__,
+                '0',
                 'b',
-                'c'
+                __str_top__
             ]
         ], function (path) {
             func(object, path, function (n) {
@@ -21,7 +21,7 @@ lodashStable.each([
                 return ++n;
             });
             assert.strictEqual(object.a[__num_top__].b.c, expected);
-            object.a[__num_top__].b.c = oldValue;
+            object.a[0].b.c = oldValue;
         });
     });
 });

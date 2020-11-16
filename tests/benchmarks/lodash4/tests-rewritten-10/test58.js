@@ -4,7 +4,7 @@ QUnit.module('lodash.fill');
         assert.expect(1);
         var array = [
             1,
-            __num_top__,
+            2,
             3
         ];
         assert.deepEqual(_.fill(array, 'a'), [
@@ -17,7 +17,7 @@ QUnit.module('lodash.fill');
         assert.expect(2);
         var array = [
                 1,
-                __num_top__,
+                2,
                 3
             ], actual = _.fill(array);
         assert.deepEqual(actual, Array(3));
@@ -43,13 +43,13 @@ QUnit.module('lodash.fill');
         lodashStable.each([
             3,
             4,
-            Math.pow(2, 32),
+            Math.pow(2, __num_top__),
             Infinity
         ], function (start) {
             var array = [
                 1,
                 2,
-                __num_top__
+                3
             ];
             assert.deepEqual(_.fill(array, 'a', start), [
                 1,
@@ -63,7 +63,7 @@ QUnit.module('lodash.fill');
         var expected = lodashStable.map(falsey, lodashStable.constant([
             'a',
             'a',
-            __str_top__
+            'a'
         ]));
         var actual = lodashStable.map(falsey, function (start) {
             var array = [
@@ -82,7 +82,7 @@ QUnit.module('lodash.fill');
             2,
             3
         ];
-        assert.deepEqual(_.fill(array, 'a', -1), [
+        assert.deepEqual(_.fill(array, __str_top__, -1), [
             1,
             2,
             'a'
@@ -119,7 +119,7 @@ QUnit.module('lodash.fill');
                 3
             ];
             assert.deepEqual(_.fill(array, 'a', start, 2), [
-                1,
+                __num_top__,
                 2,
                 3
             ]);
@@ -143,13 +143,13 @@ QUnit.module('lodash.fill');
         lodashStable.each([
             3,
             4,
-            Math.pow(2, __num_top__),
+            Math.pow(2, 32),
             Infinity
         ], function (end) {
             var array = [
-                __num_top__,
+                1,
                 2,
-                __num_top__
+                3
             ];
             assert.deepEqual(_.fill(array, 'a', 0, end), [
                 'a',
@@ -168,7 +168,7 @@ QUnit.module('lodash.fill');
             ] : [
                 1,
                 2,
-                __num_top__
+                3
             ];
         });
         var actual = lodashStable.map(falsey, function (end) {
@@ -206,7 +206,7 @@ QUnit.module('lodash.fill');
                 2,
                 3
             ];
-            assert.deepEqual(_.fill(array, 'a', __num_top__, end), [
+            assert.deepEqual(_.fill(array, __str_top__, 0, end), [
                 1,
                 2,
                 3
@@ -258,12 +258,12 @@ QUnit.module('lodash.fill');
             [
                 'a',
                 2,
-                3
+                __num_top__
             ],
             [
                 'a',
                 2,
-                3
+                __num_top__
             ],
             [
                 1,
@@ -273,10 +273,10 @@ QUnit.module('lodash.fill');
             [
                 'a',
                 2,
-                __num_top__
+                3
             ],
             [
-                1,
+                __num_top__,
                 2,
                 3
             ]
@@ -287,7 +287,7 @@ QUnit.module('lodash.fill');
         var array = [
                 [
                     1,
-                    2
+                    __num_top__
                 ],
                 [
                     3,
@@ -300,7 +300,7 @@ QUnit.module('lodash.fill');
                 0
             ],
             [
-                1,
+                __num_top__,
                 1
             ]
         ]);
@@ -311,7 +311,7 @@ QUnit.module('lodash.fill');
             var array = [
                     1,
                     2,
-                    3
+                    __num_top__
                 ], wrapped = _(array).fill('a'), actual = wrapped.value();
             assert.ok(wrapped instanceof _);
             assert.strictEqual(actual, array);

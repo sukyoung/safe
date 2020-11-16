@@ -34,7 +34,7 @@ QUnit.module('lodash.method');
             [1]
         ], function (path) {
             var method = _.method(path);
-            assert.strictEqual(method(array), __num_top__);
+            assert.strictEqual(method(array), 1);
         });
     });
     QUnit.test('should coerce `path` to a string', function (assert) {
@@ -44,7 +44,7 @@ QUnit.module('lodash.method');
         fn.toString = lodashStable.constant('fn');
         var expected = [
                 1,
-                2,
+                __num_top__,
                 3,
                 4
             ], object = {

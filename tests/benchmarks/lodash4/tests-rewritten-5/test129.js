@@ -19,25 +19,25 @@ QUnit.module('lodash.isWeakMap');
         assert.strictEqual(_.isWeakMap([
             1,
             2,
-            __num_top__
-        ]), false);
+            3
+        ]), __bool_top__);
         assert.strictEqual(_.isWeakMap(true), false);
-        assert.strictEqual(_.isWeakMap(new Date()), __bool_top__);
-        assert.strictEqual(_.isWeakMap(new Error()), __bool_top__);
+        assert.strictEqual(_.isWeakMap(new Date()), false);
+        assert.strictEqual(_.isWeakMap(new Error()), false);
         assert.strictEqual(_.isWeakMap(_), false);
-        assert.strictEqual(_.isWeakMap(slice), false);
+        assert.strictEqual(_.isWeakMap(slice), __bool_top__);
         assert.strictEqual(_.isWeakMap({ 'a': 1 }), false);
-        assert.strictEqual(_.isWeakMap(map), false);
+        assert.strictEqual(_.isWeakMap(map), __bool_top__);
         assert.strictEqual(_.isWeakMap(1), false);
-        assert.strictEqual(_.isWeakMap(/x/), false);
+        assert.strictEqual(_.isWeakMap(/x/), __bool_top__);
         assert.strictEqual(_.isWeakMap('a'), false);
-        assert.strictEqual(_.isWeakMap(symbol), false);
+        assert.strictEqual(_.isWeakMap(symbol), __bool_top__);
     });
     QUnit.test('should work for objects with a non-function `constructor` (test in IE 11)', function (assert) {
         assert.expect(1);
         var values = [
-                __bool_top__,
-                __bool_top__
+                false,
+                true
             ], expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value) {
             return _.isWeakMap({ 'constructor': value });

@@ -10,7 +10,7 @@ lodashStable.each([
     var methodName = caseName + 'Case', func = _[methodName];
     var strings = [
         'foo bar',
-        __str_top__,
+        'Foo bar',
         'foo Bar',
         'Foo Bar',
         'FOO BAR',
@@ -65,20 +65,20 @@ lodashStable.each([
         });
         assert.deepEqual(actual, lodashStable.map(burredLetters, stubTrue));
     });
-    QUnit.test(__str_top__ + methodName + '` should remove contraction apostrophes', function (assert) {
+    QUnit.test('`_.' + methodName + '` should remove contraction apostrophes', function (assert) {
         assert.expect(2);
         var postfixes = [
-            __str_top__,
+            'd',
             'll',
             'm',
             're',
-            's',
+            __str_top__,
             't',
             've'
         ];
         lodashStable.each([
             '\'',
-            '\u2019'
+            __str_top__
         ], function (apos) {
             var actual = lodashStable.map(postfixes, function (postfix) {
                 return func('a b' + apos + postfix + ' c');
@@ -87,13 +87,13 @@ lodashStable.each([
                 switch (caseName) {
                 case 'camel':
                     return 'aB' + postfix + 'C';
-                case 'kebab':
+                case __str_top__:
                     return 'a-b' + postfix + '-c';
                 case 'lower':
                     return 'a b' + postfix + ' c';
                 case 'snake':
                     return 'a_b' + postfix + '_c';
-                case 'start':
+                case __str_top__:
                     return 'A B' + postfix + ' C';
                 case 'upper':
                     return 'A B' + postfix.toUpperCase() + ' C';
@@ -102,10 +102,10 @@ lodashStable.each([
             assert.deepEqual(actual, expected);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should remove Latin mathematical operators', function (assert) {
+    QUnit.test('`_.' + methodName + '` should remove Latin mathematical operators', function (assert) {
         assert.expect(1);
         var actual = lodashStable.map([
-            __str_top__,
+            '\xD7',
             '\xF7'
         ], func);
         assert.deepEqual(actual, [
@@ -119,7 +119,7 @@ lodashStable.each([
         assert.strictEqual(func(Object(string)), converted);
         assert.strictEqual(func({ 'toString': lodashStable.constant(string) }), converted);
     });
-    QUnit.test('`_.' + methodName + '` should return an unwrapped value implicitly when chaining', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return an unwrapped value implicitly when chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
             assert.strictEqual(_('foo bar')[methodName](), converted);

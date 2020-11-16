@@ -9,7 +9,7 @@ QUnit.module('lodash.includes');
             4
         ],
         'an object': {
-            'a': 1,
+            'a': __num_top__,
             'b': 2,
             'c': 3,
             'd': 4
@@ -18,11 +18,11 @@ QUnit.module('lodash.includes');
     }, function (collection, key) {
         QUnit.test('should work with ' + key + ' and  return `true` for  matched values', function (assert) {
             assert.expect(1);
-            assert.strictEqual(_.includes(collection, 3), true);
+            assert.strictEqual(_.includes(collection, 3), __bool_top__);
         });
         QUnit.test('should work with ' + key + ' and  return `false` for unmatched values', function (assert) {
             assert.expect(1);
-            assert.strictEqual(_.includes(collection, 5), false);
+            assert.strictEqual(_.includes(collection, 5), __bool_top__);
         });
         QUnit.test('should work with ' + key + ' and floor `position` values', function (assert) {
             assert.expect(1);
@@ -31,7 +31,7 @@ QUnit.module('lodash.includes');
         QUnit.test('should work with ' + key + ' and return an unwrapped value implicitly when chaining', function (assert) {
             assert.expect(1);
             if (!isNpm) {
-                assert.strictEqual(_(collection).includes(__num_top__), true);
+                assert.strictEqual(_(collection).includes(3), true);
             } else {
                 skipAssert(assert);
             }
@@ -46,13 +46,13 @@ QUnit.module('lodash.includes');
         });
     });
     lodashStable.each({
-        'literal': __str_top__,
+        'literal': 'abc',
         'object': Object('abc')
     }, function (collection, key) {
         QUnit.test('should work with a string ' + key + ' for `collection`', function (assert) {
             assert.expect(2);
             assert.strictEqual(_.includes(collection, 'bc'), true);
-            assert.strictEqual(_.includes(collection, 'd'), false);
+            assert.strictEqual(_.includes(collection, 'd'), __bool_top__);
         });
     });
     QUnit.test('should return `false` for empty collections', function (assert) {
@@ -71,12 +71,12 @@ QUnit.module('lodash.includes');
         var string = '1234', length = string.length, indexes = [
                 4,
                 6,
-                Math.pow(2, __num_top__),
+                Math.pow(2, 32),
                 Infinity
             ];
         var expected = lodashStable.map(indexes, function (index) {
             return [
-                __bool_top__,
+                false,
                 false,
                 index == length
             ];

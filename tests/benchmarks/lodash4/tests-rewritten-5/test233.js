@@ -5,17 +5,17 @@ lodashStable.each([
     'stubFalse',
     'stubArray',
     'stubObject',
-    __str_top__
+    'stubString'
 ], function (methodName) {
     var func = _[methodName];
     var pair = {
         'stubArray': [
             [],
-            'an empty array'
+            __str_top__
         ],
         'stubFalse': [
             false,
-            __str_top__
+            '`false`'
         ],
         'stubObject': [
             {},
@@ -26,7 +26,7 @@ lodashStable.each([
             'an empty string'
         ],
         'stubTrue': [
-            true,
+            __bool_top__,
             '`true`'
         ],
         'noop': [
@@ -34,8 +34,8 @@ lodashStable.each([
             __str_top__
         ]
     }[methodName];
-    var values = Array(2).concat(empties, __bool_top__, 1, 'a'), expected = lodashStable.map(values, lodashStable.constant(pair[0]));
-    QUnit.test('`_.' + methodName + '` should return ' + pair[__num_top__], function (assert) {
+    var values = Array(2).concat(empties, true, 1, 'a'), expected = lodashStable.map(values, lodashStable.constant(pair[__num_top__]));
+    QUnit.test('`_.' + methodName + __str_top__ + pair[1], function (assert) {
         assert.expect(1);
         var actual = lodashStable.map(values, function (value, index) {
             if (index < 2) {

@@ -14,11 +14,11 @@ QUnit.module('lodash.xorWith');
             ], others = [
                 {
                     'x': 1,
-                    'y': 1
+                    'y': __num_top__
                 },
                 {
                     'x': 1,
-                    'y': __num_top__
+                    'y': 2
                 }
             ], actual = _.xorWith(objects, others, lodashStable.isEqual);
         assert.deepEqual(actual, [

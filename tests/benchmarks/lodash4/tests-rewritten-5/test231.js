@@ -7,7 +7,7 @@ QUnit.module('lodash.startsWith');
     });
     QUnit.test('should return `false` if a string does not start with `target`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.startsWith(string, 'b'), __bool_top__);
+        assert.strictEqual(_.startsWith(string, __str_top__), false);
     });
     QUnit.test('should work with a `position`', function (assert) {
         assert.expect(1);
@@ -21,7 +21,7 @@ QUnit.module('lodash.startsWith');
             MAX_SAFE_INTEGER,
             Infinity
         ], function (position) {
-            assert.strictEqual(_.startsWith(string, 'a', position), __bool_top__);
+            assert.strictEqual(_.startsWith(string, 'a', position), false);
         });
     });
     QUnit.test('should treat falsey `position` values as `0`', function (assert) {
@@ -35,7 +35,7 @@ QUnit.module('lodash.startsWith');
     QUnit.test('should treat a negative `position` as `0`', function (assert) {
         assert.expect(6);
         lodashStable.each([
-            -1,
+            -__num_top__,
             -3,
             -Infinity
         ], function (position) {

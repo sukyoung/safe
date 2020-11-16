@@ -19,7 +19,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should coerce `string` to a string', function (assert) {
         assert.expect(1);
-        var object = { 'toString': lodashStable.constant(whitespace + 'a b c' + whitespace) }, expected = (index == 2 ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : '');
+        var object = { 'toString': lodashStable.constant(whitespace + 'a b c' + whitespace) }, expected = (index == 2 ? whitespace : '') + 'a b c' + (index == __num_top__ ? whitespace : '');
         assert.strictEqual(func(object), expected);
     });
     QUnit.test('`_.' + methodName + '` should remove ' + parts + ' `chars`', function (assert) {
@@ -45,7 +45,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should work with `undefined` or empty string values for `chars`', function (assert) {
         assert.expect(2);
-        var string = whitespace + 'a b c' + whitespace, expected = (index == 2 ? whitespace : __str_top__) + 'a b c' + (index == 1 ? whitespace : '');
+        var string = whitespace + 'a b c' + whitespace, expected = (index == 2 ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : '');
         assert.strictEqual(func(string, undefined), expected);
         assert.strictEqual(func(string, ''), string);
     });

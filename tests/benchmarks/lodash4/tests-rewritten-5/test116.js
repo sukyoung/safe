@@ -20,18 +20,18 @@ QUnit.module('lodash.isNative');
             return index ? _.isNative(value) : _.isNative();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isNative(args), __bool_top__);
+        assert.strictEqual(_.isNative(args), false);
         assert.strictEqual(_.isNative([
-            __num_top__,
+            1,
             2,
             3
         ]), false);
-        assert.strictEqual(_.isNative(true), false);
-        assert.strictEqual(_.isNative(new Date()), false);
+        assert.strictEqual(_.isNative(true), __bool_top__);
+        assert.strictEqual(_.isNative(new Date()), __bool_top__);
         assert.strictEqual(_.isNative(new Error()), false);
-        assert.strictEqual(_.isNative(_), false);
-        assert.strictEqual(_.isNative({ 'a': __num_top__ }), false);
-        assert.strictEqual(_.isNative(__num_top__), false);
+        assert.strictEqual(_.isNative(_), __bool_top__);
+        assert.strictEqual(_.isNative({ 'a': 1 }), __bool_top__);
+        assert.strictEqual(_.isNative(1), false);
         assert.strictEqual(_.isNative(/x/), false);
         assert.strictEqual(_.isNative('a'), false);
         assert.strictEqual(_.isNative(symbol), false);
@@ -39,7 +39,7 @@ QUnit.module('lodash.isNative');
     QUnit.test('should work with native functions from another realm', function (assert) {
         assert.expect(2);
         if (realm.element) {
-            assert.strictEqual(_.isNative(realm.element.cloneNode), __bool_top__);
+            assert.strictEqual(_.isNative(realm.element.cloneNode), true);
         } else {
             skipAssert(assert);
         }
@@ -68,7 +68,7 @@ QUnit.module('lodash.isNative');
             emptyObject(require.cache);
             var baseIsNative = interopRequire(path.join(basePath, '_baseIsNative'));
             assert.strictEqual(baseIsNative(slice), true);
-            slice[fakeSrcKey] = slice + '';
+            slice[fakeSrcKey] = slice + __str_top__;
             assert.strictEqual(baseIsNative(slice), false);
             delete slice[fakeSrcKey];
             delete root[coreKey];

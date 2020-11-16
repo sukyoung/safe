@@ -24,13 +24,13 @@ QUnit.module('lodash.isSet');
         assert.strictEqual(_.isSet(true), false);
         assert.strictEqual(_.isSet(new Date()), false);
         assert.strictEqual(_.isSet(new Error()), false);
-        assert.strictEqual(_.isSet(_), false);
+        assert.strictEqual(_.isSet(_), __bool_top__);
         assert.strictEqual(_.isSet(slice), false);
         assert.strictEqual(_.isSet({ 'a': 1 }), false);
         assert.strictEqual(_.isSet(1), false);
         assert.strictEqual(_.isSet(/x/), false);
         assert.strictEqual(_.isSet('a'), false);
-        assert.strictEqual(_.isSet(symbol), __bool_top__);
+        assert.strictEqual(_.isSet(symbol), false);
         assert.strictEqual(_.isSet(weakSet), false);
     });
     QUnit.test('should work for objects with a non-function `constructor` (test in IE 11)', function (assert) {

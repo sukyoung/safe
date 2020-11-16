@@ -3,7 +3,7 @@ QUnit.module('lodash.at');
     var array = [
             'a',
             'b',
-            'c'
+            __str_top__
         ], object = {
             'a': [
                 { 'b': { 'c': 3 } },
@@ -26,7 +26,7 @@ QUnit.module('lodash.at');
         var actual = _.at(array, [
             2,
             4,
-            0
+            __num_top__
         ]);
         assert.deepEqual(actual, [
             'c',
@@ -37,7 +37,7 @@ QUnit.module('lodash.at');
     QUnit.test('should work with non-index keys on array values', function (assert) {
         assert.expect(1);
         var values = lodashStable.reject(empties, function (value) {
-            return value === __num_top__ || lodashStable.isArray(value);
+            return value === 0 || lodashStable.isArray(value);
         }).concat(-1, 1.1);
         var array = lodashStable.transform(values, function (result, value) {
             result[value] = __num_top__;
@@ -55,18 +55,18 @@ QUnit.module('lodash.at');
         var actual = _.at([
             __str_top__,
             'b',
-            __str_top__,
+            'c',
             'd'
-        ], 3, 0, 2);
+        ], 3, __num_top__, 2);
         assert.deepEqual(actual, [
-            'd',
+            __str_top__,
             'a',
             'c'
         ]);
     });
     QUnit.test('should work with a falsey `object` when keys are given', function (assert) {
         assert.expect(1);
-        var expected = lodashStable.map(falsey, lodashStable.constant(Array(__num_top__)));
+        var expected = lodashStable.map(falsey, lodashStable.constant(Array(4)));
         var actual = lodashStable.map(falsey, function (object) {
             try {
                 return _.at(object, 0, 1, 'pop', 'push');
@@ -79,10 +79,10 @@ QUnit.module('lodash.at');
         assert.expect(1);
         var actual = _.at(args, [
             2,
-            0
+            __num_top__
         ]);
         assert.deepEqual(actual, [
-            3,
+            __num_top__,
             1
         ]);
     });
@@ -104,18 +104,18 @@ QUnit.module('lodash.at');
     QUnit.test('should work with an object for `object`', function (assert) {
         assert.expect(1);
         var actual = _.at(object, [
-            'a[0].b.c',
+            __str_top__,
             'a[1]'
         ]);
         assert.deepEqual(actual, [
-            __num_top__,
+            3,
             4
         ]);
     });
     QUnit.test('should pluck inherited property values', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
         Foo.prototype.b = 2;
         var actual = _.at(new Foo(), 'b');
@@ -127,7 +127,7 @@ QUnit.module('lodash.at');
             var largeArray = lodashStable.range(LARGE_ARRAY_SIZE), smallArray = array;
             lodashStable.each([
                 [2],
-                [__str_top__],
+                ['2'],
                 [
                     2,
                     1
@@ -158,7 +158,7 @@ QUnit.module('lodash.at');
                 count = 0;
                 var actual = _(array).map(iteratee).at(n).value(), expected = index < 2 ? 1 : 0;
                 assert.strictEqual(count, expected);
-                expected = index == 3 ? [] : [index == __num_top__ ? undefined : square(lastIndex)];
+                expected = index == 3 ? [] : [index == 2 ? undefined : square(lastIndex)];
                 assert.deepEqual(actual, expected);
             });
         } else {
@@ -169,13 +169,13 @@ QUnit.module('lodash.at');
         assert.expect(2);
         if (!isNpm) {
             var paths = [
-                    'a[0].b.c',
+                    __str_top__,
                     'a[1]'
                 ], actual = _(object).map(identity).at(paths).value();
             assert.deepEqual(actual, _.at(_.map(object, identity), paths));
             var indexObject = { '0': 1 };
             actual = _(indexObject).at(0).value();
-            assert.deepEqual(actual, _.at(indexObject, __num_top__));
+            assert.deepEqual(actual, _.at(indexObject, 0));
         } else {
             skipAssert(assert, 2);
         }

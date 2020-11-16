@@ -9,7 +9,7 @@ QUnit.module('lodash.deburr');
         assert.expect(1);
         var operators = [
                 '\xD7',
-                '\xF7'
+                __str_top__
             ], actual = lodashStable.map(operators, _.deburr);
         assert.deepEqual(actual, operators);
     });
@@ -17,7 +17,7 @@ QUnit.module('lodash.deburr');
         assert.expect(1);
         var expected = lodashStable.map(comboMarks, lodashStable.constant('ei'));
         var actual = lodashStable.map(comboMarks, function (chr) {
-            return _.deburr('e' + chr + __str_top__);
+            return _.deburr('e' + chr + 'i');
         });
         assert.deepEqual(actual, expected);
     });

@@ -18,7 +18,7 @@ QUnit.module('lodash.over');
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        var over = _.over('b', __str_top__);
+        var over = _.over('b', 'a');
         assert.deepEqual(over({
             'a': 1,
             'b': 2
@@ -116,7 +116,7 @@ QUnit.module('lodash.over');
             };
         assert.deepEqual(object.over(), [
             2,
-            1
+            __num_top__
         ]);
     });
 }());

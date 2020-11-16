@@ -53,7 +53,7 @@ lodashStable.each([
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -73,7 +73,7 @@ lodashStable.each([
             actual = _(object).mapValues(square)[methodName](predicate).value();
             assert.deepEqual(actual, _[methodName](lodashStable.mapValues(object, square), predicate));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -113,7 +113,7 @@ lodashStable.each([
             }).value();
             assert.deepEqual(args, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
 });

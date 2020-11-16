@@ -48,7 +48,7 @@ QUnit.module('lodash.takeRight');
         var array = [
                 [
                     1,
-                    2,
+                    __num_top__,
                     3
                 ],
                 [
@@ -86,7 +86,7 @@ QUnit.module('lodash.takeRight');
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.take(_.takeRight(_.take(_.takeRight(_.filter(array, predicate), 6), 4), 2)));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

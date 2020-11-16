@@ -17,11 +17,11 @@ QUnit.module('lodash.invokeMap');
         assert.expect(1);
         var array = [function () {
                     return slice.call(arguments);
-                }], actual = _.invokeMap(array, __str_top__, null, 'a', 'b', 'c');
+                }], actual = _.invokeMap(array, 'call', null, 'a', 'b', 'c');
         assert.deepEqual(actual, [[
                 'a',
                 'b',
-                'c'
+                __str_top__
             ]]);
     });
     QUnit.test('should work with a function for `methodName`', function (assert) {

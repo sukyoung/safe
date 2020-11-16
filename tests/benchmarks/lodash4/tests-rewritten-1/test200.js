@@ -2,12 +2,12 @@ QUnit.module('lodash.reduce');
 (function () {
     var array = [
         1,
-        __num_top__,
+        2,
         3
     ];
     QUnit.test('should use the first element of a collection as the default `accumulator`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.reduce(array), 1);
+        assert.strictEqual(_.reduce(array), __num_top__);
     });
     QUnit.test('should provide correct `iteratee` arguments when iterating an array', function (assert) {
         assert.expect(2);

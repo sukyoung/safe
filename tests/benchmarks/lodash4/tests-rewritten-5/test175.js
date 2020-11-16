@@ -3,8 +3,8 @@ QUnit.module('lodash.over');
     QUnit.test('should create a function that invokes `iteratees`', function (assert) {
         assert.expect(1);
         var over = _.over(Math.max, Math.min);
-        assert.deepEqual(over(1, 2, 3, 4), [
-            __num_top__,
+        assert.deepEqual(over(1, 2, 3, __num_top__), [
+            4,
             1
         ]);
     });
@@ -23,7 +23,7 @@ QUnit.module('lodash.over');
             'a': 1,
             'b': 2
         }), [
-            2,
+            __num_top__,
             1
         ]);
     });
@@ -52,7 +52,7 @@ QUnit.module('lodash.over');
         ]);
         assert.deepEqual(over({
             'a': 1,
-            'b': __num_top__
+            'b': 2
         }), [
             true,
             false
@@ -62,7 +62,7 @@ QUnit.module('lodash.over');
             'b': 1
         }), [
             false,
-            __bool_top__
+            true
         ]);
     });
     QUnit.test('should differentiate between `_.property` and `_.matchesProperty` shorthands', function (assert) {
@@ -72,8 +72,8 @@ QUnit.module('lodash.over');
             1
         ]);
         assert.deepEqual(over({
-            'a': 1,
-            '1': __num_top__
+            'a': __num_top__,
+            '1': 2
         }), [
             1,
             2
@@ -89,8 +89,8 @@ QUnit.module('lodash.over');
                 'a',
                 1
             ]]);
-        assert.deepEqual(over({ 'a': 1 }), [true]);
-        assert.deepEqual(over({ 'a': 2 }), [false]);
+        assert.deepEqual(over({ 'a': 1 }), [__bool_top__]);
+        assert.deepEqual(over({ 'a': __num_top__ }), [false]);
     });
     QUnit.test('should provide arguments to predicates', function (assert) {
         assert.expect(1);
@@ -100,7 +100,7 @@ QUnit.module('lodash.over');
         assert.deepEqual(over('a', 'b', 'c'), [[
                 'a',
                 'b',
-                __str_top__
+                'c'
             ]]);
     });
     QUnit.test('should use `this` binding of function for `iteratees`', function (assert) {

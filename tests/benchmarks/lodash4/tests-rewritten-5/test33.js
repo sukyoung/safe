@@ -31,22 +31,22 @@ QUnit.module('lodash.create');
     QUnit.test('should assign own properties', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = 1;
+            this.a = __num_top__;
             this.c = 3;
         }
         Foo.prototype.b = 2;
         assert.deepEqual(_.create({}, new Foo()), {
-            'a': __num_top__,
+            'a': 1,
             'c': 3
         });
     });
     QUnit.test('should assign properties that shadow those of `prototype`', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = 1;
+            this.a = __num_top__;
         }
-        var object = _.create(new Foo(), { 'a': __num_top__ });
-        assert.deepEqual(lodashStable.keys(object), ['a']);
+        var object = _.create(new Foo(), { 'a': 1 });
+        assert.deepEqual(lodashStable.keys(object), [__str_top__]);
     });
     QUnit.test('should accept a falsey `prototype`', function (assert) {
         assert.expect(1);
@@ -67,7 +67,7 @@ QUnit.module('lodash.create');
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
         var array = [
-                { 'a': __num_top__ },
+                { 'a': 1 },
                 { 'a': 1 },
                 { 'a': 1 }
             ], expected = lodashStable.map(array, stubTrue), objects = lodashStable.map(array, _.create);

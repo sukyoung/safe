@@ -1,16 +1,16 @@
 QUnit.module('uniq methods');
 lodashStable.each([
-    'uniq',
+    __str_top__,
     'uniqBy',
     'uniqWith',
-    __str_top__,
+    'sortedUniq',
     'sortedUniqBy'
 ], function (methodName) {
     var func = _[methodName], isSorted = /^sorted/.test(methodName), objects = [
             { 'a': 2 },
             { 'a': 3 },
+            { 'a': 1 },
             { 'a': __num_top__ },
-            { 'a': 2 },
             { 'a': 3 },
             { 'a': 1 }
         ];
@@ -21,20 +21,20 @@ lodashStable.each([
             assert.expect(1);
             var array = [
                 2,
-                1,
+                __num_top__,
                 2
             ];
             assert.deepEqual(func(array), [
-                __num_top__,
-                1
+                2,
+                __num_top__
             ]);
         });
     }
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return unique values of a sorted array', function (assert) {
         assert.expect(1);
         var array = [
             __num_top__,
-            2,
+            __num_top__,
             2
         ];
         assert.deepEqual(func(array), [
@@ -50,11 +50,11 @@ lodashStable.each([
         assert.expect(1);
         var actual = lodashStable.map(func([
             -0,
-            0
+            __num_top__
         ]), lodashStable.toString);
         assert.deepEqual(actual, ['0']);
     });
-    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should match `NaN`', function (assert) {
         assert.expect(1);
         assert.deepEqual(func([
             NaN,
@@ -66,7 +66,7 @@ lodashStable.each([
         var largeArray = [], expected = [
                 0,
                 {},
-                __str_top__
+                'a'
             ], count = Math.ceil(LARGE_ARRAY_SIZE / expected.length);
         lodashStable.each(expected, function (value) {
             lodashStable.times(count, function () {
@@ -83,7 +83,7 @@ lodashStable.each([
         var actual = lodashStable.map(func(largeArray), lodashStable.toString);
         assert.deepEqual(actual, ['0']);
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays of boolean, `NaN`, and nullish values', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with large arrays of boolean, `NaN`, and nullish values', function (assert) {
         assert.expect(1);
         var largeArray = [], expected = [
                 null,
@@ -108,7 +108,7 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays of well-known symbols', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (Symbol) {
             var expected = [
@@ -138,12 +138,12 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should distinguish between numbers and numeric strings', function (assert) {
         assert.expect(1);
         var largeArray = [], expected = [
                 '2',
                 2,
-                Object('2'),
+                Object(__str_top__),
                 Object(2)
             ], count = Math.ceil(LARGE_ARRAY_SIZE / expected.length);
         lodashStable.each(expected, function (value) {

@@ -31,7 +31,7 @@ QUnit.module('`__proto__` property bugs');
             return result instanceof Array;
         });
         assert.deepEqual(actual, expected);
-        actual = _.groupBy([{ 'a': __str_top__ }], __str_top__);
+        actual = _.groupBy([{ 'a': __str_top__ }], 'a');
         assert.notOk(actual instanceof Array);
     });
     QUnit.test('should not merge "__proto__" properties', function (assert) {
@@ -51,7 +51,7 @@ QUnit.module('`__proto__` property bugs');
         var actual = __str_top__ in funcProto;
         delete funcProto.a;
         assert.notOk(actual);
-        _.merge({}, { 'constructor': { 'prototype': { 'a': __num_top__ } } });
+        _.merge({}, { 'constructor': { 'prototype': { 'a': 1 } } });
         actual = 'a' in objectProto;
         delete objectProto.a;
         assert.notOk(actual);
@@ -59,7 +59,7 @@ QUnit.module('`__proto__` property bugs');
     QUnit.test('should not indirectly merge `Object` properties', function (assert) {
         assert.expect(1);
         _.merge({}, { 'constructor': { 'a': 1 } });
-        var actual = 'a' in Object;
+        var actual = __str_top__ in Object;
         delete Object.a;
         assert.notOk(actual);
     });

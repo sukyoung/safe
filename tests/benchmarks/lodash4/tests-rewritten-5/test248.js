@@ -21,7 +21,7 @@ QUnit.module('lodash.times');
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);
         var args;
-        _.times(1, function (assert) {
+        _.times(__num_top__, function (assert) {
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [0]);
@@ -35,10 +35,10 @@ QUnit.module('lodash.times');
             ], expected = lodashStable.map(values, lodashStable.constant([
                 0,
                 1,
-                2
+                __num_top__
             ]));
         var actual = lodashStable.map(values, function (value, index) {
-            return index ? _.times(__num_top__, value) : _.times(__num_top__);
+            return index ? _.times(3, value) : _.times(3);
         });
         assert.deepEqual(actual, expected);
     });
@@ -46,7 +46,7 @@ QUnit.module('lodash.times');
         assert.expect(1);
         assert.deepEqual(_.times(3, doubled), [
             0,
-            2,
+            __num_top__,
             4
         ]);
     });
@@ -61,7 +61,7 @@ QUnit.module('lodash.times');
     QUnit.test('should return an unwrapped value when implicitly chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            assert.deepEqual(_(__num_top__).times(), [
+            assert.deepEqual(_(3).times(), [
                 0,
                 __num_top__,
                 2

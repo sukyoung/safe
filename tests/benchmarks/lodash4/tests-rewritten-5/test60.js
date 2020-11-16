@@ -9,7 +9,7 @@ lodashStable.each([
     QUnit.module('lodash.' + methodName);
     var array = [
             1,
-            __num_top__,
+            2,
             3,
             4
         ], func = _[methodName];
@@ -36,7 +36,7 @@ lodashStable.each([
         'findIndex': [
             1,
             -1,
-            __num_top__
+            2
         ],
         'findKey': [
             '1',
@@ -44,7 +44,7 @@ lodashStable.each([
             '2'
         ],
         'findLast': [
-            objects[2],
+            objects[__num_top__],
             undefined,
             objects[2]
         ],
@@ -59,7 +59,7 @@ lodashStable.each([
             '2'
         ]
     }[methodName];
-    QUnit.test(__str_top__ + methodName + '` should return the found value', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return the found value', function (assert) {
         assert.expect(1);
         assert.strictEqual(func(objects, function (object) {
             return object.a;
@@ -86,7 +86,7 @@ lodashStable.each([
         assert.expect(1);
         assert.strictEqual(func(objects, 'b'), expected[0]);
     });
-    QUnit.test('`_.' + methodName + '` should return `' + expected[1] + '` for empty collections', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `' + expected[1] + __str_top__, function (assert) {
         assert.expect(1);
         var emptyValues = lodashStable.endsWith(methodName, 'Index') ? lodashStable.reject(empties, lodashStable.isPlainObject) : empties, expecting = lodashStable.map(emptyValues, lodashStable.constant(expected[1]));
         var actual = lodashStable.map(emptyValues, function (value) {
@@ -102,7 +102,7 @@ lodashStable.each([
         var expected = {
             'find': 1,
             'findIndex': 0,
-            'findKey': '0',
+            'findKey': __str_top__,
             'findLast': 4,
             'findLastIndex': 3,
             'findLastKey': '3'
@@ -121,7 +121,7 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + '` should not execute immediately when explicitly chaining', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (!isNpm) {
             var wrapped = _(array).chain()[methodName]();
@@ -182,8 +182,8 @@ _.each([
         var expected = {
             'find': 1,
             'findKey': 'a',
-            'findLast': __num_top__,
-            'findLastKey': 'b'
+            'findLast': 2,
+            'findLastKey': __str_top__
         }[methodName];
         assert.strictEqual(actual, expected);
     });
@@ -195,7 +195,7 @@ _.each([
         });
         assert.deepEqual(args, [
             1,
-            __str_top__,
+            'a',
             object
         ]);
     });

@@ -4,9 +4,9 @@ lodashStable.each([
     'pickBy'
 ], function (methodName) {
     var expected = {
-            'a': 1,
+            'a': __num_top__,
             'c': 3
-        }, func = _[methodName], isPick = methodName == 'pick', object = {
+        }, func = _[methodName], isPick = methodName == __str_top__, object = {
             'a': 1,
             'b': 2,
             'c': 3,
@@ -23,7 +23,7 @@ lodashStable.each([
             };
         };
     }
-    QUnit.test('`_.' + methodName + '` should create an object of picked string keyed properties', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         assert.deepEqual(func(object, resolve(object, 'a')), { 'a': 1 });
         assert.deepEqual(func(object, resolve(object, [
@@ -38,24 +38,24 @@ lodashStable.each([
         Foo.prototype = object;
         var foo = new Foo();
         assert.deepEqual(func(foo, resolve(foo, [
-            'a',
-            'c'
+            __str_top__,
+            __str_top__
         ])), expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should preserve the sign of `0`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var object = {
-                '-0': __str_top__,
+                '-0': 'a',
                 '0': 'b'
             }, props = [
                 -0,
                 Object(-0),
-                0,
+                __num_top__,
                 Object(0)
             ], expected = [
                 { '-0': 'a' },
                 { '-0': 'a' },
-                { '0': __str_top__ },
+                { '0': 'b' },
                 { '0': 'b' }
             ];
         var actual = lodashStable.map(props, function (key) {
@@ -63,20 +63,20 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should pick symbols', function (assert) {
+    QUnit.test('`_.' + methodName + '` should pick symbols', function (assert) {
         assert.expect(3);
         function Foo() {
             this[symbol] = 1;
         }
         if (Symbol) {
-            var symbol2 = Symbol('b');
-            Foo.prototype[symbol2] = __num_top__;
-            var symbol3 = Symbol(__str_top__);
+            var symbol2 = Symbol(__str_top__);
+            Foo.prototype[symbol2] = 2;
+            var symbol3 = Symbol('c');
             defineProperty(Foo.prototype, symbol3, {
                 'configurable': true,
                 'enumerable': false,
                 'writable': true,
-                'value': __num_top__
+                'value': 3
             });
             var foo = new Foo(), actual = func(foo, resolve(foo, [
                     symbol,
@@ -91,16 +91,16 @@ lodashStable.each([
                 assert.notOk(symbol3 in actual);
             }
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with an array `object`', function (assert) {
         assert.expect(1);
         var array = [
-            1,
+            __num_top__,
             2,
             3
         ];
-        assert.deepEqual(func(array, resolve(array, '1')), { '1': 2 });
+        assert.deepEqual(func(array, resolve(array, __str_top__)), { '1': 2 });
     });
 });

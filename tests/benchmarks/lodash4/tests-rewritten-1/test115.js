@@ -25,7 +25,7 @@ QUnit.module('lodash.isNaN');
         assert.strictEqual(_.isNaN(new Error()), false);
         assert.strictEqual(_.isNaN(_), false);
         assert.strictEqual(_.isNaN(slice), false);
-        assert.strictEqual(_.isNaN({ 'a': 1 }), false);
+        assert.strictEqual(_.isNaN({ 'a': __num_top__ }), false);
         assert.strictEqual(_.isNaN(1), false);
         assert.strictEqual(_.isNaN(Object(1)), false);
         assert.strictEqual(_.isNaN(/x/), false);
@@ -35,7 +35,7 @@ QUnit.module('lodash.isNaN');
     QUnit.test('should work with `NaN` from another realm', function (assert) {
         assert.expect(1);
         if (realm.object) {
-            assert.strictEqual(_.isNaN(realm.nan), __bool_top__);
+            assert.strictEqual(_.isNaN(realm.nan), true);
         } else {
             skipAssert(assert);
         }

@@ -1,6 +1,6 @@
 QUnit.module('xor methods');
 lodashStable.each([
-    'xor',
+    __str_top__,
     'xorBy',
     'xorWith'
 ], function (methodName) {
@@ -11,7 +11,7 @@ lodashStable.each([
             2,
             1
         ], [
-            __num_top__,
+            2,
             3
         ]);
         assert.deepEqual(actual, [
@@ -19,7 +19,7 @@ lodashStable.each([
             3
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should return the symmetric difference of multiple arrays', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return the symmetric difference of multiple arrays', function (assert) {
         assert.expect(2);
         var actual = func([
             2,
@@ -47,7 +47,7 @@ lodashStable.each([
         ]);
         assert.deepEqual(actual, []);
     });
-    QUnit.test('`_.' + methodName + '` should return an empty array when comparing the same array', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return an empty array when comparing the same array', function (assert) {
         assert.expect(1);
         var array = [1], actual = func(array, array, array);
         assert.deepEqual(actual, []);
@@ -63,7 +63,7 @@ lodashStable.each([
             2,
             2,
             3,
-            5
+            __num_top__
         ], [
             3,
             4,
@@ -78,7 +78,7 @@ lodashStable.each([
             1,
             1
         ]);
-        assert.deepEqual(actual, [__num_top__]);
+        assert.deepEqual(actual, [1]);
     });
     QUnit.test('`_.' + methodName + '` should return a new array when a single array is given', function (assert) {
         assert.expect(1);
@@ -87,7 +87,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should ignore individual secondary arguments', function (assert) {
         assert.expect(1);
-        var array = [__num_top__];
+        var array = [0];
         assert.deepEqual(func(array, 3, null, { '0': 1 }), array);
     });
     QUnit.test('`_.' + methodName + '` should ignore values that are not arrays or `arguments` objects', function (assert) {
@@ -96,7 +96,7 @@ lodashStable.each([
             1,
             2
         ];
-        assert.deepEqual(func(array, __num_top__, { '0': 1 }, null), array);
+        assert.deepEqual(func(array, 3, { '0': 1 }, null), array);
         assert.deepEqual(func(null, array, null, [
             2,
             3
@@ -106,7 +106,7 @@ lodashStable.each([
         ]);
         assert.deepEqual(func(array, null, args, null), [3]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return a wrapped value when chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
             var wrapped = _([
@@ -114,7 +114,7 @@ lodashStable.each([
                 2,
                 3
             ])[methodName]([
-                5,
+                __num_top__,
                 2,
                 1,
                 4

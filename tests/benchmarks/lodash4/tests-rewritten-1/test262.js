@@ -75,7 +75,7 @@ QUnit.module('lodash.transform');
                 }
             ], expected = lodashStable.map(values, lodashStable.constant([
                 1,
-                __num_top__,
+                4,
                 9
             ]));
         var actual = lodashStable.map(values, function (value) {
@@ -85,7 +85,7 @@ QUnit.module('lodash.transform');
         });
         assert.deepEqual(actual, expected);
         var object = {
-                'a': 1,
+                'a': __num_top__,
                 'b': 4,
                 'c': 9
             }, expected = [

@@ -7,7 +7,7 @@ QUnit.module('lodash.toArray');
             'b': 2
         }), [
             1,
-            __num_top__
+            2
         ]);
     });
     QUnit.test('should convert iterables to arrays', function (assert) {
@@ -46,7 +46,7 @@ QUnit.module('lodash.toArray');
     QUnit.test('should convert strings to arrays', function (assert) {
         assert.expect(3);
         assert.deepEqual(_.toArray(''), []);
-        assert.deepEqual(_.toArray('ab'), [
+        assert.deepEqual(_.toArray(__str_top__), [
             'a',
             'b'
         ]);

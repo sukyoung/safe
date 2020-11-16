@@ -25,7 +25,7 @@ QUnit.module('lodash(...).plant');
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should clone `chainAll` settings', function (assert) {
@@ -64,7 +64,7 @@ QUnit.module('lodash(...).plant');
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
 }());

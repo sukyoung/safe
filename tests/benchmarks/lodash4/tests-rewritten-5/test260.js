@@ -3,14 +3,14 @@ QUnit.module('lodash.toPlainObject');
     QUnit.test('should flatten inherited string keyed properties', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.b = __num_top__;
+            this.b = 2;
         }
-        Foo.prototype.c = 3;
-        var actual = lodashStable.assign({ 'a': __num_top__ }, _.toPlainObject(new Foo()));
+        Foo.prototype.c = __num_top__;
+        var actual = lodashStable.assign({ 'a': 1 }, _.toPlainObject(new Foo()));
         assert.deepEqual(actual, {
             'a': 1,
-            'b': 2,
-            'c': 3
+            'b': __num_top__,
+            'c': __num_top__
         });
     });
     QUnit.test('should convert `arguments` objects to plain objects', function (assert) {
@@ -26,7 +26,7 @@ QUnit.module('lodash.toPlainObject');
         assert.expect(1);
         var actual = _.toPlainObject([
                 'a',
-                __str_top__,
+                'b',
                 'c'
             ]), expected = {
                 '0': 'a',

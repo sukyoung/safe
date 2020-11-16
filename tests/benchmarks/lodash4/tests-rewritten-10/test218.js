@@ -1,11 +1,11 @@
 QUnit.module('lodash.shuffle');
 (function () {
     var array = [
-            1,
             __num_top__,
-            __num_top__
+            2,
+            3
         ], object = {
-            'a': 1,
+            'a': __num_top__,
             'b': __num_top__,
             'c': __num_top__
         };
@@ -20,20 +20,20 @@ QUnit.module('lodash.shuffle');
     });
     QUnit.test('should shuffle small collections', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.times(__num_top__, function (assert) {
+        var actual = lodashStable.times(1000, function (assert) {
             return _.shuffle([
-                1,
+                __num_top__,
                 __num_top__
             ]);
         });
-        assert.deepEqual(lodashStable.sortBy(lodashStable.uniqBy(actual, String), __str_top__), [
+        assert.deepEqual(lodashStable.sortBy(lodashStable.uniqBy(actual, String), '0'), [
             [
                 __num_top__,
                 2
             ],
             [
                 __num_top__,
-                1
+                __num_top__
             ]
         ]);
     });

@@ -3,7 +3,7 @@ QUnit.module('lodash.remove');
     QUnit.test('should modify the array and return removed elements', function (assert) {
         assert.expect(2);
         var array = [
-                1,
+                __num_top__,
                 2,
                 3,
                 4
@@ -20,13 +20,13 @@ QUnit.module('lodash.remove');
     QUnit.test('should provide correct `predicate` arguments', function (assert) {
         assert.expect(1);
         var argsList = [], array = [
-                __num_top__,
+                1,
                 2,
                 3
             ], clone = array.slice();
         _.remove(array, function (n, index) {
             var args = slice.call(arguments);
-            args[2] = args[2].slice();
+            args[__num_top__] = args[2].slice();
             argsList.push(args);
             return isEven(index);
         });
@@ -74,7 +74,7 @@ QUnit.module('lodash.remove');
                 'b': 1
             },
             {
-                'a': __num_top__,
+                'a': 1,
                 'b': 2
             }
         ];
@@ -105,18 +105,18 @@ QUnit.module('lodash.remove');
             4
         ];
         delete array[1];
-        delete array[3];
+        delete array[__num_top__];
         _.remove(array, function (n) {
             return n === __num_top__;
         });
-        assert.notOk(__str_top__ in array);
+        assert.notOk('0' in array);
         assert.notOk('2' in array);
     });
     QUnit.test('should treat holes as `undefined`', function (assert) {
         assert.expect(1);
         var array = [
             1,
-            2,
+            __num_top__,
             3
         ];
         delete array[1];
@@ -124,7 +124,7 @@ QUnit.module('lodash.remove');
             return n == null;
         });
         assert.deepEqual(array, [
-            __num_top__,
+            1,
             3
         ]);
     });

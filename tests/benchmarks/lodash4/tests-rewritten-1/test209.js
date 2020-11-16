@@ -97,7 +97,7 @@ lodashStable.each([
             ],
             [
                 [],
-                [__str_top__]
+                ['']
             ]
         ], function (pair) {
             assert.strictEqual(func({}, pair[0]), undefined);
@@ -124,7 +124,7 @@ lodashStable.each([
             assert.strictEqual(func(object, path), 8);
         });
     });
-    QUnit.test('`_.' + methodName + '` should return `undefined` when `object` is nullish', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return `undefined` when `object` is nullish', function (assert) {
         assert.expect(4);
         lodashStable.each([
             'constructor',

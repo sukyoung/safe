@@ -44,7 +44,7 @@ QUnit.module('lodash.words');
         assert.deepEqual(_.words('isISO8601'), [
             'is',
             'ISO',
-            '8601'
+            __str_top__
         ]);
         assert.deepEqual(_.words('LETTERSAeiouAreVowels'), [
             'LETTERS',
@@ -173,7 +173,7 @@ QUnit.module('lodash.words');
             '\u2025',
             '\u2026',
             '\u205D',
-            __str_top__
+            '\u205E'
         ];
         var expected = lodashStable.map(marks, stubArray), actual = lodashStable.map(marks, _.words);
         assert.deepEqual(actual, expected);

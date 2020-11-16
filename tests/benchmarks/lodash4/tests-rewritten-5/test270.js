@@ -7,7 +7,7 @@ lodashStable.each([
     'sortedUniqBy'
 ], function (methodName) {
     var func = _[methodName], isSorted = /^sorted/.test(methodName), objects = [
-            { 'a': 2 },
+            { 'a': __num_top__ },
             { 'a': 3 },
             { 'a': 1 },
             { 'a': 2 },
@@ -17,11 +17,11 @@ lodashStable.each([
     if (isSorted) {
         objects = _.sortBy(objects, 'a');
     } else {
-        QUnit.test(__str_top__ + methodName + '` should return unique values of an unsorted array', function (assert) {
+        QUnit.test('`_.' + methodName + '` should return unique values of an unsorted array', function (assert) {
             assert.expect(1);
             var array = [
                 2,
-                __num_top__,
+                1,
                 2
             ];
             assert.deepEqual(func(array), [
@@ -52,9 +52,9 @@ lodashStable.each([
             -0,
             0
         ]), lodashStable.toString);
-        assert.deepEqual(actual, [__str_top__]);
+        assert.deepEqual(actual, ['0']);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should match `NaN`', function (assert) {
         assert.expect(1);
         assert.deepEqual(func([
             NaN,
@@ -75,7 +75,7 @@ lodashStable.each([
         });
         assert.deepEqual(func(largeArray), expected);
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays of `-0` as `0`', function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
             return isEven(index) ? -0 : 0;
@@ -138,13 +138,13 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + '` should distinguish between numbers and numeric strings', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should distinguish between numbers and numeric strings', function (assert) {
         assert.expect(1);
         var largeArray = [], expected = [
                 '2',
                 2,
                 Object('2'),
-                Object(2)
+                Object(__num_top__)
             ], count = Math.ceil(LARGE_ARRAY_SIZE / expected.length);
         lodashStable.each(expected, function (value) {
             lodashStable.times(count, function () {

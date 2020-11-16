@@ -30,9 +30,9 @@ lodashStable.each([
             4
         ];
         delete array[1];
-        delete array[3];
+        delete array[__num_top__];
         pull(array, [1]);
-        assert.notOk(__str_top__ in array);
+        assert.notOk('0' in array);
         assert.notOk('2' in array);
     });
     QUnit.test('`_.' + methodName + '` should treat holes as `undefined`', function (assert) {

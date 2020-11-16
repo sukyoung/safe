@@ -20,11 +20,11 @@ QUnit.module('lodash.matches');
             assert.strictEqual(par(object), true);
             if (index) {
                 source.a = 2;
-                source.b = 1;
+                source.b = __num_top__;
                 source.c = 3;
             } else {
                 source.a.b = 1;
-                source.a.c = __num_top__;
+                source.a.c = 2;
                 source.a.d = 3;
             }
             assert.strictEqual(par(object), true);

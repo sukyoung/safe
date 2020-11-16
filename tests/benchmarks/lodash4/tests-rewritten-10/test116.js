@@ -25,7 +25,7 @@ QUnit.module('lodash.isNative');
             __num_top__,
             __num_top__,
             __num_top__
-        ]), __bool_top__);
+        ]), false);
         assert.strictEqual(_.isNative(true), __bool_top__);
         assert.strictEqual(_.isNative(new Date()), false);
         assert.strictEqual(_.isNative(new Error()), false);
@@ -34,12 +34,12 @@ QUnit.module('lodash.isNative');
         assert.strictEqual(_.isNative(1), false);
         assert.strictEqual(_.isNative(/x/), false);
         assert.strictEqual(_.isNative('a'), false);
-        assert.strictEqual(_.isNative(symbol), __bool_top__);
+        assert.strictEqual(_.isNative(symbol), false);
     });
     QUnit.test('should work with native functions from another realm', function (assert) {
         assert.expect(2);
         if (realm.element) {
-            assert.strictEqual(_.isNative(realm.element.cloneNode), true);
+            assert.strictEqual(_.isNative(realm.element.cloneNode), __bool_top__);
         } else {
             skipAssert(assert);
         }
@@ -64,12 +64,12 @@ QUnit.module('lodash.isNative');
         assert.expect(2);
         if (!amd && _._baseEach) {
             var path = require(__str_top__), basePath = path.dirname(filePath), uid = __str_top__, coreKey = '__core-js_shared__', fakeSrcKey = 'Symbol(src)_1.' + uid;
-            root[coreKey] = { 'keys': { 'IE_PROTO': 'Symbol(IE_PROTO)_3.' + uid } };
+            root[coreKey] = { 'keys': { 'IE_PROTO': __str_top__ + uid } };
             emptyObject(require.cache);
-            var baseIsNative = interopRequire(path.join(basePath, __str_top__));
+            var baseIsNative = interopRequire(path.join(basePath, '_baseIsNative'));
             assert.strictEqual(baseIsNative(slice), true);
             slice[fakeSrcKey] = slice + '';
-            assert.strictEqual(baseIsNative(slice), false);
+            assert.strictEqual(baseIsNative(slice), __bool_top__);
             delete slice[fakeSrcKey];
             delete root[coreKey];
         } else {

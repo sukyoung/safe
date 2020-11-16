@@ -7,8 +7,8 @@ QUnit.module('lodash.flip');
         assert.expect(1);
         var flipped = _.flip(fn);
         assert.deepEqual(flipped('a', 'b', 'c', 'd'), [
+            'd',
             __str_top__,
-            'c',
             'b',
             'a'
         ]);

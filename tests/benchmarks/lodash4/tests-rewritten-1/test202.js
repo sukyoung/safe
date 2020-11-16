@@ -8,10 +8,10 @@ lodashStable.each([
             2,
             3
         ], isReduce = methodName == 'reduce';
-    QUnit.test(__str_top__ + methodName + '` should reduce a collection to a single value', function (assert) {
+    QUnit.test('`_.' + methodName + '` should reduce a collection to a single value', function (assert) {
         assert.expect(1);
         var actual = func([
-            'a',
+            __str_top__,
             'b',
             'c'
         ], function (accumulator, value) {

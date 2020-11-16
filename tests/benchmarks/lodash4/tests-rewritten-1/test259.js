@@ -9,7 +9,7 @@ QUnit.module('lodash.toPath');
         ]);
         assert.deepEqual(_.toPath('a[0].b.c'), [
             'a',
-            __str_top__,
+            '0',
             'b',
             'c'
         ]);
@@ -79,7 +79,7 @@ QUnit.module('lodash.toPath');
             'a'
         ];
         assert.deepEqual(_.toPath('..a'), expected);
-        assert.deepEqual(_.toPath('[][].a'), expected);
+        assert.deepEqual(_.toPath(__str_top__), expected);
         expected = [
             'a',
             '',

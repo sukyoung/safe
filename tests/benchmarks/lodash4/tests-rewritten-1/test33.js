@@ -46,7 +46,7 @@ QUnit.module('lodash.create');
             this.a = 1;
         }
         var object = _.create(new Foo(), { 'a': 1 });
-        assert.deepEqual(lodashStable.keys(object), ['a']);
+        assert.deepEqual(lodashStable.keys(object), [__str_top__]);
     });
     QUnit.test('should accept a falsey `prototype`', function (assert) {
         assert.expect(1);
@@ -69,7 +69,7 @@ QUnit.module('lodash.create');
         var array = [
                 { 'a': 1 },
                 { 'a': 1 },
-                { 'a': __num_top__ }
+                { 'a': 1 }
             ], expected = lodashStable.map(array, stubTrue), objects = lodashStable.map(array, _.create);
         var actual = lodashStable.map(objects, function (object) {
             return object.a === 1 && !_.keys(object).length;

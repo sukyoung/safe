@@ -4,7 +4,7 @@ QUnit.module('lodash.min');
         assert.expect(1);
         assert.strictEqual(_.min([
             1,
-            __num_top__,
+            2,
             3
         ]), 1);
     });
@@ -23,7 +23,7 @@ QUnit.module('lodash.min');
         assert.expect(1);
         assert.strictEqual(_.min([
             'a',
-            'b'
+            __str_top__
         ]), 'a');
     });
 }());

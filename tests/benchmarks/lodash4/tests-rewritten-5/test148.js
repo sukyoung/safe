@@ -10,25 +10,25 @@ QUnit.module('lodash.matches');
                 }
             },
             {
-                'a': __num_top__,
+                'a': 1,
                 'b': 2
             },
             { 'a': 1 }
         ];
         lodashStable.each(sources, function (source, index) {
             var object = lodashStable.cloneDeep(source), par = _.matches(source);
-            assert.strictEqual(par(object), true);
+            assert.strictEqual(par(object), __bool_top__);
             if (index) {
-                source.a = 2;
+                source.a = __num_top__;
                 source.b = 1;
                 source.c = 3;
             } else {
                 source.a.b = __num_top__;
-                source.a.c = __num_top__;
-                source.a.d = 3;
+                source.a.c = 2;
+                source.a.d = __num_top__;
             }
             assert.strictEqual(par(object), true);
-            assert.strictEqual(par(source), __bool_top__);
+            assert.strictEqual(par(source), false);
         });
     });
 }());

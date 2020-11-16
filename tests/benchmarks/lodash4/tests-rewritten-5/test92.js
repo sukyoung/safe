@@ -4,12 +4,12 @@ QUnit.module('lodash.intersectionWith');
         assert.expect(1);
         var objects = [
                 {
-                    'x': __num_top__,
-                    'y': 2
+                    'x': 1,
+                    'y': __num_top__
                 },
                 {
                     'x': 2,
-                    'y': 1
+                    'y': __num_top__
                 }
             ], others = [
                 {
@@ -25,7 +25,7 @@ QUnit.module('lodash.intersectionWith');
     });
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
-        var array = [-__num_top__], largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubZero), others = [
+        var array = [-0], largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubZero), others = [
                 [__num_top__],
                 largeArray
             ], expected = lodashStable.map(others, lodashStable.constant(['-0']));

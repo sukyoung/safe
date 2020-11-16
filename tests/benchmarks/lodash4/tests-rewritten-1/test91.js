@@ -13,7 +13,7 @@ QUnit.module('lodash.intersectionBy');
         actual = _.intersectionBy([{ 'x': 1 }], [
             { 'x': 2 },
             { 'x': 1 }
-        ], __str_top__);
+        ], 'x');
         assert.deepEqual(actual, [{ 'x': 1 }]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
@@ -28,6 +28,6 @@ QUnit.module('lodash.intersectionBy');
         ], function () {
             args || (args = slice.call(arguments));
         });
-        assert.deepEqual(args, [2.3]);
+        assert.deepEqual(args, [__num_top__]);
     });
 }());

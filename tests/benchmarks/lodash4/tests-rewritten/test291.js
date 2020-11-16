@@ -20,7 +20,7 @@ QUnit.module('lodash(...).commit');
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should track the `__chain__` value of a wrapper', function (assert) {
@@ -30,7 +30,7 @@ QUnit.module('lodash(...).commit');
             assert.ok(wrapped instanceof _);
             assert.strictEqual(wrapped.value(), __num_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

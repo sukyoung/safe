@@ -23,7 +23,7 @@ QUnit.module('lodash.curryRight');
                 3
             ];
         assert.deepEqual(curried(3)(1, 2), expected);
-        assert.deepEqual(curried(2, 3)(1), expected);
+        assert.deepEqual(curried(2, __num_top__)(1), expected);
         assert.deepEqual(curried(1, 2, 3), expected);
     });
     QUnit.test('should coerce `arity` to an integer', function (assert) {
@@ -39,7 +39,7 @@ QUnit.module('lodash.curryRight');
         assert.deepEqual(actual, expected);
         assert.deepEqual(_.curryRight(fn, '2')(1)(2), [
             2,
-            1
+            __num_top__
         ]);
     });
     QUnit.test('should support placeholders', function (assert) {
@@ -53,7 +53,7 @@ QUnit.module('lodash.curryRight');
         assert.deepEqual(curried(4)(2, ph)(1, ph)(3), expected);
         assert.deepEqual(curried(3, ph)(4)(1, ph)(2), expected);
         assert.deepEqual(curried(ph, ph, 4)(ph, 3)(ph, 2)(1), expected);
-        assert.deepEqual(curried(ph, ph, ph, 4)(ph, ph, 3)(ph, 2)(__num_top__), expected);
+        assert.deepEqual(curried(ph, ph, ph, 4)(ph, ph, 3)(ph, 2)(1), expected);
     });
     QUnit.test('should persist placeholders', function (assert) {
         assert.expect(1);
@@ -84,7 +84,7 @@ QUnit.module('lodash.curryRight');
         assert.expect(3);
         var curried = _.curryRight(fn, 3);
         assert.deepEqual(curried(4)(1, 2, 3), [
-            __num_top__,
+            1,
             2,
             3,
             4
@@ -93,14 +93,14 @@ QUnit.module('lodash.curryRight');
             1,
             2,
             3,
-            __num_top__,
-            5
+            4,
+            __num_top__
         ]);
-        assert.deepEqual(curried(1, 2, 3, 4, 5, 6), [
+        assert.deepEqual(curried(1, 2, 3, 4, __num_top__, 6), [
             1,
             2,
             3,
-            __num_top__,
+            4,
             5,
             6
         ]);
@@ -145,7 +145,7 @@ QUnit.module('lodash.curryRight');
         assert.deepEqual(_.curryRight(_.bind(fn, object), 3)('c')('b')('a'), expected);
         assert.deepEqual(_.curryRight(_.bind(fn, object), 3)('b', 'c')('a'), expected);
         assert.deepEqual(_.curryRight(_.bind(fn, object), 3)('a', 'b', 'c'), expected);
-        assert.deepEqual(_.bind(_.curryRight(fn), object)('c')(__str_top__)('a'), Array(3));
+        assert.deepEqual(_.bind(_.curryRight(fn), object)('c')('b')('a'), Array(3));
         assert.deepEqual(_.bind(_.curryRight(fn), object)('b', 'c')('a'), Array(3));
         assert.deepEqual(_.bind(_.curryRight(fn), object)('a', 'b', 'c'), expected);
         object.curried = _.curryRight(fn);
@@ -156,7 +156,7 @@ QUnit.module('lodash.curryRight');
     QUnit.test('should work with partialed methods', function (assert) {
         assert.expect(2);
         var curried = _.curryRight(fn), expected = [
-                1,
+                __num_top__,
                 2,
                 3,
                 4

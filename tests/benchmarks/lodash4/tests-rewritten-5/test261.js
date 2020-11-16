@@ -15,14 +15,14 @@ QUnit.module('lodash.toString');
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var values = [
-                -0,
+                -__num_top__,
                 Object(-__num_top__),
-                __num_top__,
-                Object(__num_top__)
+                0,
+                Object(0)
             ], expected = [
                 '-0',
+                '-0',
                 __str_top__,
-                '0',
                 '0'
             ], actual = lodashStable.map(values, _.toString);
         assert.deepEqual(actual, expected);
@@ -32,10 +32,10 @@ QUnit.module('lodash.toString');
         var values = [
             -0,
             Object(-0),
-            0,
+            __num_top__,
             Object(0)
         ];
-        assert.deepEqual(_.toString(values), __str_top__);
+        assert.deepEqual(_.toString(values), '-0,-0,0,0');
     });
     QUnit.test('should not error on symbols', function (assert) {
         assert.expect(1);
@@ -69,7 +69,7 @@ QUnit.module('lodash.toString');
                 2,
                 3
             ]);
-            assert.strictEqual(wrapped.toString(), '1,2,3');
+            assert.strictEqual(wrapped.toString(), __str_top__);
         } else {
             skipAssert(assert);
         }

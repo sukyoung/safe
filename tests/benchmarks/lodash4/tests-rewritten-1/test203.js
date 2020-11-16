@@ -1,7 +1,7 @@
 QUnit.module('lodash.reject');
 (function () {
     var array = [
-        1,
+        __num_top__,
         2,
         3
     ];
@@ -9,7 +9,7 @@ QUnit.module('lodash.reject');
         assert.expect(1);
         assert.deepEqual(_.reject(array, isEven), [
             1,
-            __num_top__
+            3
         ]);
     });
 }());

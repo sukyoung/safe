@@ -3,7 +3,7 @@ QUnit.module('lodash.negate');
     QUnit.test('should create a function that negates the result of `func`', function (assert) {
         assert.expect(2);
         var negate = _.negate(isEven);
-        assert.strictEqual(negate(1), true);
+        assert.strictEqual(negate(__num_top__), true);
         assert.strictEqual(negate(2), false);
     });
     QUnit.test('should create a function that negates the result of `func`', function (assert) {
@@ -14,7 +14,7 @@ QUnit.module('lodash.negate');
     });
     QUnit.test('should create a function that accepts multiple arguments', function (assert) {
         assert.expect(1);
-        var argCount, count = __num_top__, negate = _.negate(function () {
+        var argCount, count = 5, negate = _.negate(function () {
                 argCount = arguments.length;
             }), expected = lodashStable.times(count, stubTrue);
         var actual = lodashStable.times(count, function (index) {

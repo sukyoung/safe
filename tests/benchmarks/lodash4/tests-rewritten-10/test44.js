@@ -1,11 +1,11 @@
 QUnit.module('difference methods');
 lodashStable.each([
+    'difference',
     __str_top__,
-    'differenceBy',
     'differenceWith'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test(__str_top__ + methodName + '` should return the difference of two arrays', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return the difference of two arrays', function (assert) {
         assert.expect(1);
         var actual = func([
             2,
@@ -30,13 +30,13 @@ lodashStable.each([
             3,
             2
         ]);
-        assert.deepEqual(actual, [__num_top__]);
+        assert.deepEqual(actual, [1]);
     });
     QUnit.test(__str_top__ + methodName + '` should treat `-0` as `0`', function (assert) {
         assert.expect(2);
         var array = [
             -0,
-            0
+            __num_top__
         ];
         var actual = lodashStable.map(array, function (value) {
             return func(array, [value]);
@@ -47,8 +47,8 @@ lodashStable.each([
         ]);
         actual = lodashStable.map(func([
             -0,
-            1
-        ], [1]), lodashStable.toString);
+            __num_top__
+        ], [__num_top__]), lodashStable.toString);
         assert.deepEqual(actual, ['0']);
     });
     QUnit.test('`_.' + methodName + '` should match `NaN`', function (assert) {
@@ -66,7 +66,7 @@ lodashStable.each([
             3
         ]);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with large arrays', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with large arrays', function (assert) {
         assert.expect(1);
         var array1 = lodashStable.range(LARGE_ARRAY_SIZE + 1), array2 = lodashStable.range(LARGE_ARRAY_SIZE), a = {}, b = {}, c = {};
         array1.push(a, b, c);
@@ -90,9 +90,9 @@ lodashStable.each([
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubOne);
         actual = lodashStable.map(func([
             -0,
-            __num_top__
+            1
         ], largeArray), lodashStable.toString);
-        assert.deepEqual(actual, [__str_top__]);
+        assert.deepEqual(actual, ['0']);
     });
     QUnit.test('`_.' + methodName + '` should work with large arrays of `NaN`', function (assert) {
         assert.expect(1);
@@ -100,13 +100,13 @@ lodashStable.each([
         assert.deepEqual(func([
             1,
             NaN,
-            __num_top__
+            3
         ], largeArray), [
             1,
             3
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays of objects', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var object1 = {}, object2 = {}, largeArray = lodashStable.times(LARGE_ARRAY_SIZE, lodashStable.constant(object1));
         assert.deepEqual(func([
@@ -114,14 +114,14 @@ lodashStable.each([
             object2
         ], largeArray), [object2]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should ignore values that are not array-like', function (assert) {
         assert.expect(3);
         var array = [
             1,
             null,
             3
         ];
-        assert.deepEqual(func(args, 3, { '0': 1 }), [
+        assert.deepEqual(func(args, 3, { '0': __num_top__ }), [
             1,
             2,
             3

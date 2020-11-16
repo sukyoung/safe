@@ -14,7 +14,7 @@ QUnit.module('lodash.times');
         assert.expect(1);
         var actual = _.times(2.6, _.identity);
         assert.deepEqual(actual, [
-            __num_top__,
+            0,
             1
         ]);
     });
@@ -44,7 +44,7 @@ QUnit.module('lodash.times');
     });
     QUnit.test('should return an array of the results of each `iteratee` execution', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.times(3, doubled), [
+        assert.deepEqual(_.times(__num_top__, doubled), [
             0,
             2,
             4

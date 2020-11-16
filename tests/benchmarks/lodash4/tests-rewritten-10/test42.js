@@ -5,7 +5,7 @@ QUnit.module('lodash.defer');
         var done = assert.async();
         var pass = __bool_top__;
         _.defer(function () {
-            pass = true;
+            pass = __bool_top__;
         });
         setTimeout(function () {
             assert.ok(pass);
@@ -25,7 +25,7 @@ QUnit.module('lodash.defer');
                 __num_top__
             ]);
             done();
-        }, __num_top__);
+        }, 32);
     });
     QUnit.test('should be cancelable', function (assert) {
         assert.expect(1);

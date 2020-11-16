@@ -67,7 +67,7 @@ QUnit.module('lodash.dropWhile');
             assert.deepEqual(wrapped.reverse().value(), expected.slice().reverse());
             assert.strictEqual(wrapped.last(), _.last(expected));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should work in a lazy sequence with `drop`', function (assert) {

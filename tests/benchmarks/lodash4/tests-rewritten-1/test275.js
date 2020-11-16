@@ -144,7 +144,7 @@ QUnit.module('lodash.unset');
             delete numberProto.a;
         });
         lodashStable.each([
-            'a.replace.b',
+            __str_top__,
             [
                 'a',
                 'replace',

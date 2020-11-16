@@ -26,7 +26,7 @@ QUnit.module('lodash.isEmpty');
     });
     QUnit.test('should work with an object that has a `length` property', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.isEmpty({ 'length': 0 }), false);
+        assert.strictEqual(_.isEmpty({ 'length': 0 }), __bool_top__);
     });
     QUnit.test('should work with `arguments` objects', function (assert) {
         assert.expect(1);
@@ -47,7 +47,7 @@ QUnit.module('lodash.isEmpty');
             push.apply(this, elements);
         }
         Foo.prototype = {
-            'length': __num_top__,
+            'length': 0,
             'splice': arrayProto.splice
         };
         assert.strictEqual(_.isEmpty(new Foo([])), true);

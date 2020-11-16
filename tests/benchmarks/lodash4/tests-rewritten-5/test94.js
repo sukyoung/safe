@@ -9,13 +9,13 @@ QUnit.module('lodash.invertBy');
         assert.expect(1);
         var expected = {
             'group1': [
-                __str_top__,
+                'a',
                 'c'
             ],
             'group2': ['b']
         };
         var actual = _.invertBy(object, function (value) {
-            return __str_top__ + value;
+            return 'group' + value;
         });
         assert.deepEqual(actual, expected);
     });
@@ -27,10 +27,10 @@ QUnit.module('lodash.invertBy');
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant({
                 '1': [
-                    'a',
+                    __str_top__,
                     'c'
                 ],
-                '2': ['b']
+                '2': [__str_top__]
             }));
         var actual = lodashStable.map(values, function (value, index) {
             return index ? _.invertBy(object, value) : _.invertBy(object);
@@ -40,11 +40,11 @@ QUnit.module('lodash.invertBy');
     QUnit.test('should only add multiple values to own, not inherited, properties', function (assert) {
         assert.expect(1);
         var object = {
-                'a': __str_top__,
+                'a': 'hasOwnProperty',
                 'b': 'constructor'
             }, expected = {
                 'hasOwnProperty': ['a'],
-                'constructor': ['b']
+                'constructor': [__str_top__]
             };
         assert.ok(lodashStable.isEqual(_.invertBy(object), expected));
     });

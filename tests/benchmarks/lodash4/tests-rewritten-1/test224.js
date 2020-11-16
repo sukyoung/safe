@@ -31,7 +31,7 @@ lodashStable.each([
         assert.expect(1);
         var array = [
                 'a',
-                __str_top__
+                'c'
             ], values = [
                 'a',
                 'b',
@@ -130,7 +130,7 @@ lodashStable.each([
                 symbol1,
                 symbol2
             ];
-        assert.strictEqual(func(array, symbol3), isSortedIndex ? 0 : 2);
+        assert.strictEqual(func(array, symbol3), isSortedIndex ? 0 : __num_top__);
         assert.strictEqual(func(array, 1), 0);
         assert.strictEqual(func(array, 'a'), 0);
     });

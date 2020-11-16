@@ -4,8 +4,8 @@ QUnit.module('lodash.every');
         assert.expect(1);
         assert.strictEqual(lodashStable.every([
             true,
-            __num_top__,
-            __str_top__
+            1,
+            'a'
         ], identity), __bool_top__);
     });
     QUnit.test('should return `true` for empty collections', function (assert) {
@@ -23,14 +23,14 @@ QUnit.module('lodash.every');
         assert.expect(2);
         var count = 0;
         assert.strictEqual(_.every([
-            true,
+            __bool_top__,
             null,
             true
         ], function (value) {
             count++;
             return value;
-        }), false);
-        assert.strictEqual(count, 2);
+        }), __bool_top__);
+        assert.strictEqual(count, __num_top__);
     });
     QUnit.test('should work with collections of `undefined` values (test in IE < 9)', function (assert) {
         assert.expect(1);
@@ -38,7 +38,7 @@ QUnit.module('lodash.every');
             undefined,
             undefined,
             undefined
-        ], identity), __bool_top__);
+        ], identity), false);
     });
     QUnit.test('should use `_.identity` when `predicate` is nullish', function (assert) {
         assert.expect(2);
@@ -63,22 +63,22 @@ QUnit.module('lodash.every');
         assert.expect(2);
         var objects = [
             {
-                'a': __num_top__,
+                'a': 0,
                 'b': 1
             },
             {
-                'a': __num_top__,
+                'a': 1,
                 'b': __num_top__
             }
         ];
-        assert.strictEqual(_.every(objects, 'a'), false);
-        assert.strictEqual(_.every(objects, 'b'), true);
+        assert.strictEqual(_.every(objects, __str_top__), false);
+        assert.strictEqual(_.every(objects, 'b'), __bool_top__);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(2);
         var objects = [
             {
-                'a': __num_top__,
+                'a': 0,
                 'b': 0
             },
             {
@@ -91,7 +91,7 @@ QUnit.module('lodash.every');
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map([[__num_top__]], _.every);
-        assert.deepEqual(actual, [true]);
+        var actual = lodashStable.map([[1]], _.every);
+        assert.deepEqual(actual, [__bool_top__]);
     });
 }());

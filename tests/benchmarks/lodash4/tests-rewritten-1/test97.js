@@ -17,7 +17,7 @@ QUnit.module('lodash.isArguments');
             2,
             3
         ]), false);
-        assert.strictEqual(_.isArguments(true), false);
+        assert.strictEqual(_.isArguments(true), __bool_top__);
         assert.strictEqual(_.isArguments(new Date()), false);
         assert.strictEqual(_.isArguments(new Error()), false);
         assert.strictEqual(_.isArguments(_), false);
@@ -28,7 +28,7 @@ QUnit.module('lodash.isArguments');
             'length': 1
         }), false);
         assert.strictEqual(_.isArguments(1), false);
-        assert.strictEqual(_.isArguments(/x/), __bool_top__);
+        assert.strictEqual(_.isArguments(/x/), false);
         assert.strictEqual(_.isArguments('a'), false);
         assert.strictEqual(_.isArguments(symbol), false);
     });

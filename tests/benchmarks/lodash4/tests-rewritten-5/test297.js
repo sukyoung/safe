@@ -4,13 +4,13 @@ QUnit.module('lodash(...).sort');
         assert.expect(2);
         if (!isNpm) {
             var array = [
-                    __num_top__,
+                    3,
                     __num_top__,
                     __num_top__
                 ], wrapped = _(array).sort(), actual = wrapped.value();
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, [
-                1,
+                __num_top__,
                 __num_top__,
                 __num_top__
             ]);

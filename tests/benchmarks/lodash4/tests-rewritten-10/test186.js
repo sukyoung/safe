@@ -3,7 +3,7 @@ QUnit.module('lodash.partition');
     var array = [
         1,
         0,
-        __num_top__
+        1
     ];
     QUnit.test('should split elements into two groups by `predicate`', function (assert) {
         assert.expect(3);
@@ -28,7 +28,7 @@ QUnit.module('lodash.partition');
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant([
                 [
-                    1,
+                    __num_top__,
                     1
                 ],
                 [0]
@@ -41,12 +41,12 @@ QUnit.module('lodash.partition');
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         var objects = [
-                { 'a': __num_top__ },
-                { 'a': __num_top__ },
-                { 'b': 2 }
+                { 'a': 1 },
+                { 'a': 1 },
+                { 'b': __num_top__ }
             ], actual = _.partition(objects, 'a');
         assert.deepEqual(actual, [
-            objects.slice(0, 2),
+            objects.slice(__num_top__, 2),
             objects.slice(__num_top__)
         ]);
     });
@@ -54,11 +54,11 @@ QUnit.module('lodash.partition');
         assert.expect(2);
         var array = [
             [
-                1,
+                __num_top__,
                 0
             ],
             [
-                __num_top__,
+                0,
                 1
             ],
             [
@@ -68,7 +68,7 @@ QUnit.module('lodash.partition');
         ];
         assert.deepEqual(_.partition(array, 0), [
             [
-                array[__num_top__],
+                array[0],
                 array[2]
             ],
             [array[__num_top__]]
@@ -76,8 +76,8 @@ QUnit.module('lodash.partition');
         assert.deepEqual(_.partition(array, 1), [
             [array[1]],
             [
-                array[0],
-                array[__num_top__]
+                array[__num_top__],
+                array[2]
             ]
         ]);
     });
@@ -85,13 +85,13 @@ QUnit.module('lodash.partition');
         assert.expect(1);
         var actual = _.partition({
             'a': 1.1,
-            'b': 0.2,
+            'b': __num_top__,
             'c': 1.3
         }, Math.floor);
         assert.deepEqual(actual, [
             [
-                1.1,
-                __num_top__
+                __num_top__,
+                1.3
             ],
             [0.2]
         ]);

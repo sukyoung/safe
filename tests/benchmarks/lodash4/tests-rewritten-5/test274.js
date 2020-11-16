@@ -14,7 +14,7 @@ QUnit.module('lodash.uniqueId');
     QUnit.test('should coerce the prefix argument to a string', function (assert) {
         assert.expect(1);
         var actual = [
-            _.uniqueId(3),
+            _.uniqueId(__num_top__),
             _.uniqueId(__num_top__),
             _.uniqueId(__num_top__)
         ];

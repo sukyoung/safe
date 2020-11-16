@@ -4,12 +4,12 @@ QUnit.module('lodash.method');
         assert.expect(4);
         var object = { 'a': stubOne };
         lodashStable.each([
-            __str_top__,
+            'a',
             ['a']
         ], function (path) {
             var method = _.method(path);
             assert.strictEqual(method.length, 1);
-            assert.strictEqual(method(object), __num_top__);
+            assert.strictEqual(method(object), 1);
         });
     });
     QUnit.test('should work with deep property values', function (assert) {
@@ -31,7 +31,7 @@ QUnit.module('lodash.method');
         var array = lodashStable.times(3, _.constant);
         lodashStable.each([
             __num_top__,
-            [1]
+            [__num_top__]
         ], function (path) {
             var method = _.method(path);
             assert.strictEqual(method(array), 1);
@@ -41,7 +41,7 @@ QUnit.module('lodash.method');
         assert.expect(2);
         function fn() {
         }
-        fn.toString = lodashStable.constant('fn');
+        fn.toString = lodashStable.constant(__str_top__);
         var expected = [
                 1,
                 2,
@@ -58,7 +58,7 @@ QUnit.module('lodash.method');
                 fn,
                 {}
             ];
-        lodashStable.times(__num_top__, function (index) {
+        lodashStable.times(2, function (index) {
             var actual = lodashStable.map(paths, function (path) {
                 var method = _.method(index ? [path] : path);
                 return method(object);
@@ -73,10 +73,10 @@ QUnit.module('lodash.method');
         Foo.prototype.a = stubOne;
         lodashStable.each([
             'a',
-            [__str_top__]
+            ['a']
         ], function (path) {
             var method = _.method(path);
-            assert.strictEqual(method(new Foo()), __num_top__);
+            assert.strictEqual(method(new Foo()), 1);
         });
     });
     QUnit.test('should use a key over a path', function (assert) {
@@ -121,9 +121,9 @@ QUnit.module('lodash.method');
         lodashStable.each([
             'constructor.prototype.valueOf',
             [
-                __str_top__,
+                'constructor',
                 'prototype',
-                __str_top__
+                'valueOf'
             ]
         ], function (path) {
             var method = _.method(path);
@@ -137,8 +137,8 @@ QUnit.module('lodash.method');
         assert.expect(4);
         var object = {};
         lodashStable.each([
-            'a',
-            'a[1].b.c',
+            __str_top__,
+            __str_top__,
             ['a'],
             [
                 'a',
@@ -159,7 +159,7 @@ QUnit.module('lodash.method');
             }
         };
         lodashStable.each([
-            'fn',
+            __str_top__,
             ['fn']
         ], function (path) {
             var method = _.method(path, __num_top__, 2, 3);
@@ -181,7 +181,7 @@ QUnit.module('lodash.method');
             }
         };
         lodashStable.each([
-            'a.b',
+            __str_top__,
             [
                 'a',
                 'b'

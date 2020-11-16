@@ -5,7 +5,7 @@ QUnit.module('lodash.isBoolean');
         assert.strictEqual(_.isBoolean(true), true);
         assert.strictEqual(_.isBoolean(false), true);
         assert.strictEqual(_.isBoolean(Object(true)), true);
-        assert.strictEqual(_.isBoolean(Object(false)), true);
+        assert.strictEqual(_.isBoolean(Object(__bool_top__)), true);
     });
     QUnit.test('should return `false` for non-booleans', function (assert) {
         assert.expect(12);
@@ -18,7 +18,7 @@ QUnit.module('lodash.isBoolean');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isBoolean(args), false);
         assert.strictEqual(_.isBoolean([
-            __num_top__,
+            1,
             2,
             3
         ]), false);

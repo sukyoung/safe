@@ -4,7 +4,7 @@ lodashStable.each([
     'result'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test(__str_top__ + methodName + '` should get string keyed property values', function (assert) {
+    QUnit.test('`_.' + methodName + '` should get string keyed property values', function (assert) {
         assert.expect(2);
         var object = { 'a': 1 };
         lodashStable.each([
@@ -55,7 +55,7 @@ lodashStable.each([
                 'b'
             ]
         ], function (path) {
-            assert.strictEqual(func(object, path), __num_top__);
+            assert.strictEqual(func(object, path), 2);
         });
     });
     QUnit.test('`_.' + methodName + '` should get a key over a path', function (assert) {
@@ -83,7 +83,7 @@ lodashStable.each([
             'c'
         ]), 4);
     });
-    QUnit.test('`_.' + methodName + '` should not ignore empty brackets', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should not ignore empty brackets', function (assert) {
         assert.expect(1);
         var object = { 'a': { '': 1 } };
         assert.strictEqual(func(object, 'a[]'), 1);
@@ -124,7 +124,7 @@ lodashStable.each([
             assert.strictEqual(func(object, path), 8);
         });
     });
-    QUnit.test('`_.' + methodName + '` should return `undefined` when `object` is nullish', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(4);
         lodashStable.each([
             'constructor',
@@ -163,10 +163,10 @@ lodashStable.each([
             ]
         };
         lodashStable.each([
-            __str_top__,
+            'a[1].b.c',
             [
                 'a',
-                '1',
+                __str_top__,
                 'b',
                 'c'
             ]
@@ -180,7 +180,7 @@ lodashStable.each([
         lodashStable.each([
             'a.b',
             [
-                'a',
+                __str_top__,
                 'b'
             ]
         ], function (path) {
@@ -211,7 +211,7 @@ lodashStable.each([
                 ];
             });
         lodashStable.each([
-            'a.b',
+            __str_top__,
             [
                 'a',
                 'b'

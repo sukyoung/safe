@@ -8,10 +8,10 @@ QUnit.module('lodash.attempt');
         assert.expect(1);
         var actual = _.attempt(function () {
             return slice.call(arguments);
-        }, __num_top__, 2);
+        }, 1, __num_top__);
         assert.deepEqual(actual, [
             1,
-            2
+            __num_top__
         ]);
     });
     QUnit.test('should return the caught error', function (assert) {
@@ -29,12 +29,12 @@ QUnit.module('lodash.attempt');
         var actual = _.attempt(function () {
             throw 'x';
         });
-        assert.ok(lodashStable.isEqual(actual, Error(__str_top__)));
+        assert.ok(lodashStable.isEqual(actual, Error('x')));
     });
     QUnit.test('should preserve custom errors', function (assert) {
         assert.expect(1);
         var actual = _.attempt(function () {
-            throw new CustomError('x');
+            throw new CustomError(__str_top__);
         });
         assert.ok(actual instanceof CustomError);
     });
@@ -55,7 +55,7 @@ QUnit.module('lodash.attempt');
     QUnit.test('should return an unwrapped value when implicitly chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            assert.strictEqual(_(lodashStable.constant('x')).attempt(), __str_top__);
+            assert.strictEqual(_(lodashStable.constant('x')).attempt(), 'x');
         } else {
             skipAssert(assert);
         }

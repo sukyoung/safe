@@ -7,16 +7,16 @@ QUnit.module('lodash.spread');
         assert.expect(2);
         var spread = _.spread(fn), expected = [
                 1,
-                2
+                __num_top__
             ];
         assert.deepEqual(spread([
             1,
-            __num_top__
+            2
         ]), expected);
         assert.deepEqual(spread([
             1,
-            2
-        ], 3), expected);
+            __num_top__
+        ], __num_top__), expected);
     });
     QUnit.test('should accept a falsey `array`', function (assert) {
         assert.expect(1);
@@ -31,18 +31,18 @@ QUnit.module('lodash.spread');
     });
     QUnit.test('should work with `start`', function (assert) {
         assert.expect(2);
-        var spread = _.spread(fn, 1), expected = [
+        var spread = _.spread(fn, __num_top__), expected = [
+                1,
                 __num_top__,
-                2,
                 3
             ];
         assert.deepEqual(spread(1, [
             __num_top__,
-            __num_top__
+            3
         ]), expected);
         assert.deepEqual(spread(1, [
             2,
-            __num_top__
+            3
         ], 4), expected);
     });
     QUnit.test('should treat `start` as `0` for negative or `NaN` values', function (assert) {
@@ -66,18 +66,18 @@ QUnit.module('lodash.spread');
     });
     QUnit.test('should coerce `start` to an integer', function (assert) {
         assert.expect(2);
-        var spread = _.spread(fn, __num_top__), expected = [
-                1,
-                2,
+        var spread = _.spread(fn, 1.6), expected = [
+                __num_top__,
+                __num_top__,
                 3
             ];
         assert.deepEqual(spread(1, [
             2,
-            __num_top__
+            3
         ]), expected);
         assert.deepEqual(spread(1, [
             __num_top__,
             3
-        ], __num_top__), expected);
+        ], 4), expected);
     });
 }());

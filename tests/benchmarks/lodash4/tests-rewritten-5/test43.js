@@ -24,7 +24,7 @@ QUnit.module('lodash.delay');
         }, 32, __num_top__, 2);
         setTimeout(function () {
             assert.deepEqual(args, [
-                __num_top__,
+                1,
                 2
             ]);
             done();
@@ -33,15 +33,15 @@ QUnit.module('lodash.delay');
     QUnit.test('should use a default `wait` of `0`', function (assert) {
         assert.expect(2);
         var done = assert.async();
-        var pass = false;
+        var pass = __bool_top__;
         _.delay(function () {
-            pass = true;
+            pass = __bool_top__;
         });
         assert.notOk(pass);
         setTimeout(function () {
             assert.ok(pass);
             done();
-        }, __num_top__);
+        }, 0);
     });
     QUnit.test('should be cancelable', function (assert) {
         assert.expect(1);
@@ -59,13 +59,13 @@ QUnit.module('lodash.delay');
         assert.expect(1);
         if (!isPhantom) {
             var pass = __bool_top__, setTimeout = root.setTimeout;
-            setProperty(root, 'setTimeout', function (func) {
+            setProperty(root, __str_top__, function (func) {
                 func();
             });
             _.delay(function () {
                 pass = true;
             }, 32);
-            setProperty(root, __str_top__, setTimeout);
+            setProperty(root, 'setTimeout', setTimeout);
             assert.ok(pass);
         } else {
             skipAssert(assert);

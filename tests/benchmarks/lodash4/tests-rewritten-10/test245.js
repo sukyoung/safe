@@ -12,7 +12,7 @@ QUnit.module('lodash.truncate');
     });
     QUnit.test('should truncate string the given length', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.truncate(string, { 'length': 24 }), 'hi-diddly-ho there, n...');
+        assert.strictEqual(_.truncate(string, { 'length': __num_top__ }), __str_top__);
     });
     QUnit.test('should support a `omission` option', function (assert) {
         assert.expect(1);
@@ -20,19 +20,19 @@ QUnit.module('lodash.truncate');
     });
     QUnit.test('should coerce nullish `omission` values to strings', function (assert) {
         assert.expect(2);
-        assert.strictEqual(_.truncate(string, { 'omission': null }), __str_top__);
-        assert.strictEqual(_.truncate(string, { 'omission': undefined }), __str_top__);
+        assert.strictEqual(_.truncate(string, { 'omission': null }), 'hi-diddly-ho there, neighbnull');
+        assert.strictEqual(_.truncate(string, { 'omission': undefined }), 'hi-diddly-ho there, nundefined');
     });
     QUnit.test('should support a `length` option', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.truncate(string, { 'length': __num_top__ }), 'h...');
+        assert.strictEqual(_.truncate(string, { 'length': 4 }), 'h...');
     });
     QUnit.test('should support a `separator` option', function (assert) {
         assert.expect(3);
         assert.strictEqual(_.truncate(string, {
             'length': 24,
             'separator': ' '
-        }), __str_top__);
+        }), 'hi-diddly-ho there,...');
         assert.strictEqual(_.truncate(string, {
             'length': 24,
             'separator': /,? +/
@@ -46,9 +46,9 @@ QUnit.module('lodash.truncate');
         assert.expect(2);
         lodashStable.each([
             0,
-            -__num_top__
+            -2
         ], function (length) {
-            assert.strictEqual(_.truncate(string, { 'length': length }), '...');
+            assert.strictEqual(_.truncate(string, { 'length': length }), __str_top__);
         });
     });
     QUnit.test('should coerce `length` to an integer', function (assert) {
@@ -56,10 +56,10 @@ QUnit.module('lodash.truncate');
         lodashStable.each([
             '',
             NaN,
-            4.6,
-            __str_top__
+            __num_top__,
+            '4'
         ], function (length, index) {
-            var actual = index > 1 ? 'h...' : '...';
+            var actual = index > __num_top__ ? __str_top__ : __str_top__;
             assert.strictEqual(_.truncate(string, { 'length': { 'valueOf': lodashStable.constant(length) } }), actual);
         });
     });

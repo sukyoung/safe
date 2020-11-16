@@ -60,8 +60,8 @@ QUnit.module('lodash.isEqualWith');
     QUnit.test('should handle comparisons when `customizer` returns `undefined`', function (assert) {
         assert.expect(3);
         assert.strictEqual(_.isEqualWith('a', 'a', noop), true);
-        assert.strictEqual(_.isEqualWith([__str_top__], ['a'], noop), true);
-        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': 'a' }, noop), true);
+        assert.strictEqual(_.isEqualWith(['a'], ['a'], noop), true);
+        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': __str_top__ }, noop), true);
     });
     QUnit.test('should not handle comparisons when `customizer` returns `true`', function (assert) {
         assert.expect(3);

@@ -8,7 +8,7 @@ QUnit.module('lodash.multiply');
     });
     QUnit.test('should coerce arguments to numbers', function (assert) {
         assert.expect(2);
-        assert.strictEqual(_.multiply('6', '4'), __num_top__);
-        assert.deepEqual(_.multiply('x', 'y'), NaN);
+        assert.strictEqual(_.multiply('6', '4'), 24);
+        assert.deepEqual(_.multiply('x', __str_top__), NaN);
     });
 }());

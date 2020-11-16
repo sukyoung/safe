@@ -15,28 +15,28 @@ QUnit.module('lodash.isWeakSet');
             return index ? _.isWeakSet(value) : _.isWeakSet();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isWeakSet(args), false);
+        assert.strictEqual(_.isWeakSet(args), __bool_top__);
         assert.strictEqual(_.isWeakSet([
+            1,
             __num_top__,
-            2,
             3
         ]), false);
-        assert.strictEqual(_.isWeakSet(__bool_top__), false);
-        assert.strictEqual(_.isWeakSet(new Date()), false);
+        assert.strictEqual(_.isWeakSet(true), false);
+        assert.strictEqual(_.isWeakSet(new Date()), __bool_top__);
         assert.strictEqual(_.isWeakSet(new Error()), false);
         assert.strictEqual(_.isWeakSet(_), false);
-        assert.strictEqual(_.isWeakSet(slice), __bool_top__);
+        assert.strictEqual(_.isWeakSet(slice), false);
         assert.strictEqual(_.isWeakSet({ 'a': 1 }), false);
         assert.strictEqual(_.isWeakSet(1), false);
-        assert.strictEqual(_.isWeakSet(/x/), __bool_top__);
+        assert.strictEqual(_.isWeakSet(/x/), false);
         assert.strictEqual(_.isWeakSet('a'), false);
         assert.strictEqual(_.isWeakSet(set), false);
-        assert.strictEqual(_.isWeakSet(symbol), __bool_top__);
+        assert.strictEqual(_.isWeakSet(symbol), false);
     });
     QUnit.test('should work with weak sets from another realm', function (assert) {
         assert.expect(1);
         if (realm.weakSet) {
-            assert.strictEqual(_.isWeakSet(realm.weakSet), true);
+            assert.strictEqual(_.isWeakSet(realm.weakSet), __bool_top__);
         } else {
             skipAssert(assert);
         }

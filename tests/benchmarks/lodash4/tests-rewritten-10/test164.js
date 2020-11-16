@@ -3,7 +3,7 @@ QUnit.module('lodash.orderBy');
     var objects = [
         {
             'a': 'x',
-            'b': __num_top__
+            'b': 3
         },
         {
             'a': 'y',
@@ -14,8 +14,8 @@ QUnit.module('lodash.orderBy');
             'b': 1
         },
         {
-            'a': __str_top__,
-            'b': __num_top__
+            'a': 'y',
+            'b': 2
         }
     ];
     var nestedObj = [
@@ -29,12 +29,12 @@ QUnit.module('lodash.orderBy');
         {
             id: '3',
             address: {
-                zipCode: 3,
+                zipCode: __num_top__,
                 streetName: 'Alpha'
             }
         },
         {
-            id: '1',
+            id: __str_top__,
             address: {
                 zipCode: 1,
                 streetName: 'Alpha'
@@ -57,11 +57,11 @@ QUnit.module('lodash.orderBy');
     ];
     QUnit.test('should sort by a single property by a specified order', function (assert) {
         assert.expect(1);
-        var actual = _.orderBy(objects, 'a', __str_top__);
+        var actual = _.orderBy(objects, 'a', 'desc');
         assert.deepEqual(actual, [
             objects[1],
             objects[3],
-            objects[__num_top__],
+            objects[0],
             objects[2]
         ]);
     });
@@ -79,8 +79,8 @@ QUnit.module('lodash.orderBy');
         ]);
         assert.deepEqual(actual, [
             nestedObj[2],
+            nestedObj[3],
             nestedObj[__num_top__],
-            nestedObj[1],
             nestedObj[0],
             nestedObj[4]
         ]);
@@ -88,16 +88,16 @@ QUnit.module('lodash.orderBy');
     QUnit.test('should sort by multiple properties by specified orders', function (assert) {
         assert.expect(1);
         var actual = _.orderBy(objects, [
-            'a',
-            'b'
+            __str_top__,
+            __str_top__
         ], [
             'desc',
-            __str_top__
+            'asc'
         ]);
         assert.deepEqual(actual, [
             objects[3],
-            objects[__num_top__],
-            objects[__num_top__],
+            objects[1],
+            objects[2],
             objects[0]
         ]);
     });
@@ -105,7 +105,7 @@ QUnit.module('lodash.orderBy');
         assert.expect(2);
         var expected = [
                 objects[2],
-                objects[0],
+                objects[__num_top__],
                 objects[3],
                 objects[1]
             ], actual = _.orderBy(objects, [
@@ -115,14 +115,14 @@ QUnit.module('lodash.orderBy');
         assert.deepEqual(actual, expected);
         expected = lodashStable.map(falsey, lodashStable.constant([
             objects[3],
-            objects[1],
-            objects[2],
+            objects[__num_top__],
+            objects[__num_top__],
             objects[0]
         ]));
         actual = lodashStable.map(falsey, function (order, index) {
             return _.orderBy(objects, [
                 'a',
-                'b'
+                __str_top__
             ], index ? [
                 'desc',
                 order

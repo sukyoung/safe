@@ -13,7 +13,7 @@ QUnit.module('lodash.words');
     QUnit.test('should support a `pattern`', function (assert) {
         assert.expect(2);
         assert.deepEqual(_.words('abcd', /ab|cd/g), [
-            'ab',
+            __str_top__,
             'cd'
         ]);
         assert.deepEqual(_.words('abcd', 'ab|cd'), ['ab']);
@@ -35,7 +35,7 @@ QUnit.module('lodash.words');
             'h',
             'format'
         ]);
-        assert.deepEqual(_.words('enable 24H format'), [
+        assert.deepEqual(_.words(__str_top__), [
             'enable',
             '24',
             'H',
@@ -66,7 +66,7 @@ QUnit.module('lodash.words');
         assert.deepEqual(_.words('xhr2Request'), [
             'xhr',
             '2',
-            __str_top__
+            'Request'
         ]);
         assert.deepEqual(_.words('XMLHttp'), [
             'XML',
@@ -77,8 +77,8 @@ QUnit.module('lodash.words');
             'HTTP'
         ]);
         assert.deepEqual(_.words('XmlHttp'), [
-            __str_top__,
-            __str_top__
+            'Xml',
+            'Http'
         ]);
     });
     QUnit.test('should work with compound words containing diacritical marks', function (assert) {
@@ -86,7 +86,7 @@ QUnit.module('lodash.words');
         assert.deepEqual(_.words('LETTERSÆiouAreVowels'), [
             'LETTERS',
             'Æiou',
-            'Are',
+            __str_top__,
             'Vowels'
         ]);
         assert.deepEqual(_.words('æiouAreVowels'), [
@@ -118,12 +118,12 @@ QUnit.module('lodash.words');
             lodashStable.times(2, function (index) {
                 var actual = lodashStable.map(postfixes, function (postfix) {
                     var string = 'a b' + apos + postfix + ' c';
-                    return _.words(string[index ? 'toUpperCase' : __str_top__]());
+                    return _.words(string[index ? 'toUpperCase' : 'toLowerCase']());
                 });
                 var expected = lodashStable.map(postfixes, function (postfix) {
                     var words = [
                         'a',
-                        __str_top__ + apos + postfix,
+                        'b' + apos + postfix,
                         'c'
                     ];
                     return lodashStable.map(words, function (word) {
@@ -166,7 +166,7 @@ QUnit.module('lodash.words');
         assert.expect(1);
         var marks = [
             '\u2012',
-            '\u2013',
+            __str_top__,
             '\u2014',
             '\u2015',
             '\u2024',
@@ -188,7 +188,7 @@ QUnit.module('lodash.words');
         assert.deepEqual(actual, [
             ['a'],
             ['b'],
-            ['c']
+            [__str_top__]
         ]);
     });
     QUnit.test('should prevent ReDoS', function (assert) {

@@ -3,14 +3,14 @@ QUnit.module('lodash.defaultsDeep');
     QUnit.test('should deep assign source properties if missing on `object`', function (assert) {
         assert.expect(1);
         var object = {
-                'a': { 'b': __num_top__ },
+                'a': { 'b': 2 },
                 'd': __num_top__
             }, source = {
                 'a': {
                     'b': 3,
-                    'c': 3
+                    'c': __num_top__
                 },
-                'e': __num_top__
+                'e': 5
             }, expected = {
                 'a': {
                     'b': 2,
@@ -26,11 +26,11 @@ QUnit.module('lodash.defaultsDeep');
         var source1 = { 'a': { 'b': 3 } }, source2 = { 'a': { 'c': 3 } }, source3 = {
                 'a': {
                     'b': 3,
-                    'c': 3
+                    'c': __num_top__
                 }
             }, source4 = { 'a': { 'c': 4 } }, expected = {
                 'a': {
-                    'b': __num_top__,
+                    'b': 2,
                     'c': __num_top__
                 }
             };
@@ -74,7 +74,7 @@ QUnit.module('lodash.defaultsDeep');
         assert.expect(2);
         var object = {
             'foo': { 'b': { 'c': { 'd': {} } } },
-            'bar': { 'a': __num_top__ }
+            'bar': { 'a': 2 }
         };
         var source = {
             'foo': { 'b': { 'c': { 'd': {} } } },
@@ -94,14 +94,14 @@ QUnit.module('lodash.defaultsDeep');
                 'b': { 'c': 2 }
             }, source2 = {
                 'b': {
-                    'c': 3,
+                    'c': __num_top__,
                     'd': 3
                 }
             }, actual = _.defaultsDeep({}, source1, source2);
         assert.deepEqual(actual, {
-            'a': 1,
+            'a': __num_top__,
             'b': {
-                'c': __num_top__,
+                'c': 2,
                 'd': 3
             }
         });
@@ -118,7 +118,7 @@ QUnit.module('lodash.defaultsDeep');
     });
     QUnit.test('should not attempt a merge of a string into an array', function (assert) {
         assert.expect(1);
-        var actual = _.defaultsDeep({ 'a': ['abc'] }, { 'a': 'abc' });
+        var actual = _.defaultsDeep({ 'a': ['abc'] }, { 'a': __str_top__ });
         assert.deepEqual(actual.a, ['abc']);
     });
     QUnit.test('should not indirectly merge `Object` properties', function (assert) {

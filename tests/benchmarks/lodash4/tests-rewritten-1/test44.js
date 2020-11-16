@@ -51,7 +51,7 @@ lodashStable.each([
         ], [1]), lodashStable.toString);
         assert.deepEqual(actual, ['0']);
     });
-    QUnit.test('`_.' + methodName + '` should match `NaN`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should match `NaN`', function (assert) {
         assert.expect(1);
         assert.deepEqual(func([
             1,
@@ -114,7 +114,7 @@ lodashStable.each([
             object2
         ], largeArray), [object2]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should ignore values that are not array-like', function (assert) {
         assert.expect(3);
         var array = [
             1,

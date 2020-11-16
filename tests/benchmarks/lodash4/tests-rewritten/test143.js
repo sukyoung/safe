@@ -54,7 +54,7 @@ lodashStable.each([
         ];
         if (isSorted) {
             assert.strictEqual(func(array, NaN, __bool_top__), isIndexOf ? __num_top__ : __num_top__);
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         } else {
             assert.strictEqual(func(array, NaN), isIndexOf ? __num_top__ : __num_top__);
             assert.strictEqual(func(array, NaN, __num_top__), isIndexOf ? __num_top__ : __num_top__);

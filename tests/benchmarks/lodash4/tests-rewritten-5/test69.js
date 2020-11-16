@@ -38,7 +38,7 @@ QUnit.module('flatten methods');
         assert.deepEqual(_.flattenDepth(array, 2), [
             1,
             2,
-            3,
+            __num_top__,
             1,
             2,
             3
@@ -62,7 +62,7 @@ QUnit.module('flatten methods');
         lodashStable.each(methodNames, function (methodName) {
             var actual = _[methodName](array);
             assert.deepEqual(actual, expected);
-            assert.ok(__str_top__ in actual);
+            assert.ok('4' in actual);
         });
     });
     QUnit.test('should flatten objects with a truthy `Symbol.isConcatSpreadable` value', function (assert) {
@@ -83,11 +83,11 @@ QUnit.module('flatten methods');
     });
     QUnit.test('should work with extremely large arrays', function (assert) {
         assert.expect(3);
-        lodashStable.times(3, function (index) {
+        lodashStable.times(__num_top__, function (index) {
             var expected = Array(500000);
             try {
                 var func = _.flatten;
-                if (index == 1) {
+                if (index == __num_top__) {
                     func = _.flattenDeep;
                 } else if (index == 2) {
                     func = _.flattenDepth;
@@ -123,15 +123,15 @@ QUnit.module('flatten methods');
             2,
             [
                 3,
-                [__num_top__]
+                [4]
             ],
             5
         ]);
         assert.deepEqual(_.flattenDeep(array), [
             1,
             2,
-            3,
             __num_top__,
+            4,
             5
         ]);
         assert.deepEqual(_.flattenDepth(array, 2), [
@@ -178,7 +178,7 @@ QUnit.module('flatten methods');
                 1,
                 2,
                 3,
-                [__num_top__],
+                [4],
                 5
             ]);
         } else {

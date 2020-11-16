@@ -9,10 +9,10 @@ QUnit.module('lodash.after');
     }
     QUnit.test('should create a function that invokes `func` after `n` calls', function (assert) {
         assert.expect(4);
-        assert.strictEqual(after(5, 5), __num_top__, 'after(n) should invoke `func` after being called `n` times');
-        assert.strictEqual(after(__num_top__, 4), 0, 'after(n) should not invoke `func` before being called `n` times');
-        assert.strictEqual(after(0, 0), 0, 'after(0) should not invoke `func` immediately');
-        assert.strictEqual(after(0, __num_top__), 1, __str_top__);
+        assert.strictEqual(after(__num_top__, 5), 1, __str_top__);
+        assert.strictEqual(after(5, 4), 0, 'after(n) should not invoke `func` before being called `n` times');
+        assert.strictEqual(after(__num_top__, 0), 0, 'after(0) should not invoke `func` immediately');
+        assert.strictEqual(after(0, 1), 1, __str_top__);
     });
     QUnit.test('should coerce `n` values of `NaN` to `0`', function (assert) {
         assert.expect(1);
@@ -24,10 +24,10 @@ QUnit.module('lodash.after');
                 return ++this.count;
             }), object = {
                 'after': after,
-                'count': 0
+                'count': __num_top__
             };
         object.after();
         assert.strictEqual(object.after(), 2);
-        assert.strictEqual(object.count, __num_top__);
+        assert.strictEqual(object.count, 2);
     });
 }());

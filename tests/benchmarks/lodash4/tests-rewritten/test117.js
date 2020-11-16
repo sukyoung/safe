@@ -42,7 +42,7 @@ QUnit.module('lodash.isNil');
             assert.strictEqual(_.isNil(realm.null), __bool_top__);
             assert.strictEqual(_.isNil(realm.undefined), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

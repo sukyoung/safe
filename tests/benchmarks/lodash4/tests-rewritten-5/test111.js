@@ -1,13 +1,13 @@
 QUnit.module('isInteger methods');
 lodashStable.each([
     'isInteger',
-    'isSafeInteger'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], isSafe = methodName == 'isSafeInteger';
-    QUnit.test('`_.' + methodName + '` should return `true` for integer values', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         var values = [
-                -1,
+                -__num_top__,
                 0,
                 1
             ], expected = lodashStable.map(values, stubTrue);
@@ -23,8 +23,8 @@ lodashStable.each([
                 NaN,
                 Infinity,
                 -Infinity,
-                Object(1),
-                __num_top__
+                Object(__num_top__),
+                3.14
             ], expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value) {
             return func(value);
@@ -40,18 +40,18 @@ lodashStable.each([
             return index ? func(value) : func();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(func(args), __bool_top__);
+        assert.strictEqual(func(args), false);
         assert.strictEqual(func([
-            1,
+            __num_top__,
             2,
             3
         ]), false);
         assert.strictEqual(func(true), false);
-        assert.strictEqual(func(new Date()), __bool_top__);
-        assert.strictEqual(func(new Error()), __bool_top__);
+        assert.strictEqual(func(new Date()), false);
+        assert.strictEqual(func(new Error()), false);
         assert.strictEqual(func({ 'a': 1 }), false);
         assert.strictEqual(func(/x/), false);
-        assert.strictEqual(func('a'), __bool_top__);
+        assert.strictEqual(func('a'), false);
         assert.strictEqual(func(symbol), false);
     });
 });

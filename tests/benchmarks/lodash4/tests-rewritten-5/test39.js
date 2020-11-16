@@ -2,21 +2,21 @@ QUnit.module('lodash.defaults');
 (function () {
     QUnit.test('should assign source properties if missing on `object`', function (assert) {
         assert.expect(1);
-        var actual = _.defaults({ 'a': __num_top__ }, {
-            'a': 2,
+        var actual = _.defaults({ 'a': 1 }, {
+            'a': __num_top__,
             'b': 2
         });
         assert.deepEqual(actual, {
             'a': 1,
-            'b': 2
+            'b': __num_top__
         });
     });
     QUnit.test('should accept multiple sources', function (assert) {
         assert.expect(2);
         var expected = {
-                'a': __num_top__,
+                'a': 1,
                 'b': 2,
-                'c': __num_top__
+                'c': 3
             }, actual = _.defaults({
                 'a': 1,
                 'b': 2
@@ -64,9 +64,9 @@ QUnit.module('lodash.defaults');
             'valueOf': objectProto.valueOf
         };
         var source = {
-            'constructor': __num_top__,
+            'constructor': 1,
             'hasOwnProperty': 2,
-            'isPrototypeOf': 3,
+            'isPrototypeOf': __num_top__,
             'propertyIsEnumerable': 4,
             'toLocaleString': 5,
             'toString': 6,

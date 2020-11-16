@@ -135,7 +135,7 @@ QUnit.module('lodash.map');
             }).value();
             assert.deepEqual(args, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
 }());

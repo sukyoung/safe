@@ -109,7 +109,7 @@ QUnit.module('lodash.matchesProperty');
         assert.expect(2);
         function fn() {
         }
-        fn.toString = lodashStable.constant(__str_top__);
+        fn.toString = lodashStable.constant('fn');
         var object = {
                 'null': 1,
                 'undefined': 2,
@@ -364,7 +364,7 @@ QUnit.module('lodash.matchesProperty');
                 'a': [
                     {
                         'a': 1,
-                        'b': 2
+                        'b': __num_top__
                     },
                     {
                         'a': 4,

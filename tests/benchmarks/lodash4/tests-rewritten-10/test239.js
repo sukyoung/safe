@@ -1,15 +1,15 @@
 QUnit.module('lodash.take');
 (function () {
     var array = [
-        1,
+        __num_top__,
         2,
         3
     ];
     QUnit.test('should take the first two elements', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.take(array, 2), [
-            1,
-            __num_top__
+            __num_top__,
+            2
         ]);
     });
     QUnit.test('should treat falsey `n` values, except `undefined`, as `0`', function (assert) {
@@ -49,10 +49,10 @@ QUnit.module('lodash.take');
                 [
                     1,
                     2,
-                    3
+                    __num_top__
                 ],
                 [
-                    4,
+                    __num_top__,
                     __num_top__,
                     6
                 ],
@@ -74,33 +74,33 @@ QUnit.module('lodash.take');
             var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), predicate = function (value) {
                     values.push(value);
                     return isEven(value);
-                }, values = [], actual = _(array).take(2).take().value();
+                }, values = [], actual = _(array).take(__num_top__).take().value();
             assert.deepEqual(actual, _.take(_.take(array, 2)));
             actual = _(array).filter(predicate).take(2).take().value();
             assert.deepEqual(values, [
                 1,
-                __num_top__
+                2
             ]);
-            assert.deepEqual(actual, _.take(_.take(_.filter(array, predicate), 2)));
+            assert.deepEqual(actual, _.take(_.take(_.filter(array, predicate), __num_top__)));
             actual = _(array).take(6).takeRight(4).take(2).takeRight().value();
             assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(array, 6), 4), 2)));
             values = [];
-            actual = _(array).take(array.length - 1).filter(predicate).take(6).takeRight(4).take(__num_top__).takeRight().value();
+            actual = _(array).take(array.length - 1).filter(predicate).take(__num_top__).takeRight(4).take(2).takeRight().value();
             assert.deepEqual(values, [
-                __num_top__,
+                1,
                 2,
-                __num_top__,
+                3,
                 4,
                 5,
                 6,
                 7,
-                __num_top__,
+                8,
                 9,
                 10,
-                __num_top__,
-                12
+                11,
+                __num_top__
             ]);
-            assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(_.filter(_.take(array, array.length - 1), predicate), 6), __num_top__), 2)));
+            assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(_.filter(_.take(array, array.length - 1), predicate), 6), 4), 2)));
         } else {
             skipAssert(assert, 6);
         }

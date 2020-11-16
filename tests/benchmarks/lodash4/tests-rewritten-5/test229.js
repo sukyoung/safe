@@ -6,17 +6,17 @@ QUnit.module('lodash.spread');
     QUnit.test('should spread arguments to `func`', function (assert) {
         assert.expect(2);
         var spread = _.spread(fn), expected = [
-                1,
+                __num_top__,
                 2
             ];
         assert.deepEqual(spread([
-            1,
+            __num_top__,
             2
         ]), expected);
         assert.deepEqual(spread([
-            1,
+            __num_top__,
             2
-        ], 3), expected);
+        ], __num_top__), expected);
     });
     QUnit.test('should accept a falsey `array`', function (assert) {
         assert.expect(1);
@@ -37,12 +37,12 @@ QUnit.module('lodash.spread');
                 3
             ];
         assert.deepEqual(spread(1, [
-            __num_top__,
+            2,
             3
         ]), expected);
         assert.deepEqual(spread(1, [
-            __num_top__,
-            3
+            2,
+            __num_top__
         ], 4), expected);
     });
     QUnit.test('should treat `start` as `0` for negative or `NaN` values', function (assert) {
@@ -52,14 +52,14 @@ QUnit.module('lodash.spread');
                 NaN,
                 'a'
             ], expected = lodashStable.map(values, lodashStable.constant([
-                __num_top__,
+                1,
                 2
             ]));
         var actual = lodashStable.map(values, function (value) {
             var spread = _.spread(fn, value);
             return spread([
                 1,
-                __num_top__
+                2
             ]);
         });
         assert.deepEqual(actual, expected);
@@ -72,7 +72,7 @@ QUnit.module('lodash.spread');
                 3
             ];
         assert.deepEqual(spread(1, [
-            __num_top__,
+            2,
             3
         ]), expected);
         assert.deepEqual(spread(1, [

@@ -1,6 +1,6 @@
 QUnit.module('keys methods');
 lodashStable.each([
-    __str_top__,
+    'keys',
     'keysIn'
 ], function (methodName) {
     var func = _[methodName], isKeys = methodName == 'keys';
@@ -15,7 +15,7 @@ lodashStable.each([
             'b'
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? __str_top__ : '') + 'include inherited string keyed properties', function (assert) {
+    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? 'not ' : '') + 'include inherited string keyed properties', function (assert) {
         assert.expect(1);
         function Foo() {
             this.a = 1;
@@ -27,10 +27,10 @@ lodashStable.each([
             ], actual = func(new Foo()).sort();
         assert.deepEqual(actual, expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should treat sparse arrays as dense', function (assert) {
+    QUnit.test('`_.' + methodName + '` should treat sparse arrays as dense', function (assert) {
         assert.expect(1);
         var array = [1];
-        array[2] = 3;
+        array[__num_top__] = 3;
         var actual = func(array).sort();
         assert.deepEqual(actual, [
             '0',
@@ -38,7 +38,7 @@ lodashStable.each([
             '2'
         ]);
     });
-    QUnit.test(__str_top__ + methodName + '` should return keys for custom properties on arrays', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return keys for custom properties on arrays', function (assert) {
         assert.expect(1);
         var array = [1];
         array.a = 1;
@@ -48,7 +48,7 @@ lodashStable.each([
             'a'
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? 'not ' : '') + 'include inherited string keyed properties of arrays', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should ' + (isKeys ? 'not ' : '') + 'include inherited string keyed properties of arrays', function (assert) {
         assert.expect(1);
         arrayProto.a = 1;
         var expected = isKeys ? ['0'] : [
@@ -64,7 +64,7 @@ lodashStable.each([
                 args,
                 strictArgs
             ], expected = lodashStable.map(values, lodashStable.constant([
-                '0',
+                __str_top__,
                 '1',
                 '2'
             ]));
@@ -79,7 +79,7 @@ lodashStable.each([
                 args,
                 strictArgs
             ], expected = lodashStable.map(values, lodashStable.constant([
-                __str_top__,
+                '0',
                 '1',
                 '2',
                 'a'
@@ -92,7 +92,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? 'not ' : '') + 'include inherited string keyed properties of `arguments` objects', function (assert) {
+    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? 'not ' : '') + __str_top__, function (assert) {
         assert.expect(1);
         var values = [
                 args,
@@ -105,7 +105,7 @@ lodashStable.each([
                 '0',
                 '1',
                 '2',
-                'a'
+                __str_top__
             ]));
         var actual = lodashStable.map(values, function (value) {
             objectProto.a = 1;
@@ -115,9 +115,9 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should work with string objects', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
-        var actual = func(Object(__str_top__)).sort();
+        var actual = func(Object('abc')).sort();
         assert.deepEqual(actual, [
             '0',
             '1',
@@ -130,17 +130,17 @@ lodashStable.each([
         object.a = __num_top__;
         var actual = func(object).sort();
         assert.deepEqual(actual, [
-            '0',
+            __str_top__,
             'a'
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? 'not ' : '') + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should ' + (isKeys ? 'not ' : '') + 'include inherited string keyed properties of string objects', function (assert) {
         assert.expect(1);
         stringProto.a = 1;
         var expected = isKeys ? ['0'] : [
                 '0',
                 'a'
-            ], actual = func(Object(__str_top__)).sort();
+            ], actual = func(Object('a')).sort();
         assert.deepEqual(actual, expected);
         delete stringProto.a;
     });
@@ -151,7 +151,7 @@ lodashStable.each([
                 'length': 1
             }, actual = func(object).sort();
         assert.deepEqual(actual, [
-            '0',
+            __str_top__,
             'length'
         ]);
     });
@@ -180,7 +180,7 @@ lodashStable.each([
         assert.deepEqual(func(Foo.prototype), expected);
         var Fake = { 'prototype': {} };
         Fake.prototype.constructor = Fake;
-        assert.deepEqual(func(Fake.prototype), ['constructor']);
+        assert.deepEqual(func(Fake.prototype), [__str_top__]);
     });
     QUnit.test('`_.' + methodName + '` should return an empty array when `object` is nullish', function (assert) {
         var values = [

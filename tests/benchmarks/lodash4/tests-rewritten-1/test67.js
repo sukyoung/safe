@@ -1,7 +1,7 @@
 QUnit.module('flatMap methods');
 lodashStable.each([
     'flatMap',
-    __str_top__,
+    'flatMapDeep',
     'flatMapDepth'
 ], function (methodName) {
     var func = _[methodName], array = [
@@ -108,7 +108,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should treat number values for `collection` as empty', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should treat number values for `collection` as empty', function (assert) {
         assert.expect(1);
         assert.deepEqual(func(1), []);
     });

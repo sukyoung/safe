@@ -3,7 +3,7 @@ QUnit.module('lodash(...).commit');
     QUnit.test('should execute the chained sequence and returns the wrapped result', function (assert) {
         assert.expect(4);
         if (!isNpm) {
-            var array = [1], wrapped = _(array).push(2).push(__num_top__);
+            var array = [1], wrapped = _(array).push(2).push(3);
             assert.deepEqual(array, [1]);
             var otherWrapper = wrapped.commit();
             assert.ok(otherWrapper instanceof _);
@@ -17,7 +17,7 @@ QUnit.module('lodash(...).commit');
                 2,
                 3,
                 2,
-                3
+                __num_top__
             ]);
         } else {
             skipAssert(assert, 4);

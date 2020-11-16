@@ -16,7 +16,7 @@ QUnit.module('lodash.chain');
             assert.strictEqual(_.chain(wrapped), wrapped);
             assert.strictEqual(wrapped.chain(), wrapped);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should enable chaining for methods that return unwrapped values', function (assert) {
@@ -24,7 +24,7 @@ QUnit.module('lodash.chain');
         if (!isNpm) {
             var array = [
                 'c',
-                __str_top__,
+                'b',
                 'a'
             ];
             assert.ok(_.chain(array).head() instanceof _);
@@ -34,7 +34,7 @@ QUnit.module('lodash.chain');
             assert.ok(_.chain(array).sortBy().head() instanceof _);
             assert.ok(_(array).chain().sortBy().head() instanceof _);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
     QUnit.test('should chain multiple methods', function (assert) {
@@ -43,7 +43,7 @@ QUnit.module('lodash.chain');
             lodashStable.times(2, function (index) {
                 var array = [
                         'one two three four',
-                        'five six seven eight',
+                        __str_top__,
                         'nine ten eleven twelve'
                     ], expected = {
                         ' ': 9,
@@ -59,7 +59,7 @@ QUnit.module('lodash.chain');
                         's': 2,
                         't': 5,
                         'u': 1,
-                        'v': 4,
+                        'v': __num_top__,
                         'w': 2,
                         'x': 1
                     }, wrapped = index ? _(array).chain() : _.chain(array);
@@ -83,7 +83,7 @@ QUnit.module('lodash.chain');
                 actual = wrapped.chain().filter(function (n) {
                     return n % 2 != 0;
                 }).reject(function (n) {
-                    return n % 3 == 0;
+                    return n % __num_top__ == 0;
                 }).sortBy(function (n) {
                     return -n;
                 }).value();
@@ -97,8 +97,8 @@ QUnit.module('lodash.chain');
                 ];
                 wrapped = index ? _(array).chain() : _.chain(array);
                 actual = wrapped.reverse().concat([
-                    __num_top__,
-                    1
+                    2,
+                    __num_top__
                 ]).unshift(5).tap(function (value) {
                     value.pop();
                 }).map(square).value();

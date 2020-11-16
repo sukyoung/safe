@@ -1,20 +1,20 @@
 QUnit.module('pad methods');
 lodashStable.each([
-    'pad',
-    'padStart',
+    __str_top__,
+    __str_top__,
     'padEnd'
 ], function (methodName) {
-    var func = _[methodName], isPad = methodName == 'pad', isStart = methodName == 'padStart', string = __str_top__;
-    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
+    var func = _[methodName], isPad = methodName == 'pad', isStart = methodName == 'padStart', string = 'abc';
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         assert.strictEqual(func(string, __num_top__), string);
-        assert.strictEqual(func(string, __num_top__), string);
+        assert.strictEqual(func(string, 3), string);
     });
     QUnit.test('`_.' + methodName + '` should treat negative `length` as `0`', function (assert) {
         assert.expect(2);
         lodashStable.each([
             0,
-            -__num_top__
+            -2
         ], function (length) {
             assert.strictEqual(func(string, length), string);
         });
@@ -29,13 +29,13 @@ lodashStable.each([
             assert.strictEqual(func(string, length), actual);
         });
     });
-    QUnit.test('`_.' + methodName + '` should treat nullish values as empty strings', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(6);
         lodashStable.each([
             undefined,
             '_-'
         ], function (chars) {
-            var expected = chars ? isPad ? '__' : chars : '  ';
+            var expected = chars ? isPad ? __str_top__ : chars : '  ';
             assert.strictEqual(func(null, __num_top__, chars), expected);
             assert.strictEqual(func(undefined, 2, chars), expected);
             assert.strictEqual(func('', 2, chars), expected);
@@ -45,7 +45,7 @@ lodashStable.each([
         assert.expect(1);
         var values = [
                 '',
-                Object(__str_top__)
+                Object('')
             ], expected = lodashStable.map(values, lodashStable.constant(string));
         var actual = lodashStable.map(values, function (value) {
             return _.pad(string, 6, value);

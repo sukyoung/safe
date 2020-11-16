@@ -4,7 +4,7 @@ lodashStable.each([
     'toPairsIn'
 ], function (methodName) {
     var func = _[methodName], isToPairs = methodName == 'toPairs';
-    QUnit.test('`_.' + methodName + '` should create an array of string keyed-value pairs', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var object = {
                 'a': 1,
@@ -21,19 +21,19 @@ lodashStable.each([
             ]
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isToPairs ? 'not ' : '') + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should ' + (isToPairs ? __str_top__ : '') + 'include inherited string keyed property values', function (assert) {
         assert.expect(1);
         function Foo() {
             this.a = 1;
         }
-        Foo.prototype.b = __num_top__;
+        Foo.prototype.b = 2;
         var expected = isToPairs ? [[
                     'a',
                     1
                 ]] : [
                 [
                     'a',
-                    __num_top__
+                    1
                 ],
                 [
                     'b',
@@ -55,7 +55,7 @@ lodashStable.each([
                 'a'
             ],
             [
-                '1',
+                __str_top__,
                 'b'
             ],
             [
@@ -64,7 +64,7 @@ lodashStable.each([
             ]
         ]);
     });
-    QUnit.test(__str_top__ + methodName + '` should convert maps', function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert maps', function (assert) {
         assert.expect(1);
         if (Map) {
             var map = new Map();
@@ -92,7 +92,7 @@ lodashStable.each([
             set.add(2);
             assert.deepEqual(func(set), [
                 [
-                    1,
+                    __num_top__,
                     1
                 ],
                 [
@@ -104,7 +104,7 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test(__str_top__ + methodName + '` should convert strings', function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert strings', function (assert) {
         assert.expect(2);
         lodashStable.each([
             'xo',

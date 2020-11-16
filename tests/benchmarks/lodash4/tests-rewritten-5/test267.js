@@ -1,19 +1,19 @@
 QUnit.module('union methods');
 lodashStable.each([
-    'union',
+    __str_top__,
     'unionBy',
     'unionWith'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + '` should return the union of two arrays', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var actual = func([2], [
-            1,
+            __num_top__,
             2
         ]);
         assert.deepEqual(actual, [
             2,
-            __num_top__
+            1
         ]);
     });
     QUnit.test('`_.' + methodName + '` should return the union of multiple arrays', function (assert) {
@@ -34,7 +34,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should not flatten nested arrays', function (assert) {
         assert.expect(1);
         var actual = func([
-            __num_top__,
+            1,
             3,
             2
         ], [
@@ -42,7 +42,7 @@ lodashStable.each([
             [5]
         ], [
             2,
-            [__num_top__]
+            [4]
         ]);
         assert.deepEqual(actual, [
             1,
@@ -52,12 +52,12 @@ lodashStable.each([
             [4]
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should ignore values that are not arrays or `arguments` objects', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should ignore values that are not arrays or `arguments` objects', function (assert) {
         assert.expect(3);
         var array = [0];
         assert.deepEqual(func(array, 3, { '0': 1 }, null), array);
         assert.deepEqual(func(null, array, null, [
-            __num_top__,
+            2,
             1
         ]), [
             0,
@@ -66,8 +66,8 @@ lodashStable.each([
         ]);
         assert.deepEqual(func(array, null, args, null), [
             0,
+            1,
             __num_top__,
-            2,
             3
         ]);
     });

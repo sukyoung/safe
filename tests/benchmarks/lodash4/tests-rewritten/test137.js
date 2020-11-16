@@ -75,7 +75,7 @@ QUnit.module('lodash.last');
                 assert.strictEqual(wrapped.last(), _.last(_.filter(array, isEven)));
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

@@ -6,7 +6,7 @@ QUnit.module('lodash.isSymbol');
             assert.strictEqual(_.isSymbol(symbol), __bool_top__);
             assert.strictEqual(_.isSymbol(Object(symbol)), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should return `false` for non-symbols', function (assert) {

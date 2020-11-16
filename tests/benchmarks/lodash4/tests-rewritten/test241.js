@@ -67,7 +67,7 @@ QUnit.module('lodash.takeRightWhile');
             assert.deepEqual(wrapped.reverse().value(), expected.slice().reverse());
             assert.strictEqual(wrapped.last(), _.last(expected));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should provide correct `predicate` arguments in a lazy sequence', function (assert) {
@@ -104,7 +104,7 @@ QUnit.module('lodash.takeRightWhile');
             }).value();
             assert.deepEqual(args, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
 }());

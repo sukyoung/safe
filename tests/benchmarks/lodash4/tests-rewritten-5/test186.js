@@ -2,7 +2,7 @@ QUnit.module('lodash.partition');
 (function () {
     var array = [
         1,
-        0,
+        __num_top__,
         1
     ];
     QUnit.test('should split elements into two groups by `predicate`', function (assert) {
@@ -43,10 +43,10 @@ QUnit.module('lodash.partition');
         var objects = [
                 { 'a': 1 },
                 { 'a': 1 },
-                { 'b': 2 }
+                { 'b': __num_top__ }
             ], actual = _.partition(objects, 'a');
         assert.deepEqual(actual, [
-            objects.slice(0, __num_top__),
+            objects.slice(0, 2),
             objects.slice(2)
         ]);
     });
@@ -59,22 +59,22 @@ QUnit.module('lodash.partition');
             ],
             [
                 0,
-                1
+                __num_top__
             ],
             [
                 1,
-                __num_top__
+                0
             ]
         ];
         assert.deepEqual(_.partition(array, 0), [
             [
-                array[__num_top__],
+                array[0],
                 array[2]
             ],
             [array[1]]
         ]);
-        assert.deepEqual(_.partition(array, __num_top__), [
-            [array[1]],
+        assert.deepEqual(_.partition(array, 1), [
+            [array[__num_top__]],
             [
                 array[0],
                 array[2]

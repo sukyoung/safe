@@ -3,7 +3,7 @@ QUnit.module('lodash.isBoolean');
     QUnit.test('should return `true` for booleans', function (assert) {
         assert.expect(4);
         assert.strictEqual(_.isBoolean(__bool_top__), true);
-        assert.strictEqual(_.isBoolean(false), __bool_top__);
+        assert.strictEqual(_.isBoolean(false), true);
         assert.strictEqual(_.isBoolean(Object(true)), __bool_top__);
         assert.strictEqual(_.isBoolean(Object(false)), true);
     });
@@ -19,16 +19,16 @@ QUnit.module('lodash.isBoolean');
         assert.strictEqual(_.isBoolean(args), false);
         assert.strictEqual(_.isBoolean([
             1,
-            __num_top__,
+            2,
             3
-        ]), false);
-        assert.strictEqual(_.isBoolean(new Date()), false);
+        ]), __bool_top__);
+        assert.strictEqual(_.isBoolean(new Date()), __bool_top__);
         assert.strictEqual(_.isBoolean(new Error()), false);
         assert.strictEqual(_.isBoolean(_), false);
         assert.strictEqual(_.isBoolean(slice), false);
-        assert.strictEqual(_.isBoolean({ 'a': 1 }), false);
+        assert.strictEqual(_.isBoolean({ 'a': __num_top__ }), false);
         assert.strictEqual(_.isBoolean(1), false);
-        assert.strictEqual(_.isBoolean(/x/), __bool_top__);
+        assert.strictEqual(_.isBoolean(/x/), false);
         assert.strictEqual(_.isBoolean('a'), false);
         assert.strictEqual(_.isBoolean(symbol), false);
     });

@@ -23,8 +23,8 @@ QUnit.module('lodash.bindKey');
             }
         };
         var ph = _.bindKey.placeholder, bound = _.bindKey(object, 'fn', ph, 'b', ph);
-        assert.deepEqual(bound('a', __str_top__), [
-            __str_top__,
+        assert.deepEqual(bound('a', 'c'), [
+            'a',
             'b',
             'c'
         ]);
@@ -33,8 +33,8 @@ QUnit.module('lodash.bindKey');
             'b',
             undefined
         ]);
-        assert.deepEqual(bound('a', 'c', __str_top__), [
-            'a',
+        assert.deepEqual(bound('a', __str_top__, 'd'), [
+            __str_top__,
             'b',
             'c',
             'd'
@@ -55,7 +55,7 @@ QUnit.module('lodash.bindKey');
             };
             var _ph = _.placeholder = {}, ph = _.bindKey.placeholder, bound = _.bindKey(object, 'fn', _ph, 'b', ph);
             assert.deepEqual(bound('a', 'c'), [
-                'a',
+                __str_top__,
                 'b',
                 ph,
                 __str_top__

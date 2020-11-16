@@ -88,7 +88,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should return `' + expected[1] + '` for empty collections', function (assert) {
         assert.expect(1);
-        var emptyValues = lodashStable.endsWith(methodName, 'Index') ? lodashStable.reject(empties, lodashStable.isPlainObject) : empties, expecting = lodashStable.map(emptyValues, lodashStable.constant(expected[__num_top__]));
+        var emptyValues = lodashStable.endsWith(methodName, 'Index') ? lodashStable.reject(empties, lodashStable.isPlainObject) : empties, expecting = lodashStable.map(emptyValues, lodashStable.constant(expected[1]));
         var actual = lodashStable.map(emptyValues, function (value) {
             try {
                 return func(value, { 'a': 3 });
@@ -103,7 +103,7 @@ lodashStable.each([
             'find': 1,
             'findIndex': 0,
             'findKey': '0',
-            'findLast': 4,
+            'findLast': __num_top__,
             'findLastIndex': 3,
             'findLastKey': '3'
         }[methodName];

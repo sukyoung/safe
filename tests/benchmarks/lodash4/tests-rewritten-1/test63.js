@@ -13,7 +13,7 @@ lodashStable.each([
         ], func = _[methodName], resolve = methodName == 'findIndex' ? lodashStable.curry(lodashStable.eq) : identity;
     QUnit.test('`_.' + methodName + '` should return the index of the first matched value', function (assert) {
         assert.expect(1);
-        assert.strictEqual(func(array, resolve(3)), 2);
+        assert.strictEqual(func(array, resolve(__num_top__)), 2);
     });
     QUnit.test('`_.' + methodName + '` should work with a positive `fromIndex`', function (assert) {
         assert.expect(1);
@@ -29,7 +29,7 @@ lodashStable.each([
             ], expected = lodashStable.map(values, lodashStable.constant([
                 -1,
                 -1,
-                -__num_top__
+                -1
             ]));
         var actual = lodashStable.map(values, function (fromIndex) {
             return [

@@ -257,7 +257,7 @@ lodashStable.each([
             actual = lodashStable.filter(objects, matches({ 'a': map }));
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -281,7 +281,7 @@ lodashStable.each([
             actual = lodashStable.filter(objects, matches({ 'a': set }));
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {

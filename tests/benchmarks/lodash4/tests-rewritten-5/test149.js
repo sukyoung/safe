@@ -9,7 +9,7 @@ lodashStable.each([
             return _.isMatch(object, source);
         };
     }
-    QUnit.test('`_.' + methodName + '` should perform a deep comparison between `source` and `object`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should perform a deep comparison between `source` and `object`', function (assert) {
         assert.expect(5);
         var object = {
                 'a': 1,
@@ -49,7 +49,7 @@ lodashStable.each([
         }
         Foo.prototype.b = 2;
         var object = { 'a': new Foo() }, par = matches({ 'a': { 'b': 2 } });
-        assert.strictEqual(par(object), __bool_top__);
+        assert.strictEqual(par(object), true);
     });
     QUnit.test('`_.' + methodName + '` should not match by inherited `source` properties', function (assert) {
         assert.expect(1);
@@ -72,7 +72,7 @@ lodashStable.each([
                 'a': false,
                 'b': true,
                 'c': '3',
-                'd': __num_top__,
+                'd': 4,
                 'e': [5],
                 'f': { 'g': 6 }
             }, object2 = {
@@ -88,7 +88,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should match `-0` as `0`', function (assert) {
         assert.expect(2);
-        var object1 = { 'a': -0 }, object2 = { 'a': __num_top__ }, par = matches(object1);
+        var object1 = { 'a': -__num_top__ }, object2 = { 'a': 0 }, par = matches(object1);
         assert.strictEqual(par(object2), true);
         par = matches(object2);
         assert.strictEqual(par(object1), true);
@@ -129,10 +129,10 @@ lodashStable.each([
             ], actual = lodashStable.map(objects, matches(Foo));
         assert.deepEqual(actual, [
             false,
-            true
+            __bool_top__
         ]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a non-plain `object`', function (assert) {
         assert.expect(1);
         function Foo(object) {
             lodashStable.assign(this, object);
@@ -177,7 +177,7 @@ lodashStable.each([
         var objects = [
                 {
                     'a': [
-                        1,
+                        __num_top__,
                         2
                     ]
                 },
@@ -245,7 +245,7 @@ lodashStable.each([
             ];
             objects[0].a.set('a', 1);
             objects[1].a.set('a', 1);
-            objects[1].a.set('b', __num_top__);
+            objects[1].a.set('b', 2);
             var map = new Map();
             map.set('b', 2);
             var actual = lodashStable.filter(objects, matches({ 'a': map }));
@@ -273,7 +273,7 @@ lodashStable.each([
             var set = new Set();
             set.add(2);
             var actual = lodashStable.filter(objects, matches({ 'a': set }));
-            assert.deepEqual(actual, [objects[1]]);
+            assert.deepEqual(actual, [objects[__num_top__]]);
             set.delete(2);
             actual = lodashStable.filter(objects, matches({ 'a': set }));
             assert.deepEqual(actual, objects);

@@ -102,7 +102,7 @@ QUnit.module('lodash.take');
             ]);
             assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(_.filter(_.take(array, array.length - __num_top__), predicate), __num_top__), __num_top__), __num_top__)));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

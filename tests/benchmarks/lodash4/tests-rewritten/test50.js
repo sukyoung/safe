@@ -69,7 +69,7 @@ QUnit.module('lodash.dropRightWhile');
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

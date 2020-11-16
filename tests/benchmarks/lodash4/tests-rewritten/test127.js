@@ -3,7 +3,7 @@ QUnit.module('lodash.isTypedArray');
     QUnit.test('should return `true` for typed arrays', function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(typedArrays, function (type) {
-            return type in root;
+            return root[type] != undefined;
         });
         var actual = lodashStable.map(typedArrays, function (type) {
             var Ctor = root[type];

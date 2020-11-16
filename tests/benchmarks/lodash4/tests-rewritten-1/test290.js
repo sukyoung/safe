@@ -72,7 +72,7 @@ lodashStable.each([
         QUnit.test('`_.' + methodName + '` should work with ' + key, function (assert) {
             assert.expect(2);
             var actual = func(pair[0]);
-            assert.deepEqual(actual, pair[1]);
+            assert.deepEqual(actual, pair[__num_top__]);
             assert.deepEqual(func(actual), actual.length ? pair[0] : []);
         });
     });
@@ -106,7 +106,7 @@ lodashStable.each([
             ]
         ];
         var actual = func(pair[0]);
-        assert.ok('0' in actual[__num_top__]);
+        assert.ok('0' in actual[2]);
         assert.deepEqual(actual, pair[1]);
         actual = func(actual);
         assert.ok('2' in actual[0]);

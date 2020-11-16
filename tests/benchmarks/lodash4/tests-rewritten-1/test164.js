@@ -109,7 +109,7 @@ QUnit.module('lodash.orderBy');
                 objects[3],
                 objects[1]
             ], actual = _.orderBy(objects, [
-                'a',
+                __str_top__,
                 'b'
             ]);
         assert.deepEqual(actual, expected);
@@ -137,7 +137,7 @@ QUnit.module('lodash.orderBy');
             objects[1],
             objects[3],
             objects[0],
-            objects[__num_top__]
+            objects[2]
         ]);
     });
 }());

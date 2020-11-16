@@ -84,7 +84,7 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test(__str_top__ + methodName + '` should convert sets', function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert sets', function (assert) {
         assert.expect(1);
         if (Set) {
             var set = new Set();
@@ -118,7 +118,7 @@ lodashStable.each([
                 ],
                 [
                     '1',
-                    'o'
+                    __str_top__
                 ]
             ]);
         });

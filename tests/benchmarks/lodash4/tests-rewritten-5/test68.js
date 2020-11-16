@@ -3,10 +3,10 @@ QUnit.module('lodash.flattenDepth');
     var array = [
         1,
         [
-            __num_top__,
+            2,
             [
                 3,
-                [4]
+                [__num_top__]
             ],
             5
         ]
@@ -15,7 +15,7 @@ QUnit.module('lodash.flattenDepth');
         assert.expect(1);
         assert.deepEqual(_.flattenDepth(array), [
             1,
-            2,
+            __num_top__,
             [
                 3,
                 [4]
@@ -27,10 +27,10 @@ QUnit.module('lodash.flattenDepth');
         assert.expect(2);
         lodashStable.each([
             -__num_top__,
-            __num_top__
+            0
         ], function (depth) {
             assert.deepEqual(_.flattenDepth(array, depth), [
-                1,
+                __num_top__,
                 [
                     2,
                     [
@@ -49,7 +49,7 @@ QUnit.module('lodash.flattenDepth');
             2,
             3,
             [__num_top__],
-            __num_top__
+            5
         ]);
     });
 }());

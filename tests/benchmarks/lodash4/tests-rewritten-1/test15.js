@@ -228,7 +228,7 @@ QUnit.module('lodash.bind');
         ]);
         assert.deepEqual(bound3(), [
             object1,
-            'b'
+            __str_top__
         ]);
     });
     QUnit.test('should not error when instantiating bound built-ins', function (assert) {
@@ -241,7 +241,7 @@ QUnit.module('lodash.bind');
         assert.deepEqual(actual, expected);
         Ctor = _.bind(Date, null, 2012, 4, 23);
         try {
-            actual = new Ctor(0, 0, 0, __num_top__);
+            actual = new Ctor(0, 0, 0, 0);
         } catch (e) {
         }
         assert.deepEqual(actual, expected);

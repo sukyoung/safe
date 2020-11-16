@@ -90,7 +90,7 @@ QUnit.module('lodash.isEqual');
                 true
             ],
             [
-                __str_top__,
+                'a',
                 Object('a'),
                 true
             ],
@@ -106,7 +106,7 @@ QUnit.module('lodash.isEqual');
             ],
             [
                 'a',
-                [__str_top__],
+                ['a'],
                 false
             ],
             [
@@ -192,7 +192,7 @@ QUnit.module('lodash.isEqual');
             [
                 null,
                 {},
-                false
+                __bool_top__
             ],
             [
                 null,
@@ -235,7 +235,7 @@ QUnit.module('lodash.isEqual');
                 true,
                 null,
                 1,
-                __str_top__,
+                'a',
                 undefined
             ];
         assert.strictEqual(_.isEqual(array1, array2), true);
@@ -421,7 +421,7 @@ QUnit.module('lodash.isEqual');
             'b': 2,
             'c': 3
         };
-        assert.strictEqual(_.isEqual(object1, object2), false);
+        assert.strictEqual(_.isEqual(object1, object2), __bool_top__);
     });
     QUnit.test('should compare objects regardless of key order', function (assert) {
         assert.expect(1);
@@ -432,7 +432,7 @@ QUnit.module('lodash.isEqual');
             }, object2 = {
                 'c': 3,
                 'a': 1,
-                'b': 2
+                'b': __num_top__
             };
         assert.strictEqual(_.isEqual(object1, object2), true);
     });
@@ -500,7 +500,7 @@ QUnit.module('lodash.isEqual');
     QUnit.test('should compare objects with constructor properties', function (assert) {
         assert.expect(5);
         assert.strictEqual(_.isEqual({ 'constructor': 1 }, { 'constructor': 1 }), true);
-        assert.strictEqual(_.isEqual({ 'constructor': 1 }, { 'constructor': '1' }), false);
+        assert.strictEqual(_.isEqual({ 'constructor': 1 }, { 'constructor': '1' }), __bool_top__);
         assert.strictEqual(_.isEqual({ 'constructor': [1] }, { 'constructor': [1] }), true);
         assert.strictEqual(_.isEqual({ 'constructor': [1] }, { 'constructor': ['1'] }), false);
         assert.strictEqual(_.isEqual({ 'constructor': Object }, {}), false);
@@ -774,7 +774,7 @@ QUnit.module('lodash.isEqual');
         });
         var expected = lodashStable.map(pairs, lodashStable.constant([
             true,
-            false,
+            __bool_top__,
             false
         ]));
         var actual = lodashStable.map(pairs, function (pair) {
@@ -1018,7 +1018,7 @@ QUnit.module('lodash.isEqual');
                 wrapped2 = _(vals[2]);
                 actual = wrapped1.isEqual(wrapped2);
                 assert.strictEqual(actual, false);
-                assert.strictEqual(_.isEqual(_(actual), _(false)), __bool_top__);
+                assert.strictEqual(_.isEqual(_(actual), _(false)), true);
             } else {
                 skipAssert(assert, 4);
             }

@@ -91,7 +91,7 @@ QUnit.module('lodash.isPlainObject');
             assert.strictEqual(_.isPlainObject(object), __bool_top__);
             assert.notOk(lodashStable.has(object, Symbol.toStringTag));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work with objects from another realm', function (assert) {

@@ -6,12 +6,12 @@ QUnit.module('lodash.once');
                 return ++count;
             });
         once();
-        assert.strictEqual(once(), __num_top__);
-        assert.strictEqual(count, __num_top__);
+        assert.strictEqual(once(), 1);
+        assert.strictEqual(count, 1);
     });
     QUnit.test('should ignore recursive calls', function (assert) {
         assert.expect(2);
-        var count = 0;
+        var count = __num_top__;
         var once = _.once(function () {
             once();
             return ++count;
@@ -26,6 +26,6 @@ QUnit.module('lodash.once');
         });
         assert.raises(once);
         once();
-        assert.ok(true);
+        assert.ok(__bool_top__);
     });
 }());

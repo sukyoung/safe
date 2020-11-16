@@ -187,7 +187,7 @@ QUnit.module('lodash.slice');
                 assert.deepEqual(wrapped[methodName]().slice(__num_top__, NaN).value(), array.slice(__num_top__, NaN));
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 38);
         }
     });
 }());

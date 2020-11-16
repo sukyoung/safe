@@ -10,7 +10,7 @@ QUnit.module('lodash.result');
     });
     QUnit.test('should invoke default function values', function (assert) {
         assert.expect(1);
-        var actual = _.result(object, __str_top__, object.b);
+        var actual = _.result(object, 'c', object.b);
         assert.strictEqual(actual, 'b');
     });
     QUnit.test('should invoke nested function values', function (assert) {
@@ -19,7 +19,7 @@ QUnit.module('lodash.result');
         lodashStable.each([
             'a.b',
             [
-                'a',
+                __str_top__,
                 'b'
             ]
         ], function (path) {

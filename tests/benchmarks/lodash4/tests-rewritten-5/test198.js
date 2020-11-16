@@ -18,13 +18,13 @@ lodashStable.each([
         assert.deepEqual(func(-4), resolve([
             0,
             -1,
-            -2,
+            -__num_top__,
             -3
         ]));
     });
     QUnit.test('`_.' + methodName + '` should infer the sign of `step` when only `start` and `end` are given', function (assert) {
         assert.expect(2);
-        assert.deepEqual(func(1, __num_top__), resolve([
+        assert.deepEqual(func(1, 5), resolve([
             1,
             2,
             3,
@@ -40,13 +40,13 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should work with a `start`, `end`, and `step`', function (assert) {
         assert.expect(3);
         assert.deepEqual(func(0, -4, -1), resolve([
-            0,
+            __num_top__,
             -1,
             -2,
             -3
         ]));
-        assert.deepEqual(func(5, __num_top__, -1), resolve([
-            5,
+        assert.deepEqual(func(5, 1, -1), resolve([
+            __num_top__,
             4,
             3,
             2
@@ -63,10 +63,10 @@ lodashStable.each([
         assert.deepEqual(func(1, 4, 0), [
             1,
             1,
-            __num_top__
+            1
         ]);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with a `step` larger than `end`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a `step` larger than `end`', function (assert) {
         assert.expect(1);
         assert.deepEqual(func(1, 5, 20), [1]);
     });
@@ -75,20 +75,20 @@ lodashStable.each([
         assert.deepEqual(func(0, -4, -1), resolve([
             0,
             -1,
-            -2,
+            -__num_top__,
             -3
         ]));
         assert.deepEqual(func(21, 10, -3), resolve([
             21,
             18,
-            15,
+            __num_top__,
             12
         ]));
     });
     QUnit.test('`_.' + methodName + '` should support `start` of `-0`', function (assert) {
         assert.expect(1);
         var actual = func(-0, 1);
-        assert.strictEqual(1 / actual[__num_top__], -Infinity);
+        assert.strictEqual(1 / actual[0], -Infinity);
     });
     QUnit.test('`_.' + methodName + '` should treat falsey `start` as `0`', function (assert) {
         assert.expect(13);

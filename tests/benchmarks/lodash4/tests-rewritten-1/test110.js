@@ -11,12 +11,12 @@ QUnit.module('lodash.isFunction');
     });
     QUnit.test('should return `true` for generator functions', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.isFunction(genFunc), typeof genFunc == 'function');
+        assert.strictEqual(_.isFunction(genFunc), typeof genFunc == __str_top__);
     });
     QUnit.test('should return `true` for the `Proxy` constructor', function (assert) {
         assert.expect(1);
         if (Proxy) {
-            assert.strictEqual(_.isFunction(Proxy), __bool_top__);
+            assert.strictEqual(_.isFunction(Proxy), true);
         } else {
             skipAssert(assert);
         }

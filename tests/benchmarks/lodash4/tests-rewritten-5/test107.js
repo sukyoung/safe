@@ -4,7 +4,7 @@ QUnit.module('lodash.isEqualWith');
         assert.expect(1);
         var argsList = [], object1 = {
                 'a': [
-                    1,
+                    __num_top__,
                     2
                 ],
                 'b': null
@@ -31,7 +31,7 @@ QUnit.module('lodash.isEqualWith');
             ],
             [
                 object1.a[0],
-                object2.a[0],
+                object2.a[__num_top__],
                 0,
                 object1.a,
                 object2.a
@@ -39,7 +39,7 @@ QUnit.module('lodash.isEqualWith');
             [
                 object1.a[1],
                 object2.a[1],
-                1,
+                __num_top__,
                 object1.a,
                 object2.a
             ],
@@ -59,7 +59,7 @@ QUnit.module('lodash.isEqualWith');
     });
     QUnit.test('should handle comparisons when `customizer` returns `undefined`', function (assert) {
         assert.expect(3);
-        assert.strictEqual(_.isEqualWith(__str_top__, __str_top__, noop), true);
+        assert.strictEqual(_.isEqualWith('a', 'a', noop), true);
         assert.strictEqual(_.isEqualWith(['a'], ['a'], noop), true);
         assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': 'a' }, noop), true);
     });
@@ -70,7 +70,7 @@ QUnit.module('lodash.isEqualWith');
         };
         assert.strictEqual(_.isEqualWith('a', 'b', customizer), true);
         assert.strictEqual(_.isEqualWith(['a'], ['b'], customizer), true);
-        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': __str_top__ }, customizer), true);
+        assert.strictEqual(_.isEqualWith({ '0': __str_top__ }, { '0': 'b' }, customizer), true);
     });
     QUnit.test('should not handle comparisons when `customizer` returns `false`', function (assert) {
         assert.expect(3);
@@ -116,7 +116,7 @@ QUnit.module('lodash.isEqualWith');
         var value = { 'a': { 'b': 2 } };
         if (Map) {
             var map1 = new Map();
-            map1.set(__str_top__, value);
+            map1.set('a', value);
             var map2 = new Map();
             map2.set('a', value);
         }
@@ -159,7 +159,7 @@ QUnit.module('lodash.isEqualWith');
                     ],
                     [
                         array[0][1],
-                        array[0][1],
+                        array[0][__num_top__],
                         1,
                         array[0],
                         array[0]
@@ -168,7 +168,7 @@ QUnit.module('lodash.isEqualWith');
                 if (index) {
                     expected.length = 2;
                 }
-                _.isEqualWith(pair[__num_top__], pair[1], function () {
+                _.isEqualWith(pair[0], pair[1], function () {
                     var length = arguments.length, args = slice.call(arguments, 0, length - (length > 2 ? 1 : 0));
                     argsList.push(args);
                 });

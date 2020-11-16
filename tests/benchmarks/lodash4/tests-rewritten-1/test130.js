@@ -24,13 +24,13 @@ QUnit.module('lodash.isWeakSet');
         assert.strictEqual(_.isWeakSet(true), false);
         assert.strictEqual(_.isWeakSet(new Date()), false);
         assert.strictEqual(_.isWeakSet(new Error()), false);
-        assert.strictEqual(_.isWeakSet(_), false);
+        assert.strictEqual(_.isWeakSet(_), __bool_top__);
         assert.strictEqual(_.isWeakSet(slice), false);
         assert.strictEqual(_.isWeakSet({ 'a': 1 }), false);
         assert.strictEqual(_.isWeakSet(1), false);
         assert.strictEqual(_.isWeakSet(/x/), false);
         assert.strictEqual(_.isWeakSet('a'), false);
-        assert.strictEqual(_.isWeakSet(set), __bool_top__);
+        assert.strictEqual(_.isWeakSet(set), false);
         assert.strictEqual(_.isWeakSet(symbol), false);
     });
     QUnit.test('should work with weak sets from another realm', function (assert) {

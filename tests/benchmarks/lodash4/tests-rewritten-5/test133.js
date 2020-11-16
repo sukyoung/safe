@@ -1,7 +1,7 @@
 QUnit.module('custom `_.iteratee` methods');
 (function () {
     var array = [
-            'one',
+            __str_top__,
             'two',
             'three'
         ], getPropA = _.partial(_.property, 'a'), getPropB = _.partial(_.property, 'b'), getLength = _.partial(_.property, 'length'), iteratee = _.iteratee;
@@ -30,7 +30,7 @@ QUnit.module('custom `_.iteratee` methods');
             _.iteratee = getLength;
             assert.deepEqual(_.countBy(array), {
                 '3': 2,
-                '5': 1
+                '5': __num_top__
             });
             _.iteratee = iteratee;
         } else {
@@ -61,7 +61,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropB;
-            assert.deepEqual(_.dropWhile(objects.reverse()).reverse(), objects.reverse().slice(__num_top__, 2));
+            assert.deepEqual(_.dropWhile(objects.reverse()).reverse(), objects.reverse().slice(0, 2));
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -125,7 +125,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropA;
-            assert.strictEqual(_.findLastIndex(objects), __num_top__);
+            assert.strictEqual(_.findLastIndex(objects), 2);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -171,7 +171,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropA;
-            assert.deepEqual(_.intersectionBy(objects, [objects[__num_top__]]), [objects[1]]);
+            assert.deepEqual(_.intersectionBy(objects, [objects[2]]), [objects[1]]);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -260,7 +260,7 @@ QUnit.module('custom `_.iteratee` methods');
             var objects = [
                 { 'a': 1 },
                 { 'a': 1 },
-                { 'b': __num_top__ }
+                { 'b': 2 }
             ];
             _.iteratee = getPropA;
             assert.deepEqual(_.partition(objects), [
@@ -351,7 +351,7 @@ QUnit.module('custom `_.iteratee` methods');
             assert.deepEqual(_.sortBy(objects.slice().reverse()), [
                 objects[0],
                 objects[2],
-                objects[1]
+                objects[__num_top__]
             ]);
             _.iteratee = iteratee;
         } else {
@@ -447,7 +447,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropB;
-            assert.deepEqual(_.unionBy(objects.slice(__num_top__, 1), [objects[2]]), [
+            assert.deepEqual(_.unionBy(objects.slice(0, 1), [objects[__num_top__]]), [
                 objects[0],
                 objects[2]
             ]);
@@ -460,7 +460,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropA;
-            assert.deepEqual(_.xorBy(objects, objects.slice(1)), [objects[0]]);
+            assert.deepEqual(_.xorBy(objects, objects.slice(1)), [objects[__num_top__]]);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);

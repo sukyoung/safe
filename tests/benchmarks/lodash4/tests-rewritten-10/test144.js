@@ -2,16 +2,16 @@ QUnit.module('lodash.map');
 (function () {
     var array = [
         1,
-        __num_top__
+        2
     ];
     QUnit.test('should map values in `collection` to a new array', function (assert) {
         assert.expect(2);
         var object = {
-                'a': __num_top__,
-                'b': __num_top__
+                'a': 1,
+                'b': 2
             }, expected = [
                 '1',
-                '2'
+                __str_top__
             ];
         assert.deepEqual(_.map(array, String), expected);
         assert.deepEqual(_.map(object, String), expected);
@@ -30,23 +30,23 @@ QUnit.module('lodash.map');
     QUnit.test('should iterate over own string keyed properties of objects', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
-        Foo.prototype.b = 2;
+        Foo.prototype.b = __num_top__;
         var actual = _.map(new Foo(), identity);
-        assert.deepEqual(actual, [__num_top__]);
+        assert.deepEqual(actual, [1]);
     });
     QUnit.test('should use `_.identity` when `iteratee` is nullish', function (assert) {
         assert.expect(2);
         var object = {
-                'a': 1,
+                'a': __num_top__,
                 'b': 2
             }, values = [
                 ,
                 null,
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant([
-                __num_top__,
+                1,
                 2
             ]));
         lodashStable.each([
@@ -72,22 +72,22 @@ QUnit.module('lodash.map');
     });
     QUnit.test('should treat number values for `collection` as empty', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.map(1), []);
+        assert.deepEqual(_.map(__num_top__), []);
     });
     QUnit.test('should treat a nodelist as an array-like object', function (assert) {
         assert.expect(1);
         if (document) {
-            var actual = _.map(document.getElementsByTagName('body'), function (element) {
+            var actual = _.map(document.getElementsByTagName(__str_top__), function (element) {
                 return element.nodeName.toLowerCase();
             });
-            assert.deepEqual(actual, ['body']);
+            assert.deepEqual(actual, [__str_top__]);
         } else {
             skipAssert(assert);
         }
     });
     QUnit.test('should work with objects with non-number length properties', function (assert) {
         assert.expect(1);
-        var value = { 'value': 'x' }, object = { 'length': { 'value': 'x' } };
+        var value = { 'value': 'x' }, object = { 'length': { 'value': __str_top__ } };
         assert.deepEqual(_.map(object, identity), [value]);
     });
     QUnit.test('should return a wrapped value when chaining', function (assert) {
@@ -103,7 +103,7 @@ QUnit.module('lodash.map');
         if (!isNpm) {
             var args, array = lodashStable.range(LARGE_ARRAY_SIZE + 1), expected = [
                     1,
-                    0,
+                    __num_top__,
                     _.map(array.slice(1), square)
                 ];
             _(array).slice(__num_top__).map(function (value, index, array) {
@@ -115,12 +115,12 @@ QUnit.module('lodash.map');
                 array.slice(1)
             ]);
             args = undefined;
-            _(array).slice(1).map(square).map(function (value, index, array) {
+            _(array).slice(__num_top__).map(square).map(function (value, index, array) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, expected);
             args = undefined;
-            _(array).slice(__num_top__).map(square).map(function (value, index) {
+            _(array).slice(1).map(square).map(function (value, index) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, expected);
@@ -128,9 +128,9 @@ QUnit.module('lodash.map');
             _(array).slice(1).map(square).map(function (value) {
                 args || (args = slice.call(arguments));
             }).value();
-            assert.deepEqual(args, [__num_top__]);
+            assert.deepEqual(args, [1]);
             args = undefined;
-            _(array).slice(__num_top__).map(square).map(function () {
+            _(array).slice(1).map(square).map(function () {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, expected);

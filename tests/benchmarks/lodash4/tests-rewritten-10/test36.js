@@ -1,11 +1,11 @@
 QUnit.module('curry methods');
 lodashStable.each([
-    __str_top__,
-    __str_top__
+    'curry',
+    'curryRight'
 ], function (methodName) {
     var func = _[methodName], fn = function (a, b) {
             return slice.call(arguments);
-        }, isCurry = methodName == __str_top__;
+        }, isCurry = methodName == 'curry';
     QUnit.test(__str_top__ + methodName + '` should not error on functions with the same name as lodash methods', function (assert) {
         assert.expect(1);
         function run(a, b) {
@@ -13,12 +13,12 @@ lodashStable.each([
         }
         var curried = func(run);
         try {
-            var actual = curried(1)(__num_top__);
+            var actual = curried(1)(2);
         } catch (e) {
         }
         assert.strictEqual(actual, 3);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work for function names that shadow those on `Object.prototype`', function (assert) {
         assert.expect(1);
         var curried = _.curry(function hasOwnProperty(a, b, c) {
             return [
@@ -30,11 +30,11 @@ lodashStable.each([
         var expected = [
             1,
             2,
-            3
+            __num_top__
         ];
-        assert.deepEqual(curried(__num_top__)(2)(3), expected);
+        assert.deepEqual(curried(__num_top__)(__num_top__)(__num_top__), expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should work as an iteratee for methods like `_.map`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         var array = [
                 fn,
@@ -54,10 +54,10 @@ lodashStable.each([
                     'b'
                 ] : [
                     __str_top__,
-                    'a'
+                    __str_top__
                 ]));
             var actual = lodashStable.map(curries, function (curried) {
-                return curried(__str_top__)('b');
+                return curried(__str_top__)(__str_top__);
             });
             assert.deepEqual(actual, expected);
         });

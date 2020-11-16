@@ -25,16 +25,16 @@ lodashStable.each([
                 ],
                 [
                     36,
-                    40
+                    __num_top__
                 ]
             ],
             [
                 [
-                    'barney',
+                    __str_top__,
                     36
                 ],
                 [
-                    __str_top__,
+                    'fred',
                     40
                 ]
             ]
@@ -56,7 +56,7 @@ lodashStable.each([
             ],
             [
                 [
-                    'barney',
+                    __str_top__,
                     36,
                     false
                 ],
@@ -69,24 +69,24 @@ lodashStable.each([
         ]
     };
     lodashStable.forOwn(object, function (pair, key) {
-        QUnit.test('`_.' + methodName + '` should work with ' + key, function (assert) {
+        QUnit.test(__str_top__ + methodName + '` should work with ' + key, function (assert) {
             assert.expect(2);
             var actual = func(pair[0]);
-            assert.deepEqual(actual, pair[1]);
-            assert.deepEqual(func(actual), actual.length ? pair[__num_top__] : []);
+            assert.deepEqual(actual, pair[__num_top__]);
+            assert.deepEqual(func(actual), actual.length ? pair[0] : []);
         });
     });
-    QUnit.test('`_.' + methodName + '` should work with tuples of different lengths', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with tuples of different lengths', function (assert) {
         assert.expect(4);
         var pair = [
             [
                 [
-                    __str_top__,
+                    'barney',
                     36
                 ],
                 [
-                    __str_top__,
-                    __num_top__,
+                    'fred',
+                    40,
                     false
                 ]
             ],
@@ -96,7 +96,7 @@ lodashStable.each([
                     'fred'
                 ],
                 [
-                    __num_top__,
+                    36,
                     40
                 ],
                 [
@@ -105,20 +105,20 @@ lodashStable.each([
                 ]
             ]
         ];
-        var actual = func(pair[__num_top__]);
-        assert.ok('0' in actual[__num_top__]);
+        var actual = func(pair[0]);
+        assert.ok('0' in actual[2]);
         assert.deepEqual(actual, pair[1]);
         actual = func(actual);
-        assert.ok('2' in actual[0]);
+        assert.ok(__str_top__ in actual[0]);
         assert.deepEqual(actual, [
             [
-                'barney',
+                __str_top__,
                 36,
                 undefined
             ],
             [
                 'fred',
-                __num_top__,
+                40,
                 false
             ]
         ]);
@@ -144,7 +144,7 @@ lodashStable.each([
             ],
             [
                 3,
-                4
+                __num_top__
             ],
             null,
             undefined,
@@ -169,7 +169,7 @@ lodashStable.each([
                 'fred'
             ],
             [
-                __num_top__,
+                36,
                 40
             ]
         ];

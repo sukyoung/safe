@@ -651,7 +651,7 @@ QUnit.module('lodash.isEqual');
         object1.a = 1;
         var object2 = { 'a': 1 };
         assert.strictEqual(_.isEqual(object1, object2), true);
-        assert.strictEqual(_.isEqual(new Foo(), object2), __bool_top__);
+        assert.strictEqual(_.isEqual(new Foo(), object2), false);
     });
     QUnit.test('should avoid common type coercions', function (assert) {
         assert.expect(9);

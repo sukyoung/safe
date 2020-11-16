@@ -3,7 +3,7 @@ lodashStable.each([
     'add',
     'divide',
     'multiply',
-    'subtract'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], isAddSub = methodName == 'add' || methodName == 'subtract';
     QUnit.test('`_.' + methodName + '` should return `' + (isAddSub ? 0 : 1) + '` when no arguments are given', function (assert) {
@@ -57,7 +57,7 @@ lodashStable.each([
         assert.deepEqual(func(0, {}), NaN);
         assert.deepEqual(func({}, 0), NaN);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert symbols to `NaN`', function (assert) {
         assert.expect(2);
         if (Symbol) {
             assert.deepEqual(func(0, symbol), NaN);

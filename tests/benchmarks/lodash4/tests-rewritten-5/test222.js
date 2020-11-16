@@ -22,7 +22,7 @@ QUnit.module('lodash.sortBy');
         assert.expect(1);
         var actual = lodashStable.map(_.sortBy(objects, function (object) {
             return object.b;
-        }), __str_top__);
+        }), 'b');
         assert.deepEqual(actual, [
             1,
             2,
@@ -34,7 +34,7 @@ QUnit.module('lodash.sortBy');
         assert.expect(1);
         var array = [
                 3,
-                __num_top__,
+                2,
                 1
             ], values = [
                 ,
@@ -52,7 +52,7 @@ QUnit.module('lodash.sortBy');
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map(_.sortBy(objects.concat(undefined), 'b'), 'b');
+        var actual = lodashStable.map(_.sortBy(objects.concat(undefined), __str_top__), 'b');
         assert.deepEqual(actual, [
             1,
             2,
@@ -65,7 +65,7 @@ QUnit.module('lodash.sortBy');
         assert.expect(1);
         var actual = _.sortBy({
             'a': 1,
-            'b': __num_top__,
+            'b': 2,
             'c': 3
         }, Math.sin);
         assert.deepEqual(actual, [
@@ -76,7 +76,7 @@ QUnit.module('lodash.sortBy');
     });
     QUnit.test('should move `NaN`, nullish, and symbol values to the end', function (assert) {
         assert.expect(2);
-        var symbol1 = Symbol ? Symbol('a') : null, symbol2 = Symbol ? Symbol('b') : null, array = [
+        var symbol1 = Symbol ? Symbol('a') : null, symbol2 = Symbol ? Symbol(__str_top__) : null, array = [
                 NaN,
                 undefined,
                 null,
@@ -111,7 +111,7 @@ QUnit.module('lodash.sortBy');
             null,
             'd',
             null,
-            __str_top__,
+            'a',
             symbol2,
             undefined,
             'c',
@@ -120,9 +120,9 @@ QUnit.module('lodash.sortBy');
         ];
         expected = [
             'a',
-            'b',
+            __str_top__,
             'c',
-            'd',
+            __str_top__,
             symbol1,
             symbol2,
             null,
@@ -178,7 +178,7 @@ QUnit.module('lodash.sortBy');
                 3
             ],
             [
-                1,
+                __num_top__,
                 2,
                 3
             ]

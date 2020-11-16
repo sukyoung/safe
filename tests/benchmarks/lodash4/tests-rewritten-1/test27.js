@@ -5,7 +5,7 @@ QUnit.module('lodash.concat');
         var array = [
                 1,
                 2,
-                __num_top__
+                3
             ], actual = _.concat(array);
         assert.deepEqual(actual, array);
         assert.notStrictEqual(actual, array);
@@ -15,7 +15,7 @@ QUnit.module('lodash.concat');
         var array = [1], actual = _.concat(array, 2, [3], [[4]]);
         assert.deepEqual(actual, [
             1,
-            2,
+            __num_top__,
             3,
             [4]
         ]);

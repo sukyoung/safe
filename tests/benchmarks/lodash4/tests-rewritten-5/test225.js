@@ -9,7 +9,7 @@ lodashStable.each([
         var args;
         func([
             __num_top__,
-            __num_top__
+            50
         ], 40, function (assert) {
             args || (args = slice.call(arguments));
         });
@@ -20,19 +20,19 @@ lodashStable.each([
         var objects = [
                 { 'x': 30 },
                 { 'x': 50 }
-            ], actual = func(objects, { 'x': 40 }, 'x');
-        assert.strictEqual(actual, 1);
+            ], actual = func(objects, { 'x': __num_top__ }, __str_top__);
+        assert.strictEqual(actual, __num_top__);
     });
-    QUnit.test('`_.' + methodName + '` should avoid calling iteratee when length is 0', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         var objects = [], iteratee = function () {
                 throw new Error();
             }, actual = func(objects, { 'x': 50 }, iteratee);
         assert.strictEqual(actual, 0);
     });
-    QUnit.test(__str_top__ + methodName + '` should support arrays larger than `MAX_ARRAY_LENGTH / 2`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should support arrays larger than `MAX_ARRAY_LENGTH / 2`', function (assert) {
         assert.expect(12);
         lodashStable.each([
-            Math.ceil(MAX_ARRAY_LENGTH / __num_top__),
+            Math.ceil(MAX_ARRAY_LENGTH / 2),
             MAX_ARRAY_LENGTH
         ], function (length) {
             var array = [], values = [
@@ -48,7 +48,7 @@ lodashStable.each([
                     return value;
                 });
                 var expected = (isSortedIndexBy ? !lodashStable.isNaN(value) : lodashStable.isFinite(value)) ? 0 : Math.min(length, MAX_ARRAY_INDEX);
-                assert.ok(steps == 32 || steps == __num_top__);
+                assert.ok(steps == 32 || steps == 33);
                 assert.strictEqual(actual, expected);
             });
         });

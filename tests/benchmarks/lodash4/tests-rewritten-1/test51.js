@@ -13,7 +13,7 @@ QUnit.module('lodash.dropWhile');
         },
         {
             'a': 1,
-            'b': __num_top__
+            'b': 1
         },
         {
             'a': 0,
@@ -27,7 +27,7 @@ QUnit.module('lodash.dropWhile');
         });
         assert.deepEqual(actual, [
             3,
-            4
+            __num_top__
         ]);
     });
     QUnit.test('should provide correct `predicate` arguments', function (assert) {

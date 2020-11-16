@@ -21,8 +21,8 @@ QUnit.module('lodash.defer');
         }, 1, 2);
         setTimeout(function () {
             assert.deepEqual(args, [
-                1,
-                __num_top__
+                __num_top__,
+                2
             ]);
             done();
         }, 32);

@@ -109,7 +109,7 @@ QUnit.module('lodash.groupBy');
             ],
             'b': [[
                     2,
-                    'b'
+                    __str_top__
                 ]]
         });
     });
@@ -136,7 +136,7 @@ QUnit.module('lodash.groupBy');
                     value.push(value[0]);
                     return value;
                 }, predicate = function (value) {
-                    return isEven(value[__num_top__]);
+                    return isEven(value[0]);
                 }, actual = _(array).groupBy().map(iteratee).filter(predicate).take().value();
             assert.deepEqual(actual, _.take(_.filter(lodashStable.map(_.groupBy(array), iteratee), predicate)));
         } else {

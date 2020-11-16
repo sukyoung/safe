@@ -1,7 +1,7 @@
 QUnit.module('values methods');
 lodashStable.each([
     'values',
-    __str_top__
+    'valuesIn'
 ], function (methodName) {
     var func = _[methodName], isValues = methodName == 'values';
     QUnit.test('`_.' + methodName + '` should get string keyed values of `object`', function (assert) {
@@ -24,7 +24,7 @@ lodashStable.each([
             }, actual = func(object).sort();
         assert.deepEqual(actual, [
             2,
-            'a',
+            __str_top__,
             'b'
         ]);
     });

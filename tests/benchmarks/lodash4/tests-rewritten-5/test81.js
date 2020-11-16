@@ -12,7 +12,7 @@ QUnit.module('lodash.groupBy');
             '4': [4.2],
             '6': [
                 6.1,
-                __num_top__
+                6.3
             ]
         });
     });
@@ -21,7 +21,7 @@ QUnit.module('lodash.groupBy');
         var array = [
                 6,
                 4,
-                __num_top__
+                6
             ], values = [
                 ,
                 null,
@@ -47,10 +47,10 @@ QUnit.module('lodash.groupBy');
         ], 'length');
         assert.deepEqual(actual, {
             '3': [
-                'one',
+                __str_top__,
                 'two'
             ],
-            '5': ['three']
+            '5': [__str_top__]
         });
     });
     QUnit.test('should only add values to own, not inherited, properties', function (assert) {
@@ -68,8 +68,8 @@ QUnit.module('lodash.groupBy');
         assert.expect(2);
         var array = [
             [
-                1,
-                __str_top__
+                __num_top__,
+                'a'
             ],
             [
                 2,
@@ -91,7 +91,7 @@ QUnit.module('lodash.groupBy');
                     'a'
                 ],
                 [
-                    __num_top__,
+                    2,
                     'b'
                 ]
             ]
@@ -136,7 +136,7 @@ QUnit.module('lodash.groupBy');
                     value.push(value[0]);
                     return value;
                 }, predicate = function (value) {
-                    return isEven(value[0]);
+                    return isEven(value[__num_top__]);
                 }, actual = _(array).groupBy().map(iteratee).filter(predicate).take().value();
             assert.deepEqual(actual, _.take(_.filter(lodashStable.map(_.groupBy(array), iteratee), predicate)));
         } else {

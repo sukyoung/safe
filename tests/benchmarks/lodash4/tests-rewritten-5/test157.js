@@ -5,8 +5,8 @@ QUnit.module('lodash.mergeWith');
         var actual = _.mergeWith({
             'a': {
                 'b': [
-                    1,
-                    __num_top__
+                    __num_top__,
+                    1
                 ]
             }
         }, { 'a': { 'b': [0] } }, noop);
@@ -42,9 +42,9 @@ QUnit.module('lodash.mergeWith');
         assert.deepEqual(actual, {
             'a': {
                 'b': [
-                    __num_top__,
+                    0,
                     1,
-                    2
+                    __num_top__
                 ]
             }
         });
@@ -65,10 +65,10 @@ QUnit.module('lodash.mergeWith');
     });
     QUnit.test('should overwrite primitives with source object clones', function (assert) {
         assert.expect(1);
-        var actual = _.mergeWith({ 'a': 0 }, { 'a': { 'b': ['c'] } }, function (a, b) {
+        var actual = _.mergeWith({ 'a': 0 }, { 'a': { 'b': [__str_top__] } }, function (a, b) {
             return lodashStable.isArray(a) ? a.concat(b) : undefined;
         });
-        assert.deepEqual(actual, { 'a': { 'b': ['c'] } });
+        assert.deepEqual(actual, { 'a': { 'b': [__str_top__] } });
     });
     QUnit.test('should pop the stack of sources for each sibling property', function (assert) {
         assert.expect(1);
@@ -85,8 +85,8 @@ QUnit.module('lodash.mergeWith');
         assert.deepEqual(actual, {
             'a': [
                 'a',
-                __str_top__,
-                __str_top__
+                'b',
+                'c'
             ],
             'b': [
                 'b',

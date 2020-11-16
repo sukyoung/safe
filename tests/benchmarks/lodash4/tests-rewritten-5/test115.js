@@ -2,7 +2,7 @@ QUnit.module('lodash.isNaN');
 (function () {
     QUnit.test('should return `true` for NaNs', function (assert) {
         assert.expect(2);
-        assert.strictEqual(_.isNaN(NaN), __bool_top__);
+        assert.strictEqual(_.isNaN(NaN), true);
         assert.strictEqual(_.isNaN(Object(NaN)), true);
     });
     QUnit.test('should return `false` for non-NaNs', function (assert) {
@@ -14,22 +14,22 @@ QUnit.module('lodash.isNaN');
             return index ? _.isNaN(value) : _.isNaN();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isNaN(args), false);
+        assert.strictEqual(_.isNaN(args), __bool_top__);
         assert.strictEqual(_.isNaN([
             1,
-            __num_top__,
+            2,
             3
-        ]), false);
-        assert.strictEqual(_.isNaN(__bool_top__), false);
-        assert.strictEqual(_.isNaN(new Date()), __bool_top__);
+        ]), __bool_top__);
+        assert.strictEqual(_.isNaN(true), false);
+        assert.strictEqual(_.isNaN(new Date()), false);
         assert.strictEqual(_.isNaN(new Error()), false);
         assert.strictEqual(_.isNaN(_), false);
         assert.strictEqual(_.isNaN(slice), false);
         assert.strictEqual(_.isNaN({ 'a': 1 }), false);
-        assert.strictEqual(_.isNaN(1), false);
+        assert.strictEqual(_.isNaN(__num_top__), false);
         assert.strictEqual(_.isNaN(Object(1)), false);
-        assert.strictEqual(_.isNaN(/x/), false);
-        assert.strictEqual(_.isNaN('a'), false);
+        assert.strictEqual(_.isNaN(/x/), __bool_top__);
+        assert.strictEqual(_.isNaN('a'), __bool_top__);
         assert.strictEqual(_.isNaN(symbol), false);
     });
     QUnit.test('should work with `NaN` from another realm', function (assert) {

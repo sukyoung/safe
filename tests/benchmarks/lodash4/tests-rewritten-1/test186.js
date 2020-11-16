@@ -54,7 +54,7 @@ QUnit.module('lodash.partition');
         assert.expect(2);
         var array = [
             [
-                __num_top__,
+                1,
                 0
             ],
             [
@@ -71,7 +71,7 @@ QUnit.module('lodash.partition');
                 array[0],
                 array[2]
             ],
-            [array[1]]
+            [array[__num_top__]]
         ]);
         assert.deepEqual(_.partition(array, 1), [
             [array[1]],

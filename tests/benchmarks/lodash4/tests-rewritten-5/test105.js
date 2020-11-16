@@ -5,10 +5,10 @@ QUnit.module('lodash.isEmpty');
         var expected = lodashStable.map(empties, stubTrue), actual = lodashStable.map(empties, _.isEmpty);
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isEmpty(true), true);
-        assert.strictEqual(_.isEmpty(slice), __bool_top__);
-        assert.strictEqual(_.isEmpty(1), true);
-        assert.strictEqual(_.isEmpty(NaN), __bool_top__);
-        assert.strictEqual(_.isEmpty(/x/), true);
+        assert.strictEqual(_.isEmpty(slice), true);
+        assert.strictEqual(_.isEmpty(1), __bool_top__);
+        assert.strictEqual(_.isEmpty(NaN), true);
+        assert.strictEqual(_.isEmpty(/x/), __bool_top__);
         assert.strictEqual(_.isEmpty(symbol), true);
         assert.strictEqual(_.isEmpty(), true);
         if (Buffer) {
@@ -20,8 +20,8 @@ QUnit.module('lodash.isEmpty');
     });
     QUnit.test('should return `false` for non-empty values', function (assert) {
         assert.expect(3);
-        assert.strictEqual(_.isEmpty([0]), false);
-        assert.strictEqual(_.isEmpty({ 'a': 0 }), __bool_top__);
+        assert.strictEqual(_.isEmpty([__num_top__]), false);
+        assert.strictEqual(_.isEmpty({ 'a': 0 }), false);
         assert.strictEqual(_.isEmpty('a'), false);
     });
     QUnit.test('should work with an object that has a `length` property', function (assert) {
@@ -37,7 +37,7 @@ QUnit.module('lodash.isEmpty');
         function Foo() {
         }
         Foo.prototype = { 'constructor': Foo };
-        assert.strictEqual(_.isEmpty(Foo.prototype), __bool_top__);
+        assert.strictEqual(_.isEmpty(Foo.prototype), true);
         Foo.prototype.a = 1;
         assert.strictEqual(_.isEmpty(Foo.prototype), false);
     });
@@ -60,7 +60,7 @@ QUnit.module('lodash.isEmpty');
                 realm.map
             ], function (map) {
                 assert.strictEqual(_.isEmpty(map), true);
-                map.set('a', 1);
+                map.set('a', __num_top__);
                 assert.strictEqual(_.isEmpty(map), false);
                 map.clear();
             });
@@ -75,7 +75,7 @@ QUnit.module('lodash.isEmpty');
                 new Set(),
                 realm.set
             ], function (set) {
-                assert.strictEqual(_.isEmpty(set), __bool_top__);
+                assert.strictEqual(_.isEmpty(set), true);
                 set.add(1);
                 assert.strictEqual(_.isEmpty(set), false);
                 set.clear();
@@ -96,7 +96,7 @@ QUnit.module('lodash.isEmpty');
         function Foo() {
         }
         Foo.prototype.length = MAX_SAFE_INTEGER + 1;
-        assert.strictEqual(_.isEmpty(new Foo()), true);
+        assert.strictEqual(_.isEmpty(new Foo()), __bool_top__);
     });
     QUnit.test('should not treat objects with non-number lengths as array-like', function (assert) {
         assert.expect(1);

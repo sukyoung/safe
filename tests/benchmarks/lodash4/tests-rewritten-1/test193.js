@@ -4,13 +4,13 @@ QUnit.module('lodash.pullAllBy');
         assert.expect(1);
         var array = [
             { 'x': 1 },
-            { 'x': 2 },
+            { 'x': __num_top__ },
             { 'x': 3 },
             { 'x': 1 }
         ];
         var actual = _.pullAllBy(array, [
             { 'x': 1 },
-            { 'x': __num_top__ }
+            { 'x': 3 }
         ], function (object) {
             return object.x;
         });

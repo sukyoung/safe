@@ -110,7 +110,7 @@ lodashStable.each([
             assert.deepEqual(object, { '': value });
         });
     });
-    QUnit.test('`_.' + methodName + '` should handle complex paths', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         var object = { 'a': { '1.23': { '["b"]': { 'c': { '[\'d\']': { '\ne\n': { 'f': { 'g': oldValue } } } } } } } };
         var paths = [
@@ -214,7 +214,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should not assign values that are the same as their destinations', function (assert) {
         assert.expect(4);
         lodashStable.each([
-            __str_top__,
+            'a',
             ['a'],
             { 'a': 1 },
             NaN

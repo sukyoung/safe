@@ -13,7 +13,7 @@ lodashStable.each([
         ], 40, function (assert) {
             args || (args = slice.call(arguments));
         });
-        assert.deepEqual(args, [__num_top__]);
+        assert.deepEqual(args, [40]);
     });
     QUnit.test('`_.' + methodName + '` should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
@@ -27,7 +27,7 @@ lodashStable.each([
         var objects = [], iteratee = function () {
                 throw new Error();
             }, actual = func(objects, { 'x': 50 }, iteratee);
-        assert.strictEqual(actual, 0);
+        assert.strictEqual(actual, __num_top__);
     });
     QUnit.test('`_.' + methodName + '` should support arrays larger than `MAX_ARRAY_LENGTH / 2`', function (assert) {
         assert.expect(12);

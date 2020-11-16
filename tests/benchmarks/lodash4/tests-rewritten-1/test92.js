@@ -4,7 +4,7 @@ QUnit.module('lodash.intersectionWith');
         assert.expect(1);
         var objects = [
                 {
-                    'x': __num_top__,
+                    'x': 1,
                     'y': 2
                 },
                 {
@@ -18,7 +18,7 @@ QUnit.module('lodash.intersectionWith');
                 },
                 {
                     'x': 1,
-                    'y': 2
+                    'y': __num_top__
                 }
             ], actual = _.intersectionWith(objects, others, lodashStable.isEqual);
         assert.deepEqual(actual, [objects[0]]);

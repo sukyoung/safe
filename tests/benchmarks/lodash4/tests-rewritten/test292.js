@@ -27,7 +27,7 @@ lodashStable.each([
                 'value': undefined
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test(__str_top__ + chainType, function (assert) {
@@ -40,7 +40,7 @@ lodashStable.each([
             assert.strictEqual(wrapped[Symbol.iterator](), wrapped);
             assert.deepEqual(lodashStable.toArray(wrapped), array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test(__str_top__ + chainType, function (assert) {
@@ -56,7 +56,7 @@ lodashStable.each([
                 assert.deepEqual(Array.from(wrapped), _.toArray(value));
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test(__str_top__ + chainType, function (assert) {
@@ -72,7 +72,7 @@ lodashStable.each([
             assert.deepEqual(lodashStable.toArray(other), array, __str_top__);
             assert.deepEqual(lodashStable.toArray(wrapped), [], __str_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test(__str_top__ + chainType, function (assert) {
@@ -87,7 +87,7 @@ lodashStable.each([
             assert.deepEqual(lodashStable.toArray(wrapped), _.filter(array, isEven), __str_top__);
             assert.deepEqual(values, array, __str_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
 });

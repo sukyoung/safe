@@ -2,7 +2,7 @@ QUnit.module('lodash.sample');
 (function () {
     var array = [
         1,
-        __num_top__,
+        2,
         3
     ];
     QUnit.test('should return a random element', function (assert) {
@@ -25,7 +25,7 @@ QUnit.module('lodash.sample');
         assert.expect(1);
         var object = {
                 'a': 1,
-                'b': 2,
+                'b': __num_top__,
                 'c': 3
             }, actual = _.sample(object);
         assert.ok(lodashStable.includes(array, actual));

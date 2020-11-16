@@ -2,22 +2,22 @@ QUnit.module('lodash.reverse');
 (function () {
     var largeArray = lodashStable.range(LARGE_ARRAY_SIZE).concat(null), smallArray = [
             0,
+            1,
             __num_top__,
-            2,
             null
         ];
     QUnit.test('should reverse `array`', function (assert) {
         assert.expect(2);
         var array = [
-                __num_top__,
-                __num_top__,
+                1,
+                2,
                 3
             ], actual = _.reverse(array);
         assert.strictEqual(actual, array);
         assert.deepEqual(array, [
             3,
-            2,
-            __num_top__
+            __num_top__,
+            1
         ]);
     });
     QUnit.test('should return the wrapped reversed `array`', function (assert) {
@@ -30,7 +30,7 @@ QUnit.module('lodash.reverse');
                 assert.deepEqual(actual, clone.slice().reverse());
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -38,7 +38,7 @@ QUnit.module('lodash.reverse');
         if (!isNpm) {
             lodashStable.times(2, function (index) {
                 var array = (index ? largeArray : smallArray).slice(), expected = array.slice(), actual = _(array).slice(1).reverse().value();
-                assert.deepEqual(actual, expected.slice(1).reverse());
+                assert.deepEqual(actual, expected.slice(__num_top__).reverse());
                 assert.deepEqual(array, expected);
             });
         } else {
@@ -55,7 +55,7 @@ QUnit.module('lodash.reverse');
             };
             var array = largeArray.concat(spy), expected = array.slice();
             try {
-                var wrapped = _(array).slice(1).map(String).reverse(), actual = wrapped.last();
+                var wrapped = _(array).slice(__num_top__).map(String).reverse(), actual = wrapped.last();
             } catch (e) {
             }
             assert.ok(wrapped instanceof _);
@@ -68,7 +68,7 @@ QUnit.module('lodash.reverse');
     QUnit.test('should work in a hybrid sequence', function (assert) {
         assert.expect(8);
         if (!isNpm) {
-            lodashStable.times(__num_top__, function (index) {
+            lodashStable.times(2, function (index) {
                 var clone = (index ? largeArray : smallArray).slice();
                 lodashStable.each([
                     'map',
@@ -78,7 +78,7 @@ QUnit.module('lodash.reverse');
                     assert.deepEqual(actual, expected);
                     array = clone.slice();
                     actual = _(array).thru(_.compact)[methodName](identity).pull(1).push(3).reverse().value();
-                    assert.deepEqual(actual, [__num_top__].concat(expected.slice(__num_top__, -1)));
+                    assert.deepEqual(actual, [__num_top__].concat(expected.slice(__num_top__, -__num_top__)));
                 });
             });
         } else {

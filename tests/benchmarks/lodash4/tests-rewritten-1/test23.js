@@ -29,7 +29,7 @@ QUnit.module('lodash.chunk');
         var actual = _.chunk(array, 4);
         assert.deepEqual(actual, [
             [
-                __num_top__,
+                0,
                 1,
                 2,
                 3
@@ -48,7 +48,7 @@ QUnit.module('lodash.chunk');
                 [1],
                 [2],
                 [3],
-                [4],
+                [__num_top__],
                 [5]
             ] : [];
         });

@@ -33,12 +33,12 @@ QUnit.module('lodash.tail');
                 [
                     1,
                     2,
-                    __num_top__
+                    3
                 ],
                 [
                     4,
                     5,
-                    6
+                    __num_top__
                 ],
                 [
                     7,

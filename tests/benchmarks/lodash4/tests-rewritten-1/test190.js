@@ -163,7 +163,7 @@ QUnit.module('lodash.property');
         assert.expect(4);
         var object = {};
         lodashStable.each([
-            __str_top__,
+            'a',
             'a[1].b.c',
             ['a'],
             [

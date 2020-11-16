@@ -25,7 +25,7 @@ QUnit.module('lodash(...).plant');
                 9
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should clone `chainAll` settings', function (assert) {
@@ -51,7 +51,7 @@ QUnit.module('lodash(...).plant');
                     4
                 ], array2 = [
                     6,
-                    8
+                    __num_top__
                 ], wrapped1 = _(array1).map(square);
             assert.deepEqual(lodashStable.toArray(wrapped1), [
                 4,

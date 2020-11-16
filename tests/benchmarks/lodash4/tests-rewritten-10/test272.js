@@ -1,18 +1,18 @@
 QUnit.module('uniqBy methods');
 lodashStable.each([
-    'uniqBy',
+    __str_top__,
     'sortedUniqBy'
 ], function (methodName) {
     var func = _[methodName], isSorted = methodName == 'sortedUniqBy', objects = [
-            { 'a': __num_top__ },
-            { 'a': __num_top__ },
-            { 'a': 1 },
             { 'a': 2 },
+            { 'a': 3 },
+            { 'a': 1 },
+            { 'a': __num_top__ },
             { 'a': 3 },
             { 'a': 1 }
         ];
     if (isSorted) {
-        objects = _.sortBy(objects, __str_top__);
+        objects = _.sortBy(objects, 'a');
     }
     QUnit.test('`_.' + methodName + '` should work with an `iteratee`', function (assert) {
         assert.expect(1);
@@ -20,7 +20,7 @@ lodashStable.each([
             { 'a': 1 },
             { 'a': 2 },
             { 'a': 3 }
-        ] : objects.slice(0, __num_top__);
+        ] : objects.slice(0, 3);
         var actual = func(objects, function (object) {
             return object.a;
         });
@@ -30,7 +30,7 @@ lodashStable.each([
         assert.expect(2);
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, function () {
             return [
-                1,
+                __num_top__,
                 2
             ];
         });
@@ -38,7 +38,7 @@ lodashStable.each([
         assert.strictEqual(actual[0], largeArray[0]);
         assert.deepEqual(actual, [[
                 1,
-                2
+                __num_top__
             ]]);
     });
     QUnit.test('`_.' + methodName + '` should provide correct `iteratee` arguments', function (assert) {
@@ -53,13 +53,13 @@ lodashStable.each([
         assert.expect(2);
         var expected = isSorted ? [
                 { 'a': 1 },
-                { 'a': __num_top__ },
-                { 'a': 3 }
-            ] : objects.slice(0, 3), actual = func(objects, 'a');
+                { 'a': 2 },
+                { 'a': __num_top__ }
+            ] : objects.slice(0, 3), actual = func(objects, __str_top__);
         assert.deepEqual(actual, expected);
         var arrays = [
             [2],
-            [3],
+            [__num_top__],
             [1],
             [2],
             [3],
@@ -71,29 +71,29 @@ lodashStable.each([
         expected = isSorted ? [
             [1],
             [2],
-            [__num_top__]
+            [3]
         ] : arrays.slice(0, 3);
         actual = func(arrays, 0);
         assert.deepEqual(actual, expected);
     });
     lodashStable.each({
         'an array': [
-            0,
-            __str_top__
+            __num_top__,
+            'a'
         ],
-        'an object': { '0': __str_top__ },
+        'an object': { '0': 'a' },
         'a number': 0,
         'a string': '0'
     }, function (iteratee, key) {
-        QUnit.test('`_.' + methodName + __str_top__ + key + __str_top__, function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + ' for `iteratee`', function (assert) {
             assert.expect(1);
             var actual = func([
                 ['a'],
-                ['a'],
+                [__str_top__],
                 ['b']
             ], iteratee);
             assert.deepEqual(actual, [
-                ['a'],
+                [__str_top__],
                 ['b']
             ]);
         });

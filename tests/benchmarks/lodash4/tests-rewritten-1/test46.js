@@ -4,7 +4,7 @@ QUnit.module('lodash.differenceWith');
         assert.expect(1);
         var objects = [
                 {
-                    'x': 1,
+                    'x': __num_top__,
                     'y': 2
                 },
                 {
@@ -23,7 +23,7 @@ QUnit.module('lodash.differenceWith');
                 -0,
                 1
             ], largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubOne), others = [
-                [__num_top__],
+                [1],
                 largeArray
             ], expected = lodashStable.map(others, lodashStable.constant(['-0']));
         var actual = lodashStable.map(others, function (other) {

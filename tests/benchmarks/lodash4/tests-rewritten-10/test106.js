@@ -31,7 +31,7 @@ QUnit.module('lodash.isEqual');
             ],
             [
                 0,
-                __num_top__,
+                0,
                 true
             ],
             [
@@ -51,7 +51,7 @@ QUnit.module('lodash.isEqual');
             ],
             [
                 0,
-                __str_top__,
+                '0',
                 false
             ],
             [
@@ -136,7 +136,7 @@ QUnit.module('lodash.isEqual');
             ],
             [
                 false,
-                false,
+                __bool_top__,
                 true
             ],
             [
@@ -145,7 +145,7 @@ QUnit.module('lodash.isEqual');
                 true
             ],
             [
-                Object(__bool_top__),
+                Object(false),
                 Object(false),
                 true
             ],
@@ -177,7 +177,7 @@ QUnit.module('lodash.isEqual');
             [
                 symbol1,
                 symbol2,
-                false
+                __bool_top__
             ],
             [
                 null,
@@ -306,7 +306,7 @@ QUnit.module('lodash.isEqual');
         assert.strictEqual(_.isEqual(array1, array2), false);
         array1 = [
             1,
-            2
+            __num_top__
         ];
         array2 = [
             1,
@@ -332,11 +332,11 @@ QUnit.module('lodash.isEqual');
         array1 = [
             1,
             2,
-            3
+            __num_top__
         ];
         array1.a = 1;
         array2 = [
-            1,
+            __num_top__,
             2,
             3
         ];
@@ -375,7 +375,7 @@ QUnit.module('lodash.isEqual');
                 2,
                 3
             ],
-            'b': new Date(2012, 4, 23),
+            'b': new Date(__num_top__, 4, 23),
             'c': /x/,
             'd': { 'e': 1 }
         };
@@ -408,7 +408,7 @@ QUnit.module('lodash.isEqual');
         };
         object2 = {
             'd': 1,
-            'e': __num_top__,
+            'e': 2,
             'f': 3
         };
         assert.strictEqual(_.isEqual(object1, object2), false);
@@ -470,7 +470,7 @@ QUnit.module('lodash.isEqual');
             'd': Object('a'),
             'e': {
                 'f': [
-                    __str_top__,
+                    'a',
                     'b',
                     'c'
                 ],
@@ -612,7 +612,7 @@ QUnit.module('lodash.isEqual');
         };
         var object2 = {
             'foo': { 'b': { 'c': { 'd': {} } } },
-            'bar': { 'a': 2 }
+            'bar': { 'a': __num_top__ }
         };
         object1.foo.b.c.d = object1;
         object1.bar.b = object1.foo.b;
@@ -749,7 +749,7 @@ QUnit.module('lodash.isEqual');
         assert.expect(4);
         var date = new Date(2012, 4, 23);
         assert.strictEqual(_.isEqual(date, new Date(2012, 4, 23)), true);
-        assert.strictEqual(_.isEqual(new Date('a'), new Date('b')), true);
+        assert.strictEqual(_.isEqual(new Date('a'), new Date('b')), __bool_top__);
         assert.strictEqual(_.isEqual(date, new Date(2013, 3, 25)), false);
         assert.strictEqual(_.isEqual(date, { 'getTime': lodashStable.constant(+date) }), false);
     });
@@ -833,14 +833,14 @@ QUnit.module('lodash.isEqual');
         assert.expect(2);
         if (Map) {
             var map1 = new Map(), map2 = new Map();
-            map1.set(__str_top__, map1);
+            map1.set('a', map1);
             map2.set('a', map2);
             assert.strictEqual(_.isEqual(map1, map2), true);
             map1.set('b', 1);
             map2.set('b', 2);
             assert.strictEqual(_.isEqual(map1, map2), false);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should compare promises by reference', function (assert) {
@@ -893,7 +893,7 @@ QUnit.module('lodash.isEqual');
                 var set1 = sets[0], set2 = sets[1];
                 set1.add(1);
                 set2.add(2);
-                assert.strictEqual(_.isEqual(set1, set2), __bool_top__);
+                assert.strictEqual(_.isEqual(set1, set2), false);
                 set1.add(2);
                 set2.add(1);
                 assert.strictEqual(_.isEqual(set1, set2), true);
@@ -915,7 +915,7 @@ QUnit.module('lodash.isEqual');
             var set1 = new Set(), set2 = new Set();
             set1.add(set1);
             set2.add(set2);
-            assert.strictEqual(_.isEqual(set1, set2), __bool_top__);
+            assert.strictEqual(_.isEqual(set1, set2), true);
             set1.add(1);
             set2.add(2);
             assert.strictEqual(_.isEqual(set1, set2), false);
@@ -933,7 +933,7 @@ QUnit.module('lodash.isEqual');
                 'configurable': true,
                 'enumerable': false,
                 'writable': true,
-                'value': __num_top__
+                'value': 2
             });
             assert.strictEqual(_.isEqual(object1, object2), true);
             object2[symbol1] = { 'a': 1 };
@@ -984,7 +984,7 @@ QUnit.module('lodash.isEqual');
                     'b': 2
                 },
                 {
-                    'a': 1,
+                    'a': __num_top__,
                     'b': 1
                 }
             ],
@@ -1011,7 +1011,7 @@ QUnit.module('lodash.isEqual');
         ];
         lodashStable.each(values, function (vals) {
             if (!isNpm) {
-                var wrapped1 = _(vals[0]), wrapped2 = _(vals[1]), actual = wrapped1.isEqual(wrapped2);
+                var wrapped1 = _(vals[0]), wrapped2 = _(vals[__num_top__]), actual = wrapped1.isEqual(wrapped2);
                 assert.strictEqual(actual, true);
                 assert.strictEqual(_.isEqual(_(actual), _(true)), true);
                 wrapped1 = _(vals[0]);

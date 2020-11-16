@@ -1,7 +1,7 @@
 QUnit.module('toPairs methods');
 lodashStable.each([
     'toPairs',
-    'toPairsIn'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], isToPairs = methodName == 'toPairs';
     QUnit.test('`_.' + methodName + '` should create an array of string keyed-value pairs', function (assert) {
@@ -16,12 +16,12 @@ lodashStable.each([
                 1
             ],
             [
-                __str_top__,
-                __num_top__
+                'b',
+                2
             ]
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isToPairs ? 'not ' : __str_top__) + 'include inherited string keyed property values', function (assert) {
+    QUnit.test('`_.' + methodName + '` should ' + (isToPairs ? 'not ' : '') + 'include inherited string keyed property values', function (assert) {
         assert.expect(1);
         function Foo() {
             this.a = 1;
@@ -32,12 +32,12 @@ lodashStable.each([
                     1
                 ]] : [
                 [
-                    'a',
+                    __str_top__,
                     1
                 ],
                 [
-                    'b',
-                    2
+                    __str_top__,
+                    __num_top__
                 ]
             ], actual = lodashStable.sortBy(func(new Foo()), 0);
         assert.deepEqual(actual, expected);
@@ -45,14 +45,14 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should convert objects with a `length` property', function (assert) {
         assert.expect(1);
         var object = {
-                '0': 'a',
+                '0': __str_top__,
                 '1': 'b',
                 'length': 2
             }, actual = lodashStable.sortBy(func(object), 0);
         assert.deepEqual(actual, [
             [
                 __str_top__,
-                __str_top__
+                'a'
             ],
             [
                 '1',
@@ -64,20 +64,20 @@ lodashStable.each([
             ]
         ]);
     });
-    QUnit.test(__str_top__ + methodName + '` should convert maps', function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert maps', function (assert) {
         assert.expect(1);
         if (Map) {
             var map = new Map();
-            map.set('a', __num_top__);
+            map.set('a', 1);
             map.set('b', 2);
             assert.deepEqual(func(map), [
                 [
-                    __str_top__,
-                    1
+                    'a',
+                    __num_top__
                 ],
                 [
-                    __str_top__,
-                    2
+                    'b',
+                    __num_top__
                 ]
             ]);
         } else {
@@ -110,7 +110,7 @@ lodashStable.each([
             'xo',
             Object('xo')
         ], function (string) {
-            var actual = lodashStable.sortBy(func(string), 0);
+            var actual = lodashStable.sortBy(func(string), __num_top__);
             assert.deepEqual(actual, [
                 [
                     '0',

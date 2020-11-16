@@ -321,7 +321,7 @@ QUnit.module('lodash.fill');
                 __str_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
 }());

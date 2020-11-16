@@ -9,7 +9,7 @@ QUnit.module('lodash.pickBy');
             'd': 4
         };
         var actual = _.pickBy(object, function (n) {
-            return n == __num_top__ || n == 3;
+            return n == 1 || n == 3;
         });
         assert.deepEqual(actual, {
             'a': 1,
@@ -18,7 +18,7 @@ QUnit.module('lodash.pickBy');
     });
     QUnit.test('should not treat keys with dots as deep paths', function (assert) {
         assert.expect(1);
-        var object = { 'a.b.c': 1 }, actual = _.pickBy(object, stubTrue);
+        var object = { 'a.b.c': __num_top__ }, actual = _.pickBy(object, stubTrue);
         assert.deepEqual(actual, { 'a.b.c': 1 });
     });
 }());

@@ -3,13 +3,13 @@ QUnit.module('lodash.takeRightWhile');
     var array = [
         1,
         2,
-        3,
+        __num_top__,
         4
     ];
     var objects = [
         {
             'a': 0,
-            'b': __num_top__
+            'b': 0
         },
         {
             'a': 1,
@@ -17,7 +17,7 @@ QUnit.module('lodash.takeRightWhile');
         },
         {
             'a': 2,
-            'b': __num_top__
+            'b': 2
         }
     ];
     QUnit.test('should take elements while `predicate` returns truthy', function (assert) {
@@ -37,25 +37,25 @@ QUnit.module('lodash.takeRightWhile');
             args = slice.call(arguments);
         });
         assert.deepEqual(args, [
-            4,
+            __num_top__,
             3,
             array
         ]);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.takeRightWhile(objects, { 'b': 2 }), objects.slice(2));
+        assert.deepEqual(_.takeRightWhile(objects, { 'b': 2 }), objects.slice(__num_top__));
     });
     QUnit.test('should work with `_.matchesProperty` shorthands', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.takeRightWhile(objects, [
-            'b',
-            __num_top__
+            __str_top__,
+            2
         ]), objects.slice(2));
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.takeRightWhile(objects, 'b'), objects.slice(__num_top__));
+        assert.deepEqual(_.takeRightWhile(objects, 'b'), objects.slice(1));
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(3);
@@ -95,7 +95,7 @@ QUnit.module('lodash.takeRightWhile');
                 args = slice.call(arguments);
             }).value();
             assert.deepEqual(args, expected);
-            _(array).slice(1).map(square).takeRightWhile(function (index) {
+            _(array).slice(__num_top__).map(square).takeRightWhile(function (index) {
                 args = slice.call(arguments);
             }).value();
             assert.deepEqual(args, [square(LARGE_ARRAY_SIZE)]);
@@ -104,7 +104,7 @@ QUnit.module('lodash.takeRightWhile');
             }).value();
             assert.deepEqual(args, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
 }());

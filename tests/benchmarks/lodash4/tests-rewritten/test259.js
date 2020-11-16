@@ -48,7 +48,7 @@ QUnit.module('lodash.toPath');
                 assert.ok(lodashStable.isSymbol(actual[__num_top__]));
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should handle complex paths', function (assert) {

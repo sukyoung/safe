@@ -4,7 +4,7 @@ QUnit.module('lodash.findLast');
     lodashStable.each({
         'an `arguments` object': args,
         'an array': [
-            __num_top__,
+            1,
             2,
             3
         ]
@@ -27,7 +27,7 @@ QUnit.module('lodash.findLast');
             var indexes = [
                 4,
                 6,
-                Math.pow(2, 32),
+                Math.pow(__num_top__, 32),
                 Infinity
             ];
             var expected = lodashStable.map(indexes, lodashStable.constant([

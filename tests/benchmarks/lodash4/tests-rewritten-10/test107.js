@@ -31,8 +31,8 @@ QUnit.module('lodash.isEqualWith');
             ],
             [
                 object1.a[0],
-                object2.a[__num_top__],
-                __num_top__,
+                object2.a[0],
+                0,
                 object1.a,
                 object2.a
             ],
@@ -60,8 +60,8 @@ QUnit.module('lodash.isEqualWith');
     QUnit.test('should handle comparisons when `customizer` returns `undefined`', function (assert) {
         assert.expect(3);
         assert.strictEqual(_.isEqualWith('a', 'a', noop), true);
-        assert.strictEqual(_.isEqualWith(['a'], ['a'], noop), true);
-        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': 'a' }, noop), true);
+        assert.strictEqual(_.isEqualWith([__str_top__], ['a'], noop), true);
+        assert.strictEqual(_.isEqualWith({ '0': __str_top__ }, { '0': 'a' }, noop), __bool_top__);
     });
     QUnit.test('should not handle comparisons when `customizer` returns `true`', function (assert) {
         assert.expect(3);
@@ -70,16 +70,16 @@ QUnit.module('lodash.isEqualWith');
         };
         assert.strictEqual(_.isEqualWith('a', 'b', customizer), true);
         assert.strictEqual(_.isEqualWith(['a'], ['b'], customizer), true);
-        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': __str_top__ }, customizer), true);
+        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': 'b' }, customizer), true);
     });
     QUnit.test('should not handle comparisons when `customizer` returns `false`', function (assert) {
         assert.expect(3);
         var customizer = function (value) {
-            return _.isString(value) ? false : undefined;
+            return _.isString(value) ? __bool_top__ : undefined;
         };
         assert.strictEqual(_.isEqualWith('a', 'a', customizer), false);
         assert.strictEqual(_.isEqualWith(['a'], ['a'], customizer), false);
-        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': 'a' }, customizer), false);
+        assert.strictEqual(_.isEqualWith({ '0': 'a' }, { '0': __str_top__ }, customizer), __bool_top__);
     });
     QUnit.test('should return a boolean value even when `customizer` does not', function (assert) {
         assert.expect(2);
@@ -137,7 +137,7 @@ QUnit.module('lodash.isEqualWith');
             ]
         ], function (pair, index) {
             if (pair[0]) {
-                var argsList = [], array = lodashStable.toArray(pair[__num_top__]);
+                var argsList = [], array = lodashStable.toArray(pair[0]);
                 var expected = [
                     [
                         pair[__num_top__],
@@ -145,14 +145,14 @@ QUnit.module('lodash.isEqualWith');
                     ],
                     [
                         array[0],
-                        array[__num_top__],
+                        array[0],
                         0,
                         array,
                         array
                     ],
                     [
-                        array[__num_top__][0],
                         array[0][0],
+                        array[__num_top__][0],
                         0,
                         array[0],
                         array[0]
@@ -169,7 +169,7 @@ QUnit.module('lodash.isEqualWith');
                     expected.length = 2;
                 }
                 _.isEqualWith(pair[__num_top__], pair[1], function () {
-                    var length = arguments.length, args = slice.call(arguments, 0, length - (length > __num_top__ ? 1 : 0));
+                    var length = arguments.length, args = slice.call(arguments, 0, length - (length > 2 ? 1 : 0));
                     argsList.push(args);
                 });
                 assert.deepEqual(argsList, expected, index ? 'Set' : 'Map');

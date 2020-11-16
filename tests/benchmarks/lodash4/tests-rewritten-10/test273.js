@@ -4,7 +4,7 @@ QUnit.module('lodash.uniqWith');
         assert.expect(1);
         var objects = [
                 {
-                    'x': __num_top__,
+                    'x': 1,
                     'y': __num_top__
                 },
                 {
@@ -24,7 +24,7 @@ QUnit.module('lodash.uniqWith');
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
-            return isEven(index) ? -0 : __num_top__;
+            return isEven(index) ? -__num_top__ : 0;
         });
         var arrays = [
                 [
@@ -32,7 +32,7 @@ QUnit.module('lodash.uniqWith');
                     __num_top__
                 ],
                 largeArray
-            ], expected = lodashStable.map(arrays, lodashStable.constant(['-0']));
+            ], expected = lodashStable.map(arrays, lodashStable.constant([__str_top__]));
         var actual = lodashStable.map(arrays, function (array) {
             return lodashStable.map(_.uniqWith(array, lodashStable.eq), lodashStable.toString);
         });

@@ -3,8 +3,8 @@ QUnit.module('lodash.pickBy');
     QUnit.test('should work with a predicate argument', function (assert) {
         assert.expect(1);
         var object = {
-            'a': 1,
-            'b': __num_top__,
+            'a': __num_top__,
+            'b': 2,
             'c': 3,
             'd': 4
         };
@@ -13,12 +13,12 @@ QUnit.module('lodash.pickBy');
         });
         assert.deepEqual(actual, {
             'a': 1,
-            'c': __num_top__
+            'c': 3
         });
     });
     QUnit.test('should not treat keys with dots as deep paths', function (assert) {
         assert.expect(1);
-        var object = { 'a.b.c': 1 }, actual = _.pickBy(object, stubTrue);
+        var object = { 'a.b.c': __num_top__ }, actual = _.pickBy(object, stubTrue);
         assert.deepEqual(actual, { 'a.b.c': __num_top__ });
     });
 }());

@@ -2,7 +2,7 @@ QUnit.module('lodash.create');
 (function () {
     function Shape() {
         this.x = __num_top__;
-        this.y = __num_top__;
+        this.y = 0;
     }
     function Circle() {
         Shape.call(this);
@@ -20,7 +20,7 @@ QUnit.module('lodash.create');
         assert.expect(3);
         var expected = {
             'constructor': Circle,
-            'radius': 0
+            'radius': __num_top__
         };
         Circle.prototype = _.create(Shape.prototype, expected);
         var actual = new Circle();
@@ -36,14 +36,14 @@ QUnit.module('lodash.create');
         }
         Foo.prototype.b = __num_top__;
         assert.deepEqual(_.create({}, new Foo()), {
-            'a': __num_top__,
+            'a': 1,
             'c': __num_top__
         });
     });
     QUnit.test('should assign properties that shadow those of `prototype`', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
         var object = _.create(new Foo(), { 'a': __num_top__ });
         assert.deepEqual(lodashStable.keys(object), ['a']);
@@ -67,12 +67,12 @@ QUnit.module('lodash.create');
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
         var array = [
-                { 'a': __num_top__ },
                 { 'a': 1 },
-                { 'a': 1 }
+                { 'a': __num_top__ },
+                { 'a': __num_top__ }
             ], expected = lodashStable.map(array, stubTrue), objects = lodashStable.map(array, _.create);
         var actual = lodashStable.map(objects, function (object) {
-            return object.a === 1 && !_.keys(object).length;
+            return object.a === __num_top__ && !_.keys(object).length;
         });
         assert.deepEqual(actual, expected);
     });

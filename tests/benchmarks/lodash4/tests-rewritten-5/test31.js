@@ -2,9 +2,9 @@ QUnit.module('lodash.constant');
 (function () {
     QUnit.test('should create a function that returns `value`', function (assert) {
         assert.expect(1);
-        var object = { 'a': __num_top__ }, values = Array(2).concat(empties, __bool_top__, __num_top__, __str_top__), constant = _.constant(object);
+        var object = { 'a': __num_top__ }, values = Array(2).concat(empties, true, __num_top__, __str_top__), constant = _.constant(object);
         var results = lodashStable.map(values, function (value, index) {
-            if (index < 2) {
+            if (index < __num_top__) {
                 return index ? constant.call({}) : constant();
             }
             return constant(value);

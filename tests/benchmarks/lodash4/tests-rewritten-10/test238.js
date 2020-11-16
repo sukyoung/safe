@@ -1,9 +1,9 @@
 QUnit.module('lodash.tail');
 (function () {
     var array = [
+        1,
         __num_top__,
-        __num_top__,
-        __num_top__
+        3
     ];
     QUnit.test('should accept a falsey `array`', function (assert) {
         assert.expect(1);
@@ -19,7 +19,7 @@ QUnit.module('lodash.tail');
     QUnit.test('should exclude the first element', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.tail(array), [
-            2,
+            __num_top__,
             3
         ]);
     });
@@ -31,13 +31,13 @@ QUnit.module('lodash.tail');
         assert.expect(1);
         var array = [
                 [
-                    1,
                     __num_top__,
+                    2,
                     3
                 ],
                 [
-                    4,
-                    5,
+                    __num_top__,
+                    __num_top__,
                     6
                 ],
                 [
@@ -52,7 +52,7 @@ QUnit.module('lodash.tail');
                 3
             ],
             [
-                __num_top__,
+                5,
                 6
             ],
             [
@@ -67,7 +67,7 @@ QUnit.module('lodash.tail');
             var array = lodashStable.range(LARGE_ARRAY_SIZE), values = [];
             var actual = _(array).tail().filter(function (value) {
                 values.push(value);
-                return __bool_top__;
+                return false;
             }).value();
             assert.deepEqual(actual, []);
             assert.deepEqual(values, array.slice(1));
@@ -87,15 +87,15 @@ QUnit.module('lodash.tail');
         if (!isNpm) {
             var array = lodashStable.range(LARGE_ARRAY_SIZE), iteratee = function () {
                     pass = false;
-                }, pass = true, actual = _(array).slice(0, __num_top__).tail().map(iteratee).value();
+                }, pass = __bool_top__, actual = _(array).slice(0, 1).tail().map(iteratee).value();
             assert.ok(pass);
             assert.deepEqual(actual, []);
             pass = true;
-            actual = _(array).filter().slice(0, 1).tail().map(iteratee).value();
+            actual = _(array).filter().slice(__num_top__, __num_top__).tail().map(iteratee).value();
             assert.ok(pass);
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
 }());

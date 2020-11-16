@@ -79,7 +79,7 @@ QUnit.module('lodash.remove');
             }
         ];
         _.remove(objects, [
-            'a',
+            __str_top__,
             1
         ]);
         assert.deepEqual(objects, [{
@@ -117,7 +117,7 @@ QUnit.module('lodash.remove');
         var array = [
             1,
             2,
-            __num_top__
+            3
         ];
         delete array[1];
         _.remove(array, function (n) {

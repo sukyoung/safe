@@ -10,18 +10,18 @@ QUnit.module('lodash(...).plant');
                     null,
                     1
                 ], array2 = [
-                    __num_top__,
+                    10,
                     null,
                     8,
                     null,
-                    6
+                    __num_top__
                 ], wrapped1 = _(array1).thru(_.compact).map(square).takeRight(2).sort(), wrapped2 = wrapped1.plant(array2);
             assert.deepEqual(wrapped2.value(), [
                 36,
-                __num_top__
+                64
             ]);
             assert.deepEqual(wrapped1.value(), [
-                __num_top__,
+                1,
                 9
             ]);
         } else {
@@ -32,8 +32,8 @@ QUnit.module('lodash(...).plant');
         assert.expect(1);
         if (!isNpm) {
             var array1 = [
-                    2,
-                    4
+                    __num_top__,
+                    __num_top__
                 ], array2 = [
                     __num_top__,
                     8

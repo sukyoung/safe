@@ -4,7 +4,7 @@ QUnit.module('lodash.mapValues');
             1,
             2
         ], object = {
-            'a': 1,
+            'a': __num_top__,
             'b': 2
         };
     QUnit.test('should map values in `object` to a new object', function (assert) {
@@ -12,7 +12,7 @@ QUnit.module('lodash.mapValues');
         var actual = _.mapValues(object, String);
         assert.deepEqual(actual, {
             'a': '1',
-            'b': __str_top__
+            'b': '2'
         });
     });
     QUnit.test('should treat arrays like objects', function (assert) {

@@ -48,11 +48,11 @@ QUnit.module('lodash.take');
         var array = [
                 [
                     1,
-                    2,
+                    __num_top__,
                     3
                 ],
                 [
-                    4,
+                    __num_top__,
                     5,
                     6
                 ],
@@ -65,7 +65,7 @@ QUnit.module('lodash.take');
         assert.deepEqual(actual, [
             [1],
             [4],
-            [__num_top__]
+            [7]
         ]);
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -74,7 +74,7 @@ QUnit.module('lodash.take');
             var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), predicate = function (value) {
                     values.push(value);
                     return isEven(value);
-                }, values = [], actual = _(array).take(__num_top__).take().value();
+                }, values = [], actual = _(array).take(2).take().value();
             assert.deepEqual(actual, _.take(_.take(array, 2)));
             actual = _(array).filter(predicate).take(2).take().value();
             assert.deepEqual(values, [
@@ -82,15 +82,15 @@ QUnit.module('lodash.take');
                 __num_top__
             ]);
             assert.deepEqual(actual, _.take(_.take(_.filter(array, predicate), 2)));
-            actual = _(array).take(6).takeRight(__num_top__).take(2).takeRight().value();
+            actual = _(array).take(6).takeRight(4).take(2).takeRight().value();
             assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(array, 6), 4), 2)));
             values = [];
-            actual = _(array).take(array.length - 1).filter(predicate).take(6).takeRight(4).take(2).takeRight().value();
+            actual = _(array).take(array.length - 1).filter(predicate).take(6).takeRight(__num_top__).take(2).takeRight().value();
             assert.deepEqual(values, [
                 1,
                 2,
                 3,
-                4,
+                __num_top__,
                 5,
                 6,
                 7,
@@ -100,7 +100,7 @@ QUnit.module('lodash.take');
                 11,
                 12
             ]);
-            assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(_.filter(_.take(array, array.length - 1), predicate), 6), 4), __num_top__)));
+            assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(_.filter(_.take(array, array.length - 1), predicate), 6), 4), 2)));
         } else {
             skipAssert(assert, 6);
         }

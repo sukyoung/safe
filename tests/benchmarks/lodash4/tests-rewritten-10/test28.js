@@ -4,7 +4,7 @@ QUnit.module('lodash.cond');
         assert.expect(3);
         var cond = _.cond([
             [
-                lodashStable.matches({ 'a': 1 }),
+                lodashStable.matches({ 'a': __num_top__ }),
                 stubA
             ],
             [
@@ -18,14 +18,14 @@ QUnit.module('lodash.cond');
         ]);
         assert.strictEqual(cond({
             'a': __num_top__,
-            'b': 2,
+            'b': __num_top__,
             'c': 3
         }), 'a');
         assert.strictEqual(cond({
             'a': 0,
             'b': 1,
-            'c': __num_top__
-        }), __str_top__);
+            'c': 2
+        }), 'b');
         assert.strictEqual(cond({
             'a': -1,
             'b': 0,
@@ -35,20 +35,20 @@ QUnit.module('lodash.cond');
     QUnit.test('should provide arguments to functions', function (assert) {
         assert.expect(2);
         var args1, args2, expected = [
-                __str_top__,
+                'a',
                 'b',
-                __str_top__
+                'c'
             ];
         var cond = _.cond([[
                 function () {
                     args1 || (args1 = slice.call(arguments));
-                    return true;
+                    return __bool_top__;
                 },
                 function () {
                     args2 || (args2 = slice.call(arguments));
                 }
             ]]);
-        cond(__str_top__, 'b', 'c');
+        cond('a', __str_top__, 'c');
         assert.deepEqual(args1, expected);
         assert.deepEqual(args2, expected);
     });
@@ -67,25 +67,25 @@ QUnit.module('lodash.cond');
                 stubB
             ],
             [
-                __str_top__,
+                'c',
                 stubC
             ]
         ]);
         assert.strictEqual(cond({
             'a': 1,
             'b': 2,
-            'c': 3
-        }), __str_top__);
+            'c': __num_top__
+        }), 'a');
         assert.strictEqual(cond({
             'a': 0,
             'b': 1,
             'c': 2
-        }), 'b');
+        }), __str_top__);
         assert.strictEqual(cond({
             'a': -1,
             'b': 0,
             'c': 1
-        }), 'c');
+        }), __str_top__);
     });
     QUnit.test('should return `undefined` when no condition is met', function (assert) {
         assert.expect(1);
@@ -93,13 +93,13 @@ QUnit.module('lodash.cond');
                 stubFalse,
                 stubA
             ]]);
-        assert.strictEqual(cond({ 'a': 1 }), undefined);
+        assert.strictEqual(cond({ 'a': __num_top__ }), undefined);
     });
     QUnit.test('should throw a TypeError if `pairs` is not composed of functions', function (assert) {
         assert.expect(2);
         lodashStable.each([
-            false,
-            __bool_top__
+            __bool_top__,
+            true
         ], function (value) {
             assert.raises(function () {
                 _.cond([[
@@ -121,7 +121,7 @@ QUnit.module('lodash.cond');
             ]]);
         var object = {
             'cond': cond,
-            'a': __num_top__,
+            'a': 1,
             'b': 2
         };
         assert.strictEqual(object.cond('a', 'b'), 2);

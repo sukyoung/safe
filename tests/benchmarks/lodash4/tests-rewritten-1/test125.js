@@ -18,10 +18,10 @@ QUnit.module('lodash.isString');
         assert.strictEqual(_.isString([
             1,
             2,
-            3
+            __num_top__
         ]), false);
         assert.strictEqual(_.isString(true), false);
-        assert.strictEqual(_.isString(new Date()), __bool_top__);
+        assert.strictEqual(_.isString(new Date()), false);
         assert.strictEqual(_.isString(new Error()), false);
         assert.strictEqual(_.isString(_), false);
         assert.strictEqual(_.isString(slice), false);

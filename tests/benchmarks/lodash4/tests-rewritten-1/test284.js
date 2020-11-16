@@ -30,14 +30,14 @@ QUnit.module('lodash.wrap');
             ], expected = lodashStable.map(values, stubA);
         var actual = lodashStable.map(values, function (value, index) {
             var wrapped = index ? _.wrap('a', value) : _.wrap('a');
-            return wrapped('b', 'c');
+            return wrapped('b', __str_top__);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should use `this` binding of function', function (assert) {
         assert.expect(1);
         var p = _.wrap(lodashStable.escape, function (func) {
-            return __str_top__ + func(this.text) + '</p>';
+            return '<p>' + func(this.text) + '</p>';
         });
         var object = {
             'p': p,

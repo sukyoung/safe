@@ -9,7 +9,7 @@ QUnit.module('isType checks');
             'isFunction',
             'isNumber',
             'isRegExp',
-            __str_top__
+            'isString'
         ];
         lodashStable.each(funcs, function (methodName) {
             function Foo() {
@@ -33,30 +33,30 @@ QUnit.module('isType checks');
             'isBoolean',
             'isBuffer',
             'isDate',
-            __str_top__,
+            'isElement',
             'isError',
             'isFinite',
-            'isFunction',
-            'isInteger',
-            'isMap',
             __str_top__,
+            __str_top__,
+            'isMap',
+            'isNaN',
             'isNil',
-            'isNull',
+            __str_top__,
             'isNumber',
             'isObject',
             'isObjectLike',
-            __str_top__,
+            'isRegExp',
             'isSet',
             'isSafeInteger',
             'isString',
             'isUndefined',
-            __str_top__,
+            'isWeakMap',
             'isWeakSet'
         ];
         lodashStable.each(funcs, function (methodName) {
             if (xml) {
                 _[methodName](xml);
-                assert.ok(true, '`_.' + methodName + '` should not error');
+                assert.ok(__bool_top__, __str_top__ + methodName + '` should not error');
             } else {
                 skipAssert(assert);
             }

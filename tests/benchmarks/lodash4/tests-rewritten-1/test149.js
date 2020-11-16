@@ -61,7 +61,7 @@ lodashStable.each([
                 { 'a': 1 },
                 {
                     'a': 1,
-                    'b': 2
+                    'b': __num_top__
                 }
             ], source = new Foo(), actual = lodashStable.map(objects, matches(source)), expected = lodashStable.map(objects, stubTrue);
         assert.deepEqual(actual, expected);
@@ -193,7 +193,7 @@ lodashStable.each([
                     2
                 ]
             }));
-        assert.deepEqual(actual, [objects[__num_top__]]);
+        assert.deepEqual(actual, [objects[1]]);
     });
     QUnit.test('should partial match arrays of objects', function (assert) {
         assert.expect(1);

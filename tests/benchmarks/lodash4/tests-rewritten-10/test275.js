@@ -45,7 +45,7 @@ QUnit.module('lodash.unset');
             assert.strictEqual(_.unset(object, symbol), true);
             assert.notOk(symbol in object);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should unset deep property values', function (assert) {
@@ -53,7 +53,7 @@ QUnit.module('lodash.unset');
         lodashStable.each([
             'a.b',
             [
-                'a',
+                __str_top__,
                 'b'
             ]
         ], function (path) {
@@ -65,22 +65,22 @@ QUnit.module('lodash.unset');
     QUnit.test('should handle complex paths', function (assert) {
         assert.expect(4);
         var paths = [
-            'a[-1.23]["[\\"b\\"]"].c[\'[\\\'d\\\']\'][\ne\n][f].g',
+            __str_top__,
             [
                 'a',
                 '-1.23',
-                __str_top__,
+                '["b"]',
                 'c',
                 '[\'d\']',
                 '\ne\n',
-                __str_top__,
-                'g'
+                'f',
+                __str_top__
             ]
         ];
         lodashStable.each(paths, function (path) {
-            var object = { 'a': { '-1.23': { '["b"]': { 'c': { '[\'d\']': { '\ne\n': { 'f': { 'g': 8 } } } } } } } };
+            var object = { 'a': { '-1.23': { '["b"]': { 'c': { '[\'d\']': { '\ne\n': { 'f': { 'g': __num_top__ } } } } } } } };
             assert.strictEqual(_.unset(object, path), true);
-            assert.notOk(__str_top__ in object.a[-1.23][__str_top__].c['[\'d\']']['\ne\n'].f);
+            assert.notOk('g' in object.a[-1.23]['["b"]'].c['[\'d\']']['\ne\n'].f);
         });
     });
     QUnit.test('should return `true` for nonexistent paths', function (assert) {
@@ -104,7 +104,7 @@ QUnit.module('lodash.unset');
             ], expected = [
                 [
                     true,
-                    __bool_top__
+                    true
                 ],
                 [
                     true,
@@ -114,9 +114,9 @@ QUnit.module('lodash.unset');
         var actual = lodashStable.map(values, function (value) {
             try {
                 return [
-                    _.unset(value, __str_top__),
+                    _.unset(value, 'a.b'),
                     _.unset(value, [
-                        'a',
+                        __str_top__,
                         'b'
                     ])
                 ];
@@ -128,7 +128,7 @@ QUnit.module('lodash.unset');
     });
     QUnit.test('should follow `path` over non-plain objects', function (assert) {
         assert.expect(8);
-        var object = { 'a': __str_top__ }, paths = [
+        var object = { 'a': '' }, paths = [
                 __str_top__,
                 [
                     'constructor',
@@ -139,8 +139,8 @@ QUnit.module('lodash.unset');
         lodashStable.each(paths, function (path) {
             numberProto.a = 1;
             var actual = _.unset(0, path);
-            assert.strictEqual(actual, true);
-            assert.notOk('a' in numberProto);
+            assert.strictEqual(actual, __bool_top__);
+            assert.notOk(__str_top__ in numberProto);
             delete numberProto.a;
         });
         lodashStable.each([
@@ -148,13 +148,13 @@ QUnit.module('lodash.unset');
             [
                 'a',
                 'replace',
-                'b'
+                __str_top__
             ]
         ], function (path) {
             stringProto.replace.b = 1;
             var actual = _.unset(object, path);
             assert.strictEqual(actual, true);
-            assert.notOk('a' in stringProto.replace);
+            assert.notOk(__str_top__ in stringProto.replace);
             delete stringProto.replace.b;
         });
     });
@@ -164,7 +164,7 @@ QUnit.module('lodash.unset');
         if (!isStrict) {
             defineProperty(object, 'a', {
                 'configurable': false,
-                'enumerable': __bool_top__,
+                'enumerable': true,
                 'writable': true,
                 'value': 1
             });

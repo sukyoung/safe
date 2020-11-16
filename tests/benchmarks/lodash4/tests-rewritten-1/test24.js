@@ -13,7 +13,7 @@ QUnit.module('lodash.clamp');
     });
     QUnit.test('should clamp positive numbers', function (assert) {
         assert.expect(3);
-        assert.strictEqual(_.clamp(10, -5, 5), __num_top__);
+        assert.strictEqual(_.clamp(10, -5, 5), 5);
         assert.strictEqual(_.clamp(10.6, -5.6, 5.4), 5.4);
         assert.strictEqual(_.clamp(Infinity, -5, 5), 5);
     });
@@ -27,7 +27,7 @@ QUnit.module('lodash.clamp');
         assert.expect(3);
         assert.strictEqual(_.clamp(4, -5, 5), 4);
         assert.strictEqual(_.clamp(5, -5, 5), 5);
-        assert.strictEqual(_.clamp(4.5, -5.1, 5.2), 4.5);
+        assert.strictEqual(_.clamp(4.5, -5.1, 5.2), __num_top__);
     });
     QUnit.test('should not alter `0` in range', function (assert) {
         assert.expect(1);

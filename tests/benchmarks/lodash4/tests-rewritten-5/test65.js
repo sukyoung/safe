@@ -6,10 +6,10 @@ QUnit.module('lodash.flip');
     QUnit.test('should flip arguments provided to `func`', function (assert) {
         assert.expect(1);
         var flipped = _.flip(fn);
-        assert.deepEqual(flipped('a', 'b', __str_top__, __str_top__), [
+        assert.deepEqual(flipped(__str_top__, 'b', __str_top__, 'd'), [
             __str_top__,
-            'c',
             __str_top__,
+            'b',
             __str_top__
         ]);
     });

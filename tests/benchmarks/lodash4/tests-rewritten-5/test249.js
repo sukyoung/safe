@@ -15,7 +15,7 @@ QUnit.module('lodash.toArray');
         if (Symbol && Symbol.iterator) {
             var object = {
                 '0': 'a',
-                'length': __num_top__
+                'length': 1
             };
             object[Symbol.iterator] = arrayProto[Symbol.iterator];
             assert.deepEqual(_.toArray(object), ['a']);
@@ -28,11 +28,11 @@ QUnit.module('lodash.toArray');
         if (Map) {
             var map = new Map();
             map.set('a', 1);
-            map.set(__str_top__, __num_top__);
+            map.set('b', __num_top__);
             assert.deepEqual(_.toArray(map), [
                 [
-                    'a',
-                    1
+                    __str_top__,
+                    __num_top__
                 ],
                 [
                     'b',
@@ -51,8 +51,8 @@ QUnit.module('lodash.toArray');
             'b'
         ]);
         assert.deepEqual(_.toArray(Object(__str_top__)), [
-            'a',
-            __str_top__
+            __str_top__,
+            'b'
         ]);
     });
     QUnit.test('should work in a lazy sequence', function (assert) {

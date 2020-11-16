@@ -3,7 +3,7 @@ QUnit.module('lodash.startsWith');
     var string = 'abc';
     QUnit.test('should return `true` if a string starts with `target`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.startsWith(string, 'a'), true);
+        assert.strictEqual(_.startsWith(string, __str_top__), true);
     });
     QUnit.test('should return `false` if a string does not start with `target`', function (assert) {
         assert.expect(1);
@@ -45,6 +45,6 @@ QUnit.module('lodash.startsWith');
     });
     QUnit.test('should coerce `position` to an integer', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.startsWith(string, __str_top__, 1.2), true);
+        assert.strictEqual(_.startsWith(string, 'bc', 1.2), true);
     });
 }());

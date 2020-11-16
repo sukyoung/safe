@@ -1,46 +1,46 @@
 QUnit.module('values methods');
 lodashStable.each([
-    __str_top__,
-    __str_top__
+    'values',
+    'valuesIn'
 ], function (methodName) {
     var func = _[methodName], isValues = methodName == __str_top__;
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should get string keyed values of `object`', function (assert) {
         assert.expect(1);
         var object = {
                 'a': 1,
-                'b': __num_top__
+                'b': 2
             }, actual = func(object).sort();
         assert.deepEqual(actual, [
-            1,
+            __num_top__,
             2
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should work with an object that has a `length` property', function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var object = {
-                '0': 'a',
+                '0': __str_top__,
                 '1': 'b',
                 'length': __num_top__
             }, actual = func(object).sort();
         assert.deepEqual(actual, [
-            __num_top__,
-            'a',
+            2,
+            __str_top__,
             'b'
         ]);
     });
     QUnit.test('`_.' + methodName + '` should ' + (isValues ? 'not ' : '') + 'include inherited string keyed property values', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
-        Foo.prototype.b = __num_top__;
+        Foo.prototype.b = 2;
         var expected = isValues ? [1] : [
                 1,
-                2
+                __num_top__
             ], actual = func(new Foo()).sort();
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should work with `arguments` objects', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with `arguments` objects', function (assert) {
         assert.expect(1);
         var values = [
                 args,

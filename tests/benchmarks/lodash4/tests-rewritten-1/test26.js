@@ -5,7 +5,7 @@ QUnit.module('lodash.compact');
         assert.expect(1);
         var array = [
             '0',
-            '1',
+            __str_top__,
             '2'
         ];
         assert.deepEqual(_.compact(falsey.concat(array)), array);
@@ -17,7 +17,7 @@ QUnit.module('lodash.compact');
             assert.deepEqual(actual, []);
             actual = _(falsey).thru(_.slice).push(true, 1).compact().push('a').value();
             assert.deepEqual(actual, [
-                __bool_top__,
+                true,
                 1,
                 'a'
             ]);

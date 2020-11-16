@@ -5,7 +5,7 @@ QUnit.module('lodash.wrap');
         var p = _.wrap(lodashStable.escape, function (func, text) {
             return '<p>' + func(text) + '</p>';
         });
-        assert.strictEqual(p('fred, barney, & pebbles'), '<p>fred, barney, &amp; pebbles</p>');
+        assert.strictEqual(p(__str_top__), '<p>fred, barney, &amp; pebbles</p>');
     });
     QUnit.test('should provide correct `wrapper` arguments', function (assert) {
         assert.expect(1);
@@ -29,8 +29,8 @@ QUnit.module('lodash.wrap');
                 undefined
             ], expected = lodashStable.map(values, stubA);
         var actual = lodashStable.map(values, function (value, index) {
-            var wrapped = index ? _.wrap(__str_top__, value) : _.wrap('a');
-            return wrapped(__str_top__, __str_top__);
+            var wrapped = index ? _.wrap('a', value) : _.wrap(__str_top__);
+            return wrapped('b', 'c');
         });
         assert.deepEqual(actual, expected);
     });
@@ -41,8 +41,8 @@ QUnit.module('lodash.wrap');
         });
         var object = {
             'p': p,
-            'text': __str_top__
+            'text': 'fred, barney, & pebbles'
         };
-        assert.strictEqual(object.p(), '<p>fred, barney, &amp; pebbles</p>');
+        assert.strictEqual(object.p(), __str_top__);
     });
 }());

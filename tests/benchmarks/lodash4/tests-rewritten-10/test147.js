@@ -10,15 +10,15 @@ lodashStable.each([
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __str_top__;
+            this.a = 'a';
         }
         Foo.prototype.b = __str_top__;
         var actual = func(new Foo(), function (value, key) {
             return key;
         });
-        assert.deepEqual(actual, { 'a': __str_top__ });
+        assert.deepEqual(actual, { 'a': 'a' });
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(falsey, stubObject);
         var actual = lodashStable.map(falsey, function (object, index) {
@@ -29,7 +29,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         if (!isNpm) {
             assert.ok(_(object)[methodName](noop) instanceof _);

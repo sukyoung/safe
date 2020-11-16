@@ -18,14 +18,14 @@ QUnit.module('lodash.toPlainObject');
         var actual = _.toPlainObject(args), expected = {
                 '0': 1,
                 '1': 2,
-                '2': __num_top__
+                '2': 3
             };
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should convert arrays to plain objects', function (assert) {
         assert.expect(1);
         var actual = _.toPlainObject([
-                'a',
+                __str_top__,
                 'b',
                 'c'
             ]), expected = {

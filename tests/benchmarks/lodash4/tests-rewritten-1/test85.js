@@ -8,7 +8,7 @@ QUnit.module('lodash.head');
     ];
     QUnit.test('should return the first element', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.head(array), __num_top__);
+        assert.strictEqual(_.head(array), 1);
     });
     QUnit.test('should return `undefined` when querying empty arrays', function (assert) {
         assert.expect(1);
@@ -32,7 +32,7 @@ QUnit.module('lodash.head');
                 [
                     7,
                     8,
-                    9
+                    __num_top__
                 ]
             ], actual = lodashStable.map(array, _.head);
         assert.deepEqual(actual, [

@@ -7,14 +7,14 @@ QUnit.module('lodash.isPlainObject');
             this.a = 1;
         }
         assert.strictEqual(_.isPlainObject({}), true);
-        assert.strictEqual(_.isPlainObject({ 'a': 1 }), __bool_top__);
-        assert.strictEqual(_.isPlainObject({ 'constructor': Foo }), true);
+        assert.strictEqual(_.isPlainObject({ 'a': 1 }), true);
+        assert.strictEqual(_.isPlainObject({ 'constructor': Foo }), __bool_top__);
         assert.strictEqual(_.isPlainObject([
             1,
-            2,
-            3
+            __num_top__,
+            __num_top__
         ]), false);
-        assert.strictEqual(_.isPlainObject(new Foo(1)), false);
+        assert.strictEqual(_.isPlainObject(new Foo(__num_top__)), false);
     });
     QUnit.test('should return `true` for objects with a `[[Prototype]]` of `null`', function (assert) {
         assert.expect(2);
@@ -53,8 +53,8 @@ QUnit.module('lodash.isPlainObject');
     QUnit.test('should return `false` for non-Object objects', function (assert) {
         assert.expect(3);
         assert.strictEqual(_.isPlainObject(arguments), false);
-        assert.strictEqual(_.isPlainObject(Error), __bool_top__);
-        assert.strictEqual(_.isPlainObject(Math), false);
+        assert.strictEqual(_.isPlainObject(Error), false);
+        assert.strictEqual(_.isPlainObject(Math), __bool_top__);
     });
     QUnit.test('should return `false` for non-objects', function (assert) {
         assert.expect(4);
@@ -65,16 +65,16 @@ QUnit.module('lodash.isPlainObject');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isPlainObject(true), false);
         assert.strictEqual(_.isPlainObject('a'), false);
-        assert.strictEqual(_.isPlainObject(symbol), __bool_top__);
+        assert.strictEqual(_.isPlainObject(symbol), false);
     });
     QUnit.test('should return `false` for objects with a read-only `Symbol.toStringTag` property', function (assert) {
         assert.expect(1);
         if (Symbol && Symbol.toStringTag) {
             var object = {};
             defineProperty(object, Symbol.toStringTag, {
-                'configurable': __bool_top__,
+                'configurable': true,
                 'enumerable': false,
-                'writable': __bool_top__,
+                'writable': false,
                 'value': 'X'
             });
             assert.deepEqual(_.isPlainObject(object), false);

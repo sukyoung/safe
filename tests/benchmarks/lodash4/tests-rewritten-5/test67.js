@@ -1,11 +1,11 @@
 QUnit.module('flatMap methods');
 lodashStable.each([
-    'flatMap',
+    __str_top__,
     'flatMapDeep',
-    'flatMapDepth'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], array = [
-            __num_top__,
+            1,
             2,
             3,
             4
@@ -16,7 +16,7 @@ lodashStable.each([
             n
         ];
     }
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should map values in `array` to a new flattened array', function (assert) {
         assert.expect(1);
         var actual = func(array, duplicate), expected = lodashStable.flatten(lodashStable.map(array, duplicate));
         assert.deepEqual(actual, expected);
@@ -26,7 +26,7 @@ lodashStable.each([
         var objects = [
             {
                 'a': [
-                    __num_top__,
+                    1,
                     2
                 ]
             },
@@ -44,7 +44,7 @@ lodashStable.each([
         function Foo() {
             this.a = [
                 1,
-                __num_top__
+                2
             ];
         }
         Foo.prototype.b = [
@@ -66,7 +66,7 @@ lodashStable.each([
                 ],
                 [
                     3,
-                    __num_top__
+                    4
                 ]
             ], object = {
                 'a': [
@@ -75,7 +75,7 @@ lodashStable.each([
                 ],
                 'b': [
                     3,
-                    4
+                    __num_top__
                 ]
             }, values = [
                 ,
@@ -116,13 +116,13 @@ lodashStable.each([
         assert.expect(1);
         var object = {
             'length': [
-                1,
+                __num_top__,
                 2
             ]
         };
         assert.deepEqual(func(object, identity), [
             1,
-            2
+            __num_top__
         ]);
     });
 });

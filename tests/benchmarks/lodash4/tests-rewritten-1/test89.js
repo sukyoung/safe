@@ -8,7 +8,7 @@ QUnit.module('lodash.inRange');
     });
     QUnit.test('should work with a `start` and `end`', function (assert) {
         assert.expect(4);
-        assert.strictEqual(_.inRange(1, 1, 5), true);
+        assert.strictEqual(_.inRange(1, __num_top__, 5), true);
         assert.strictEqual(_.inRange(3, 1, 5), true);
         assert.strictEqual(_.inRange(0, 1, 5), false);
         assert.strictEqual(_.inRange(5, 1, 5), false);
@@ -34,7 +34,7 @@ QUnit.module('lodash.inRange');
         assert.strictEqual(_.inRange(0.5, 5), true);
         assert.strictEqual(_.inRange(1.2, 1, 5), true);
         assert.strictEqual(_.inRange(5.2, 5), false);
-        assert.strictEqual(_.inRange(0.5, __num_top__, 5), false);
+        assert.strictEqual(_.inRange(0.5, 1, 5), false);
     });
     QUnit.test('should coerce arguments to finite numbers', function (assert) {
         assert.expect(1);

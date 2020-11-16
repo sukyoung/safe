@@ -1,8 +1,8 @@
 QUnit.module('lodash.meanBy');
 (function () {
     var objects = [
-        { 'a': 2 },
-        { 'a': 3 },
+        { 'a': __num_top__ },
+        { 'a': __num_top__ },
         { 'a': __num_top__ }
     ];
     QUnit.test('should work with an `iteratee`', function (assert) {
@@ -18,14 +18,14 @@ QUnit.module('lodash.meanBy');
         _.meanBy(objects, function () {
             args || (args = slice.call(arguments));
         });
-        assert.deepEqual(args, [{ 'a': __num_top__ }]);
+        assert.deepEqual(args, [{ 'a': 2 }]);
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(2);
         var arrays = [
             [__num_top__],
             [__num_top__],
-            [__num_top__]
+            [1]
         ];
         assert.strictEqual(_.meanBy(arrays, __num_top__), __num_top__);
         assert.strictEqual(_.meanBy(objects, __str_top__), __num_top__);

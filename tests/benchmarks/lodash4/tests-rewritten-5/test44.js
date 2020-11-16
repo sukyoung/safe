@@ -5,7 +5,7 @@ lodashStable.each([
     'differenceWith'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + '` should return the difference of two arrays', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var actual = func([
             2,
@@ -24,7 +24,7 @@ lodashStable.each([
             2,
             3
         ], [
-            __num_top__,
+            3,
             4
         ], [
             3,
@@ -46,7 +46,7 @@ lodashStable.each([
             []
         ]);
         actual = lodashStable.map(func([
-            -__num_top__,
+            -0,
             1
         ], [1]), lodashStable.toString);
         assert.deepEqual(actual, ['0']);
@@ -66,7 +66,7 @@ lodashStable.each([
             3
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with large arrays', function (assert) {
         assert.expect(1);
         var array1 = lodashStable.range(LARGE_ARRAY_SIZE + 1), array2 = lodashStable.range(LARGE_ARRAY_SIZE), a = {}, b = {}, c = {};
         array1.push(a, b, c);
@@ -90,7 +90,7 @@ lodashStable.each([
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubOne);
         actual = lodashStable.map(func([
             -0,
-            1
+            __num_top__
         ], largeArray), lodashStable.toString);
         assert.deepEqual(actual, ['0']);
     });
@@ -102,7 +102,7 @@ lodashStable.each([
             NaN,
             3
         ], largeArray), [
-            __num_top__,
+            1,
             3
         ]);
     });
@@ -119,12 +119,12 @@ lodashStable.each([
         var array = [
             1,
             null,
-            __num_top__
+            3
         ];
         assert.deepEqual(func(args, 3, { '0': 1 }), [
             1,
             2,
-            3
+            __num_top__
         ]);
         assert.deepEqual(func(null, array, 1), []);
         assert.deepEqual(func(array, args, null), [null]);

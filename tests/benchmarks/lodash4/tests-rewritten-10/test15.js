@@ -33,7 +33,7 @@ QUnit.module('lodash.bind');
     });
     QUnit.test('should bind a function to nullish values', function (assert) {
         assert.expect(6);
-        var bound = _.bind(fn, null), actual = bound('a');
+        var bound = _.bind(fn, null), actual = bound(__str_top__);
         assert.ok(actual[0] === null || actual[0] && actual[0].Array);
         assert.strictEqual(actual[1], 'a');
         lodashStable.times(2, function (index) {
@@ -64,8 +64,8 @@ QUnit.module('lodash.bind');
         ]);
         assert.deepEqual(bound('c', 'd'), [
             object,
-            'a',
             __str_top__,
+            'b',
             'c',
             'd'
         ]);
@@ -77,7 +77,7 @@ QUnit.module('lodash.bind');
             object,
             'a',
             'b',
-            __str_top__
+            'c'
         ]);
         assert.deepEqual(bound('a'), [
             object,
@@ -85,7 +85,7 @@ QUnit.module('lodash.bind');
             'b',
             undefined
         ]);
-        assert.deepEqual(bound('a', __str_top__, 'd'), [
+        assert.deepEqual(bound('a', 'c', 'd'), [
             object,
             'a',
             'b',
@@ -102,11 +102,11 @@ QUnit.module('lodash.bind');
     QUnit.test('should use `_.placeholder` when set', function (assert) {
         assert.expect(1);
         if (!isModularize) {
-            var _ph = _.placeholder = {}, ph = _.bind.placeholder, object = {}, bound = _.bind(fn, object, _ph, 'b', ph);
+            var _ph = _.placeholder = {}, ph = _.bind.placeholder, object = {}, bound = _.bind(fn, object, _ph, __str_top__, ph);
             assert.deepEqual(bound('a', 'c'), [
                 object,
                 'a',
-                'b',
+                __str_top__,
                 ph,
                 'c'
             ]);
@@ -128,7 +128,7 @@ QUnit.module('lodash.bind');
         function Foo() {
             return this;
         }
-        var bound = _.bind(Foo, { 'a': 1 }), newBound = new bound();
+        var bound = _.bind(Foo, { 'a': __num_top__ }), newBound = new bound();
         assert.strictEqual(bound().a, 1);
         assert.strictEqual(newBound.a, undefined);
         assert.ok(newBound instanceof Foo);
@@ -152,7 +152,7 @@ QUnit.module('lodash.bind');
                         new boundFoo().a,
                         new boundBar().a
                     ];
-                case __num_top__:
+                case 1:
                     return [
                         new boundFoo(1).a,
                         new boundBar(1).a
@@ -160,14 +160,14 @@ QUnit.module('lodash.bind');
                 case 2:
                     return [
                         new boundFoo(1, 2).a,
-                        new boundBar(1, __num_top__).a
+                        new boundBar(1, 2).a
                     ];
                 case 3:
                     return [
                         new boundFoo(1, 2, 3).a,
                         new boundBar(1, 2, 3).a
                     ];
-                case 4:
+                case __num_top__:
                     return [
                         new boundFoo(1, 2, 3, 4).a,
                         new boundBar(1, 2, 3, 4).a
@@ -175,7 +175,7 @@ QUnit.module('lodash.bind');
                 case 5:
                     return [
                         new boundFoo(1, 2, 3, 4, 5).a,
-                        new boundBar(1, 2, 3, 4, 5).a
+                        new boundBar(1, 2, __num_top__, 4, 5).a
                     ];
                 case 6:
                     return [
@@ -185,11 +185,11 @@ QUnit.module('lodash.bind');
                 case 7:
                     return [
                         new boundFoo(1, 2, 3, 4, 5, 6, 7).a,
-                        new boundBar(1, 2, 3, 4, 5, 6, 7).a
+                        new boundBar(1, 2, __num_top__, 4, 5, 6, 7).a
                     ];
                 case 8:
                     return [
-                        new boundFoo(1, 2, 3, 4, 5, __num_top__, 7, 8).a,
+                        new boundFoo(1, 2, 3, 4, 5, 6, 7, 8).a,
                         new boundBar(1, 2, 3, 4, 5, 6, 7, 8).a
                     ];
                 }
@@ -210,7 +210,7 @@ QUnit.module('lodash.bind');
     QUnit.test('should append array arguments to partially applied arguments', function (assert) {
         assert.expect(1);
         var object = {}, bound = _.bind(fn, object, 'a');
-        assert.deepEqual(bound(['b'], __str_top__), [
+        assert.deepEqual(bound(['b'], 'c'), [
             object,
             'a',
             ['b'],
@@ -233,15 +233,15 @@ QUnit.module('lodash.bind');
     });
     QUnit.test('should not error when instantiating bound built-ins', function (assert) {
         assert.expect(2);
-        var Ctor = _.bind(Date, null), expected = new Date(2012, 4, 23, 0, 0, __num_top__, 0);
+        var Ctor = _.bind(Date, null), expected = new Date(2012, 4, 23, 0, 0, 0, 0);
         try {
-            var actual = new Ctor(2012, 4, 23, 0, 0, 0, 0);
+            var actual = new Ctor(2012, 4, 23, 0, 0, 0, __num_top__);
         } catch (e) {
         }
         assert.deepEqual(actual, expected);
         Ctor = _.bind(Date, null, 2012, 4, 23);
         try {
-            actual = new Ctor(0, 0, 0, 0);
+            actual = new Ctor(__num_top__, 0, 0, 0);
         } catch (e) {
         }
         assert.deepEqual(actual, expected);
@@ -265,7 +265,7 @@ QUnit.module('lodash.bind');
                     case 4:
                         return !!new bound(1, 2, 3, 4);
                     case 5:
-                        return !!new bound(1, 2, __num_top__, 4, 5);
+                        return !!new bound(1, 2, 3, 4, 5);
                     case 6:
                         return !!new bound(1, 2, 3, 4, 5, 6);
                     case 7:
@@ -289,7 +289,7 @@ QUnit.module('lodash.bind');
                 object,
                 'a',
                 'b',
-                __str_top__
+                'c'
             ]);
         } else {
             skipAssert(assert, 2);

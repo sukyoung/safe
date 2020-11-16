@@ -24,7 +24,7 @@ lodashStable.each([
                     'fred'
                 ],
                 [
-                    __num_top__,
+                    36,
                     40
                 ]
             ],
@@ -34,7 +34,7 @@ lodashStable.each([
                     36
                 ],
                 [
-                    'fred',
+                    __str_top__,
                     40
                 ]
             ]
@@ -43,7 +43,7 @@ lodashStable.each([
             [
                 [
                     'barney',
-                    'fred'
+                    __str_top__
                 ],
                 [
                     36,
@@ -81,7 +81,7 @@ lodashStable.each([
         var pair = [
             [
                 [
-                    __str_top__,
+                    'barney',
                     36
                 ],
                 [
@@ -97,11 +97,11 @@ lodashStable.each([
                 ],
                 [
                     36,
-                    40
+                    __num_top__
                 ],
                 [
                     undefined,
-                    false
+                    __bool_top__
                 ]
             ]
         ];
@@ -118,7 +118,7 @@ lodashStable.each([
             ],
             [
                 'fred',
-                __num_top__,
+                40,
                 false
             ]
         ]);
@@ -143,7 +143,7 @@ lodashStable.each([
                 2
             ],
             [
-                __num_top__,
+                3,
                 4
             ],
             null,
@@ -165,7 +165,7 @@ lodashStable.each([
         assert.expect(1);
         var expected = [
             [
-                __str_top__,
+                'barney',
                 'fred'
             ],
             [

@@ -12,8 +12,8 @@ QUnit.module('lodash.unary');
         ], _.unary(parseInt));
         assert.deepEqual(actual, [
             __num_top__,
-            8,
-            __num_top__
+            __num_top__,
+            10
         ]);
     });
     QUnit.test('should not force a minimum argument count', function (assert) {

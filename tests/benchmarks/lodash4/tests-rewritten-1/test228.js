@@ -5,12 +5,12 @@ QUnit.module('lodash.split');
         var string = 'abcde';
         assert.deepEqual(_.split(string, 'c'), [
             'ab',
-            'de'
+            __str_top__
         ]);
         assert.deepEqual(_.split(string, /[bd]/), [
             'a',
             'c',
-            __str_top__
+            'e'
         ]);
         assert.deepEqual(_.split(string, '', 2), [
             'a',

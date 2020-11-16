@@ -19,8 +19,8 @@ QUnit.module('lodash.nth');
             return _.nth(array, -n);
         });
         assert.deepEqual(actual, [
-            'd',
             __str_top__,
+            'c',
             'b',
             'a'
         ]);

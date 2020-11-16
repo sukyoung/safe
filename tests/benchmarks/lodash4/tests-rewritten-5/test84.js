@@ -11,12 +11,12 @@ lodashStable.each([
         var object = { 'a': 1 };
         lodashStable.each([
             'a',
-            [__str_top__]
+            ['a']
         ], function (path) {
             assert.strictEqual(func(object, path), true);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should not use the `hasOwnProperty` method of `object`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var object = {
             'hasOwnProperty': null,
@@ -24,7 +24,7 @@ lodashStable.each([
         };
         assert.strictEqual(func(object, 'a'), true);
     });
-    QUnit.test('`_.' + methodName + '` should support deep paths', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(4);
         var object = { 'a': { 'b': 2 } };
         lodashStable.each([
@@ -34,7 +34,7 @@ lodashStable.each([
                 'b'
             ]
         ], function (path) {
-            assert.strictEqual(func(object, path), true);
+            assert.strictEqual(func(object, path), __bool_top__);
         });
         lodashStable.each([
             'a.a',
@@ -53,7 +53,7 @@ lodashStable.each([
         fn.toString = lodashStable.constant('fn');
         var object = {
                 'null': 1,
-                'undefined': 2,
+                'undefined': __num_top__,
                 'fn': 3,
                 '[object Object]': 4
             }, paths = [
@@ -112,7 +112,7 @@ lodashStable.each([
             var symbol2 = Symbol('b');
             defineProperty(Foo.prototype, symbol2, {
                 'configurable': true,
-                'enumerable': __bool_top__,
+                'enumerable': false,
                 'writable': true,
                 'value': 2
             });
@@ -125,7 +125,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should check for a key over a path', function (assert) {
         assert.expect(2);
-        var object = { 'a.b': 1 };
+        var object = { 'a.b': __num_top__ };
         lodashStable.each([
             'a.b',
             ['a.b']
@@ -160,7 +160,7 @@ lodashStable.each([
                 'a[0]',
                 [
                     'a',
-                    __str_top__
+                    '0'
                 ]
             ], function (path) {
                 return func({ 'a': value }, path);
@@ -264,7 +264,7 @@ lodashStable.each([
             ]));
         var actual = lodashStable.map(values, function (value) {
             return lodashStable.map([
-                __str_top__,
+                'a[0].b',
                 [
                     'a',
                     '0',

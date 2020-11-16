@@ -1,7 +1,7 @@
 QUnit.module('forIn methods');
 lodashStable.each([
     'forIn',
-    'forInRight'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName];
     QUnit.test('`_.' + methodName + '` iterates over inherited string keyed properties', function (assert) {
@@ -15,7 +15,7 @@ lodashStable.each([
             keys.push(key);
         });
         assert.deepEqual(keys.sort(), [
-            __str_top__,
+            'a',
             'b'
         ]);
     });

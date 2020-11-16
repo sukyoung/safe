@@ -6,11 +6,11 @@ QUnit.module('lodash.uniq');
                 [
                     __num_top__,
                     1,
-                    __num_top__
+                    2
                 ],
                 [
                     __num_top__,
-                    2,
+                    __num_top__,
                     1
                 ]
             ], actual = lodashStable.map(array, lodashStable.uniq);

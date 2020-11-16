@@ -48,7 +48,7 @@ QUnit.module('clone methods');
         'regexes': /a/gim,
         'sets': set,
         'strings': 'a',
-        'string objects': Object('a'),
+        'string objects': Object(__str_top__),
         'undefined values': undefined
     };
     objects.arrays.length = 3;
@@ -65,7 +65,7 @@ QUnit.module('clone methods');
     QUnit.test('`_.clone` should perform a shallow clone', function (assert) {
         assert.expect(2);
         var array = [
-                { 'a': 0 },
+                { 'a': __num_top__ },
                 { 'b': 1 }
             ], actual = _.clone(array);
         assert.deepEqual(actual, array);
@@ -89,13 +89,13 @@ QUnit.module('clone methods');
             cyclical['v' + index] = [index ? cyclical['v' + (index - 1)] : cyclical];
         });
         var clone = _.cloneDeep(cyclical), actual = clone['v' + LARGE_ARRAY_SIZE][0];
-        assert.strictEqual(actual, clone['v' + (LARGE_ARRAY_SIZE - 1)]);
-        assert.notStrictEqual(actual, cyclical['v' + (LARGE_ARRAY_SIZE - __num_top__)]);
+        assert.strictEqual(actual, clone['v' + (LARGE_ARRAY_SIZE - __num_top__)]);
+        assert.notStrictEqual(actual, cyclical['v' + (LARGE_ARRAY_SIZE - 1)]);
     });
     QUnit.test('`_.cloneDeepWith` should provide `stack` to `customizer`', function (assert) {
         assert.expect(1);
         var actual;
-        _.cloneDeepWith({ 'a': __num_top__ }, function () {
+        _.cloneDeepWith({ 'a': 1 }, function () {
             actual = _.last(arguments);
         });
         assert.ok(isNpm ? actual.constructor.name == 'Stack' : actual instanceof mapCaches.Stack);
@@ -132,24 +132,24 @@ QUnit.module('clone methods');
             if (Buffer) {
                 var buffer = new Buffer([
                         1,
-                        __num_top__
+                        2
                     ]), actual = func(buffer);
                 assert.strictEqual(actual.byteLength, buffer.byteLength);
                 assert.strictEqual(actual.inspect(), buffer.inspect());
                 assert.notStrictEqual(actual, buffer);
-                buffer[0] = 2;
+                buffer[__num_top__] = __num_top__;
                 assert.strictEqual(actual[0], isDeep ? 2 : 1);
             } else {
                 skipAssert(assert, 4);
             }
         });
-        QUnit.test('`_.' + methodName + '` should clone `index` and `input` array properties', function (assert) {
+        QUnit.test('`_.' + methodName + __str_top__, function (assert) {
             assert.expect(2);
             var array = /c/.exec('abcde'), actual = func(array);
             assert.strictEqual(actual.index, 2);
             assert.strictEqual(actual.input, 'abcde');
         });
-        QUnit.test(__str_top__ + methodName + '` should clone `lastIndex` regexp property', function (assert) {
+        QUnit.test('`_.' + methodName + '` should clone `lastIndex` regexp property', function (assert) {
             assert.expect(1);
             var regexp = /c/g;
             regexp.exec('abcde');
@@ -164,7 +164,7 @@ QUnit.module('clone methods');
                 'a'
             ], function (value) {
                 var object = Object(value);
-                object.a = __num_top__;
+                object.a = 1;
                 return object;
             });
             var expected = lodashStable.map(values, stubTrue);
@@ -183,7 +183,7 @@ QUnit.module('clone methods');
             assert.expect(1);
             assert.ok(func(new Foo()) instanceof Foo);
         });
-        QUnit.test(__str_top__ + methodName + '` should set the `[[Prototype]]` of a clone even when the `constructor` is incorrect', function (assert) {
+        QUnit.test('`_.' + methodName + '` should set the `[[Prototype]]` of a clone even when the `constructor` is incorrect', function (assert) {
             assert.expect(1);
             Foo.prototype.constructor = Object;
             assert.ok(func(new Foo()) instanceof Foo);
@@ -210,7 +210,7 @@ QUnit.module('clone methods');
             assert.deepEqual(actual, object);
             assert.notStrictEqual(actual, object);
         });
-        QUnit.test(__str_top__ + methodName + '` should clone symbol properties', function (assert) {
+        QUnit.test('`_.' + methodName + '` should clone symbol properties', function (assert) {
             assert.expect(7);
             function Foo() {
                 this[symbol] = { 'c': 1 };
@@ -223,7 +223,7 @@ QUnit.module('clone methods');
                     'configurable': true,
                     'enumerable': false,
                     'writable': true,
-                    'value': 3
+                    'value': __num_top__
                 });
                 var object = { 'a': { 'b': new Foo() } };
                 object[symbol] = { 'b': 1 };
@@ -249,7 +249,7 @@ QUnit.module('clone methods');
             if (Symbol) {
                 assert.strictEqual(func(symbol), symbol);
                 var object = Object(symbol), actual = func(object);
-                assert.strictEqual(typeof actual, __str_top__);
+                assert.strictEqual(typeof actual, 'object');
                 assert.strictEqual(typeof actual.valueOf(), 'symbol');
                 assert.notStrictEqual(actual, object);
             } else {
@@ -271,7 +271,7 @@ QUnit.module('clone methods');
                 try {
                     assert.deepEqual(func(element), {});
                 } catch (e) {
-                    assert.ok(false, e.message);
+                    assert.ok(__bool_top__, e.message);
                 }
             } else {
                 skipAssert(assert);
@@ -301,9 +301,9 @@ QUnit.module('clone methods');
                 ], actual = lodashStable.map(expected, func);
             assert.deepEqual(actual, expected);
             if (isDeep) {
-                assert.ok(actual[0] !== expected[0] && actual[0].a !== expected[0].a && actual[__num_top__].b !== expected[__num_top__].b);
+                assert.ok(actual[0] !== expected[0] && actual[0].a !== expected[0].a && actual[1].b !== expected[1].b);
             } else {
-                assert.ok(actual[0] !== expected[0] && actual[0].a === expected[0].a && actual[1].b === expected[1].b);
+                assert.ok(actual[0] !== expected[0] && actual[0].a === expected[0].a && actual[1].b === expected[__num_top__].b);
             }
         });
         QUnit.test('`_.' + methodName + '` should return a unwrapped value when chaining', function (assert) {
@@ -353,7 +353,7 @@ QUnit.module('clone methods');
     });
     lodashStable.each([
         'cloneWith',
-        'cloneDeepWith'
+        __str_top__
     ], function (methodName) {
         var func = _[methodName], isDeep = methodName == 'cloneDeepWith';
         QUnit.test('`_.' + methodName + '` should provide correct `customizer` arguments', function (assert) {

@@ -4,12 +4,12 @@ QUnit.module('lodash.conforms');
         assert.expect(2);
         var object = { 'a': 2 }, source = {
                 'a': function (value) {
-                    return value > 1;
+                    return value > __num_top__;
                 }
             }, par = _.conforms(source);
         assert.strictEqual(par(object), true);
         source.a = function (value) {
-            return value < __num_top__;
+            return value < 2;
         };
         assert.strictEqual(par(object), true);
     });

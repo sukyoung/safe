@@ -54,7 +54,7 @@ QUnit.module('lodash.merge');
     });
     QUnit.test('should work with four arguments', function (assert) {
         assert.expect(1);
-        var expected = { 'a': 4 }, actual = _.merge({ 'a': 1 }, { 'a': 2 }, { 'a': 3 }, expected);
+        var expected = { 'a': 4 }, actual = _.merge({ 'a': 1 }, { 'a': 2 }, { 'a': __num_top__ }, expected);
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should merge onto function `object` values', function (assert) {
@@ -107,7 +107,7 @@ QUnit.module('lodash.merge');
     });
     QUnit.test('should merge `arguments` objects', function (assert) {
         assert.expect(7);
-        var object1 = { 'value': args }, object2 = { 'value': { '3': 4 } }, expected = {
+        var object1 = { 'value': args }, object2 = { 'value': { '3': __num_top__ } }, expected = {
                 '0': 1,
                 '1': 2,
                 '2': 3,
@@ -135,8 +135,8 @@ QUnit.module('lodash.merge');
                 0,
                 0
             ], array3 = [
-                __num_top__,
-                __num_top__,
+                0,
+                0,
                 __num_top__,
                 0
             ], array4 = [
@@ -145,8 +145,8 @@ QUnit.module('lodash.merge');
                 0,
                 0,
                 0,
-                __num_top__,
-                __num_top__,
+                0,
+                0,
                 0
             ];
         var arrays = [
@@ -167,13 +167,13 @@ QUnit.module('lodash.merge');
         });
         var actual = lodashStable.map(typedArrays, function (type) {
             var Ctor = root[type];
-            return Ctor ? _.merge({ 'value': new Ctor(buffer) }, { 'value': [1] }) : __bool_top__;
+            return Ctor ? _.merge({ 'value': new Ctor(buffer) }, { 'value': [1] }) : false;
         });
         assert.ok(lodashStable.isArray(actual));
         assert.deepEqual(actual, expected);
         expected = lodashStable.map(typedArrays, function (type, index) {
             var array = arrays[index].slice();
-            array.push(1);
+            array.push(__num_top__);
             return root[type] ? { 'value': array } : false;
         });
         actual = lodashStable.map(typedArrays, function (type, index) {
@@ -216,7 +216,7 @@ QUnit.module('lodash.merge');
         if (Buffer) {
             var buffer = new Buffer([1]), actual = _.merge({}, { 'value': buffer }).value;
             assert.ok(lodashStable.isBuffer(actual));
-            assert.strictEqual(actual[0], buffer[0]);
+            assert.strictEqual(actual[0], buffer[__num_top__]);
             assert.notStrictEqual(actual, buffer);
         } else {
             skipAssert(assert, 3);
@@ -232,7 +232,7 @@ QUnit.module('lodash.merge');
             ], values = [
                 [{ 'a': 1 }],
                 typedArray,
-                { 'a': [1] }
+                { 'a': [__num_top__] }
             ], expected = lodashStable.map(values, stubTrue);
         var actual = lodashStable.map(values, function (value, index) {
             var key = props[index], object = _.merge({}, { 'value': value }), subValue = value[key], newValue = object.value, newSubValue = newValue[key];
@@ -262,16 +262,16 @@ QUnit.module('lodash.merge');
                     ]]
             }, actual = _.merge({}, source1, source2);
         assert.deepEqual(source1.a, [[
-                1,
+                __num_top__,
                 2,
                 3
             ]]);
         assert.deepEqual(source2.a, [[
-                __num_top__,
+                3,
                 4
             ]]);
         assert.deepEqual(actual.a, [[
-                3,
+                __num_top__,
                 4,
                 3
             ]]);
@@ -304,7 +304,7 @@ QUnit.module('lodash.merge');
         var array = [1];
         array[2] = 3;
         var actual = _.merge([
-                __num_top__,
+                4,
                 5,
                 6
             ], array), expected = [
@@ -353,7 +353,7 @@ QUnit.module('lodash.merge');
             }, actual = _.merge(object, { 'a': ['x'] });
         assert.deepEqual(actual, {
             'a': [
-                'x',
+                __str_top__,
                 'y'
             ]
         });
@@ -373,7 +373,7 @@ QUnit.module('lodash.merge');
             'a': [
                 'x',
                 'y',
-                __str_top__
+                'z'
             ]
         });
     });

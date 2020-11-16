@@ -7,13 +7,13 @@ QUnit.module('lodash(...).splice');
                     1,
                     __num_top__
                 ], wrapped = _(array);
-            assert.deepEqual(wrapped.splice(1, __num_top__, __num_top__).value(), [__num_top__]);
+            assert.deepEqual(wrapped.splice(__num_top__, __num_top__, 3).value(), [__num_top__]);
             assert.deepEqual(wrapped.value(), [
-                __num_top__,
+                1,
                 3
             ]);
-            assert.deepEqual(wrapped.splice(__num_top__, 2).value(), [
-                __num_top__,
+            assert.deepEqual(wrapped.splice(__num_top__, __num_top__).value(), [
+                1,
                 __num_top__
             ]);
             var actual = wrapped.value();
@@ -29,7 +29,7 @@ QUnit.module('lodash(...).splice');
             var expected = lodashStable.map(falsey, stubTrue);
             var actual = lodashStable.map(falsey, function (value, index) {
                 try {
-                    var result = index ? _(value).splice(0, __num_top__).value() : _().splice(0, __num_top__).value();
+                    var result = index ? _(value).splice(__num_top__, __num_top__).value() : _().splice(0, __num_top__).value();
                     return lodashStable.isEqual(result, []);
                 } catch (e) {
                 }

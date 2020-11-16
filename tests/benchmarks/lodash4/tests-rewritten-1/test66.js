@@ -34,7 +34,7 @@ QUnit.module('lodash.flatMapDepth');
                 2,
                 [
                     3,
-                    [4]
+                    [__num_top__]
                 ],
                 5
             ]));
@@ -57,7 +57,7 @@ QUnit.module('lodash.flatMapDepth');
                         3,
                         [4]
                     ],
-                    __num_top__
+                    5
                 ]
             ]);
         });

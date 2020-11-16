@@ -2,7 +2,7 @@ QUnit.module('lodash.castArray');
 (function () {
     QUnit.test('should wrap non-array items in an array', function (assert) {
         assert.expect(1);
-        var values = falsey.concat(true, 1, __str_top__, { 'a': 1 }), expected = lodashStable.map(values, function (value) {
+        var values = falsey.concat(true, 1, 'a', { 'a': __num_top__ }), expected = lodashStable.map(values, function (value) {
                 return [value];
             }), actual = lodashStable.map(values, _.castArray);
         assert.deepEqual(actual, expected);

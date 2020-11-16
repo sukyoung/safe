@@ -4,7 +4,7 @@ QUnit.module('lodash.uniq');
         assert.expect(1);
         var array = [
                 [
-                    2,
+                    __num_top__,
                     1,
                     2
                 ],
@@ -16,7 +16,7 @@ QUnit.module('lodash.uniq');
             ], actual = lodashStable.map(array, lodashStable.uniq);
         assert.deepEqual(actual, [
             [
-                __num_top__,
+                2,
                 1
             ],
             [

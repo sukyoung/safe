@@ -42,7 +42,7 @@ QUnit.module('lodash.zipWith');
             3,
             4
         ], [
-            __num_top__,
+            5,
             6
         ], function () {
             args || (args = slice.call(arguments));
@@ -60,7 +60,7 @@ QUnit.module('lodash.zipWith');
                 2
             ], array2 = [
                 3,
-                4
+                __num_top__
             ], values = [
                 ,
                 null,

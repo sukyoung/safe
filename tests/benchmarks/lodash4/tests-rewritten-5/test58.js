@@ -20,7 +20,7 @@ QUnit.module('lodash.fill');
                 2,
                 3
             ], actual = _.fill(array);
-        assert.deepEqual(actual, Array(3));
+        assert.deepEqual(actual, Array(__num_top__));
         assert.ok(lodashStable.every(actual, function (value, index) {
             return index in actual;
         }));
@@ -53,7 +53,7 @@ QUnit.module('lodash.fill');
             ];
             assert.deepEqual(_.fill(array, 'a', start), [
                 1,
-                __num_top__,
+                2,
                 3
             ]);
         });
@@ -84,7 +84,7 @@ QUnit.module('lodash.fill');
         ];
         assert.deepEqual(_.fill(array, 'a', -1), [
             1,
-            2,
+            __num_top__,
             'a'
         ]);
     });
@@ -118,7 +118,7 @@ QUnit.module('lodash.fill');
                 2,
                 3
             ];
-            assert.deepEqual(_.fill(array, 'a', start, 2), [
+            assert.deepEqual(_.fill(array, 'a', start, __num_top__), [
                 1,
                 2,
                 3
@@ -151,7 +151,7 @@ QUnit.module('lodash.fill');
                 2,
                 3
             ];
-            assert.deepEqual(_.fill(array, 'a', __num_top__, end), [
+            assert.deepEqual(_.fill(array, 'a', 0, end), [
                 'a',
                 'a',
                 'a'
@@ -167,7 +167,7 @@ QUnit.module('lodash.fill');
                 'a'
             ] : [
                 1,
-                2,
+                __num_top__,
                 3
             ];
         });
@@ -287,10 +287,10 @@ QUnit.module('lodash.fill');
         var array = [
                 [
                     1,
-                    __num_top__
+                    2
                 ],
                 [
-                    3,
+                    __num_top__,
                     4
                 ]
             ], actual = lodashStable.map(array, _.fill);
@@ -300,7 +300,7 @@ QUnit.module('lodash.fill');
                 0
             ],
             [
-                __num_top__,
+                1,
                 1
             ]
         ]);
@@ -318,7 +318,7 @@ QUnit.module('lodash.fill');
             assert.deepEqual(actual, [
                 'a',
                 'a',
-                __str_top__
+                'a'
             ]);
         } else {
             skipAssert(assert, 3);

@@ -12,11 +12,11 @@ QUnit.module('lodash.ary');
         ], _.ary(parseInt, 1));
         assert.deepEqual(actual, [
             6,
-            8,
+            __num_top__,
             10
         ]);
         var capped = _.ary(fn, 2);
-        assert.deepEqual(capped('a', __str_top__, 'c', 'd'), [
+        assert.deepEqual(capped('a', 'b', 'c', 'd'), [
             'a',
             'b'
         ]);
@@ -44,9 +44,9 @@ QUnit.module('lodash.ary');
         var values = [
                 '1',
                 1.6,
-                __str_top__
+                'xyz'
             ], expected = [
-                [__str_top__],
+                ['a'],
                 ['a'],
                 []
             ];
@@ -81,15 +81,15 @@ QUnit.module('lodash.ary');
     QUnit.test('should use the existing `ary` if smaller', function (assert) {
         assert.expect(1);
         var capped = _.ary(_.ary(fn, 1), 2);
-        assert.deepEqual(capped('a', 'b', 'c'), ['a']);
+        assert.deepEqual(capped(__str_top__, __str_top__, 'c'), ['a']);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var funcs = lodashStable.map([fn], _.ary), actual = funcs[0]('a', __str_top__, 'c');
+        var funcs = lodashStable.map([fn], _.ary), actual = funcs[0]('a', 'b', 'c');
         assert.deepEqual(actual, [
             'a',
             'b',
-            'c'
+            __str_top__
         ]);
     });
     QUnit.test('should work when combined with other methods that use metadata', function (assert) {

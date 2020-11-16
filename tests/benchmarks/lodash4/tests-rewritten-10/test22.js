@@ -16,16 +16,16 @@ QUnit.module('lodash.chain');
             assert.strictEqual(_.chain(wrapped), wrapped);
             assert.strictEqual(wrapped.chain(), wrapped);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should enable chaining for methods that return unwrapped values', function (assert) {
         assert.expect(6);
         if (!isNpm) {
             var array = [
-                __str_top__,
+                'c',
                 'b',
-                __str_top__
+                'a'
             ];
             assert.ok(_.chain(array).head() instanceof _);
             assert.ok(_(array).chain().head() instanceof _);
@@ -42,31 +42,31 @@ QUnit.module('lodash.chain');
         if (!isNpm) {
             lodashStable.times(2, function (index) {
                 var array = [
+                        'one two three four',
                         __str_top__,
-                        'five six seven eight',
-                        __str_top__
+                        'nine ten eleven twelve'
                     ], expected = {
-                        ' ': 9,
+                        ' ': __num_top__,
                         'e': 14,
                         'f': 2,
-                        'g': __num_top__,
+                        'g': 1,
                         'h': 2,
                         'i': 4,
                         'l': 2,
                         'n': 6,
-                        'o': 3,
-                        'r': 2,
+                        'o': __num_top__,
+                        'r': __num_top__,
                         's': 2,
-                        't': 5,
+                        't': __num_top__,
                         'u': 1,
-                        'v': 4,
-                        'w': 2,
+                        'v': __num_top__,
+                        'w': __num_top__,
                         'x': 1
                     }, wrapped = index ? _(array).chain() : _.chain(array);
                 var actual = wrapped.chain().map(function (value) {
                     return value.split('');
                 }).flatten().reduce(function (object, chr) {
-                    object[chr] || (object[chr] = __num_top__);
+                    object[chr] || (object[chr] = 0);
                     object[chr]++;
                     return object;
                 }, {}).value();
@@ -74,10 +74,10 @@ QUnit.module('lodash.chain');
                 array = [
                     1,
                     2,
+                    3,
                     __num_top__,
-                    4,
-                    __num_top__,
-                    __num_top__
+                    5,
+                    6
                 ];
                 wrapped = index ? _(array).chain() : _.chain(array);
                 actual = wrapped.chain().filter(function (n) {
@@ -88,7 +88,7 @@ QUnit.module('lodash.chain');
                     return -n;
                 }).value();
                 assert.deepEqual(actual, [
-                    5,
+                    __num_top__,
                     1
                 ]);
                 array = [
@@ -103,7 +103,7 @@ QUnit.module('lodash.chain');
                     value.pop();
                 }).map(square).value();
                 assert.deepEqual(actual, [
-                    25,
+                    __num_top__,
                     16,
                     9,
                     4

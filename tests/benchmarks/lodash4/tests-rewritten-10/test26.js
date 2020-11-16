@@ -5,7 +5,7 @@ QUnit.module('lodash.compact');
         assert.expect(1);
         var array = [
             __str_top__,
-            __str_top__,
+            '1',
             __str_top__
         ];
         assert.deepEqual(_.compact(falsey.concat(array)), array);
@@ -15,21 +15,21 @@ QUnit.module('lodash.compact');
         if (!isNpm) {
             var actual = _(falsey).thru(_.slice).compact().thru(_.slice).value();
             assert.deepEqual(actual, []);
-            actual = _(falsey).thru(_.slice).push(__bool_top__, __num_top__).compact().push('a').value();
+            actual = _(falsey).thru(_.slice).push(true, __num_top__).compact().push('a').value();
             assert.deepEqual(actual, [
                 __bool_top__,
                 1,
                 __str_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            var actual = _(largeArray).slice(1).compact().reverse().take().value();
-            assert.deepEqual(actual, _.take(_.compact(_.slice(largeArray, 1)).reverse()));
+            var actual = _(largeArray).slice(__num_top__).compact().reverse().take().value();
+            assert.deepEqual(actual, _.take(_.compact(_.slice(largeArray, __num_top__)).reverse()));
         } else {
             skipAssert(assert);
         }
@@ -41,7 +41,7 @@ QUnit.module('lodash.compact');
             _.iteratee = identity;
             try {
                 var actual = _(largeArray).slice(1).compact().value();
-                pass = lodashStable.isEqual(actual, _.compact(_.slice(largeArray, 1)));
+                pass = lodashStable.isEqual(actual, _.compact(_.slice(largeArray, __num_top__)));
             } catch (e) {
                 console.log(e);
             }

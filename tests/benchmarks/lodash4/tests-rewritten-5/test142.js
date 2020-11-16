@@ -4,7 +4,7 @@ lodashStable.each([
     'lastIndexOf'
 ], function (methodName) {
     var array = [
-            1,
+            __num_top__,
             2,
             3,
             1,
@@ -13,17 +13,17 @@ lodashStable.each([
         ], func = _[methodName], resolve = methodName == 'findLastIndex' ? lodashStable.curry(lodashStable.eq) : identity;
     QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
-        assert.strictEqual(func(array, resolve(3)), 5);
+        assert.strictEqual(func(array, resolve(__num_top__)), 5);
     });
     QUnit.test('`_.' + methodName + '` should work with a positive `fromIndex`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(func(array, resolve(1), __num_top__), 0);
+        assert.strictEqual(func(array, resolve(1), 2), 0);
     });
     QUnit.test('`_.' + methodName + '` should work with a `fromIndex` >= `length`', function (assert) {
         assert.expect(1);
         var values = [
                 6,
-                __num_top__,
+                8,
                 Math.pow(2, 32),
                 Infinity
             ], expected = lodashStable.map(values, lodashStable.constant([
@@ -42,7 +42,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should work with a negative `fromIndex`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(func(array, resolve(2), -__num_top__), 1);
+        assert.strictEqual(func(array, resolve(2), -3), 1);
     });
     QUnit.test('`_.' + methodName + '` should work with a negative `fromIndex` <= `-length`', function (assert) {
         assert.expect(1);
@@ -62,12 +62,12 @@ lodashStable.each([
             return value === undefined ? 5 : -1;
         });
         var actual = lodashStable.map(falsey, function (fromIndex) {
-            return func(array, resolve(__num_top__), fromIndex);
+            return func(array, resolve(3), fromIndex);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('`_.' + methodName + '` should coerce `fromIndex` to an integer', function (assert) {
         assert.expect(1);
-        assert.strictEqual(func(array, resolve(2), 4.2), 4);
+        assert.strictEqual(func(array, resolve(__num_top__), 4.2), __num_top__);
     });
 });

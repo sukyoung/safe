@@ -12,27 +12,27 @@ lodashStable.each([
         parts.push('trailing');
     }
     parts = parts.join(' and ');
-    QUnit.test('`_.' + methodName + '` should remove ' + parts + ' whitespace', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__ + parts + ' whitespace', function (assert) {
         assert.expect(1);
-        var string = whitespace + 'a b c' + whitespace, expected = (index == 2 ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : '');
+        var string = whitespace + __str_top__ + whitespace, expected = (index == 2 ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : '');
         assert.strictEqual(func(string), expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should coerce `string` to a string', function (assert) {
+    QUnit.test('`_.' + methodName + '` should coerce `string` to a string', function (assert) {
         assert.expect(1);
         var object = { 'toString': lodashStable.constant(whitespace + 'a b c' + whitespace) }, expected = (index == 2 ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : '');
         assert.strictEqual(func(object), expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should remove ' + parts + ' `chars`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should remove ' + parts + ' `chars`', function (assert) {
         assert.expect(1);
-        var string = '-_-a-b-c-_-', expected = (index == 2 ? '-_-' : '') + 'a-b-c' + (index == 1 ? '-_-' : __str_top__);
-        assert.strictEqual(func(string, __str_top__), expected);
+        var string = '-_-a-b-c-_-', expected = (index == 2 ? '-_-' : '') + 'a-b-c' + (index == 1 ? __str_top__ : '');
+        assert.strictEqual(func(string, '_-'), expected);
     });
     QUnit.test('`_.' + methodName + '` should coerce `chars` to a string', function (assert) {
         assert.expect(1);
-        var object = { 'toString': lodashStable.constant('_-') }, string = '-_-a-b-c-_-', expected = (index == 2 ? '-_-' : '') + 'a-b-c' + (index == 1 ? '-_-' : '');
+        var object = { 'toString': lodashStable.constant('_-') }, string = '-_-a-b-c-_-', expected = (index == 2 ? '-_-' : '') + 'a-b-c' + (index == 1 ? __str_top__ : '');
         assert.strictEqual(func(string, object), expected);
     });
-    QUnit.test('`_.' + methodName + '` should return an empty string for empty values and `chars`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(6);
         lodashStable.each([
             null,
@@ -51,7 +51,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var string = Object(whitespace + 'a b c' + whitespace), trimmed = (index == __num_top__ ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : ''), actual = lodashStable.map([
+        var string = Object(whitespace + 'a b c' + whitespace), trimmed = (index == 2 ? whitespace : '') + 'a b c' + (index == 1 ? whitespace : ''), actual = lodashStable.map([
                 string,
                 string,
                 string

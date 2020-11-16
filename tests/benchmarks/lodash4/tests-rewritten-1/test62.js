@@ -7,7 +7,7 @@ lodashStable.each([
     lodashStable.each({
         'an `arguments` object': args,
         'an array': [
-            1,
+            __num_top__,
             2,
             3
         ]
@@ -84,7 +84,7 @@ lodashStable.each([
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test(__str_top__ + methodName + '` should work with ' + key + ' and a negative `fromIndex` <= `-length`', function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and a negative `fromIndex` <= `-length`', function (assert) {
             assert.expect(1);
             var indexes = [
                     -4,

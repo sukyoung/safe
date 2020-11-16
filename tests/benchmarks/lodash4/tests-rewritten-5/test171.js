@@ -2,7 +2,7 @@ QUnit.module('lodash.omit');
 (function () {
     var args = toArgs([
             'a',
-            __str_top__
+            'c'
         ]), object = {
             'a': 1,
             'b': 2,
@@ -24,7 +24,7 @@ QUnit.module('lodash.omit');
         assert.deepEqual(_.omit(object, [
             'a',
             'd'
-        ], 'c'), { 'b': 2 });
+        ], __str_top__), { 'b': 2 });
     });
     QUnit.test('should support deep paths', function (assert) {
         assert.expect(1);
@@ -37,9 +37,9 @@ QUnit.module('lodash.omit');
         assert.expect(1);
         var object = {
                 'a.b': __num_top__,
-                'a': { 'b': 2 }
+                'a': { 'b': __num_top__ }
             }, actual = _.omit(object, [['a.b']]);
-        assert.deepEqual(actual, { 'a': { 'b': __num_top__ } });
+        assert.deepEqual(actual, { 'a': { 'b': 2 } });
     });
     QUnit.test('should omit a key over a path', function (assert) {
         assert.expect(2);
@@ -74,14 +74,14 @@ QUnit.module('lodash.omit');
         assert.expect(1);
         stringProto.a = 1;
         stringProto.b = 2;
-        assert.deepEqual(_.omit(__str_top__, 'b'), { 'a': 1 });
+        assert.deepEqual(_.omit('', 'b'), { 'a': 1 });
         delete stringProto.a;
         delete stringProto.b;
     });
     QUnit.test('should work with `arguments` object `paths`', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.omit(object, args), {
-            'b': 2,
+            'b': __num_top__,
             'd': 4
         });
     });
@@ -93,7 +93,7 @@ QUnit.module('lodash.omit');
             'a.b',
             ['a.b']
         ], function (path) {
-            var object = { 'a': { 'b': __num_top__ } };
+            var object = { 'a': { 'b': 2 } };
             _.omit(object, path);
             assert.deepEqual(object, { 'a': { 'b': 2 } });
         });

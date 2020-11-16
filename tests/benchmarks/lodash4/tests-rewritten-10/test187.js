@@ -1,18 +1,18 @@
 QUnit.module('lodash.pick');
 (function () {
     var args = toArgs([
-            __str_top__,
-            __str_top__
+            'a',
+            'c'
         ]), object = {
             'a': 1,
             'b': 2,
-            'c': 3,
+            'c': __num_top__,
             'd': 4
         }, nested = {
-            'a': 1,
+            'a': __num_top__,
             'b': {
-                'c': __num_top__,
-                'd': __num_top__
+                'c': 2,
+                'd': 3
             }
         };
     QUnit.test('should flatten `paths`', function (assert) {
@@ -23,9 +23,9 @@ QUnit.module('lodash.pick');
         });
         assert.deepEqual(_.pick(object, [
             'a',
-            __str_top__
-        ], 'c'), {
-            'a': __num_top__,
+            'd'
+        ], __str_top__), {
+            'a': 1,
             'c': 3,
             'd': 4
         });
@@ -39,7 +39,7 @@ QUnit.module('lodash.pick');
         var object = {
                 'a.b': 1,
                 'a': { 'b': 2 }
-            }, actual = _.pick(object, [['a.b']]);
+            }, actual = _.pick(object, [[__str_top__]]);
         assert.deepEqual(actual, { 'a.b': __num_top__ });
     });
     QUnit.test('should pick a key over a path', function (assert) {
@@ -50,7 +50,7 @@ QUnit.module('lodash.pick');
         };
         lodashStable.each([
             __str_top__,
-            ['a.b']
+            [__str_top__]
         ], function (path) {
             assert.deepEqual(_.pick(object, path), { 'a.b': 1 });
         });
@@ -58,9 +58,9 @@ QUnit.module('lodash.pick');
     QUnit.test('should coerce `paths` to strings', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.pick({
-            '0': 'a',
-            '1': 'b'
-        }, 0), { '0': __str_top__ });
+            '0': __str_top__,
+            '1': __str_top__
+        }, 0), { '0': 'a' });
     });
     QUnit.test('should return an empty object when `object` is nullish', function (assert) {
         assert.expect(2);
@@ -68,12 +68,12 @@ QUnit.module('lodash.pick');
             null,
             undefined
         ], function (value) {
-            assert.deepEqual(_.pick(value, 'valueOf'), {});
+            assert.deepEqual(_.pick(value, __str_top__), {});
         });
     });
     QUnit.test('should work with a primitive `object`', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.pick('', 'slice'), { 'slice': __str_top__.slice });
+        assert.deepEqual(_.pick('', 'slice'), { 'slice': ''.slice });
     });
     QUnit.test('should work with `arguments` object `paths`', function (assert) {
         assert.expect(1);

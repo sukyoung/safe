@@ -10,15 +10,15 @@ QUnit.module('lodash.findLast');
         ]
     }, function (collection, key) {
         var values = lodashStable.toArray(collection);
-        QUnit.test('should work with ' + key + __str_top__, function (assert) {
+        QUnit.test(__str_top__ + key + ' and a positive `fromIndex`', function (assert) {
             assert.expect(1);
             var expected = [
                 values[1],
                 undefined
             ];
             var actual = [
-                _.findLast(collection, resolve(values[__num_top__]), 1),
-                _.findLast(collection, resolve(values[2]), 1)
+                _.findLast(collection, resolve(values[1]), __num_top__),
+                _.findLast(collection, resolve(values[__num_top__]), 1)
             ];
             assert.deepEqual(actual, expected);
         });
@@ -62,7 +62,7 @@ QUnit.module('lodash.findLast');
                 undefined
             ];
             var actual = [
-                _.findLast(collection, resolve(values[0]), __num_top__),
+                _.findLast(collection, resolve(values[0]), 0.1),
                 _.findLast(collection, resolve(values[__num_top__]), NaN),
                 _.findLast(collection, resolve(values[2]), '1')
             ];

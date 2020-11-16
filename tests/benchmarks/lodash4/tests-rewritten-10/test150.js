@@ -12,7 +12,7 @@ QUnit.module('lodash.matchesProperty');
         matches = _.matchesProperty('b', 3);
         assert.strictEqual(matches(object), false);
         matches = _.matchesProperty('a', {
-            'a': __num_top__,
+            'a': 1,
             'c': 3
         });
         assert.strictEqual(matches({ 'a': object }), true);
@@ -32,11 +32,11 @@ QUnit.module('lodash.matchesProperty');
             'f': 4
         };
         matches = _.matchesProperty('a', { 'b': { 'c': 1 } });
-        assert.strictEqual(matches(object), true);
+        assert.strictEqual(matches(object), __bool_top__);
     });
     QUnit.test('should support deep paths', function (assert) {
         assert.expect(2);
-        var object = { 'a': { 'b': __num_top__ } };
+        var object = { 'a': { 'b': 2 } };
         lodashStable.each([
             'a.b',
             [
@@ -89,7 +89,7 @@ QUnit.module('lodash.matchesProperty');
                 Object(0)
             ], values = [
                 'a',
-                __str_top__,
+                'a',
                 'b',
                 'b'
             ], expected = lodashStable.map(props, lodashStable.constant([
@@ -137,7 +137,7 @@ QUnit.module('lodash.matchesProperty');
         };
         lodashStable.each([
             'a.b',
-            ['a.b']
+            [__str_top__]
         ], function (path) {
             var matches = _.matchesProperty(path, 1);
             assert.strictEqual(matches(object), true);
@@ -194,7 +194,7 @@ QUnit.module('lodash.matchesProperty');
         var object = {};
         lodashStable.each([
             'a',
-            'a[1].b.c',
+            __str_top__,
             ['a'],
             [
                 'a',
@@ -248,14 +248,14 @@ QUnit.module('lodash.matchesProperty');
         var object1 = {
                 'a': false,
                 'b': true,
-                'c': '3',
+                'c': __str_top__,
                 'd': 4,
                 'e': [5],
                 'f': { 'g': 6 }
             }, object2 = {
                 'a': 0,
                 'b': 1,
-                'c': 3,
+                'c': __num_top__,
                 'd': '4',
                 'e': ['5'],
                 'f': { 'g': '6' }
@@ -266,7 +266,7 @@ QUnit.module('lodash.matchesProperty');
     QUnit.test('should match `-0` as `0`', function (assert) {
         assert.expect(2);
         var matches = _.matchesProperty('a', -0);
-        assert.strictEqual(matches({ 'a': 0 }), __bool_top__);
+        assert.strictEqual(matches({ 'a': 0 }), true);
         matches = _.matchesProperty('a', 0);
         assert.strictEqual(matches({ 'a': -0 }), true);
     });
@@ -316,7 +316,7 @@ QUnit.module('lodash.matchesProperty');
     QUnit.test('should partial match arrays', function (assert) {
         assert.expect(3);
         var objects = [
-                { 'a': [__str_top__] },
+                { 'a': ['b'] },
                 {
                     'a': [
                         'c',
@@ -330,7 +330,7 @@ QUnit.module('lodash.matchesProperty');
             'd'
         ]));
         assert.deepEqual(actual, []);
-        actual = lodashStable.filter(objects, _.matchesProperty('a', [
+        actual = lodashStable.filter(objects, _.matchesProperty(__str_top__, [
             'd',
             'b'
         ]));
@@ -403,9 +403,9 @@ QUnit.module('lodash.matchesProperty');
                 { 'a': new Map() },
                 { 'a': new Map() }
             ];
-            objects[0].a.set('a', 1);
+            objects[0].a.set(__str_top__, 1);
             objects[1].a.set('a', 1);
-            objects[1].a.set('b', __num_top__);
+            objects[1].a.set('b', 2);
             var map = new Map();
             map.set('b', 2);
             var actual = lodashStable.filter(objects, _.matchesProperty('a', map));
@@ -413,7 +413,7 @@ QUnit.module('lodash.matchesProperty');
             map.delete('b');
             actual = lodashStable.filter(objects, _.matchesProperty('a', map));
             assert.deepEqual(actual, objects);
-            map.set(__str_top__, 3);
+            map.set('c', __num_top__);
             actual = lodashStable.filter(objects, _.matchesProperty('a', map));
             assert.deepEqual(actual, []);
         } else {
@@ -428,7 +428,7 @@ QUnit.module('lodash.matchesProperty');
                 { 'a': new Set() }
             ];
             objects[0].a.add(1);
-            objects[1].a.add(__num_top__);
+            objects[1].a.add(1);
             objects[1].a.add(2);
             var set = new Set();
             set.add(2);
@@ -497,7 +497,7 @@ QUnit.module('lodash.matchesProperty');
             'a.a',
             [
                 'a',
-                __str_top__
+                'a'
             ]
         ], function (path) {
             var matches = _.matchesProperty(path, undefined);
@@ -537,7 +537,7 @@ QUnit.module('lodash.matchesProperty');
                 {
                     'a': [
                         2,
-                        3
+                        __num_top__
                     ],
                     'b': { 'd': 2 }
                 }
@@ -565,10 +565,10 @@ QUnit.module('lodash.matchesProperty');
             },
             { 'a': 1 }
         ], function (source, index) {
-            var object = lodashStable.cloneDeep(source), matches = _.matchesProperty('a', source);
+            var object = lodashStable.cloneDeep(source), matches = _.matchesProperty(__str_top__, source);
             assert.strictEqual(matches({ 'a': object }), true);
             if (index) {
-                source.a = __num_top__;
+                source.a = 2;
                 source.b = 1;
                 source.c = 3;
             } else {

@@ -18,13 +18,13 @@ QUnit.module('lodash.parseInt');
     QUnit.test('should use a radix of `16`, for hexadecimals, if `radix` is `undefined` or `0`', function (assert) {
         assert.expect(8);
         lodashStable.each([
-            '0x20',
+            __str_top__,
             '0X20'
         ], function (string) {
             assert.strictEqual(_.parseInt(string), 32);
             assert.strictEqual(_.parseInt(string, 0), 32);
             assert.strictEqual(_.parseInt(string, 16), 32);
-            assert.strictEqual(_.parseInt(string, undefined), 32);
+            assert.strictEqual(_.parseInt(string, undefined), __num_top__);
         });
     });
     QUnit.test('should use a radix of `10` for string with leading zeros', function (assert) {
@@ -36,7 +36,7 @@ QUnit.module('lodash.parseInt');
         assert.expect(2);
         var expected = [
             8,
-            __num_top__,
+            8,
             10,
             10,
             32,
@@ -53,9 +53,9 @@ QUnit.module('lodash.parseInt');
                 });
                 lodashStable.each([
                     '0x20',
-                    __str_top__
+                    '0X20'
                 ], function (string) {
-                    actual.push(func(whitespace + string), func(whitespace + string, 16));
+                    actual.push(func(whitespace + string), func(whitespace + string, __num_top__));
                 });
                 assert.deepEqual(actual, expected);
             } else {
@@ -79,13 +79,13 @@ QUnit.module('lodash.parseInt');
         assert.deepEqual(actual, [
             6,
             8,
-            __num_top__
+            10
         ]);
         actual = lodashStable.map('123', _.parseInt);
         assert.deepEqual(actual, [
-            __num_top__,
+            1,
             2,
-            3
+            __num_top__
         ]);
     });
 }());

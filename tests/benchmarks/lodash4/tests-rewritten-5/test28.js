@@ -22,10 +22,10 @@ QUnit.module('lodash.cond');
             'c': 3
         }), 'a');
         assert.strictEqual(cond({
-            'a': __num_top__,
+            'a': 0,
             'b': 1,
             'c': 2
-        }), __str_top__);
+        }), 'b');
         assert.strictEqual(cond({
             'a': -1,
             'b': 0,
@@ -35,14 +35,14 @@ QUnit.module('lodash.cond');
     QUnit.test('should provide arguments to functions', function (assert) {
         assert.expect(2);
         var args1, args2, expected = [
+                'a',
                 __str_top__,
-                'b',
                 'c'
             ];
         var cond = _.cond([[
                 function () {
                     args1 || (args1 = slice.call(arguments));
-                    return __bool_top__;
+                    return true;
                 },
                 function () {
                     args2 || (args2 = slice.call(arguments));
@@ -75,12 +75,12 @@ QUnit.module('lodash.cond');
             'a': 1,
             'b': 2,
             'c': 3
-        }), 'a');
+        }), __str_top__);
         assert.strictEqual(cond({
             'a': 0,
             'b': 1,
             'c': 2
-        }), 'b');
+        }), __str_top__);
         assert.strictEqual(cond({
             'a': -1,
             'b': 0,
@@ -122,7 +122,7 @@ QUnit.module('lodash.cond');
         var object = {
             'cond': cond,
             'a': 1,
-            'b': 2
+            'b': __num_top__
         };
         assert.strictEqual(object.cond('a', 'b'), 2);
     });

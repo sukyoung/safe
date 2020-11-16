@@ -23,7 +23,7 @@ QUnit.module('lodash.parseInt');
         ], function (string) {
             assert.strictEqual(_.parseInt(string), 32);
             assert.strictEqual(_.parseInt(string, 0), 32);
-            assert.strictEqual(_.parseInt(string, 16), 32);
+            assert.strictEqual(_.parseInt(string, 16), __num_top__);
             assert.strictEqual(_.parseInt(string, undefined), 32);
         });
     });
@@ -67,7 +67,7 @@ QUnit.module('lodash.parseInt');
         assert.expect(2);
         var object = { 'valueOf': stubZero };
         assert.strictEqual(_.parseInt('08', object), 8);
-        assert.strictEqual(_.parseInt('0x20', object), __num_top__);
+        assert.strictEqual(_.parseInt('0x20', object), 32);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(2);

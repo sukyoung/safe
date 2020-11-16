@@ -2,7 +2,7 @@ QUnit.module('lodash.shuffle');
 (function () {
     var array = [
             1,
-            2,
+            __num_top__,
             3
         ], object = {
             'a': 1,
@@ -20,7 +20,7 @@ QUnit.module('lodash.shuffle');
     });
     QUnit.test('should shuffle small collections', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.times(__num_top__, function (assert) {
+        var actual = lodashStable.times(1000, function (assert) {
             return _.shuffle([
                 1,
                 2

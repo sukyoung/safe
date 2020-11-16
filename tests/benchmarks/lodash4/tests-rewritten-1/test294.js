@@ -5,7 +5,7 @@ QUnit.module('lodash(...).pop');
         if (!isNpm) {
             var array = [
                     1,
-                    2
+                    __num_top__
                 ], wrapped = _(array);
             assert.strictEqual(wrapped.pop(), 2);
             assert.deepEqual(wrapped.value(), [1]);
@@ -14,7 +14,7 @@ QUnit.module('lodash(...).pop');
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
     QUnit.test('should accept falsey arguments', function (assert) {

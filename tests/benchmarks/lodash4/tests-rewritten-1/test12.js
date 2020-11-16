@@ -91,7 +91,7 @@ QUnit.module('lodash.at');
         var actual = _.at([
             1,
             2,
-            __num_top__,
+            3,
             4,
             5
         ], args);
@@ -170,7 +170,7 @@ QUnit.module('lodash.at');
         if (!isNpm) {
             var paths = [
                     'a[0].b.c',
-                    'a[1]'
+                    __str_top__
                 ], actual = _(object).map(identity).at(paths).value();
             assert.deepEqual(actual, _.at(_.map(object, identity), paths));
             var indexObject = { '0': 1 };

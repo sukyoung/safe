@@ -1,7 +1,7 @@
 QUnit.module('lodash.at');
 (function () {
     var array = [
-            'a',
+            __str_top__,
             'b',
             'c'
         ], object = {
@@ -24,8 +24,8 @@ QUnit.module('lodash.at');
     QUnit.test('should return `undefined` for nonexistent keys', function (assert) {
         assert.expect(1);
         var actual = _.at(array, [
+            2,
             __num_top__,
-            4,
             0
         ]);
         assert.deepEqual(actual, [
@@ -56,10 +56,10 @@ QUnit.module('lodash.at');
             'a',
             'b',
             'c',
-            __str_top__
-        ], __num_top__, 0, 2);
+            'd'
+        ], 3, 0, 2);
         assert.deepEqual(actual, [
-            'd',
+            __str_top__,
             'a',
             'c'
         ]);
@@ -109,7 +109,7 @@ QUnit.module('lodash.at');
         ]);
         assert.deepEqual(actual, [
             3,
-            __num_top__
+            4
         ]);
     });
     QUnit.test('should pluck inherited property values', function (assert) {
@@ -169,7 +169,7 @@ QUnit.module('lodash.at');
         assert.expect(2);
         if (!isNpm) {
             var paths = [
-                    'a[0].b.c',
+                    __str_top__,
                     'a[1]'
                 ], actual = _(object).map(identity).at(paths).value();
             assert.deepEqual(actual, _.at(_.map(object, identity), paths));

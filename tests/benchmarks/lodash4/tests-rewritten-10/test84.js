@@ -6,7 +6,7 @@ lodashStable.each([
     var func = _[methodName], isHas = methodName == 'has', sparseArgs = toArgs([1]), sparseArray = Array(1), sparseString = Object('a');
     delete sparseArgs[0];
     delete sparseString[0];
-    QUnit.test(__str_top__ + methodName + '` should check for own properties', function (assert) {
+    QUnit.test('`_.' + methodName + '` should check for own properties', function (assert) {
         assert.expect(2);
         var object = { 'a': 1 };
         lodashStable.each([
@@ -22,7 +22,7 @@ lodashStable.each([
             'hasOwnProperty': null,
             'a': 1
         };
-        assert.strictEqual(func(object, 'a'), true);
+        assert.strictEqual(func(object, __str_top__), true);
     });
     QUnit.test('`_.' + methodName + '` should support deep paths', function (assert) {
         assert.expect(4);
@@ -34,10 +34,10 @@ lodashStable.each([
                 'b'
             ]
         ], function (path) {
-            assert.strictEqual(func(object, path), true);
+            assert.strictEqual(func(object, path), __bool_top__);
         });
         lodashStable.each([
-            'a.a',
+            __str_top__,
             [
                 'a',
                 'a'
@@ -46,14 +46,14 @@ lodashStable.each([
             assert.strictEqual(func(object, path), false);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should coerce `path` to a string', function (assert) {
+    QUnit.test('`_.' + methodName + '` should coerce `path` to a string', function (assert) {
         assert.expect(2);
         function fn() {
         }
         fn.toString = lodashStable.constant('fn');
         var object = {
-                'null': __num_top__,
-                'undefined': 2,
+                'null': 1,
+                'undefined': __num_top__,
                 'fn': 3,
                 '[object Object]': 4
             }, paths = [
@@ -81,7 +81,7 @@ lodashStable.each([
             3
         ];
         lodashStable.each([
-            __num_top__,
+            1,
             [1]
         ], function (path) {
             assert.strictEqual(func(array, path), true);
@@ -90,11 +90,11 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var object = {
-                '-0': 'a',
+                '-0': __str_top__,
                 '0': 'b'
             }, props = [
                 -0,
-                Object(-__num_top__),
+                Object(-0),
                 0,
                 Object(0)
             ], expected = lodashStable.map(props, stubTrue);
@@ -103,7 +103,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with a symbol `path`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a symbol `path`', function (assert) {
         assert.expect(2);
         function Foo() {
         }
@@ -141,7 +141,7 @@ lodashStable.each([
                 sparseString
             ], expected = lodashStable.map(values, stubTrue);
         var actual = lodashStable.map(values, function (value) {
-            return func(value, 0);
+            return func(value, __num_top__);
         });
         assert.deepEqual(actual, expected);
     });
@@ -152,7 +152,7 @@ lodashStable.each([
                 sparseArray,
                 sparseString
             ], expected = lodashStable.map(values, lodashStable.constant([
-                true,
+                __bool_top__,
                 true
             ]));
         var actual = lodashStable.map(values, function (value) {
@@ -180,7 +180,7 @@ lodashStable.each([
             assert.strictEqual(func(new Foo(), path), !isHas);
         });
     });
-    QUnit.test('`_.' + methodName + __str_top__ + (isHas ? 'false' : 'true') + '` for nested inherited properties', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `' + (isHas ? __str_top__ : __str_top__) + '` for nested inherited properties', function (assert) {
         assert.expect(2);
         function Foo() {
         }
@@ -195,7 +195,7 @@ lodashStable.each([
             assert.strictEqual(func(new Foo(), path), !isHas);
         });
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `false` when `object` is nullish', function (assert) {
         assert.expect(2);
         var values = [
                 null,
@@ -220,7 +220,7 @@ lodashStable.each([
         lodashStable.each([
             'constructor.prototype.valueOf',
             [
-                __str_top__,
+                'constructor',
                 'prototype',
                 'valueOf'
             ]

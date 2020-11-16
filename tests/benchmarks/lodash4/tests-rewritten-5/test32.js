@@ -2,7 +2,7 @@ QUnit.module('lodash.countBy');
 (function () {
     var array = [
         6.1,
-        4.2,
+        __num_top__,
         6.3
     ];
     QUnit.test('should transform keys by `iteratee`', function (assert) {
@@ -10,7 +10,7 @@ QUnit.module('lodash.countBy');
         var actual = _.countBy(array, Math.floor);
         assert.deepEqual(actual, {
             '4': 1,
-            '6': __num_top__
+            '6': 2
         });
     });
     QUnit.test('should use `_.identity` when `iteratee` is nullish', function (assert) {
@@ -35,12 +35,12 @@ QUnit.module('lodash.countBy');
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         var actual = _.countBy([
-            'one',
+            __str_top__,
             'two',
             'three'
         ], 'length');
         assert.deepEqual(actual, {
-            '3': __num_top__,
+            '3': 2,
             '5': 1
         });
     });
@@ -49,7 +49,7 @@ QUnit.module('lodash.countBy');
         var actual = _.countBy(array, function (n) {
             return Math.floor(n) > 4 ? 'hasOwnProperty' : 'constructor';
         });
-        assert.deepEqual(actual.constructor, __num_top__);
+        assert.deepEqual(actual.constructor, 1);
         assert.deepEqual(actual.hasOwnProperty, 2);
     });
     QUnit.test('should work with a number for `iteratee`', function (assert) {
@@ -61,14 +61,14 @@ QUnit.module('lodash.countBy');
             ],
             [
                 2,
-                'a'
+                __str_top__
             ],
             [
                 2,
                 'b'
             ]
         ];
-        assert.deepEqual(_.countBy(array, 0), {
+        assert.deepEqual(_.countBy(array, __num_top__), {
             '1': 1,
             '2': 2
         });
@@ -82,11 +82,11 @@ QUnit.module('lodash.countBy');
         var actual = _.countBy({
             'a': 6.1,
             'b': 4.2,
-            'c': 6.3
+            'c': __num_top__
         }, Math.floor);
         assert.deepEqual(actual, {
-            '4': __num_top__,
-            '6': __num_top__
+            '4': 1,
+            '6': 2
         });
     });
     QUnit.test('should work in a lazy sequence', function (assert) {

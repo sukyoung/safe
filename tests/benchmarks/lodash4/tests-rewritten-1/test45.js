@@ -13,8 +13,8 @@ QUnit.module('lodash.differenceBy');
         actual = _.differenceBy([
             { 'x': 2 },
             { 'x': 1 }
-        ], [{ 'x': 1 }], __str_top__);
-        assert.deepEqual(actual, [{ 'x': 2 }]);
+        ], [{ 'x': 1 }], 'x');
+        assert.deepEqual(actual, [{ 'x': __num_top__ }]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);

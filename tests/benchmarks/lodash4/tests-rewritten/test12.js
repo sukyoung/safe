@@ -139,7 +139,7 @@ QUnit.module('lodash.at');
                 });
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
     QUnit.test('should support shortcut fusion', function (assert) {
@@ -162,7 +162,7 @@ QUnit.module('lodash.at');
                 assert.deepEqual(actual, expected);
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 8);
         }
     });
     QUnit.test('work with an object for `object` when chaining', function (assert) {
@@ -177,7 +177,7 @@ QUnit.module('lodash.at');
             actual = _(indexObject).at(__num_top__).value();
             assert.deepEqual(actual, _.at(indexObject, __num_top__));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

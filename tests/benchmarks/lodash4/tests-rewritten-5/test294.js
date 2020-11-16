@@ -8,13 +8,13 @@ QUnit.module('lodash(...).pop');
                     __num_top__
                 ], wrapped = _(array);
             assert.strictEqual(wrapped.pop(), __num_top__);
-            assert.deepEqual(wrapped.value(), [1]);
+            assert.deepEqual(wrapped.value(), [__num_top__]);
             assert.strictEqual(wrapped.pop(), __num_top__);
             var actual = wrapped.value();
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
     QUnit.test('should accept falsey arguments', function (assert) {

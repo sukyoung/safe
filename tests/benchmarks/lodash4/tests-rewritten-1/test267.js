@@ -2,7 +2,7 @@ QUnit.module('union methods');
 lodashStable.each([
     'union',
     'unionBy',
-    __str_top__
+    'unionWith'
 ], function (methodName) {
     var func = _[methodName];
     QUnit.test('`_.' + methodName + '` should return the union of two arrays', function (assert) {
@@ -38,7 +38,7 @@ lodashStable.each([
             3,
             2
         ], [
-            1,
+            __num_top__,
             [5]
         ], [
             2,

@@ -23,7 +23,7 @@ QUnit.module('lodash.debounce');
             assert.strictEqual(callCount, 1);
             var results = [
                 debounced('d'),
-                debounced('e'),
+                debounced(__str_top__),
                 debounced('f')
             ];
             assert.deepEqual(results, [
@@ -147,7 +147,7 @@ QUnit.module('lodash.debounce');
         withoutTrailing();
         assert.strictEqual(withoutCount, 0);
         setTimeout(function () {
-            assert.strictEqual(withCount, __num_top__);
+            assert.strictEqual(withCount, 1);
             assert.strictEqual(withoutCount, 0);
             done();
         }, 64);

@@ -76,14 +76,14 @@ QUnit.module('lodash.take');
                     return isEven(value);
                 }, values = [], actual = _(array).take(2).take().value();
             assert.deepEqual(actual, _.take(_.take(array, 2)));
-            actual = _(array).filter(predicate).take(__num_top__).take().value();
+            actual = _(array).filter(predicate).take(2).take().value();
             assert.deepEqual(values, [
                 1,
                 2
             ]);
             assert.deepEqual(actual, _.take(_.take(_.filter(array, predicate), 2)));
             actual = _(array).take(6).takeRight(4).take(2).takeRight().value();
-            assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(array, 6), 4), 2)));
+            assert.deepEqual(actual, _.takeRight(_.take(_.takeRight(_.take(array, __num_top__), 4), 2)));
             values = [];
             actual = _(array).take(array.length - 1).filter(predicate).take(6).takeRight(4).take(2).takeRight().value();
             assert.deepEqual(values, [

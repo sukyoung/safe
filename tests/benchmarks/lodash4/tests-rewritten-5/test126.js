@@ -3,10 +3,10 @@ QUnit.module('lodash.isSymbol');
     QUnit.test('should return `true` for symbols', function (assert) {
         assert.expect(2);
         if (Symbol) {
-            assert.strictEqual(_.isSymbol(symbol), true);
+            assert.strictEqual(_.isSymbol(symbol), __bool_top__);
             assert.strictEqual(_.isSymbol(Object(symbol)), true);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should return `false` for non-symbols', function (assert) {
@@ -18,11 +18,11 @@ QUnit.module('lodash.isSymbol');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isSymbol(args), false);
         assert.strictEqual(_.isSymbol([
-            1,
+            __num_top__,
             2,
-            3
+            __num_top__
         ]), false);
-        assert.strictEqual(_.isSymbol(__bool_top__), false);
+        assert.strictEqual(_.isSymbol(true), false);
         assert.strictEqual(_.isSymbol(new Date()), false);
         assert.strictEqual(_.isSymbol(new Error()), false);
         assert.strictEqual(_.isSymbol(_), false);
@@ -30,10 +30,10 @@ QUnit.module('lodash.isSymbol');
         assert.strictEqual(_.isSymbol({
             '0': 1,
             'length': 1
-        }), false);
+        }), __bool_top__);
         assert.strictEqual(_.isSymbol(__num_top__), false);
         assert.strictEqual(_.isSymbol(/x/), false);
-        assert.strictEqual(_.isSymbol(__str_top__), __bool_top__);
+        assert.strictEqual(_.isSymbol('a'), false);
     });
     QUnit.test('should work with symbols from another realm', function (assert) {
         assert.expect(1);

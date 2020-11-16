@@ -2,18 +2,18 @@ QUnit.module('lodash.split');
 (function () {
     QUnit.test('should split a string by `separator`', function (assert) {
         assert.expect(3);
-        var string = 'abcde';
-        assert.deepEqual(_.split(string, __str_top__), [
+        var string = __str_top__;
+        assert.deepEqual(_.split(string, 'c'), [
             'ab',
-            __str_top__
+            'de'
         ]);
         assert.deepEqual(_.split(string, /[bd]/), [
-            __str_top__,
+            'a',
             'c',
             'e'
         ]);
-        assert.deepEqual(_.split(string, '', 2), [
-            'a',
+        assert.deepEqual(_.split(string, '', __num_top__), [
+            __str_top__,
             'b'
         ]);
     });

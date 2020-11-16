@@ -23,7 +23,7 @@ QUnit.module('lodash.mixin');
     };
     var array = ['a'], source = {
             'a': function (array) {
-                return array[__num_top__];
+                return array[0];
             },
             'b': 'B'
         };
@@ -33,8 +33,8 @@ QUnit.module('lodash.mixin');
             _.mixin(source);
             assert.strictEqual(_.a(array), 'a');
             assert.strictEqual(_(array).a().value(), 'a');
-            assert.notOk('b' in _);
-            assert.notOk(__str_top__ in _.prototype);
+            assert.notOk(__str_top__ in _);
+            assert.notOk('b' in _.prototype);
             reset(_);
         } else {
             skipAssert(assert, 4);
@@ -94,7 +94,7 @@ QUnit.module('lodash.mixin');
     QUnit.test('should accept an `options`', function (assert) {
         assert.expect(8);
         function message(func, chain) {
-            return (func === _ ? 'lodash' : __str_top__) + __str_top__ + (chain ? '' : 'not ') + __str_top__;
+            return (func === _ ? __str_top__ : __str_top__) + ' function should ' + (chain ? '' : 'not ') + 'chain';
         }
         lodashStable.each([
             _,
@@ -112,10 +112,10 @@ QUnit.module('lodash.mixin');
                     }
                     var wrapped = func(array), actual = wrapped.a();
                     if (options.chain) {
-                        assert.strictEqual(actual.value(), 'a', message(func, __bool_top__));
-                        assert.ok(actual instanceof func, message(func, true));
+                        assert.strictEqual(actual.value(), 'a', message(func, true));
+                        assert.ok(actual instanceof func, message(func, __bool_top__));
                     } else {
-                        assert.strictEqual(actual, 'a', message(func, false));
+                        assert.strictEqual(actual, 'a', message(func, __bool_top__));
                         assert.notOk(actual instanceof func, message(func, false));
                     }
                     reset(func);
@@ -135,7 +135,7 @@ QUnit.module('lodash.mixin');
         assert.expect(2);
         var pass = true;
         try {
-            _.mixin({}, source, 1);
+            _.mixin({}, source, __num_top__);
         } catch (e) {
             pass = false;
         }

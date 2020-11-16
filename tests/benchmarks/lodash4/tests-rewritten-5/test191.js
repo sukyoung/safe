@@ -5,23 +5,23 @@ QUnit.module('lodash.propertyOf');
         var object = { 'a': 1 }, propOf = _.propertyOf(object);
         assert.strictEqual(propOf.length, 1);
         lodashStable.each([
-            __str_top__,
+            'a',
             ['a']
         ], function (path) {
-            assert.strictEqual(propOf(path), 1);
+            assert.strictEqual(propOf(path), __num_top__);
         });
     });
     QUnit.test('should pluck deep property values', function (assert) {
         assert.expect(2);
         var object = { 'a': { 'b': 2 } }, propOf = _.propertyOf(object);
         lodashStable.each([
-            'a.b',
+            __str_top__,
             [
                 'a',
                 'b'
             ]
         ], function (path) {
-            assert.strictEqual(propOf(path), 2);
+            assert.strictEqual(propOf(path), __num_top__);
         });
     });
     QUnit.test('should pluck inherited property values', function (assert) {
@@ -32,7 +32,7 @@ QUnit.module('lodash.propertyOf');
         Foo.prototype.b = 2;
         var propOf = _.propertyOf(new Foo());
         lodashStable.each([
-            __str_top__,
+            'b',
             ['b']
         ], function (path) {
             assert.strictEqual(propOf(path), 2);
@@ -124,7 +124,7 @@ QUnit.module('lodash.propertyOf');
                 undefined
             ], expected = lodashStable.map(values, noop);
         lodashStable.each([
-            'constructor',
+            __str_top__,
             ['constructor']
         ], function (path) {
             var actual = lodashStable.map(values, function (value, index) {
@@ -160,13 +160,13 @@ QUnit.module('lodash.propertyOf');
         assert.expect(4);
         var propOf = _.propertyOf({});
         lodashStable.each([
-            __str_top__,
+            'a',
             'a[1].b.c',
             ['a'],
             [
                 'a',
                 '1',
-                __str_top__,
+                'b',
                 'c'
             ]
         ], function (path) {

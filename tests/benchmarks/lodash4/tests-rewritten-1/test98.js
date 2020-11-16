@@ -5,7 +5,7 @@ QUnit.module('lodash.isArray');
         assert.strictEqual(_.isArray([
             1,
             2,
-            3
+            __num_top__
         ]), true);
     });
     QUnit.test('should return `false` for non-arrays', function (assert) {
@@ -23,7 +23,7 @@ QUnit.module('lodash.isArray');
         assert.strictEqual(_.isArray(slice), false);
         assert.strictEqual(_.isArray({
             '0': 1,
-            'length': __num_top__
+            'length': 1
         }), false);
         assert.strictEqual(_.isArray(1), false);
         assert.strictEqual(_.isArray(/x/), false);

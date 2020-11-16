@@ -2,16 +2,16 @@ QUnit.module('lodash.toPath');
 (function () {
     QUnit.test('should convert a string to a path', function (assert) {
         assert.expect(2);
-        assert.deepEqual(_.toPath(__str_top__), [
-            __str_top__,
+        assert.deepEqual(_.toPath('a.b.c'), [
+            'a',
             'b',
             'c'
         ]);
         assert.deepEqual(_.toPath('a[0].b.c'), [
             'a',
-            '0',
+            __str_top__,
             'b',
-            'c'
+            __str_top__
         ]);
     });
     QUnit.test('should coerce array elements to strings', function (assert) {
@@ -76,16 +76,16 @@ QUnit.module('lodash.toPath');
         expected = [
             '',
             '',
-            __str_top__
+            'a'
         ];
         assert.deepEqual(_.toPath('..a'), expected);
         assert.deepEqual(_.toPath('[][].a'), expected);
         expected = [
+            'a',
             __str_top__,
-            '',
             'b'
         ];
-        assert.deepEqual(_.toPath('a..b'), expected);
+        assert.deepEqual(_.toPath(__str_top__), expected);
         assert.deepEqual(_.toPath('a[].b'), expected);
         expected = [
             'a',

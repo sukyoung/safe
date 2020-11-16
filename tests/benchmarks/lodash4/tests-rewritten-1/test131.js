@@ -8,7 +8,7 @@ QUnit.module('isType checks');
             'isDate',
             'isFunction',
             'isNumber',
-            __str_top__,
+            'isRegExp',
             'isString'
         ];
         lodashStable.each(funcs, function (methodName) {
@@ -43,7 +43,7 @@ QUnit.module('isType checks');
             'isNil',
             'isNull',
             'isNumber',
-            'isObject',
+            __str_top__,
             'isObjectLike',
             'isRegExp',
             'isSet',

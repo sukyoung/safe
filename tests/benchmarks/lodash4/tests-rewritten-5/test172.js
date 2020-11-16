@@ -4,12 +4,12 @@ QUnit.module('lodash.omitBy');
         assert.expect(1);
         var object = {
             'a': 1,
-            'b': 2,
+            'b': __num_top__,
             'c': 3,
             'd': __num_top__
         };
         var actual = _.omitBy(object, function (n) {
-            return n != __num_top__ && n != __num_top__;
+            return n != __num_top__ && n != 4;
         });
         assert.deepEqual(actual, {
             'b': __num_top__,

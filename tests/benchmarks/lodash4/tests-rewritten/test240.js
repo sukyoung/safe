@@ -86,7 +86,7 @@ QUnit.module('lodash.takeRight');
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.take(_.takeRight(_.take(_.takeRight(_.filter(array, predicate), __num_top__), __num_top__), __num_top__)));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

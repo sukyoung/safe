@@ -7,7 +7,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should return `true` for integer values', function (assert) {
         assert.expect(2);
         var values = [
-                -1,
+                -__num_top__,
                 0,
                 1
             ], expected = lodashStable.map(values, stubTrue);
@@ -40,7 +40,7 @@ lodashStable.each([
             return index ? func(value) : func();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(func(args), __bool_top__);
+        assert.strictEqual(func(args), false);
         assert.strictEqual(func([
             1,
             2,

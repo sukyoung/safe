@@ -17,7 +17,7 @@ QUnit.module('lodash.isMap');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isMap(args), false);
         assert.strictEqual(_.isMap([
-            __num_top__,
+            1,
             2,
             3
         ]), false);
@@ -31,7 +31,7 @@ QUnit.module('lodash.isMap');
         assert.strictEqual(_.isMap(/x/), false);
         assert.strictEqual(_.isMap('a'), false);
         assert.strictEqual(_.isMap(symbol), false);
-        assert.strictEqual(_.isMap(weakMap), false);
+        assert.strictEqual(_.isMap(weakMap), __bool_top__);
     });
     QUnit.test('should work for objects with a non-function `constructor` (test in IE 11)', function (assert) {
         assert.expect(1);

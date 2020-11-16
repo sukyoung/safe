@@ -11,13 +11,13 @@ QUnit.module('isIterateeCall');
             assert.strictEqual(func(1, 'a', object), true);
             assert.strictEqual(func(1, 'a', new Foo()), true);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should return `false` for non-iteratee calls', function (assert) {
         assert.expect(4);
         if (func) {
-            assert.strictEqual(func(2, 0, array), false);
+            assert.strictEqual(func(__num_top__, 0, array), false);
             assert.strictEqual(func(1, 1.1, array), false);
             assert.strictEqual(func(1, 0, { 'length': MAX_SAFE_INTEGER + 1 }), false);
             assert.strictEqual(func(1, 'b', object), false);

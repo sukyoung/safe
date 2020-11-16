@@ -1,9 +1,9 @@
 QUnit.module('lodash.drop');
 (function () {
     var array = [
-        __num_top__,
-        __num_top__,
-        __num_top__
+        1,
+        2,
+        3
     ];
     QUnit.test('should drop the first two elements', function (assert) {
         assert.expect(1);
@@ -26,7 +26,7 @@ QUnit.module('lodash.drop');
         assert.expect(3);
         lodashStable.each([
             0,
-            -__num_top__,
+            -1,
             -Infinity
         ], function (n) {
             assert.deepEqual(_.drop(array, n), array);
@@ -37,7 +37,7 @@ QUnit.module('lodash.drop');
         lodashStable.each([
             3,
             4,
-            Math.pow(2, 32),
+            Math.pow(2, __num_top__),
             Infinity
         ], function (n) {
             assert.deepEqual(_.drop(array, n), []);
@@ -45,8 +45,8 @@ QUnit.module('lodash.drop');
     });
     QUnit.test('should coerce `n` to an integer', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.drop(array, 1.6), [
-            __num_top__,
+        assert.deepEqual(_.drop(array, __num_top__), [
+            2,
             3
         ]);
     });
@@ -56,7 +56,7 @@ QUnit.module('lodash.drop');
                 [
                     1,
                     2,
-                    3
+                    __num_top__
                 ],
                 [
                     4,
@@ -71,35 +71,35 @@ QUnit.module('lodash.drop');
             ], actual = lodashStable.map(array, _.drop);
         assert.deepEqual(actual, [
             [
-                __num_top__,
+                2,
                 3
             ],
             [
                 __num_top__,
-                6
+                __num_top__
             ],
             [
                 8,
-                9
+                __num_top__
             ]
         ]);
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(6);
         if (!isNpm) {
-            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), predicate = function (value) {
+            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + __num_top__), predicate = function (value) {
                     values.push(value);
                     return isEven(value);
-                }, values = [], actual = _(array).drop(2).drop().value();
+                }, values = [], actual = _(array).drop(__num_top__).drop().value();
             assert.deepEqual(actual, array.slice(3));
-            actual = _(array).filter(predicate).drop(2).drop().value();
+            actual = _(array).filter(predicate).drop(__num_top__).drop().value();
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.drop(_.drop(_.filter(array, predicate), 2)));
             actual = _(array).drop(2).dropRight().drop().dropRight(2).value();
-            assert.deepEqual(actual, _.dropRight(_.drop(_.dropRight(_.drop(array, 2))), __num_top__));
+            assert.deepEqual(actual, _.dropRight(_.drop(_.dropRight(_.drop(array, 2))), 2));
             values = [];
             actual = _(array).drop().filter(predicate).drop(2).dropRight().drop().dropRight(2).value();
-            assert.deepEqual(values, array.slice(__num_top__));
+            assert.deepEqual(values, array.slice(1));
             assert.deepEqual(actual, _.dropRight(_.drop(_.dropRight(_.drop(_.filter(_.drop(array), predicate), 2))), __num_top__));
         } else {
             skipAssert(assert, 6);

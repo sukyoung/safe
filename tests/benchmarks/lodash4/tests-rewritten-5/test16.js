@@ -1,12 +1,12 @@
 QUnit.module('lodash.bindAll');
 (function () {
-    var args = toArgs(['a']);
+    var args = toArgs([__str_top__]);
     var source = {
         '_n0': -2,
         '_p0': -1,
-        '_a': 1,
+        '_a': __num_top__,
         '_b': 2,
-        '_c': 3,
+        '_c': __num_top__,
         '_d': 4,
         '-0': function () {
             return this._n0;
@@ -30,17 +30,17 @@ QUnit.module('lodash.bindAll');
     QUnit.test('should accept individual method names', function (assert) {
         assert.expect(1);
         var object = lodashStable.cloneDeep(source);
-        _.bindAll(object, 'a', __str_top__);
+        _.bindAll(object, 'a', 'b');
         var actual = lodashStable.map([
             'a',
-            __str_top__,
+            'b',
             'c'
         ], function (key) {
             return object[key].call({});
         });
         assert.deepEqual(actual, [
             1,
-            2,
+            __num_top__,
             undefined
         ]);
     });
@@ -50,7 +50,7 @@ QUnit.module('lodash.bindAll');
         _.bindAll(object, [
             'a',
             'b'
-        ], ['c']);
+        ], [__str_top__]);
         var actual = lodashStable.map([
             'a',
             'b',
@@ -62,15 +62,15 @@ QUnit.module('lodash.bindAll');
         assert.deepEqual(actual, [
             1,
             2,
-            __num_top__,
+            3,
             undefined
         ]);
     });
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var props = [
-            -__num_top__,
-            Object(-__num_top__),
+            -0,
+            Object(-0),
             0,
             Object(0)
         ];

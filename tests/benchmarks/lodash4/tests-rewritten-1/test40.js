@@ -25,7 +25,7 @@ QUnit.module('lodash.defaultsDeep');
         assert.expect(2);
         var source1 = { 'a': { 'b': 3 } }, source2 = { 'a': { 'c': 3 } }, source3 = {
                 'a': {
-                    'b': __num_top__,
+                    'b': 3,
                     'c': 3
                 }
             }, source4 = { 'a': { 'c': 4 } }, expected = {
@@ -34,7 +34,7 @@ QUnit.module('lodash.defaultsDeep');
                     'c': 3
                 }
             };
-        assert.deepEqual(_.defaultsDeep({ 'a': { 'b': 2 } }, source1, source2), expected);
+        assert.deepEqual(_.defaultsDeep({ 'a': { 'b': __num_top__ } }, source1, source2), expected);
         assert.deepEqual(_.defaultsDeep({ 'a': { 'b': 2 } }, source3, source4), expected);
     });
     QUnit.test('should not overwrite `null` values', function (assert) {

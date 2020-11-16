@@ -2,7 +2,7 @@ QUnit.module('lodash.reverse');
 (function () {
     var largeArray = lodashStable.range(LARGE_ARRAY_SIZE).concat(null), smallArray = [
             0,
-            1,
+            __num_top__,
             2,
             null
         ];
@@ -16,7 +16,7 @@ QUnit.module('lodash.reverse');
         assert.strictEqual(actual, array);
         assert.deepEqual(array, [
             3,
-            2,
+            __num_top__,
             1
         ]);
     });
@@ -36,9 +36,9 @@ QUnit.module('lodash.reverse');
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(4);
         if (!isNpm) {
-            lodashStable.times(2, function (index) {
+            lodashStable.times(__num_top__, function (index) {
                 var array = (index ? largeArray : smallArray).slice(), expected = array.slice(), actual = _(array).slice(1).reverse().value();
-                assert.deepEqual(actual, expected.slice(__num_top__).reverse());
+                assert.deepEqual(actual, expected.slice(1).reverse());
                 assert.deepEqual(array, expected);
             });
         } else {
@@ -50,7 +50,7 @@ QUnit.module('lodash.reverse');
         if (!isNpm) {
             var spy = {
                 'toString': function () {
-                    throw new Error(__str_top__);
+                    throw new Error('spy was revealed');
                 }
             };
             var array = largeArray.concat(spy), expected = array.slice();
@@ -72,23 +72,23 @@ QUnit.module('lodash.reverse');
                 var clone = (index ? largeArray : smallArray).slice();
                 lodashStable.each([
                     'map',
-                    'filter'
+                    __str_top__
                 ], function (methodName) {
                     var array = clone.slice(), expected = clone.slice(1, -1).reverse(), actual = _(array)[methodName](identity).thru(_.compact).reverse().value();
                     assert.deepEqual(actual, expected);
                     array = clone.slice();
                     actual = _(array).thru(_.compact)[methodName](identity).pull(1).push(3).reverse().value();
-                    assert.deepEqual(actual, [__num_top__].concat(expected.slice(0, -1)));
+                    assert.deepEqual(actual, [3].concat(expected.slice(0, -1)));
                 });
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 8);
         }
     });
     QUnit.test('should track the `__chain__` value of a wrapper', function (assert) {
         assert.expect(6);
         if (!isNpm) {
-            lodashStable.times(__num_top__, function (index) {
+            lodashStable.times(2, function (index) {
                 var array = (index ? largeArray : smallArray).slice(), expected = array.slice().reverse(), wrapped = _(array).chain().reverse().head();
                 assert.ok(wrapped instanceof _);
                 assert.strictEqual(wrapped.value(), _.head(expected));

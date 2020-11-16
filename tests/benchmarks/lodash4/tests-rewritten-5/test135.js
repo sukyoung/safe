@@ -6,8 +6,8 @@ QUnit.module('lodash.keyBy');
             'code': 97
         },
         {
-            'dir': __str_top__,
-            'code': __num_top__
+            'dir': 'right',
+            'code': 100
         }
     ];
     QUnit.test('should transform keys by `iteratee`', function (assert) {
@@ -18,7 +18,7 @@ QUnit.module('lodash.keyBy');
                 'code': 97
             },
             'd': {
-                'dir': __str_top__,
+                'dir': 'right',
                 'code': 100
             }
         };
@@ -38,7 +38,7 @@ QUnit.module('lodash.keyBy');
                 null,
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant({
-                '4': 4,
+                '4': __num_top__,
                 '6': 6
             }));
         var actual = lodashStable.map(values, function (value, index) {
@@ -55,7 +55,7 @@ QUnit.module('lodash.keyBy');
                 },
                 'right': {
                     'dir': 'right',
-                    'code': __num_top__
+                    'code': 100
                 }
             }, actual = _.keyBy(array, 'dir');
         assert.deepEqual(actual, expected);
@@ -64,7 +64,7 @@ QUnit.module('lodash.keyBy');
         assert.expect(2);
         var actual = _.keyBy([
             6.1,
-            4.2,
+            __num_top__,
             6.3
         ], function (n) {
             return Math.floor(n) > 4 ? 'hasOwnProperty' : 'constructor';
@@ -84,7 +84,7 @@ QUnit.module('lodash.keyBy');
                 'a'
             ],
             [
-                2,
+                __num_top__,
                 'b'
             ]
         ];
@@ -94,7 +94,7 @@ QUnit.module('lodash.keyBy');
                 'a'
             ],
             '2': [
-                2,
+                __num_top__,
                 'b'
             ]
         });
@@ -105,7 +105,7 @@ QUnit.module('lodash.keyBy');
             ],
             'b': [
                 2,
-                __str_top__
+                'b'
             ]
         });
     });

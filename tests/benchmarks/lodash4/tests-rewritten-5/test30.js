@@ -14,14 +14,14 @@ lodashStable.each([
         var objects = [
             {
                 'a': 1,
-                'b': __num_top__
+                'b': 8
             },
             {
                 'a': 2,
                 'b': 4
             },
             {
-                'a': 3,
+                'a': __num_top__,
                 'b': 16
             }
         ];
@@ -62,7 +62,7 @@ lodashStable.each([
                 'b': 8
             },
             {
-                'a': __num_top__,
+                'a': 2,
                 'b': 4
             },
             {
@@ -85,7 +85,7 @@ lodashStable.each([
                 return true;
             }
         });
-        assert.strictEqual(par({}), __bool_top__);
+        assert.strictEqual(par({}), false);
         assert.strictEqual(count, 0);
     });
     QUnit.test('`_.' + methodName + '` should work with a function for `object`', function (assert) {
@@ -101,7 +101,7 @@ lodashStable.each([
                 return value > 1;
             }
         });
-        assert.strictEqual(par(Foo), __bool_top__);
+        assert.strictEqual(par(Foo), false);
         assert.strictEqual(par(Bar), true);
     });
     QUnit.test('`_.' + methodName + '` should work with a function for `source`', function (assert) {
@@ -112,7 +112,7 @@ lodashStable.each([
             return value > 1;
         };
         var objects = [
-                { 'a': 1 },
+                { 'a': __num_top__ },
                 { 'a': 2 }
             ], actual = lodashStable.filter(objects, conforms(Foo));
         assert.deepEqual(actual, [objects[1]]);
@@ -139,7 +139,7 @@ lodashStable.each([
             ], expected = lodashStable.map(values, stubFalse);
         var par = conforms({
             'a': function (value) {
-                return value > 1;
+                return value > __num_top__;
             }
         });
         var actual = lodashStable.map(values, function (value, index) {
@@ -165,7 +165,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should return `true` when comparing an empty `source`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var object = { 'a': 1 }, expected = lodashStable.map(empties, stubTrue);
         var actual = lodashStable.map(empties, function (value) {

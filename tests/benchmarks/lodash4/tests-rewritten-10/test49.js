@@ -1,13 +1,13 @@
 QUnit.module('lodash.dropRight');
 (function () {
     var array = [
-        __num_top__,
+        1,
         2,
-        __num_top__
+        3
     ];
     QUnit.test('should drop the last two elements', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.dropRight(array, 2), [1]);
+        assert.deepEqual(_.dropRight(array, __num_top__), [1]);
     });
     QUnit.test('should treat falsey `n` values, except `undefined`, as `0`', function (assert) {
         assert.expect(1);
@@ -37,7 +37,7 @@ QUnit.module('lodash.dropRight');
         lodashStable.each([
             3,
             4,
-            Math.pow(2, 32),
+            Math.pow(__num_top__, 32),
             Infinity
         ], function (n) {
             assert.deepEqual(_.dropRight(array, n), []);
@@ -47,7 +47,7 @@ QUnit.module('lodash.dropRight');
         assert.expect(1);
         assert.deepEqual(_.dropRight(array, 1.6), [
             1,
-            __num_top__
+            2
         ]);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
@@ -55,7 +55,7 @@ QUnit.module('lodash.dropRight');
         var array = [
                 [
                     1,
-                    2,
+                    __num_top__,
                     3
                 ],
                 [
@@ -75,32 +75,32 @@ QUnit.module('lodash.dropRight');
                 2
             ],
             [
-                __num_top__,
-                __num_top__
+                4,
+                5
             ],
             [
-                7,
-                __num_top__
+                __num_top__,
+                8
             ]
         ]);
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(6);
         if (!isNpm) {
-            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), predicate = function (value) {
+            var array = lodashStable.range(__num_top__, LARGE_ARRAY_SIZE + 1), predicate = function (value) {
                     values.push(value);
                     return isEven(value);
                 }, values = [], actual = _(array).dropRight(2).dropRight().value();
-            assert.deepEqual(actual, array.slice(0, -__num_top__));
+            assert.deepEqual(actual, array.slice(0, -3));
             actual = _(array).filter(predicate).dropRight(2).dropRight().value();
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.dropRight(_.dropRight(_.filter(array, predicate), 2)));
-            actual = _(array).dropRight(__num_top__).drop().dropRight().drop(2).value();
+            actual = _(array).dropRight(__num_top__).drop().dropRight().drop(__num_top__).value();
             assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(array, 2))), 2));
             values = [];
             actual = _(array).dropRight().filter(predicate).dropRight(2).drop().dropRight().drop(2).value();
-            assert.deepEqual(values, array.slice(0, -__num_top__));
-            assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(_.filter(_.dropRight(array), predicate), 2))), 2));
+            assert.deepEqual(values, array.slice(__num_top__, -1));
+            assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(_.filter(_.dropRight(array), predicate), __num_top__))), 2));
         } else {
             skipAssert(assert, 6);
         }

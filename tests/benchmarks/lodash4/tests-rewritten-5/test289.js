@@ -3,7 +3,7 @@ QUnit.module('lodash.zipWith');
     QUnit.test('should zip arrays combining grouped elements with `iteratee`', function (assert) {
         assert.expect(2);
         var array1 = [
-                __num_top__,
+                1,
                 2,
                 __num_top__
             ], array2 = [
@@ -12,7 +12,7 @@ QUnit.module('lodash.zipWith');
                 6
             ], array3 = [
                 7,
-                8,
+                __num_top__,
                 9
             ];
         var actual = _.zipWith(array1, array2, array3, function (a, b, c) {
@@ -36,21 +36,21 @@ QUnit.module('lodash.zipWith');
         assert.expect(1);
         var args;
         _.zipWith([
-            1,
+            __num_top__,
             2
         ], [
             3,
             4
         ], [
-            __num_top__,
+            5,
             6
         ], function () {
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [
-            1,
             __num_top__,
-            __num_top__
+            3,
+            5
         ]);
     });
     QUnit.test('should perform a basic zip when `iteratee` is nullish', function (assert) {

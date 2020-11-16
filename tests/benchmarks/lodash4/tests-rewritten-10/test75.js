@@ -33,7 +33,7 @@ QUnit.module('iteration methods');
     var arrayMethods = [
         'findIndex',
         'findLastIndex',
-        __str_top__,
+        'maxBy',
         'minBy'
     ];
     var collectionMethods = [
@@ -44,7 +44,7 @@ QUnit.module('iteration methods');
         'find',
         'findLast',
         'forEach',
-        'forEachRight',
+        __str_top__,
         'groupBy',
         'keyBy',
         'map',
@@ -52,13 +52,13 @@ QUnit.module('iteration methods');
         'reduce',
         'reduceRight',
         'reject',
-        __str_top__
+        'some'
     ];
     var forInMethods = [
         'forIn',
         'forInRight',
         __str_top__,
-        'pickBy'
+        __str_top__
     ];
     var iterationMethods = [
         '_baseEach',
@@ -76,17 +76,17 @@ QUnit.module('iteration methods');
         'forInRight',
         'forOwn',
         'forOwnRight',
-        __str_top__,
+        'mapKeys',
         'mapValues',
         'omitBy',
         'pickBy'
     ];
     var rightMethods = [
         'findLast',
-        'findLastIndex',
+        __str_top__,
         'findLastKey',
         'forEachRight',
-        __str_top__,
+        'forInRight',
         'forOwnRight'
     ];
     var unwrappedMethods = [
@@ -100,10 +100,10 @@ QUnit.module('iteration methods');
         'findLastIndex',
         'findLastKey',
         'forEach',
-        'forEachRight',
+        __str_top__,
         'forIn',
         'forInRight',
-        __str_top__,
+        'forOwn',
         'forOwnRight',
         'max',
         'maxBy',
@@ -115,13 +115,13 @@ QUnit.module('iteration methods');
         var array = [
                 1,
                 2,
-                __num_top__
+                3
             ], func = _[methodName], isBy = /(^partition|By)$/.test(methodName), isFind = /^find/.test(methodName), isOmitPick = /^(?:omit|pick)By$/.test(methodName), isSome = methodName == 'some';
         QUnit.test('`_.' + methodName + '` should provide correct iteratee arguments', function (assert) {
             assert.expect(1);
             if (func) {
                 var args, expected = [
-                        __num_top__,
+                        1,
                         0,
                         array
                     ];
@@ -136,7 +136,7 @@ QUnit.module('iteration methods');
                     expected[1] += '';
                 }
                 if (isBy) {
-                    expected.length = isOmitPick ? 2 : 1;
+                    expected.length = isOmitPick ? __num_top__ : 1;
                 }
                 assert.deepEqual(args, expected);
             } else {
@@ -166,7 +166,7 @@ QUnit.module('iteration methods');
                     ]
                 ] : [
                     [
-                        __num_top__,
+                        1,
                         0,
                         array
                     ],
@@ -183,7 +183,7 @@ QUnit.module('iteration methods');
                 ];
                 if (isBy) {
                     expected = lodashStable.map(expected, function (args) {
-                        return args.slice(0, isOmitPick ? 2 : 1);
+                        return args.slice(__num_top__, isOmitPick ? 2 : 1);
                     });
                 } else if (lodashStable.includes(objectMethods, methodName)) {
                     expected = lodashStable.map(expected, function (args) {
@@ -246,7 +246,7 @@ QUnit.module('iteration methods');
         var array = [
             1,
             2,
-            3
+            __num_top__
         ];
         QUnit.test('`_.' + methodName + '` should return an unwrapped value when implicitly chaining', function (assert) {
             assert.expect(1);
@@ -329,7 +329,7 @@ QUnit.module('iteration methods');
                 Foo.a = 1;
                 assert.deepEqual(actual, expected);
                 assert.ok(isIteratedAsObject(Foo));
-                assert.notOk(isIteratedAsObject({ 'length': __num_top__ }));
+                assert.notOk(isIteratedAsObject({ 'length': 0 }));
             } else {
                 skipAssert(assert, 3);
             }
@@ -343,7 +343,7 @@ QUnit.module('iteration methods');
                 var count = 0, array = [1];
                 func(array, function () {
                     if (++count == 1) {
-                        array.push(2);
+                        array.push(__num_top__);
                     }
                     return !(isFind || isSome);
                 }, isReduce ? array : null);
@@ -355,7 +355,7 @@ QUnit.module('iteration methods');
     });
     lodashStable.each(lodashStable.difference(lodashStable.union(methods, collectionMethods), arrayMethods), function (methodName) {
         var func = _[methodName], isFind = /^find/.test(methodName), isSome = methodName == 'some', isReduce = /^reduce/.test(methodName);
-        QUnit.test('`_.' + methodName + '` should ignore added `object` properties', function (assert) {
+        QUnit.test('`_.' + methodName + __str_top__, function (assert) {
             assert.expect(1);
             if (func) {
                 var count = 0, object = { 'a': 1 };

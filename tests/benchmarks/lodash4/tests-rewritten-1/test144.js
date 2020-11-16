@@ -47,7 +47,7 @@ QUnit.module('lodash.map');
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant([
                 1,
-                __num_top__
+                2
             ]));
         lodashStable.each([
             array,
@@ -106,7 +106,7 @@ QUnit.module('lodash.map');
                     0,
                     _.map(array.slice(1), square)
                 ];
-            _(array).slice(1).map(function (value, index, array) {
+            _(array).slice(__num_top__).map(function (value, index, array) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, [

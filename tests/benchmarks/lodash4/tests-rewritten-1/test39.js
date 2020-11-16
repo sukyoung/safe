@@ -14,11 +14,11 @@ QUnit.module('lodash.defaults');
     QUnit.test('should accept multiple sources', function (assert) {
         assert.expect(2);
         var expected = {
-                'a': 1,
+                'a': __num_top__,
                 'b': 2,
                 'c': 3
             }, actual = _.defaults({
-                'a': __num_top__,
+                'a': 1,
                 'b': 2
             }, { 'b': 3 }, { 'c': 3 });
         assert.deepEqual(actual, expected);

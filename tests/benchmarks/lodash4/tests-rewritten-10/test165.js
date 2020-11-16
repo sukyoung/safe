@@ -14,7 +14,7 @@ QUnit.module('lodash.overArgs');
     QUnit.test('should use `_.identity` when a predicate is nullish', function (assert) {
         assert.expect(1);
         var over = _.overArgs(fn, undefined, null);
-        assert.deepEqual(over(__str_top__, 'b'), [
+        assert.deepEqual(over('a', 'b'), [
             'a',
             'b'
         ]);
@@ -22,14 +22,14 @@ QUnit.module('lodash.overArgs');
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         var over = _.overArgs(fn, 'b', 'a');
-        assert.deepEqual(over({ 'b': 2 }, { 'a': __num_top__ }), [
+        assert.deepEqual(over({ 'b': 2 }, { 'a': 1 }), [
             2,
-            1
+            __num_top__
         ]);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(1);
-        var over = _.overArgs(fn, { 'b': 1 }, { 'a': 1 });
+        var over = _.overArgs(fn, { 'b': 1 }, { 'a': __num_top__ });
         assert.deepEqual(over({ 'b': 2 }, { 'a': 1 }), [
             false,
             true
@@ -47,8 +47,8 @@ QUnit.module('lodash.overArgs');
                 1
             ]
         ]);
-        assert.deepEqual(over({ 'b': __num_top__ }, { 'a': __num_top__ }), [
-            false,
+        assert.deepEqual(over({ 'b': 2 }, { 'a': 1 }), [
+            __bool_top__,
             true
         ]);
     });
@@ -56,17 +56,17 @@ QUnit.module('lodash.overArgs');
         assert.expect(2);
         var over = _.overArgs(fn, [
             'a',
-            __num_top__
+            1
         ]);
-        assert.deepEqual(over({ 'a': 1 }, { '1': 2 }), [
+        assert.deepEqual(over({ 'a': __num_top__ }, { '1': 2 }), [
             1,
             2
         ]);
         over = _.overArgs(fn, [[
                 'a',
-                __num_top__
+                1
             ]]);
-        assert.deepEqual(over({ 'a': 1 }), [true]);
+        assert.deepEqual(over({ 'a': __num_top__ }), [true]);
     });
     QUnit.test('should flatten `transforms`', function (assert) {
         assert.expect(1);
@@ -74,10 +74,10 @@ QUnit.module('lodash.overArgs');
             doubled,
             square
         ], String);
-        assert.deepEqual(over(__num_top__, 10, 15), [
+        assert.deepEqual(over(5, 10, 15), [
             10,
             100,
-            __str_top__
+            '15'
         ]);
     });
     QUnit.test('should not transform any argument greater than the number of transforms', function (assert) {
@@ -101,14 +101,14 @@ QUnit.module('lodash.overArgs');
     QUnit.test('should not pass `undefined` if there are more transforms than arguments', function (assert) {
         assert.expect(1);
         var over = _.overArgs(fn, doubled, identity);
-        assert.deepEqual(over(5), [10]);
+        assert.deepEqual(over(__num_top__), [10]);
     });
     QUnit.test('should provide the correct argument to each transform', function (assert) {
         assert.expect(1);
         var argsList = [], transform = function () {
                 argsList.push(slice.call(arguments));
             }, over = _.overArgs(noop, transform, transform, transform);
-        over('a', 'b');
+        over(__str_top__, 'b');
         assert.deepEqual(argsList, [
             ['a'],
             ['b']

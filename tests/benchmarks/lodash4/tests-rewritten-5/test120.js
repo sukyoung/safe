@@ -5,15 +5,15 @@ QUnit.module('lodash.isObject');
         assert.strictEqual(_.isObject(args), true);
         assert.strictEqual(_.isObject([
             1,
-            __num_top__,
+            2,
             3
         ]), true);
-        assert.strictEqual(_.isObject(Object(false)), true);
+        assert.strictEqual(_.isObject(Object(__bool_top__)), true);
         assert.strictEqual(_.isObject(new Date()), true);
-        assert.strictEqual(_.isObject(new Error()), __bool_top__);
+        assert.strictEqual(_.isObject(new Error()), true);
         assert.strictEqual(_.isObject(_), true);
-        assert.strictEqual(_.isObject(slice), true);
-        assert.strictEqual(_.isObject({ 'a': 1 }), true);
+        assert.strictEqual(_.isObject(slice), __bool_top__);
+        assert.strictEqual(_.isObject({ 'a': __num_top__ }), true);
         assert.strictEqual(_.isObject(Object(__num_top__)), true);
         assert.strictEqual(_.isObject(/x/), true);
         assert.strictEqual(_.isObject(Object('a')), true);
@@ -30,7 +30,7 @@ QUnit.module('lodash.isObject');
     });
     QUnit.test('should return `false` for non-objects', function (assert) {
         assert.expect(1);
-        var values = falsey.concat(__bool_top__, 1, 'a', symbol), expected = lodashStable.map(values, stubFalse);
+        var values = falsey.concat(true, 1, 'a', symbol), expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value, index) {
             return index ? _.isObject(value) : _.isObject();
         });
@@ -49,7 +49,7 @@ QUnit.module('lodash.isObject');
             assert.strictEqual(_.isObject(realm.function), true);
             assert.strictEqual(_.isObject(realm.number), true);
             assert.strictEqual(_.isObject(realm.object), true);
-            assert.strictEqual(_.isObject(realm.regexp), __bool_top__);
+            assert.strictEqual(_.isObject(realm.regexp), true);
             assert.strictEqual(_.isObject(realm.string), true);
         } else {
             skipAssert(assert, 7);

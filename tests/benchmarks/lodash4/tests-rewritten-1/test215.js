@@ -50,7 +50,7 @@ QUnit.module('lodash.sampleSize');
     });
     QUnit.test('should coerce `n` to an integer', function (assert) {
         assert.expect(1);
-        var actual = _.sampleSize(array, 1.6);
+        var actual = _.sampleSize(array, __num_top__);
         assert.strictEqual(actual.length, 1);
     });
     QUnit.test('should return an empty array for empty collections', function (assert) {
@@ -68,7 +68,7 @@ QUnit.module('lodash.sampleSize');
         assert.expect(2);
         var object = {
                 'a': 1,
-                'b': __num_top__,
+                'b': 2,
                 'c': 3
             }, actual = _.sampleSize(object, 2);
         assert.strictEqual(actual.length, 2);

@@ -53,7 +53,7 @@ lodashStable.each([
                 0,
                 Object(0)
             ], expected = [
-                { '-0': __str_top__ },
+                { '-0': 'a' },
                 { '-0': 'a' },
                 { '0': 'b' },
                 { '0': 'b' }
@@ -94,7 +94,7 @@ lodashStable.each([
             skipAssert(assert, 3);
         }
     });
-    QUnit.test('`_.' + methodName + '` should work with an array `object`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var array = [
             1,

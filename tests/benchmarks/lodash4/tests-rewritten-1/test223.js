@@ -74,7 +74,7 @@ lodashStable.each([
         assert.deepEqual(actual, [
             objects[2],
             objects[0],
-            objects[3],
+            objects[__num_top__],
             objects[1]
         ]);
     });
@@ -88,7 +88,7 @@ lodashStable.each([
                 'a',
                 'c'
             ]);
-            assert.deepEqual(actual, stableArray, index ? __str_top__ : 'array');
+            assert.deepEqual(actual, stableArray, index ? 'object' : 'array');
         });
     });
     QUnit.test('`_.' + methodName + '` should not error on nullish elements', function (assert) {

@@ -9,7 +9,7 @@ QUnit.module('lodash.differenceWith');
                 },
                 {
                     'x': __num_top__,
-                    'y': __num_top__
+                    'y': 1
                 }
             ], actual = _.differenceWith(objects, [{
                     'x': __num_top__,
@@ -23,7 +23,7 @@ QUnit.module('lodash.differenceWith');
                 -__num_top__,
                 __num_top__
             ], largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubOne), others = [
-                [1],
+                [__num_top__],
                 largeArray
             ], expected = lodashStable.map(others, lodashStable.constant([__str_top__]));
         var actual = lodashStable.map(others, function (other) {

@@ -17,19 +17,19 @@ QUnit.module('lodash.isSet');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isSet(args), false);
         assert.strictEqual(_.isSet([
-            __num_top__,
+            1,
             2,
-            __num_top__
-        ]), false);
+            3
+        ]), __bool_top__);
         assert.strictEqual(_.isSet(true), false);
-        assert.strictEqual(_.isSet(new Date()), __bool_top__);
-        assert.strictEqual(_.isSet(new Error()), false);
-        assert.strictEqual(_.isSet(_), false);
+        assert.strictEqual(_.isSet(new Date()), false);
+        assert.strictEqual(_.isSet(new Error()), __bool_top__);
+        assert.strictEqual(_.isSet(_), __bool_top__);
         assert.strictEqual(_.isSet(slice), false);
         assert.strictEqual(_.isSet({ 'a': 1 }), false);
         assert.strictEqual(_.isSet(1), false);
-        assert.strictEqual(_.isSet(/x/), __bool_top__);
-        assert.strictEqual(_.isSet('a'), false);
+        assert.strictEqual(_.isSet(/x/), false);
+        assert.strictEqual(_.isSet('a'), __bool_top__);
         assert.strictEqual(_.isSet(symbol), false);
         assert.strictEqual(_.isSet(weakSet), false);
     });
@@ -37,7 +37,7 @@ QUnit.module('lodash.isSet');
         assert.expect(1);
         var values = [
                 false,
-                true
+                __bool_top__
             ], expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value) {
             return _.isSet({ 'constructor': value });
@@ -47,7 +47,7 @@ QUnit.module('lodash.isSet');
     QUnit.test('should work with weak sets from another realm', function (assert) {
         assert.expect(1);
         if (realm.set) {
-            assert.strictEqual(_.isSet(realm.set), __bool_top__);
+            assert.strictEqual(_.isSet(realm.set), true);
         } else {
             skipAssert(assert);
         }

@@ -44,7 +44,7 @@ QUnit.module('lodash.ary');
         var values = [
                 '1',
                 1.6,
-                __str_top__
+                'xyz'
             ], expected = [
                 ['a'],
                 ['a'],
@@ -95,7 +95,7 @@ QUnit.module('lodash.ary');
     QUnit.test('should work when combined with other methods that use metadata', function (assert) {
         assert.expect(2);
         var array = [
-                'a',
+                __str_top__,
                 'b',
                 'c'
             ], includes = _.curry(_.rearg(_.ary(_.includes, 2), 1, 0), 2);

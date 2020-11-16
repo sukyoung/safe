@@ -30,7 +30,7 @@ QUnit.module('lodash.isObject');
     });
     QUnit.test('should return `false` for non-objects', function (assert) {
         assert.expect(1);
-        var values = falsey.concat(__bool_top__, 1, 'a', symbol), expected = lodashStable.map(values, stubFalse);
+        var values = falsey.concat(true, 1, 'a', symbol), expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value, index) {
             return index ? _.isObject(value) : _.isObject();
         });
@@ -46,7 +46,7 @@ QUnit.module('lodash.isObject');
         if (realm.object) {
             assert.strictEqual(_.isObject(realm.boolean), true);
             assert.strictEqual(_.isObject(realm.date), true);
-            assert.strictEqual(_.isObject(realm.function), true);
+            assert.strictEqual(_.isObject(realm.function), __bool_top__);
             assert.strictEqual(_.isObject(realm.number), true);
             assert.strictEqual(_.isObject(realm.object), true);
             assert.strictEqual(_.isObject(realm.regexp), true);

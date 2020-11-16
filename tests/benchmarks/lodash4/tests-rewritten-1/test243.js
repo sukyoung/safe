@@ -6,7 +6,7 @@ QUnit.module('lodash.tap');
             var intercepted, array = [
                     1,
                     2,
-                    3
+                    __num_top__
                 ];
             var actual = _.tap(array, function (value) {
                 intercepted = value;
@@ -23,7 +23,7 @@ QUnit.module('lodash.tap');
             var intercepted, array = [
                     1,
                     2,
-                    __num_top__
+                    3
                 ];
             var wrapped = _(array).tap(function (value) {
                 intercepted = value;

@@ -3,7 +3,7 @@ QUnit.module('lodash.transform');
     function Foo() {
         this.a = 1;
         this.b = 2;
-        this.c = __num_top__;
+        this.c = 3;
     }
     QUnit.test('should create an object with the same `[[Prototype]]` as `object` when `accumulator` is nullish', function (assert) {
         assert.expect(4);
@@ -25,8 +25,8 @@ QUnit.module('lodash.transform');
         assert.deepEqual(actual, expected);
         expected = lodashStable.map(accumulators, lodashStable.constant({
             'a': 1,
-            'b': 4,
-            'c': __num_top__
+            'b': __num_top__,
+            'c': 9
         }));
         actual = lodashStable.map(results, lodashStable.toPlainObject);
         assert.deepEqual(actual, expected);
@@ -38,13 +38,13 @@ QUnit.module('lodash.transform');
         actual = lodashStable.map(accumulators, mapper);
         assert.deepEqual(actual, expected);
         object = [
-            1,
+            __num_top__,
             2,
             3
         ];
         expected = lodashStable.map(accumulators, lodashStable.constant([
             __num_top__,
-            4,
+            __num_top__,
             9
         ]));
         actual = lodashStable.map(accumulators, mapper);
@@ -69,13 +69,13 @@ QUnit.module('lodash.transform');
                     3
                 ],
                 {
-                    'a': __num_top__,
+                    'a': 1,
                     'b': 2,
                     'c': 3
                 }
             ], expected = lodashStable.map(values, lodashStable.constant([
-                1,
-                4,
+                __num_top__,
+                __num_top__,
                 9
             ]));
         var actual = lodashStable.map(values, function (value) {
@@ -87,12 +87,12 @@ QUnit.module('lodash.transform');
         var object = {
                 'a': 1,
                 'b': 4,
-                'c': 9
+                'c': __num_top__
             }, expected = [
                 object,
                 {
                     '0': 1,
-                    '1': __num_top__,
+                    '1': 4,
                     '2': 9
                 },
                 object
@@ -118,7 +118,7 @@ QUnit.module('lodash.transform');
     });
     QUnit.test('should treat sparse arrays as dense', function (assert) {
         assert.expect(1);
-        var actual = _.transform(Array(__num_top__), function (result, value, index) {
+        var actual = _.transform(Array(1), function (result, value, index) {
             result[index] = String(value);
         });
         assert.deepEqual(actual, ['undefined']);
@@ -141,9 +141,9 @@ QUnit.module('lodash.transform');
                 false,
                 true,
                 0,
-                __num_top__,
+                1,
                 NaN,
-                __str_top__,
+                '',
                 'a'
             ], expected = lodashStable.map(values, stubObject);
         var results = lodashStable.map(values, function (value) {
@@ -178,7 +178,7 @@ QUnit.module('lodash.transform');
         ],
         'object': {
             'a': 1,
-            'b': 2,
+            'b': __num_top__,
             'c': 3
         }
     }, function (object, key) {
@@ -189,12 +189,12 @@ QUnit.module('lodash.transform');
                 args || (args = slice.call(arguments));
             });
             var first = args[0];
-            if (key == 'array') {
+            if (key == __str_top__) {
                 assert.ok(first !== object && lodashStable.isArray(first));
                 assert.deepEqual(args, [
                     first,
-                    __num_top__,
-                    __num_top__,
+                    1,
+                    0,
                     object
                 ]);
             } else {
@@ -217,7 +217,7 @@ QUnit.module('lodash.transform');
         var actual = lodashStable.map(objects, function (object) {
             var Ctor = object.constructor, result = _.transform(object);
             if (result === object) {
-                return false;
+                return __bool_top__;
             }
             if (lodashStable.isTypedArray(object)) {
                 return result instanceof Array;

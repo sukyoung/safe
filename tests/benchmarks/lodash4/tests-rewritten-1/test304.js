@@ -116,7 +116,7 @@ QUnit.module('"Arrays" category methods');
             1,
             null,
             [3],
-            __num_top__
+            5
         ], message('uniq'));
         assert.deepEqual(_.without(args, null), [
             1,

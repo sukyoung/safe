@@ -1,13 +1,13 @@
 QUnit.module('lodash.join');
 (function () {
     var array = [
+        'a',
         __str_top__,
-        'b',
-        'c'
+        __str_top__
     ];
     QUnit.test('should return join all array elements into a string', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.join(array, __str_top__), __str_top__);
+        assert.strictEqual(_.join(array, '~'), __str_top__);
     });
     QUnit.test('should return an unwrapped value when implicitly chaining', function (assert) {
         assert.expect(2);

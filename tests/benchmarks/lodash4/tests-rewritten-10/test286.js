@@ -10,14 +10,14 @@ QUnit.module('lodash.xorBy');
             __num_top__
         ], Math.floor);
         assert.deepEqual(actual, [
-            1.2,
+            __num_top__,
             __num_top__
         ]);
-        actual = _.xorBy([{ 'x': 1 }], [
+        actual = _.xorBy([{ 'x': __num_top__ }], [
             { 'x': 2 },
             { 'x': __num_top__ }
-        ], __str_top__);
-        assert.deepEqual(actual, [{ 'x': __num_top__ }]);
+        ], 'x');
+        assert.deepEqual(actual, [{ 'x': 2 }]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);

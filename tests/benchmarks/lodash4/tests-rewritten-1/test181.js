@@ -4,7 +4,7 @@ lodashStable.each([
     'padStart',
     'padEnd'
 ], function (methodName) {
-    var func = _[methodName], isPad = methodName == __str_top__, isStart = methodName == 'padStart', string = 'abc';
+    var func = _[methodName], isPad = methodName == 'pad', isStart = methodName == 'padStart', string = 'abc';
     QUnit.test('`_.' + methodName + '` should not pad if string is >= `length`', function (assert) {
         assert.expect(2);
         assert.strictEqual(func(string, 2), string);
@@ -29,7 +29,7 @@ lodashStable.each([
             assert.strictEqual(func(string, length), actual);
         });
     });
-    QUnit.test('`_.' + methodName + '` should treat nullish values as empty strings', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should treat nullish values as empty strings', function (assert) {
         assert.expect(6);
         lodashStable.each([
             undefined,

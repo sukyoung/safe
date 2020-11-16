@@ -27,7 +27,7 @@ QUnit.module('lodash.takeRightWhile');
         });
         assert.deepEqual(actual, [
             3,
-            4
+            __num_top__
         ]);
     });
     QUnit.test('should provide correct `predicate` arguments', function (assert) {
@@ -50,7 +50,7 @@ QUnit.module('lodash.takeRightWhile');
         assert.expect(1);
         assert.deepEqual(_.takeRightWhile(objects, [
             'b',
-            __num_top__
+            2
         ]), objects.slice(2));
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {

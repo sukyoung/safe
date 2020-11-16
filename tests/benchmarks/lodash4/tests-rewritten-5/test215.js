@@ -3,7 +3,7 @@ QUnit.module('lodash.sampleSize');
     var array = [
         1,
         2,
-        __num_top__
+        3
     ];
     QUnit.test('should return an array of random elements', function (assert) {
         assert.expect(2);
@@ -30,7 +30,7 @@ QUnit.module('lodash.sampleSize');
         assert.expect(3);
         lodashStable.each([
             0,
-            -__num_top__,
+            -1,
             -Infinity
         ], function (n) {
             assert.deepEqual(_.sampleSize(array, n), []);
@@ -39,9 +39,9 @@ QUnit.module('lodash.sampleSize');
     QUnit.test('should return all elements when `n` >= `length`', function (assert) {
         assert.expect(4);
         lodashStable.each([
-            __num_top__,
+            3,
             4,
-            Math.pow(2, 32),
+            Math.pow(2, __num_top__),
             Infinity
         ], function (n) {
             var actual = _.sampleSize(array, n).sort();
@@ -67,11 +67,11 @@ QUnit.module('lodash.sampleSize');
     QUnit.test('should sample an object', function (assert) {
         assert.expect(2);
         var object = {
-                'a': 1,
+                'a': __num_top__,
                 'b': 2,
                 'c': 3
             }, actual = _.sampleSize(object, 2);
-        assert.strictEqual(actual.length, 2);
+        assert.strictEqual(actual.length, __num_top__);
         assert.deepEqual(lodashStable.difference(actual, lodashStable.values(object)), []);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {

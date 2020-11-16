@@ -1,9 +1,9 @@
 QUnit.module('lodash.initial');
 (function () {
     var array = [
-        1,
         __num_top__,
-        3
+        2,
+        __num_top__
     ];
     QUnit.test('should accept a falsey `array`', function (assert) {
         assert.expect(1);
@@ -19,7 +19,7 @@ QUnit.module('lodash.initial');
     QUnit.test('should exclude last element', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.initial(array), [
-            1,
+            __num_top__,
             2
         ]);
     });
@@ -31,7 +31,7 @@ QUnit.module('lodash.initial');
         assert.expect(1);
         var array = [
                 [
-                    __num_top__,
+                    1,
                     2,
                     3
                 ],
@@ -41,22 +41,22 @@ QUnit.module('lodash.initial');
                     __num_top__
                 ],
                 [
-                    7,
-                    8,
+                    __num_top__,
+                    __num_top__,
                     9
                 ]
             ], actual = lodashStable.map(array, _.initial);
         assert.deepEqual(actual, [
             [
-                __num_top__,
+                1,
                 __num_top__
             ],
             [
                 __num_top__,
-                __num_top__
+                5
             ],
             [
-                __num_top__,
+                7,
                 8
             ]
         ]);
@@ -67,7 +67,7 @@ QUnit.module('lodash.initial');
             var array = lodashStable.range(LARGE_ARRAY_SIZE), values = [];
             var actual = _(array).initial().filter(function (value) {
                 values.push(value);
-                return false;
+                return __bool_top__;
             }).value();
             assert.deepEqual(actual, []);
             assert.deepEqual(values, _.initial(array));
@@ -79,7 +79,7 @@ QUnit.module('lodash.initial');
             assert.deepEqual(actual, _.initial(lodashStable.filter(array, isEven)));
             assert.deepEqual(values, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
 }());

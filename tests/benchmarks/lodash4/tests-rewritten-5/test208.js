@@ -6,12 +6,12 @@ QUnit.module('lodash.result');
     };
     QUnit.test('should invoke function values', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.result(object, 'b'), 'b');
+        assert.strictEqual(_.result(object, __str_top__), 'b');
     });
     QUnit.test('should invoke default function values', function (assert) {
         assert.expect(1);
-        var actual = _.result(object, 'c', object.b);
-        assert.strictEqual(actual, __str_top__);
+        var actual = _.result(object, __str_top__, object.b);
+        assert.strictEqual(actual, 'b');
     });
     QUnit.test('should invoke nested function values', function (assert) {
         assert.expect(2);
@@ -19,11 +19,11 @@ QUnit.module('lodash.result');
         lodashStable.each([
             'a.b',
             [
-                __str_top__,
-                __str_top__
+                'a',
+                'b'
             ]
         ], function (path) {
-            assert.strictEqual(_.result(value, path), 'b');
+            assert.strictEqual(_.result(value, path), __str_top__);
         });
     });
     QUnit.test('should invoke deep property methods with the correct `this` binding', function (assert) {
@@ -39,8 +39,8 @@ QUnit.module('lodash.result');
         lodashStable.each([
             'a.b',
             [
-                __str_top__,
-                'b'
+                'a',
+                __str_top__
             ]
         ], function (path) {
             assert.strictEqual(_.result(value, path), 1);

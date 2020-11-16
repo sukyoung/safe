@@ -1,6 +1,6 @@
 QUnit.module('lodash.padEnd');
 (function () {
-    var string = __str_top__;
+    var string = 'abc';
     QUnit.test('should pad a string to a given length', function (assert) {
         assert.expect(1);
         var values = [
@@ -14,7 +14,7 @@ QUnit.module('lodash.padEnd');
     });
     QUnit.test('should truncate pad characters to fit the pad length', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.padEnd(string, 6, '_-'), 'abc_-_');
+        assert.strictEqual(_.padEnd(string, 6, __str_top__), 'abc_-_');
     });
     QUnit.test('should coerce `string` to a string', function (assert) {
         assert.expect(1);

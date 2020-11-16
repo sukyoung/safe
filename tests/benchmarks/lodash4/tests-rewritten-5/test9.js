@@ -11,16 +11,16 @@ lodashStable.each([
             'b': 2
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should accept multiple sources', function (assert) {
+    QUnit.test('`_.' + methodName + '` should accept multiple sources', function (assert) {
         assert.expect(2);
         var expected = {
-            'a': 1,
+            'a': __num_top__,
             'b': 2,
             'c': 3
         };
         assert.deepEqual(func({ 'a': 1 }, { 'b': 2 }, { 'c': 3 }), expected);
         assert.deepEqual(func({ 'a': 1 }, {
-            'b': 2,
+            'b': __num_top__,
             'c': 2
         }, { 'c': 3 }), expected);
     });
@@ -33,7 +33,7 @@ lodashStable.each([
         };
         assert.deepEqual(func({
             'a': 1,
-            'b': __num_top__
+            'b': 2
         }, expected), expected);
     });
     QUnit.test('`_.' + methodName + '` should assign source properties with nullish values', function (assert) {
@@ -76,7 +76,7 @@ lodashStable.each([
         }
         assert.deepEqual(actual, source);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should treat sparse array sources as dense', function (assert) {
         assert.expect(1);
         var array = [1];
         array[2] = 3;

@@ -1,10 +1,10 @@
 QUnit.module('custom `_.iteratee` methods');
 (function () {
     var array = [
-            __str_top__,
-            __str_top__,
+            'one',
+            'two',
             'three'
-        ], getPropA = _.partial(_.property, 'a'), getPropB = _.partial(_.property, __str_top__), getLength = _.partial(_.property, __str_top__), iteratee = _.iteratee;
+        ], getPropA = _.partial(_.property, __str_top__), getPropB = _.partial(_.property, 'b'), getLength = _.partial(_.property, 'length'), iteratee = _.iteratee;
     var getSum = function () {
         return function (result, object) {
             return result + object.a;
@@ -17,7 +17,7 @@ QUnit.module('custom `_.iteratee` methods');
         },
         {
             'a': 1,
-            'b': 0
+            'b': __num_top__
         },
         {
             'a': 1,
@@ -29,7 +29,7 @@ QUnit.module('custom `_.iteratee` methods');
         if (!isModularize) {
             _.iteratee = getLength;
             assert.deepEqual(_.countBy(array), {
-                '3': 2,
+                '3': __num_top__,
                 '5': 1
             });
             _.iteratee = iteratee;
@@ -41,7 +41,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropA;
-            assert.deepEqual(_.differenceBy(objects, [objects[1]]), [objects[__num_top__]]);
+            assert.deepEqual(_.differenceBy(objects, [objects[1]]), [objects[0]]);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -51,7 +51,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropB;
-            assert.deepEqual(_.dropRightWhile(objects), objects.slice(__num_top__, 2));
+            assert.deepEqual(_.dropRightWhile(objects), objects.slice(0, 2));
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -71,7 +71,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropA;
-            assert.strictEqual(_.every(objects.slice(1)), true);
+            assert.strictEqual(_.every(objects.slice(__num_top__)), __bool_top__);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -145,7 +145,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropB;
-            assert.strictEqual(_.findLastKey(objects), __str_top__);
+            assert.strictEqual(_.findLastKey(objects), '2');
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -160,7 +160,7 @@ QUnit.module('custom `_.iteratee` methods');
                     'one',
                     'two'
                 ],
-                '5': ['three']
+                '5': [__str_top__]
             });
             _.iteratee = iteratee;
         } else {
@@ -258,8 +258,8 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             var objects = [
-                { 'a': __num_top__ },
                 { 'a': 1 },
+                { 'a': __num_top__ },
                 { 'b': 2 }
             ];
             _.iteratee = getPropA;
@@ -278,8 +278,8 @@ QUnit.module('custom `_.iteratee` methods');
             _.iteratee = getPropA;
             assert.deepEqual(_.pullAllBy(objects.slice(), [{
                     'a': 1,
-                    'b': 0
-                }]), [objects[0]]);
+                    'b': __num_top__
+                }]), [objects[__num_top__]]);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -376,7 +376,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             var objects = [
-                { 'a': __num_top__ },
+                { 'a': 30 },
                 { 'a': 50 }
             ];
             _.iteratee = getPropA;

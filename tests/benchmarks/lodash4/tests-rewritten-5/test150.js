@@ -4,7 +4,7 @@ QUnit.module('lodash.matchesProperty');
         assert.expect(6);
         var object = {
                 'a': 1,
-                'b': __num_top__,
+                'b': 2,
                 'c': 3
             }, matches = _.matchesProperty('a', 1);
         assert.strictEqual(matches.length, 1);
@@ -200,7 +200,7 @@ QUnit.module('lodash.matchesProperty');
                 'a',
                 '1',
                 'b',
-                __str_top__
+                'c'
             ]
         ], function (path) {
             var matches = _.matchesProperty(path, 1);
@@ -214,7 +214,7 @@ QUnit.module('lodash.matchesProperty');
         Foo.prototype.b = 2;
         var object = { 'a': new Foo() };
         lodashStable.each([
-            'a',
+            __str_top__,
             ['a']
         ], function (path) {
             var matches = _.matchesProperty(path, { 'b': 2 });
@@ -248,7 +248,7 @@ QUnit.module('lodash.matchesProperty');
         var object1 = {
                 'a': false,
                 'b': true,
-                'c': '3',
+                'c': __str_top__,
                 'd': 4,
                 'e': [5],
                 'f': { 'g': 6 }
@@ -351,7 +351,7 @@ QUnit.module('lodash.matchesProperty');
                         2
                     ]
                 }
-            ], actual = lodashStable.filter(objects, _.matchesProperty('a', [
+            ], actual = lodashStable.filter(objects, _.matchesProperty(__str_top__, [
                 2,
                 2
             ]));
@@ -408,7 +408,7 @@ QUnit.module('lodash.matchesProperty');
             objects[1].a.set('b', 2);
             var map = new Map();
             map.set('b', 2);
-            var actual = lodashStable.filter(objects, _.matchesProperty(__str_top__, map));
+            var actual = lodashStable.filter(objects, _.matchesProperty('a', map));
             assert.deepEqual(actual, [objects[1]]);
             map.delete('b');
             actual = lodashStable.filter(objects, _.matchesProperty('a', map));
@@ -427,14 +427,14 @@ QUnit.module('lodash.matchesProperty');
                 { 'a': new Set() },
                 { 'a': new Set() }
             ];
-            objects[__num_top__].a.add(1);
+            objects[0].a.add(1);
             objects[1].a.add(1);
             objects[1].a.add(2);
             var set = new Set();
             set.add(2);
             var actual = lodashStable.filter(objects, _.matchesProperty('a', set));
             assert.deepEqual(actual, [objects[1]]);
-            set.delete(2);
+            set.delete(__num_top__);
             actual = lodashStable.filter(objects, _.matchesProperty('a', set));
             assert.deepEqual(actual, objects);
             set.add(3);
@@ -556,7 +556,7 @@ QUnit.module('lodash.matchesProperty');
             {
                 'a': {
                     'b': 2,
-                    'c': __num_top__
+                    'c': 3
                 }
             },
             {
@@ -566,7 +566,7 @@ QUnit.module('lodash.matchesProperty');
             { 'a': 1 }
         ], function (source, index) {
             var object = lodashStable.cloneDeep(source), matches = _.matchesProperty('a', source);
-            assert.strictEqual(matches({ 'a': object }), true);
+            assert.strictEqual(matches({ 'a': object }), __bool_top__);
             if (index) {
                 source.a = 2;
                 source.b = 1;

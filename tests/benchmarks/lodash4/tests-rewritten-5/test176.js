@@ -25,25 +25,25 @@ QUnit.module('lodash.overEvery');
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(2);
-        var over = _.overEvery('b', 'a');
+        var over = _.overEvery('b', __str_top__);
         assert.strictEqual(over({
             'a': 1,
             'b': 1
-        }), __bool_top__);
+        }), true);
         assert.strictEqual(over({
             'a': 0,
-            'b': 1
+            'b': __num_top__
         }), false);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(2);
-        var over = _.overEvery({ 'b': 2 }, { 'a': __num_top__ });
+        var over = _.overEvery({ 'b': 2 }, { 'a': 1 });
         assert.strictEqual(over({
             'a': 1,
             'b': 2
         }), true);
         assert.strictEqual(over({
-            'a': 0,
+            'a': __num_top__,
             'b': 2
         }), false);
     });
@@ -61,11 +61,11 @@ QUnit.module('lodash.overEvery');
         ]);
         assert.strictEqual(over({
             'a': 1,
-            'b': 2
+            'b': __num_top__
         }), true);
         assert.strictEqual(over({
             'a': 0,
-            'b': __num_top__
+            'b': 2
         }), false);
     });
     QUnit.test('should differentiate between `_.property` and `_.matchesProperty` shorthands', function (assert) {
@@ -85,13 +85,13 @@ QUnit.module('lodash.overEvery');
         assert.strictEqual(over({
             'a': 0,
             '1': 1
-        }), false);
+        }), __bool_top__);
         over = _.overEvery([[
                 'a',
                 1
             ]]);
         assert.strictEqual(over({ 'a': 1 }), true);
-        assert.strictEqual(over({ 'a': __num_top__ }), false);
+        assert.strictEqual(over({ 'a': 2 }), false);
     });
     QUnit.test('should flatten `predicates`', function (assert) {
         assert.expect(1);
@@ -122,7 +122,7 @@ QUnit.module('lodash.overEvery');
                 'a': 1,
                 'b': 2
             };
-        assert.strictEqual(object.over(), __bool_top__);
+        assert.strictEqual(object.over(), true);
         object.a = 0;
         assert.strictEqual(object.over(), false);
     });

@@ -16,7 +16,7 @@ QUnit.module('lodash.chain');
             assert.strictEqual(_.chain(wrapped), wrapped);
             assert.strictEqual(wrapped.chain(), wrapped);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should enable chaining for methods that return unwrapped values', function (assert) {
@@ -34,7 +34,7 @@ QUnit.module('lodash.chain');
             assert.ok(_.chain(array).sortBy().head() instanceof _);
             assert.ok(_(array).chain().sortBy().head() instanceof _);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
     QUnit.test('should chain multiple methods', function (assert) {
@@ -110,7 +110,7 @@ QUnit.module('lodash.chain');
                 ]);
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

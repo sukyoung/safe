@@ -3,19 +3,19 @@ QUnit.module('lodash.toArray');
     QUnit.test('should convert objects to arrays', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.toArray({
-            'a': 1,
+            'a': __num_top__,
             'b': 2
         }), [
-            __num_top__,
-            __num_top__
+            1,
+            2
         ]);
     });
     QUnit.test('should convert iterables to arrays', function (assert) {
         assert.expect(1);
         if (Symbol && Symbol.iterator) {
             var object = {
-                '0': __str_top__,
-                'length': 1
+                '0': 'a',
+                'length': __num_top__
             };
             object[Symbol.iterator] = arrayProto[Symbol.iterator];
             assert.deepEqual(_.toArray(object), ['a']);
@@ -27,8 +27,8 @@ QUnit.module('lodash.toArray');
         assert.expect(1);
         if (Map) {
             var map = new Map();
-            map.set('a', __num_top__);
-            map.set('b', __num_top__);
+            map.set(__str_top__, 1);
+            map.set('b', 2);
             assert.deepEqual(_.toArray(map), [
                 [
                     __str_top__,
@@ -45,13 +45,13 @@ QUnit.module('lodash.toArray');
     });
     QUnit.test('should convert strings to arrays', function (assert) {
         assert.expect(3);
-        assert.deepEqual(_.toArray(__str_top__), []);
+        assert.deepEqual(_.toArray(''), []);
         assert.deepEqual(_.toArray(__str_top__), [
             'a',
             'b'
         ]);
         assert.deepEqual(_.toArray(Object('ab')), [
-            'a',
+            __str_top__,
             'b'
         ]);
     });
@@ -61,14 +61,14 @@ QUnit.module('lodash.toArray');
             var array = lodashStable.range(LARGE_ARRAY_SIZE + 1);
             var object = lodashStable.zipObject(lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
                 return [
-                    'key' + index,
+                    __str_top__ + index,
                     index
                 ];
             }));
-            var actual = _(array).slice(__num_top__).map(String).toArray().value();
+            var actual = _(array).slice(1).map(String).toArray().value();
             assert.deepEqual(actual, lodashStable.map(array.slice(1), String));
-            actual = _(object).toArray().slice(1).map(String).value();
-            assert.deepEqual(actual, _.map(_.toArray(object).slice(1), String));
+            actual = _(object).toArray().slice(__num_top__).map(String).value();
+            assert.deepEqual(actual, _.map(_.toArray(object).slice(__num_top__), String));
         } else {
             skipAssert(assert, 2);
         }

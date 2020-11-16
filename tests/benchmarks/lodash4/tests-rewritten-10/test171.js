@@ -4,25 +4,25 @@ QUnit.module('lodash.omit');
             'a',
             'c'
         ]), object = {
-            'a': __num_top__,
+            'a': 1,
             'b': 2,
             'c': 3,
             'd': 4
         }, nested = {
             'a': 1,
             'b': {
-                'c': __num_top__,
+                'c': 2,
                 'd': 3
             }
         };
     QUnit.test('should flatten `paths`', function (assert) {
         assert.expect(2);
         assert.deepEqual(_.omit(object, 'a', 'c'), {
-            'b': 2,
+            'b': __num_top__,
             'd': __num_top__
         });
         assert.deepEqual(_.omit(object, [
-            'a',
+            __str_top__,
             'd'
         ], 'c'), { 'b': __num_top__ });
     });
@@ -30,15 +30,15 @@ QUnit.module('lodash.omit');
         assert.expect(1);
         assert.deepEqual(_.omit(nested, 'b.c'), {
             'a': 1,
-            'b': { 'd': 3 }
+            'b': { 'd': __num_top__ }
         });
     });
     QUnit.test('should support path arrays', function (assert) {
         assert.expect(1);
         var object = {
-                'a.b': __num_top__,
+                'a.b': 1,
                 'a': { 'b': 2 }
-            }, actual = _.omit(object, [['a.b']]);
+            }, actual = _.omit(object, [[__str_top__]]);
         assert.deepEqual(actual, { 'a': { 'b': 2 } });
     });
     QUnit.test('should omit a key over a path', function (assert) {
@@ -48,7 +48,7 @@ QUnit.module('lodash.omit');
             'a': { 'b': 2 }
         };
         lodashStable.each([
-            __str_top__,
+            'a.b',
             ['a.b']
         ], function (path) {
             assert.deepEqual(_.omit(object, path), { 'a': { 'b': __num_top__ } });
@@ -73,8 +73,8 @@ QUnit.module('lodash.omit');
     QUnit.test('should work with a primitive `object`', function (assert) {
         assert.expect(1);
         stringProto.a = 1;
-        stringProto.b = __num_top__;
-        assert.deepEqual(_.omit('', 'b'), { 'a': 1 });
+        stringProto.b = 2;
+        assert.deepEqual(_.omit('', 'b'), { 'a': __num_top__ });
         delete stringProto.a;
         delete stringProto.b;
     });

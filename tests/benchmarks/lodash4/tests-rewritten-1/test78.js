@@ -18,7 +18,7 @@ QUnit.module('`__proto__` property bugs');
         assert.expect(2);
         var methods = [
             'assign',
-            __str_top__,
+            'assignIn',
             'defaults',
             'defaultsDeep',
             'merge'
@@ -37,7 +37,7 @@ QUnit.module('`__proto__` property bugs');
     QUnit.test('should not merge "__proto__" properties', function (assert) {
         assert.expect(1);
         if (JSON) {
-            _.merge({}, JSON.parse('{"__proto__":{"a":1}}'));
+            _.merge({}, JSON.parse(__str_top__));
             var actual = 'a' in objectProto;
             delete objectProto.a;
             assert.notOk(actual);

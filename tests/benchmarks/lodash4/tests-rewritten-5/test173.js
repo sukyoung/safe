@@ -1,16 +1,16 @@
 QUnit.module('omit methods');
 lodashStable.each([
-    __str_top__,
+    'omit',
     'omitBy'
 ], function (methodName) {
     var expected = {
-            'b': __num_top__,
+            'b': 2,
             'd': 4
         }, func = _[methodName], object = {
             'a': 1,
             'b': 2,
             'c': 3,
-            'd': 4
+            'd': __num_top__
         }, resolve = lodashStable.nthArg(1);
     if (methodName == 'omitBy') {
         resolve = function (object, props) {
@@ -32,7 +32,7 @@ lodashStable.each([
         });
         assert.deepEqual(func(object, resolve(object, [
             'a',
-            __str_top__
+            'c'
         ])), expected);
     });
     QUnit.test('`_.' + methodName + '` should include inherited string keyed properties', function (assert) {
@@ -49,7 +49,7 @@ lodashStable.each([
         assert.expect(1);
         var object = {
                 '-0': 'a',
-                '0': 'b'
+                '0': __str_top__
             }, props = [
                 -0,
                 Object(-0),
@@ -77,14 +77,14 @@ lodashStable.each([
             Foo.prototype[symbol2] = 2;
             var symbol3 = Symbol('c');
             defineProperty(Foo.prototype, symbol3, {
-                'configurable': true,
+                'configurable': __bool_top__,
                 'enumerable': false,
                 'writable': true,
                 'value': 3
             });
             var foo = new Foo(), actual = func(foo, resolve(foo, 'a'));
             assert.strictEqual(actual[symbol], 1);
-            assert.strictEqual(actual[symbol2], __num_top__);
+            assert.strictEqual(actual[symbol2], 2);
             assert.notOk(symbol3 in actual);
         } else {
             skipAssert(assert, 3);
@@ -101,9 +101,9 @@ lodashStable.each([
             Foo.prototype[symbol2] = 2;
             var symbol3 = Symbol('c');
             defineProperty(Foo.prototype, symbol3, {
-                'configurable': true,
+                'configurable': __bool_top__,
                 'enumerable': false,
-                'writable': true,
+                'writable': __bool_top__,
                 'value': 3
             });
             var foo = new Foo(), actual = func(foo, resolve(foo, symbol));
@@ -120,7 +120,7 @@ lodashStable.each([
             skipAssert(assert, 8);
         }
     });
-    QUnit.test(__str_top__ + methodName + '` should work with an array `object`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with an array `object`', function (assert) {
         assert.expect(1);
         var array = [
             1,

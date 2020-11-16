@@ -6,8 +6,8 @@ QUnit.module('lodash(...).unshift');
             var array = [3], wrapped = _(array).unshift(1, 2), actual = wrapped.value();
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, [
+                1,
                 __num_top__,
-                2,
                 3
             ]);
         } else {

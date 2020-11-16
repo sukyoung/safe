@@ -22,10 +22,10 @@ QUnit.module('lodash.sortedUniq');
             ],
             [
                 1,
-                2,
-                3,
-                3,
                 __num_top__,
+                3,
+                3,
+                3,
                 3,
                 3
             ]

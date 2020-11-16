@@ -9,7 +9,7 @@ QUnit.module('lodash.methodOf');
         ], function (path) {
             var methodOf = _.methodOf(object);
             assert.strictEqual(methodOf.length, 1);
-            assert.strictEqual(methodOf(path), 1);
+            assert.strictEqual(methodOf(path), __num_top__);
         });
     });
     QUnit.test('should work with deep property values', function (assert) {
@@ -41,7 +41,7 @@ QUnit.module('lodash.methodOf');
         assert.expect(2);
         function fn() {
         }
-        fn.toString = lodashStable.constant(__str_top__);
+        fn.toString = lodashStable.constant('fn');
         var expected = [
                 1,
                 2,

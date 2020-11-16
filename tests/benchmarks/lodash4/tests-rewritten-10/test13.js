@@ -8,7 +8,7 @@ QUnit.module('lodash.attempt');
         assert.expect(1);
         var actual = _.attempt(function () {
             return slice.call(arguments);
-        }, __num_top__, 2);
+        }, __num_top__, __num_top__);
         assert.deepEqual(actual, [
             __num_top__,
             __num_top__
@@ -27,14 +27,14 @@ QUnit.module('lodash.attempt');
     QUnit.test('should coerce errors to error objects', function (assert) {
         assert.expect(1);
         var actual = _.attempt(function () {
-            throw 'x';
+            throw __str_top__;
         });
-        assert.ok(lodashStable.isEqual(actual, Error(__str_top__)));
+        assert.ok(lodashStable.isEqual(actual, Error('x')));
     });
     QUnit.test('should preserve custom errors', function (assert) {
         assert.expect(1);
         var actual = _.attempt(function () {
-            throw new CustomError(__str_top__);
+            throw new CustomError('x');
         });
         assert.ok(actual instanceof CustomError);
     });

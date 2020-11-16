@@ -2,8 +2,8 @@ QUnit.module('lodash.invoke');
 (function () {
     QUnit.test('should invoke a method on `object`', function (assert) {
         assert.expect(1);
-        var object = { 'a': lodashStable.constant(__str_top__) }, actual = _.invoke(object, 'a');
-        assert.strictEqual(actual, __str_top__);
+        var object = { 'a': lodashStable.constant('A') }, actual = _.invoke(object, 'a');
+        assert.strictEqual(actual, 'A');
     });
     QUnit.test('should support invoking with arguments', function (assert) {
         assert.expect(1);
@@ -14,7 +14,7 @@ QUnit.module('lodash.invoke');
                         b
                     ];
                 }
-            }, actual = _.invoke(object, 'a', __num_top__, 2);
+            }, actual = _.invoke(object, 'a', 1, __num_top__);
         assert.deepEqual(actual, [
             1,
             __num_top__
@@ -28,7 +28,7 @@ QUnit.module('lodash.invoke');
             ], expected = lodashStable.map(values, noop);
         var actual = lodashStable.map(values, function (value) {
             try {
-                return _.invoke(value, 'a.b', 1, 2);
+                return _.invoke(value, 'a.b', 1, __num_top__);
             } catch (e) {
             }
         });
@@ -40,18 +40,18 @@ QUnit.module('lodash.invoke');
                 '-0': stubA,
                 '0': stubB
             }, props = [
-                -0,
-                Object(-__num_top__),
-                0,
+                -__num_top__,
+                Object(-0),
+                __num_top__,
                 Object(0)
             ];
         var actual = lodashStable.map(props, function (key) {
             return _.invoke(object, key);
         });
         assert.deepEqual(actual, [
-            'a',
-            'a',
             __str_top__,
+            'a',
+            'b',
             'b'
         ]);
     });
@@ -74,10 +74,10 @@ QUnit.module('lodash.invoke');
                 'b'
             ]
         ], function (path) {
-            var actual = _.invoke(object, path, 1, __num_top__);
+            var actual = _.invoke(object, path, 1, 2);
             assert.deepEqual(actual, [
-                __num_top__,
-                2
+                1,
+                __num_top__
             ]);
         });
     });
@@ -88,17 +88,17 @@ QUnit.module('lodash.invoke');
                 'b': function () {
                     return this.c;
                 },
-                'c': 1
+                'c': __num_top__
             }
         };
         lodashStable.each([
-            __str_top__,
+            'a.b',
             [
-                __str_top__,
-                'b'
+                'a',
+                __str_top__
             ]
         ], function (path) {
-            assert.deepEqual(_.invoke(object, path), 1);
+            assert.deepEqual(_.invoke(object, path), __num_top__);
         });
     });
     QUnit.test('should return an unwrapped value when implicitly chaining', function (assert) {

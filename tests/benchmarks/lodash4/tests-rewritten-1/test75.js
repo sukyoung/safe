@@ -95,7 +95,7 @@ QUnit.module('iteration methods');
         'every',
         'find',
         'findIndex',
-        __str_top__,
+        'findKey',
         'findLast',
         'findLastIndex',
         'findLastKey',
@@ -289,7 +289,7 @@ QUnit.module('iteration methods');
     });
     lodashStable.each(iterationMethods, function (methodName) {
         var array = [
-                1,
+                __num_top__,
                 2,
                 3
             ], func = _[methodName];

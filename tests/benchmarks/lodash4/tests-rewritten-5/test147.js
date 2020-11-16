@@ -4,21 +4,21 @@ lodashStable.each([
     __str_top__
 ], function (methodName) {
     var func = _[methodName], object = {
-            'a': 1,
-            'b': __num_top__
+            'a': __num_top__,
+            'b': 2
         };
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should iterate over own string keyed properties of objects', function (assert) {
         assert.expect(1);
         function Foo() {
             this.a = 'a';
         }
-        Foo.prototype.b = 'b';
+        Foo.prototype.b = __str_top__;
         var actual = func(new Foo(), function (value, key) {
             return key;
         });
-        assert.deepEqual(actual, { 'a': __str_top__ });
+        assert.deepEqual(actual, { 'a': 'a' });
     });
-    QUnit.test('`_.' + methodName + '` should accept a falsey `object`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(falsey, stubObject);
         var actual = lodashStable.map(falsey, function (object, index) {

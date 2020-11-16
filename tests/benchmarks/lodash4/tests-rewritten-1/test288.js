@@ -7,7 +7,7 @@ lodashStable.each([
             'barney': 36,
             'fred': 40
         }, isDeep = methodName == 'zipObjectDeep';
-    QUnit.test('`_.' + methodName + '` should zip together key/value arrays into an object', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should zip together key/value arrays into an object', function (assert) {
         assert.expect(1);
         var actual = func([
             'barney',
@@ -82,7 +82,7 @@ lodashStable.each([
     QUnit.test('zipObjectDeep is not overwriting global.' + keyToTest, function (assert) {
         assert.expect(2);
         _.zipObjectDeep([root + '.' + keyToTest + '.c'], ['newValue']);
-        assert.notEqual(root[__str_top__], 'newValue');
+        assert.notEqual(root['c'], 'newValue');
         assert.notOk(root['c']);
     });
 });

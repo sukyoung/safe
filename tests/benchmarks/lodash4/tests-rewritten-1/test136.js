@@ -23,7 +23,7 @@ lodashStable.each([
         Foo.prototype.b = 2;
         var expected = isKeys ? ['a'] : [
                 'a',
-                'b'
+                __str_top__
             ], actual = func(new Foo()).sort();
         assert.deepEqual(actual, expected);
     });
@@ -140,7 +140,7 @@ lodashStable.each([
         var expected = isKeys ? ['0'] : [
                 '0',
                 'a'
-            ], actual = func(Object(__str_top__)).sort();
+            ], actual = func(Object('a')).sort();
         assert.deepEqual(actual, expected);
         delete stringProto.a;
     });

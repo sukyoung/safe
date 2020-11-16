@@ -131,7 +131,7 @@ QUnit.module('flatten methods');
             1,
             2,
             3,
-            __num_top__,
+            4,
             5
         ]);
         assert.deepEqual(_.flattenDepth(array, 2), [
@@ -156,7 +156,7 @@ QUnit.module('flatten methods');
             assert.ok(actual instanceof _);
             assert.deepEqual(actual.value(), [
                 1,
-                2,
+                __num_top__,
                 [
                     3,
                     [4]

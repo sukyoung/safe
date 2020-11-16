@@ -29,9 +29,9 @@ QUnit.module('lodash.sumBy');
         var arrays = [
             [2],
             [3],
-            [__num_top__]
+            [1]
         ];
         assert.strictEqual(_.sumBy(arrays, 0), 6);
-        assert.strictEqual(_.sumBy(objects, 'a'), 6);
+        assert.strictEqual(_.sumBy(objects, __str_top__), 6);
     });
 }());

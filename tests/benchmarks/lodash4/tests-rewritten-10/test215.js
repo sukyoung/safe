@@ -3,12 +3,12 @@ QUnit.module('lodash.sampleSize');
     var array = [
         1,
         __num_top__,
-        __num_top__
+        3
     ];
     QUnit.test('should return an array of random elements', function (assert) {
         assert.expect(2);
-        var actual = _.sampleSize(array, __num_top__);
-        assert.strictEqual(actual.length, 2);
+        var actual = _.sampleSize(array, 2);
+        assert.strictEqual(actual.length, __num_top__);
         assert.deepEqual(lodashStable.difference(actual, array), []);
     });
     QUnit.test('should contain elements of the collection', function (assert) {
@@ -22,15 +22,15 @@ QUnit.module('lodash.sampleSize');
             return value === undefined ? [__str_top__] : [];
         });
         var actual = lodashStable.map(falsey, function (size, index) {
-            return index ? _.sampleSize(['a'], size) : _.sampleSize(['a']);
+            return index ? _.sampleSize([__str_top__], size) : _.sampleSize([__str_top__]);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should return an empty array when `n` < `1` or `NaN`', function (assert) {
         assert.expect(3);
         lodashStable.each([
-            __num_top__,
-            -1,
+            0,
+            -__num_top__,
             -Infinity
         ], function (n) {
             assert.deepEqual(_.sampleSize(array, n), []);
@@ -39,9 +39,9 @@ QUnit.module('lodash.sampleSize');
     QUnit.test('should return all elements when `n` >= `length`', function (assert) {
         assert.expect(4);
         lodashStable.each([
-            __num_top__,
+            3,
             4,
-            Math.pow(2, 32),
+            Math.pow(2, __num_top__),
             Infinity
         ], function (n) {
             var actual = _.sampleSize(array, n).sort();
@@ -50,8 +50,8 @@ QUnit.module('lodash.sampleSize');
     });
     QUnit.test('should coerce `n` to an integer', function (assert) {
         assert.expect(1);
-        var actual = _.sampleSize(array, 1.6);
-        assert.strictEqual(actual.length, 1);
+        var actual = _.sampleSize(array, __num_top__);
+        assert.strictEqual(actual.length, __num_top__);
     });
     QUnit.test('should return an empty array for empty collections', function (assert) {
         assert.expect(1);
@@ -67,16 +67,16 @@ QUnit.module('lodash.sampleSize');
     QUnit.test('should sample an object', function (assert) {
         assert.expect(2);
         var object = {
-                'a': __num_top__,
+                'a': 1,
                 'b': 2,
                 'c': 3
-            }, actual = _.sampleSize(object, __num_top__);
+            }, actual = _.sampleSize(object, 2);
         assert.strictEqual(actual.length, __num_top__);
         assert.deepEqual(lodashStable.difference(actual, lodashStable.values(object)), []);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map([[__str_top__]], _.sampleSize);
+        var actual = lodashStable.map([['a']], _.sampleSize);
         assert.deepEqual(actual, [['a']]);
     });
 }());

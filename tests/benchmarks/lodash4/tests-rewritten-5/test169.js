@@ -3,7 +3,7 @@ QUnit.module('lodash.nth');
     var array = [
         'a',
         'b',
-        __str_top__,
+        'c',
         'd'
     ];
     QUnit.test('should get the nth element of `array`', function (assert) {
@@ -15,12 +15,12 @@ QUnit.module('lodash.nth');
     });
     QUnit.test('should work with a negative `n`', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map(lodashStable.range(1, array.length + 1), function (n) {
+        var actual = lodashStable.map(lodashStable.range(1, array.length + __num_top__), function (n) {
             return _.nth(array, -n);
         });
         assert.deepEqual(actual, [
-            'd',
             __str_top__,
+            'c',
             __str_top__,
             'a'
         ]);
@@ -50,20 +50,20 @@ QUnit.module('lodash.nth');
                 []
             ], expected = lodashStable.map(values, noop);
         var actual = lodashStable.map(values, function (array) {
-            return _.nth(array, 1);
+            return _.nth(array, __num_top__);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should return `undefined` for non-indexes', function (assert) {
         assert.expect(1);
         var array = [
-                1,
-                __num_top__
+                __num_top__,
+                2
             ], values = [
                 Infinity,
                 array.length
             ], expected = lodashStable.map(values, noop);
-        array[-1] = __num_top__;
+        array[-1] = 3;
         var actual = lodashStable.map(values, function (n) {
             return _.nth(array, n);
         });

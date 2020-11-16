@@ -14,7 +14,7 @@ QUnit.module('lodash(...).shift');
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
     QUnit.test('should accept falsey arguments', function (assert) {

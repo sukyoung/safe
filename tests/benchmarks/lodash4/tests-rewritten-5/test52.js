@@ -3,15 +3,15 @@ QUnit.module('lodash.endsWith');
     var string = 'abc';
     QUnit.test('should return `true` if a string ends with `target`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.endsWith(string, __str_top__), true);
+        assert.strictEqual(_.endsWith(string, 'c'), true);
     });
     QUnit.test('should return `false` if a string does not end with `target`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.endsWith(string, 'b'), false);
+        assert.strictEqual(_.endsWith(string, 'b'), __bool_top__);
     });
     QUnit.test('should work with a `position`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.endsWith(string, 'b', __num_top__), true);
+        assert.strictEqual(_.endsWith(string, 'b', 2), __bool_top__);
     });
     QUnit.test('should work with `position` >= `length`', function (assert) {
         assert.expect(4);
@@ -28,7 +28,7 @@ QUnit.module('lodash.endsWith');
         assert.expect(1);
         var expected = lodashStable.map(falsey, stubTrue);
         var actual = lodashStable.map(falsey, function (position) {
-            return _.endsWith(string, position === undefined ? 'c' : __str_top__, position);
+            return _.endsWith(string, position === undefined ? 'c' : '', position);
         });
         assert.deepEqual(actual, expected);
     });
@@ -36,17 +36,17 @@ QUnit.module('lodash.endsWith');
         assert.expect(6);
         lodashStable.each([
             -1,
-            -3,
+            -__num_top__,
             -Infinity
         ], function (position) {
             assert.ok(lodashStable.every(string, function (chr) {
                 return !_.endsWith(string, chr, position);
             }));
-            assert.strictEqual(_.endsWith(string, __str_top__, position), true);
+            assert.strictEqual(_.endsWith(string, '', position), true);
         });
     });
     QUnit.test('should coerce `position` to an integer', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.endsWith(string, 'ab', __num_top__), true);
+        assert.strictEqual(_.endsWith(string, __str_top__, __num_top__), true);
     });
 }());

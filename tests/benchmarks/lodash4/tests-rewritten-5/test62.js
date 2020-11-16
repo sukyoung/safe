@@ -25,7 +25,7 @@ lodashStable.each([
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and a `fromIndex` >= `length`', function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + __str_top__, function (assert) {
             assert.expect(1);
             var indexes = [
                 4,
@@ -61,18 +61,18 @@ lodashStable.each([
         QUnit.test(__str_top__ + methodName + '` should work with ' + key + ' and coerce `fromIndex` to an integer', function (assert) {
             assert.expect(1);
             var expected = [
-                isIncludes || values[0],
-                isIncludes || values[0],
-                isIncludes ? __bool_top__ : undefined
+                isIncludes || values[__num_top__],
+                isIncludes || values[__num_top__],
+                isIncludes ? false : undefined
             ];
             var actual = [
                 func(collection, resolve(values[0]), 0.1),
-                func(collection, resolve(values[0]), NaN),
-                func(collection, resolve(values[__num_top__]), __str_top__)
+                func(collection, resolve(values[__num_top__]), NaN),
+                func(collection, resolve(values[0]), '1')
             ];
             assert.deepEqual(actual, expected);
         });
-        QUnit.test('`_.' + methodName + '` should work with ' + key + __str_top__, function (assert) {
+        QUnit.test('`_.' + methodName + '` should work with ' + key + ' and a negative `fromIndex`', function (assert) {
             assert.expect(1);
             var expected = [
                 isIncludes || values[2],

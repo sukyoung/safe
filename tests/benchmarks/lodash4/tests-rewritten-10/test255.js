@@ -1,18 +1,18 @@
 QUnit.module('number coercion methods');
 lodashStable.each([
-    __str_top__,
+    'toFinite',
     'toInteger',
     'toNumber',
     'toSafeInteger'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + '` should preserve the sign of `0`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should preserve the sign of `0`', function (assert) {
         assert.expect(2);
         var values = [
                 0,
                 '0',
                 -0,
-                '-0'
+                __str_top__
             ], expected = [
                 [
                     0,
@@ -23,7 +23,7 @@ lodashStable.each([
                     Infinity
                 ],
                 [
-                    -__num_top__,
+                    -0,
                     -Infinity
                 ],
                 [
@@ -31,7 +31,7 @@ lodashStable.each([
                     -Infinity
                 ]
             ];
-        lodashStable.times(__num_top__, function (index) {
+        lodashStable.times(2, function (index) {
             var others = lodashStable.map(values, index ? Object : identity);
             var actual = lodashStable.map(others, function (value) {
                 var result = func(value);
@@ -46,7 +46,7 @@ lodashStable.each([
 });
 lodashStable.each([
     'toFinite',
-    __str_top__,
+    'toInteger',
     'toLength',
     'toNumber',
     'toSafeInteger'
@@ -65,7 +65,7 @@ lodashStable.each([
         assert.expect(1);
         var values = [
             0,
-            1,
+            __num_top__,
             NaN
         ];
         var expected = lodashStable.map(values, function (value) {
@@ -127,8 +127,8 @@ lodashStable.each([
             '10',
             '1.234567890',
             MAX_SAFE_INTEGER + '',
-            '1e+308',
             __str_top__,
+            '1e308',
             '1E+308',
             '1E308',
             '5e-324',
@@ -184,7 +184,7 @@ lodashStable.each([
             ], values = [
                 '0b101010',
                 '0o12345',
-                '0x1a2b3c'
+                __str_top__
             ];
         var expected = lodashStable.map(numbers, function (n) {
             return lodashStable.times(8, lodashStable.constant(n));
@@ -211,11 +211,11 @@ lodashStable.each([
                 negative
             ], values = [
                 '0b',
-                '0o',
+                __str_top__,
                 '0x',
                 '0b1010102',
                 '0o123458',
-                __str_top__
+                '0x1a2b3x'
             ];
         var expected = lodashStable.map(values, function (n) {
             return lodashStable.times(8, lodashStable.constant(isToNumber ? NaN : 0));
@@ -230,7 +230,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should convert symbols to `' + (isToNumber ? 'NaN' : '0') + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should convert symbols to `' + (isToNumber ? 'NaN' : '0') + '`', function (assert) {
         assert.expect(1);
         if (Symbol) {
             var object1 = Object(symbol), object2 = Object(symbol), values = [
@@ -256,7 +256,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + '` should coerce objects to numbers', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var values = [
             {},
@@ -264,7 +264,7 @@ lodashStable.each([
             [1],
             [
                 1,
-                2
+                __num_top__
             ],
             { 'valueOf': '1.1' },
             {
@@ -293,11 +293,11 @@ lodashStable.each([
             NaN,
             NaN,
             2.2,
-            __num_top__,
+            1.1,
             1.1,
             NaN,
             NaN,
-            5349,
+            __num_top__,
             5349,
             42,
             42
@@ -327,7 +327,7 @@ lodashStable.each([
                 0,
                 0,
                 2,
-                __num_top__,
+                1,
                 1,
                 0,
                 0,

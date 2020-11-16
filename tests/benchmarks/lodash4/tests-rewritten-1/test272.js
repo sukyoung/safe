@@ -55,11 +55,11 @@ lodashStable.each([
                 { 'a': 1 },
                 { 'a': 2 },
                 { 'a': 3 }
-            ] : objects.slice(0, 3), actual = func(objects, 'a');
+            ] : objects.slice(0, 3), actual = func(objects, __str_top__);
         assert.deepEqual(actual, expected);
         var arrays = [
             [2],
-            [__num_top__],
+            [3],
             [1],
             [2],
             [3],

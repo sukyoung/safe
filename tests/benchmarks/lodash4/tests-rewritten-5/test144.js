@@ -19,18 +19,18 @@ QUnit.module('lodash.map');
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         var objects = [
-            { 'a': 'x' },
+            { 'a': __str_top__ },
             { 'a': 'y' }
         ];
         assert.deepEqual(_.map(objects, 'a'), [
             'x',
-            'y'
+            __str_top__
         ]);
     });
     QUnit.test('should iterate over own string keyed properties of objects', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
         Foo.prototype.b = 2;
         var actual = _.map(new Foo(), identity);
@@ -40,7 +40,7 @@ QUnit.module('lodash.map');
         assert.expect(2);
         var object = {
                 'a': 1,
-                'b': __num_top__
+                'b': 2
             }, values = [
                 ,
                 null,
@@ -101,7 +101,7 @@ QUnit.module('lodash.map');
     QUnit.test('should provide correct `predicate` arguments in a lazy sequence', function (assert) {
         assert.expect(5);
         if (!isNpm) {
-            var args, array = lodashStable.range(LARGE_ARRAY_SIZE + 1), expected = [
+            var args, array = lodashStable.range(LARGE_ARRAY_SIZE + __num_top__), expected = [
                     1,
                     0,
                     _.map(array.slice(1), square)

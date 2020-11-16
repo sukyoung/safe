@@ -102,7 +102,7 @@ QUnit.module('lodash.dropRight');
             assert.deepEqual(values, array.slice(__num_top__, -__num_top__));
             assert.deepEqual(actual, _.drop(_.dropRight(_.drop(_.dropRight(_.filter(_.dropRight(array), predicate), __num_top__))), __num_top__));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

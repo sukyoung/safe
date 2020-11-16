@@ -3,11 +3,11 @@ lodashStable.each([
     'find',
     'findLast'
 ], function (methodName) {
-    var isFind = methodName == __str_top__;
+    var isFind = methodName == 'find';
     QUnit.test('`_.' + methodName + '` should support shortcut fusion', function (assert) {
         assert.expect(3);
         if (!isNpm) {
-            var findCount = 0, mapCount = 0, array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), iteratee = function (value) {
+            var findCount = 0, mapCount = 0, array = lodashStable.range(1, LARGE_ARRAY_SIZE + __num_top__), iteratee = function (value) {
                     mapCount++;
                     return square(value);
                 }, predicate = function (value) {

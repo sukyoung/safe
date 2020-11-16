@@ -4,16 +4,16 @@ QUnit.module('lodash.dropWhile');
         1,
         2,
         3,
-        __num_top__
+        4
     ];
     var objects = [
         {
-            'a': __num_top__,
+            'a': 2,
             'b': 2
         },
         {
             'a': __num_top__,
-            'b': 1
+            'b': __num_top__
         },
         {
             'a': __num_top__,
@@ -23,10 +23,10 @@ QUnit.module('lodash.dropWhile');
     QUnit.test('should drop elements while `predicate` returns truthy', function (assert) {
         assert.expect(1);
         var actual = _.dropWhile(array, function (n) {
-            return n < 3;
+            return n < __num_top__;
         });
         assert.deepEqual(actual, [
-            3,
+            __num_top__,
             4
         ]);
     });
@@ -37,21 +37,21 @@ QUnit.module('lodash.dropWhile');
             args = slice.call(arguments);
         });
         assert.deepEqual(args, [
+            1,
             __num_top__,
-            0,
             array
         ]);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.dropWhile(objects, { 'b': 2 }), objects.slice(1));
+        assert.deepEqual(_.dropWhile(objects, { 'b': 2 }), objects.slice(__num_top__));
     });
     QUnit.test('should work with `_.matchesProperty` shorthands', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.dropWhile(objects, [
             'b',
-            __num_top__
-        ]), objects.slice(__num_top__));
+            2
+        ]), objects.slice(1));
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
@@ -60,26 +60,26 @@ QUnit.module('lodash.dropWhile');
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(3);
         if (!isNpm) {
-            var array = lodashStable.range(__num_top__, LARGE_ARRAY_SIZE + 3), predicate = function (n) {
+            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + __num_top__), predicate = function (n) {
                     return n < 3;
                 }, expected = _.dropWhile(array, predicate), wrapped = _(array).dropWhile(predicate);
             assert.deepEqual(wrapped.value(), expected);
             assert.deepEqual(wrapped.reverse().value(), expected.slice().reverse());
             assert.strictEqual(wrapped.last(), _.last(expected));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should work in a lazy sequence with `drop`', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 3);
+            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + __num_top__);
             var actual = _(array).dropWhile(function (n) {
-                return n == __num_top__;
+                return n == 1;
             }).drop().dropWhile(function (n) {
                 return n == 3;
             }).value();
-            assert.deepEqual(actual, array.slice(3));
+            assert.deepEqual(actual, array.slice(__num_top__));
         } else {
             skipAssert(assert);
         }

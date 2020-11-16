@@ -15,7 +15,7 @@ QUnit.module('"Arrays" category methods');
         ]), array = [
             1,
             2,
-            3,
+            __num_top__,
             4,
             5,
             6
@@ -26,7 +26,7 @@ QUnit.module('"Arrays" category methods');
             return '`_.' + methodName + '` should work with `arguments` objects';
         }
         assert.deepEqual(_.difference(args, [null]), [
-            __num_top__,
+            1,
             [3],
             5
         ], message('difference'));
@@ -94,8 +94,8 @@ QUnit.module('"Arrays" category methods');
         ], message('initial'));
         assert.deepEqual(_.intersection(args, [1]), [1], message('intersection'));
         assert.deepEqual(_.last(args), 5, message('last'));
-        assert.deepEqual(_.lastIndexOf(args, 1), 0, message('lastIndexOf'));
-        assert.deepEqual(_.sortedIndex(sortedArgs, 6), 3, message('sortedIndex'));
+        assert.deepEqual(_.lastIndexOf(args, 1), __num_top__, message('lastIndexOf'));
+        assert.deepEqual(_.sortedIndex(sortedArgs, 6), __num_top__, message('sortedIndex'));
         assert.deepEqual(_.sortedIndexOf(sortedArgs, 5), 2, message('sortedIndexOf'));
         assert.deepEqual(_.sortedLastIndex(sortedArgs, 5), 3, message('sortedLastIndex'));
         assert.deepEqual(_.sortedLastIndexOf(sortedArgs, 1), 0, message('sortedLastIndexOf'));
@@ -151,7 +151,7 @@ QUnit.module('"Arrays" category methods');
         function message(methodName) {
             return '`_.' + methodName + '` should accept falsey primary arguments';
         }
-        assert.deepEqual(_.difference(null, array), [], message('difference'));
+        assert.deepEqual(_.difference(null, array), [], message(__str_top__));
         assert.deepEqual(_.intersection(null, array), [], message('intersection'));
         assert.deepEqual(_.union(null, array), array, message('union'));
         assert.deepEqual(_.xor(null, array), array, message('xor'));
@@ -163,6 +163,6 @@ QUnit.module('"Arrays" category methods');
         }
         assert.deepEqual(_.difference(array, null), array, message('difference'));
         assert.deepEqual(_.intersection(array, null), [], message('intersection'));
-        assert.deepEqual(_.union(array, null), array, message(__str_top__));
+        assert.deepEqual(_.union(array, null), array, message('union'));
     });
 }());

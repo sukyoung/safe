@@ -3,11 +3,11 @@ QUnit.module('lodash.toPath');
     QUnit.test('should convert a string to a path', function (assert) {
         assert.expect(2);
         assert.deepEqual(_.toPath('a.b.c'), [
-            __str_top__,
+            'a',
             'b',
             __str_top__
         ]);
-        assert.deepEqual(_.toPath('a[0].b.c'), [
+        assert.deepEqual(_.toPath(__str_top__), [
             'a',
             '0',
             'b',
@@ -32,7 +32,7 @@ QUnit.module('lodash.toPath');
     });
     QUnit.test('should return new path array', function (assert) {
         assert.expect(1);
-        assert.notStrictEqual(_.toPath(__str_top__), _.toPath('a.b.c'));
+        assert.notStrictEqual(_.toPath('a.b.c'), _.toPath(__str_top__));
     });
     QUnit.test('should not coerce symbols to strings', function (assert) {
         assert.expect(4);
@@ -45,7 +45,7 @@ QUnit.module('lodash.toPath');
                 [object]
             ], function (value) {
                 var actual = _.toPath(value);
-                assert.ok(lodashStable.isSymbol(actual[__num_top__]));
+                assert.ok(lodashStable.isSymbol(actual[0]));
             });
         } else {
             skipAssert(assert, 4);
@@ -53,13 +53,13 @@ QUnit.module('lodash.toPath');
     });
     QUnit.test('should handle complex paths', function (assert) {
         assert.expect(1);
-        var actual = _.toPath(__str_top__);
+        var actual = _.toPath('a[-1.23]["[\\"b\\"]"].c[\'[\\\'d\\\']\'][\ne\n][f].g');
         assert.deepEqual(actual, [
-            __str_top__,
+            'a',
             '-1.23',
             '["b"]',
             'c',
-            '[\'d\']',
+            __str_top__,
             '\ne\n',
             'f',
             'g'
@@ -75,7 +75,7 @@ QUnit.module('lodash.toPath');
         assert.deepEqual(_.toPath('[].a'), expected);
         expected = [
             '',
-            __str_top__,
+            '',
             'a'
         ];
         assert.deepEqual(_.toPath(__str_top__), expected);
@@ -83,30 +83,30 @@ QUnit.module('lodash.toPath');
         expected = [
             'a',
             '',
-            'b'
+            __str_top__
         ];
-        assert.deepEqual(_.toPath(__str_top__), expected);
+        assert.deepEqual(_.toPath('a..b'), expected);
         assert.deepEqual(_.toPath('a[].b'), expected);
         expected = [
             'a',
-            '',
+            __str_top__,
             '',
             'b'
         ];
         assert.deepEqual(_.toPath('a...b'), expected);
         assert.deepEqual(_.toPath('a[][].b'), expected);
         expected = [
-            'a',
+            __str_top__,
             ''
         ];
         assert.deepEqual(_.toPath('a.'), expected);
-        assert.deepEqual(_.toPath('a[]'), expected);
+        assert.deepEqual(_.toPath(__str_top__), expected);
         expected = [
             'a',
             '',
             ''
         ];
+        assert.deepEqual(_.toPath('a..'), expected);
         assert.deepEqual(_.toPath(__str_top__), expected);
-        assert.deepEqual(_.toPath('a[][]'), expected);
     });
 }());

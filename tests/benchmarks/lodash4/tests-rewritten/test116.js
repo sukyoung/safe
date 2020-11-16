@@ -73,7 +73,7 @@ QUnit.module('lodash.isNative');
             delete slice[fakeSrcKey];
             delete root[coreKey];
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

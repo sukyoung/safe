@@ -18,7 +18,7 @@ QUnit.module('lodash.isRegExp');
             2,
             3
         ]), false);
-        assert.strictEqual(_.isRegExp(true), __bool_top__);
+        assert.strictEqual(_.isRegExp(true), false);
         assert.strictEqual(_.isRegExp(new Date()), false);
         assert.strictEqual(_.isRegExp(new Error()), false);
         assert.strictEqual(_.isRegExp(_), false);
@@ -31,7 +31,7 @@ QUnit.module('lodash.isRegExp');
     QUnit.test('should work with regexes from another realm', function (assert) {
         assert.expect(1);
         if (realm.regexp) {
-            assert.strictEqual(_.isRegExp(realm.regexp), true);
+            assert.strictEqual(_.isRegExp(realm.regexp), __bool_top__);
         } else {
             skipAssert(assert);
         }

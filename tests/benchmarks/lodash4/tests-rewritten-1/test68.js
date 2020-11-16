@@ -15,7 +15,7 @@ QUnit.module('lodash.flattenDepth');
         assert.expect(1);
         assert.deepEqual(_.flattenDepth(array), [
             1,
-            2,
+            __num_top__,
             [
                 3,
                 [4]
@@ -45,7 +45,7 @@ QUnit.module('lodash.flattenDepth');
     QUnit.test('should coerce `depth` to an integer', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.flattenDepth(array, 2.2), [
-            __num_top__,
+            1,
             2,
             3,
             [4],

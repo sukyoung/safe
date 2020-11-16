@@ -10,7 +10,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should iterate over own string keyed properties of objects', function (assert) {
         assert.expect(1);
         function Foo() {
-            this.a = __str_top__;
+            this.a = 'a';
         }
         Foo.prototype.b = 'b';
         var actual = func(new Foo(), function (value, key) {
@@ -18,7 +18,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, { 'a': 'a' });
     });
-    QUnit.test('`_.' + methodName + '` should accept a falsey `object`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should accept a falsey `object`', function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(falsey, stubObject);
         var actual = lodashStable.map(falsey, function (object, index) {

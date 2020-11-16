@@ -48,7 +48,7 @@ QUnit.module('lodash.rest');
     QUnit.test('should coerce `start` to an integer', function (assert) {
         assert.expect(1);
         var rest = _.rest(fn, 1.6);
-        assert.deepEqual(rest(__num_top__, 2, 3), [
+        assert.deepEqual(rest(1, 2, 3), [
             1,
             [
                 2,
@@ -70,7 +70,7 @@ QUnit.module('lodash.rest');
         var rest = _.rest(function (a, b, c, d) {
             return slice.call(arguments);
         });
-        assert.deepEqual(rest(1, 2, 3, 4, 5), [
+        assert.deepEqual(rest(1, __num_top__, 3, 4, 5), [
             1,
             2,
             3,

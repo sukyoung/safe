@@ -5,11 +5,11 @@ QUnit.module('lodash.invokeMap');
         var array = [
                 'a',
                 'b',
-                __str_top__
+                'c'
             ], actual = _.invokeMap(array, 'toUpperCase');
         assert.deepEqual(actual, [
+            'A',
             __str_top__,
-            'B',
             'C'
         ]);
     });
@@ -17,7 +17,7 @@ QUnit.module('lodash.invokeMap');
         assert.expect(1);
         var array = [function () {
                     return slice.call(arguments);
-                }], actual = _.invokeMap(array, 'call', null, 'a', 'b', __str_top__);
+                }], actual = _.invokeMap(array, 'call', null, 'a', 'b', 'c');
         assert.deepEqual(actual, [[
                 'a',
                 'b',
@@ -27,13 +27,13 @@ QUnit.module('lodash.invokeMap');
     QUnit.test('should work with a function for `methodName`', function (assert) {
         assert.expect(1);
         var array = [
-            'a',
             __str_top__,
-            __str_top__
+            'b',
+            'c'
         ];
         var actual = _.invokeMap(array, function (left, right) {
             return left + this.toUpperCase() + right;
-        }, '(', ')');
+        }, '(', __str_top__);
         assert.deepEqual(actual, [
             '(A)',
             '(B)',
@@ -60,7 +60,7 @@ QUnit.module('lodash.invokeMap');
     QUnit.test('should not error on nullish elements', function (assert) {
         assert.expect(1);
         var array = [
-            'a',
+            __str_top__,
             null,
             undefined,
             'd'
@@ -130,10 +130,10 @@ QUnit.module('lodash.invokeMap');
             ]);
             actual = wrapped.invokeMap(function (left, right) {
                 return left + this.toUpperCase() + right;
-            }, '(', ')');
+            }, __str_top__, ')');
             assert.ok(actual instanceof _);
             assert.deepEqual(actual.valueOf(), [
-                __str_top__,
+                '(A)',
                 '(B)',
                 '(C)'
             ]);

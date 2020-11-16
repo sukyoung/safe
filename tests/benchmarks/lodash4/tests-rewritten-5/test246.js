@@ -29,13 +29,13 @@ QUnit.module('lodash.throttle');
         ]);
         setTimeout(function () {
             var results = [
-                throttled('c'),
+                throttled(__str_top__),
                 throttled('d')
             ];
             assert.notEqual(results[0], 'a');
             assert.notStrictEqual(results[0], undefined);
             assert.notEqual(results[1], 'd');
-            assert.notStrictEqual(results[1], undefined);
+            assert.notStrictEqual(results[__num_top__], undefined);
             done();
         }, 64);
     });
@@ -59,7 +59,7 @@ QUnit.module('lodash.throttle');
             setTimeout(function () {
                 assert.strictEqual(callCount, 2);
                 done();
-            }, __num_top__);
+            }, 64);
         } else {
             skipAssert(assert);
             done();
@@ -114,7 +114,7 @@ QUnit.module('lodash.throttle');
         setTimeout(function () {
             assert.strictEqual(callCount, 2);
             done();
-        }, __num_top__);
+        }, 400);
     });
     QUnit.test('should apply default options', function (assert) {
         assert.expect(2);
@@ -124,7 +124,7 @@ QUnit.module('lodash.throttle');
             }, 32, {});
         throttled();
         throttled();
-        assert.strictEqual(callCount, 1);
+        assert.strictEqual(callCount, __num_top__);
         setTimeout(function () {
             assert.strictEqual(callCount, 2);
             done();
@@ -133,7 +133,7 @@ QUnit.module('lodash.throttle');
     QUnit.test('should support a `leading` option', function (assert) {
         assert.expect(2);
         var withLeading = _.throttle(identity, 32, { 'leading': true });
-        assert.strictEqual(withLeading('a'), 'a');
+        assert.strictEqual(withLeading(__str_top__), 'a');
         var withoutLeading = _.throttle(identity, 32, { 'leading': false });
         assert.strictEqual(withoutLeading('a'), undefined);
     });
@@ -144,13 +144,13 @@ QUnit.module('lodash.throttle');
         var withTrailing = _.throttle(function (value) {
             withCount++;
             return value;
-        }, 64, { 'trailing': __bool_top__ });
+        }, 64, { 'trailing': true });
         var withoutTrailing = _.throttle(function (value) {
             withoutCount++;
             return value;
         }, 64, { 'trailing': false });
         assert.strictEqual(withTrailing('a'), 'a');
-        assert.strictEqual(withTrailing(__str_top__), 'a');
+        assert.strictEqual(withTrailing('b'), 'a');
         assert.strictEqual(withoutTrailing('a'), 'a');
         assert.strictEqual(withoutTrailing('b'), 'a');
         setTimeout(function () {
@@ -165,7 +165,7 @@ QUnit.module('lodash.throttle');
         var callCount = 0;
         var throttled = _.throttle(function () {
             callCount++;
-        }, 64, { 'trailing': false });
+        }, 64, { 'trailing': __bool_top__ });
         throttled();
         throttled();
         setTimeout(function () {
@@ -194,7 +194,7 @@ QUnit.module('lodash.throttle');
                 return value;
             }, 32);
             var results = [
-                throttled(__str_top__),
+                throttled('a'),
                 throttled('b'),
                 throttled('c')
             ];

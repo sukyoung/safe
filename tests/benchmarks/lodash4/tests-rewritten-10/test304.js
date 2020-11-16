@@ -13,8 +13,8 @@ QUnit.module('"Arrays" category methods');
             null,
             null
         ]), array = [
-            1,
             __num_top__,
+            2,
             3,
             4,
             5,
@@ -33,7 +33,7 @@ QUnit.module('"Arrays" category methods');
         assert.deepEqual(_.difference(array, args), [
             2,
             3,
-            __num_top__,
+            4,
             6
         ], '_.difference should work with `arguments` objects as secondary arguments');
         assert.deepEqual(_.union(args, [
@@ -51,7 +51,7 @@ QUnit.module('"Arrays" category methods');
             [3]
         ]), '_.union should work with `arguments` objects as secondary arguments');
         assert.deepEqual(_.compact(args), [
-            __num_top__,
+            1,
             [3],
             5
         ], message('compact'));
@@ -74,8 +74,8 @@ QUnit.module('"Arrays" category methods');
             [3],
             null,
             5
-        ], message('dropWhile'));
-        assert.deepEqual(_.findIndex(args, identity), 0, message(__str_top__));
+        ], message(__str_top__));
+        assert.deepEqual(_.findIndex(args, identity), 0, message('findIndex'));
         assert.deepEqual(_.findLastIndex(args, identity), 4, message('findLastIndex'));
         assert.deepEqual(_.flatten(args), [
             1,
@@ -87,7 +87,7 @@ QUnit.module('"Arrays" category methods');
         assert.deepEqual(_.head(args), 1, message('head'));
         assert.deepEqual(_.indexOf(args, 5), 4, message('indexOf'));
         assert.deepEqual(_.initial(args), [
-            __num_top__,
+            1,
             null,
             [3],
             null
@@ -96,9 +96,9 @@ QUnit.module('"Arrays" category methods');
         assert.deepEqual(_.last(args), 5, message('last'));
         assert.deepEqual(_.lastIndexOf(args, 1), 0, message('lastIndexOf'));
         assert.deepEqual(_.sortedIndex(sortedArgs, 6), 3, message('sortedIndex'));
-        assert.deepEqual(_.sortedIndexOf(sortedArgs, 5), 2, message('sortedIndexOf'));
-        assert.deepEqual(_.sortedLastIndex(sortedArgs, 5), __num_top__, message(__str_top__));
-        assert.deepEqual(_.sortedLastIndexOf(sortedArgs, 1), 0, message('sortedLastIndexOf'));
+        assert.deepEqual(_.sortedIndexOf(sortedArgs, 5), __num_top__, message('sortedIndexOf'));
+        assert.deepEqual(_.sortedLastIndex(sortedArgs, 5), __num_top__, message('sortedLastIndex'));
+        assert.deepEqual(_.sortedLastIndexOf(sortedArgs, __num_top__), 0, message('sortedLastIndexOf'));
         assert.deepEqual(_.tail(args, 4), [
             null,
             [3],
@@ -111,7 +111,7 @@ QUnit.module('"Arrays" category methods');
         ], message('take'));
         assert.deepEqual(_.takeRight(args, 1), [5], message('takeRight'));
         assert.deepEqual(_.takeRightWhile(args, identity), [5], message('takeRightWhile'));
-        assert.deepEqual(_.takeWhile(args, identity), [1], message('takeWhile'));
+        assert.deepEqual(_.takeWhile(args, identity), [__num_top__], message('takeWhile'));
         assert.deepEqual(_.uniq(args), [
             1,
             null,

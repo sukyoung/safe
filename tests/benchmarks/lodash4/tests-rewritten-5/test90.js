@@ -8,7 +8,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should return the intersection of two arrays', function (assert) {
         assert.expect(1);
         var actual = func([
-            __num_top__,
+            2,
             1
         ], [
             2,
@@ -20,7 +20,7 @@ lodashStable.each([
         assert.expect(1);
         var actual = func([
             2,
-            __num_top__,
+            1,
             2,
             3
         ], [
@@ -30,7 +30,7 @@ lodashStable.each([
             3,
             2
         ]);
-        assert.deepEqual(actual, [3]);
+        assert.deepEqual(actual, [__num_top__]);
     });
     QUnit.test('`_.' + methodName + '` should return an array of unique values', function (assert) {
         assert.expect(1);
@@ -38,13 +38,13 @@ lodashStable.each([
             1,
             1,
             3,
-            2,
+            __num_top__,
             2
         ], [
             5,
             2,
             2,
-            1,
+            __num_top__,
             4
         ], [
             2,
@@ -56,7 +56,7 @@ lodashStable.each([
             2
         ]);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with a single array', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with a single array', function (assert) {
         assert.expect(1);
         var actual = func([
             1,
@@ -99,7 +99,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should match `NaN`', function (assert) {
         assert.expect(1);
         var actual = func([
-            __num_top__,
+            1,
             NaN,
             3
         ], [
@@ -109,7 +109,7 @@ lodashStable.each([
         ]);
         assert.deepEqual(actual, [NaN]);
     });
-    QUnit.test('`_.' + methodName + '` should work with large arrays of `-0` as `0`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with large arrays of `-0` as `0`', function (assert) {
         assert.expect(1);
         var values = [
                 -0,
@@ -139,7 +139,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should treat values that are not arrays or `arguments` objects as empty', function (assert) {
         assert.expect(3);
         var array = [
-            0,
+            __num_top__,
             1,
             null,
             3
@@ -151,7 +151,7 @@ lodashStable.each([
         ]), []);
         assert.deepEqual(func(array, null, args, null), []);
     });
-    QUnit.test(__str_top__ + methodName + '` should return a wrapped value when chaining', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return a wrapped value when chaining', function (assert) {
         assert.expect(2);
         if (!isNpm) {
             var wrapped = _([

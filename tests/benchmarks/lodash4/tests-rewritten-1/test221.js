@@ -87,7 +87,7 @@ QUnit.module('lodash.some');
                 'b': 1
             }
         ];
-        assert.strictEqual(_.some(objects, 'a'), false);
+        assert.strictEqual(_.some(objects, __str_top__), false);
         assert.strictEqual(_.some(objects, 'b'), true);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
@@ -95,7 +95,7 @@ QUnit.module('lodash.some');
         var objects = [
             {
                 'a': 0,
-                'b': __num_top__
+                'b': 0
             },
             {
                 'a': 1,

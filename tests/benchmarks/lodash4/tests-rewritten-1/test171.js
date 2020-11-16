@@ -30,13 +30,13 @@ QUnit.module('lodash.omit');
         assert.expect(1);
         assert.deepEqual(_.omit(nested, 'b.c'), {
             'a': 1,
-            'b': { 'd': __num_top__ }
+            'b': { 'd': 3 }
         });
     });
     QUnit.test('should support path arrays', function (assert) {
         assert.expect(1);
         var object = {
-                'a.b': 1,
+                'a.b': __num_top__,
                 'a': { 'b': 2 }
             }, actual = _.omit(object, [['a.b']]);
         assert.deepEqual(actual, { 'a': { 'b': 2 } });

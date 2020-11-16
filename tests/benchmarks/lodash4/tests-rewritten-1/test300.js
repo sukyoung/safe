@@ -12,9 +12,9 @@ QUnit.module('lodash(...).value');
             ]);
             assert.deepEqual(wrapped.value(), [
                 1,
-                __num_top__,
-                3,
                 2,
+                3,
+                __num_top__,
                 3
             ]);
             assert.deepEqual(array, [

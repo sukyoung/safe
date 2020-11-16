@@ -19,7 +19,7 @@ QUnit.module('lodash.tail');
     QUnit.test('should exclude the first element', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.tail(array), [
-            2,
+            __num_top__,
             3
         ]);
     });
@@ -41,8 +41,8 @@ QUnit.module('lodash.tail');
                     __num_top__
                 ],
                 [
-                    __num_top__,
-                    __num_top__,
+                    7,
+                    8,
                     9
                 ]
             ], actual = lodashStable.map(array, _.tail);
@@ -56,7 +56,7 @@ QUnit.module('lodash.tail');
                 __num_top__
             ],
             [
-                8,
+                __num_top__,
                 9
             ]
         ]);

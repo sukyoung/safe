@@ -29,7 +29,7 @@ QUnit.module('methods using `createWrapper`');
                 'a': 1,
                 'fn': fn
             };
-        var a = _.bindKey(object, __str_top__), b = _.partialRight(a, 4), c = _.partial(b, 2);
+        var a = _.bindKey(object, 'fn'), b = _.partialRight(a, 4), c = _.partial(b, 2);
         assert.deepEqual(c(3), expected);
         a = _.bind(fn, object);
         b = _.partialRight(a, 4);
@@ -59,12 +59,12 @@ QUnit.module('methods using `createWrapper`');
                 5,
                 6
             ], object = { 'fn': fn };
-        var a = _.bindKey(object, 'fn', ph2, 2), b = _.partialRight(a, ph4, 6), c = _.partial(b, 1, ph3, __num_top__);
+        var a = _.bindKey(object, 'fn', ph2, 2), b = _.partialRight(a, ph4, 6), c = _.partial(b, 1, ph3, 4);
         assert.deepEqual(c(3, 5), expected);
         a = _.bind(fn, object, ph1, 2);
         b = _.partialRight(a, ph4, 6);
         c = _.partial(b, 1, ph3, 4);
-        assert.deepEqual(c(3, 5), expected);
+        assert.deepEqual(c(__num_top__, 5), expected);
         a = _.partial(fn, ph3, 2);
         b = _.bind(a, object, 1, ph1, 4);
         c = _.partialRight(b, ph4, 6);
@@ -73,7 +73,7 @@ QUnit.module('methods using `createWrapper`');
     QUnit.test('should work with combinations of functions with overlapping placeholders', function (assert) {
         assert.expect(3);
         var expected = [
-                1,
+                __num_top__,
                 2,
                 3,
                 4
@@ -107,13 +107,13 @@ QUnit.module('methods using `createWrapper`');
             };
             var object = {}, bound1 = index ? _.bind(fn, object, 1) : _.bind(fn, object), expected = [
                     object,
-                    1,
+                    __num_top__,
                     2,
-                    3
+                    __num_top__
                 ];
             var actual = _.last(lodashStable.times(HOT_COUNT, function () {
                 var bound2 = index ? _.bind(bound1, null, 2) : _.bind(bound1);
-                return index ? bound2(__num_top__) : bound2(1, 2, 3);
+                return index ? bound2(3) : bound2(1, 2, 3);
             }));
             assert.deepEqual(actual, expected);
             actual = _.last(lodashStable.times(HOT_COUNT, function () {
@@ -137,7 +137,7 @@ QUnit.module('methods using `createWrapper`');
                     2,
                     1
                 ] : [
-                    __num_top__,
+                    1,
                     2,
                     3
                 ];
@@ -153,7 +153,7 @@ QUnit.module('methods using `createWrapper`');
         });
         lodashStable.each([
             'partial',
-            'partialRight'
+            __str_top__
         ], function (methodName, index) {
             var func = _[methodName], fn = function () {
                     return slice.call(arguments);

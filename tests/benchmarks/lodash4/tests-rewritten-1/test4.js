@@ -1,6 +1,6 @@
 QUnit.module('lodash constructor');
 (function () {
-    var values = empties.concat(true, 1, __str_top__), expected = lodashStable.map(values, stubTrue);
+    var values = empties.concat(true, __num_top__, 'a'), expected = lodashStable.map(values, stubTrue);
     QUnit.test('should create a new instance when called without the `new` operator', function (assert) {
         assert.expect(1);
         if (!isNpm) {

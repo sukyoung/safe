@@ -3,11 +3,11 @@ QUnit.module('lodash.shuffle');
     var array = [
             __num_top__,
             2,
-            __num_top__
+            3
         ], object = {
             'a': 1,
-            'b': 2,
-            'c': __num_top__
+            'b': __num_top__,
+            'c': 3
         };
     QUnit.test('should return a new array', function (assert) {
         assert.expect(1);
@@ -22,13 +22,13 @@ QUnit.module('lodash.shuffle');
         assert.expect(1);
         var actual = lodashStable.times(1000, function (assert) {
             return _.shuffle([
-                __num_top__,
-                2
+                1,
+                __num_top__
             ]);
         });
         assert.deepEqual(lodashStable.sortBy(lodashStable.uniqBy(actual, String), __str_top__), [
             [
-                1,
+                __num_top__,
                 2
             ],
             [

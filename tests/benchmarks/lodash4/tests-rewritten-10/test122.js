@@ -1,31 +1,31 @@
 QUnit.module('lodash.isPlainObject');
 (function () {
-    var element = document && document.createElement('div');
+    var element = document && document.createElement(__str_top__);
     QUnit.test('should detect plain objects', function (assert) {
         assert.expect(5);
         function Foo(a) {
             this.a = 1;
         }
-        assert.strictEqual(_.isPlainObject({}), __bool_top__);
-        assert.strictEqual(_.isPlainObject({ 'a': 1 }), true);
+        assert.strictEqual(_.isPlainObject({}), true);
+        assert.strictEqual(_.isPlainObject({ 'a': __num_top__ }), true);
         assert.strictEqual(_.isPlainObject({ 'constructor': Foo }), true);
         assert.strictEqual(_.isPlainObject([
             1,
             2,
-            __num_top__
+            3
         ]), false);
-        assert.strictEqual(_.isPlainObject(new Foo(1)), false);
+        assert.strictEqual(_.isPlainObject(new Foo(__num_top__)), false);
     });
     QUnit.test('should return `true` for objects with a `[[Prototype]]` of `null`', function (assert) {
         assert.expect(2);
         var object = create(null);
         assert.strictEqual(_.isPlainObject(object), true);
         object.constructor = objectProto.constructor;
-        assert.strictEqual(_.isPlainObject(object), __bool_top__);
+        assert.strictEqual(_.isPlainObject(object), true);
     });
     QUnit.test('should return `true` for objects with a `valueOf` property', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.isPlainObject({ 'valueOf': 0 }), true);
+        assert.strictEqual(_.isPlainObject({ 'valueOf': __num_top__ }), __bool_top__);
     });
     QUnit.test('should return `true` for objects with a writable `Symbol.toStringTag` property', function (assert) {
         assert.expect(1);
@@ -39,8 +39,8 @@ QUnit.module('lodash.isPlainObject');
     });
     QUnit.test('should return `false` for objects with a custom `[[Prototype]]`', function (assert) {
         assert.expect(1);
-        var object = create({ 'a': __num_top__ });
-        assert.strictEqual(_.isPlainObject(object), __bool_top__);
+        var object = create({ 'a': 1 });
+        assert.strictEqual(_.isPlainObject(object), false);
     });
     QUnit.test('should return `false` for DOM elements', function (assert) {
         assert.expect(1);
@@ -52,7 +52,7 @@ QUnit.module('lodash.isPlainObject');
     });
     QUnit.test('should return `false` for non-Object objects', function (assert) {
         assert.expect(3);
-        assert.strictEqual(_.isPlainObject(arguments), false);
+        assert.strictEqual(_.isPlainObject(arguments), __bool_top__);
         assert.strictEqual(_.isPlainObject(Error), false);
         assert.strictEqual(_.isPlainObject(Math), false);
     });
@@ -64,7 +64,7 @@ QUnit.module('lodash.isPlainObject');
         });
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isPlainObject(true), false);
-        assert.strictEqual(_.isPlainObject('a'), __bool_top__);
+        assert.strictEqual(_.isPlainObject(__str_top__), false);
         assert.strictEqual(_.isPlainObject(symbol), false);
     });
     QUnit.test('should return `false` for objects with a read-only `Symbol.toStringTag` property', function (assert) {
@@ -74,10 +74,10 @@ QUnit.module('lodash.isPlainObject');
             defineProperty(object, Symbol.toStringTag, {
                 'configurable': true,
                 'enumerable': __bool_top__,
-                'writable': __bool_top__,
+                'writable': false,
                 'value': 'X'
             });
-            assert.deepEqual(_.isPlainObject(object), false);
+            assert.deepEqual(_.isPlainObject(object), __bool_top__);
         } else {
             skipAssert(assert);
         }
@@ -88,16 +88,16 @@ QUnit.module('lodash.isPlainObject');
             var proto = {};
             proto[Symbol.toStringTag] = undefined;
             var object = create(proto);
-            assert.strictEqual(_.isPlainObject(object), false);
+            assert.strictEqual(_.isPlainObject(object), __bool_top__);
             assert.notOk(lodashStable.has(object, Symbol.toStringTag));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work with objects from another realm', function (assert) {
         assert.expect(1);
         if (realm.object) {
-            assert.strictEqual(_.isPlainObject(realm.object), __bool_top__);
+            assert.strictEqual(_.isPlainObject(realm.object), true);
         } else {
             skipAssert(assert);
         }

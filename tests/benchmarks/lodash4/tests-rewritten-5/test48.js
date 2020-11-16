@@ -7,7 +7,7 @@ QUnit.module('lodash.drop');
     ];
     QUnit.test('should drop the first two elements', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.drop(array, 2), [3]);
+        assert.deepEqual(_.drop(array, __num_top__), [3]);
     });
     QUnit.test('should treat falsey `n` values, except `undefined`, as `0`', function (assert) {
         assert.expect(1);
@@ -36,8 +36,8 @@ QUnit.module('lodash.drop');
         assert.expect(4);
         lodashStable.each([
             3,
-            4,
-            Math.pow(__num_top__, 32),
+            __num_top__,
+            Math.pow(2, __num_top__),
             Infinity
         ], function (n) {
             assert.deepEqual(_.drop(array, n), []);
@@ -55,11 +55,11 @@ QUnit.module('lodash.drop');
         var array = [
                 [
                     1,
-                    2,
+                    __num_top__,
                     3
                 ],
                 [
-                    4,
+                    __num_top__,
                     5,
                     6
                 ],
@@ -72,7 +72,7 @@ QUnit.module('lodash.drop');
         assert.deepEqual(actual, [
             [
                 2,
-                __num_top__
+                3
             ],
             [
                 5,
@@ -90,12 +90,12 @@ QUnit.module('lodash.drop');
             var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), predicate = function (value) {
                     values.push(value);
                     return isEven(value);
-                }, values = [], actual = _(array).drop(__num_top__).drop().value();
+                }, values = [], actual = _(array).drop(2).drop().value();
             assert.deepEqual(actual, array.slice(3));
-            actual = _(array).filter(predicate).drop(__num_top__).drop().value();
+            actual = _(array).filter(predicate).drop(2).drop().value();
             assert.deepEqual(values, array);
             assert.deepEqual(actual, _.drop(_.drop(_.filter(array, predicate), 2)));
-            actual = _(array).drop(2).dropRight().drop().dropRight(__num_top__).value();
+            actual = _(array).drop(2).dropRight().drop().dropRight(2).value();
             assert.deepEqual(actual, _.dropRight(_.drop(_.dropRight(_.drop(array, 2))), 2));
             values = [];
             actual = _(array).drop().filter(predicate).drop(2).dropRight().drop().dropRight(2).value();

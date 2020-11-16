@@ -15,14 +15,14 @@ QUnit.module('lodash.compact');
         if (!isNpm) {
             var actual = _(falsey).thru(_.slice).compact().thru(_.slice).value();
             assert.deepEqual(actual, []);
-            actual = _(falsey).thru(_.slice).push(true, 1).compact().push(__str_top__).value();
+            actual = _(falsey).thru(_.slice).push(__bool_top__, __num_top__).compact().push('a').value();
             assert.deepEqual(actual, [
                 true,
                 1,
                 'a'
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -40,8 +40,8 @@ QUnit.module('lodash.compact');
             var iteratee = _.iteratee, pass = __bool_top__;
             _.iteratee = identity;
             try {
-                var actual = _(largeArray).slice(__num_top__).compact().value();
-                pass = lodashStable.isEqual(actual, _.compact(_.slice(largeArray, 1)));
+                var actual = _(largeArray).slice(1).compact().value();
+                pass = lodashStable.isEqual(actual, _.compact(_.slice(largeArray, __num_top__)));
             } catch (e) {
                 console.log(e);
             }

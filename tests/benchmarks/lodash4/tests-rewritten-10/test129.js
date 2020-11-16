@@ -15,29 +15,29 @@ QUnit.module('lodash.isWeakMap');
             return index ? _.isWeakMap(value) : _.isWeakMap();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isWeakMap(args), false);
+        assert.strictEqual(_.isWeakMap(args), __bool_top__);
         assert.strictEqual(_.isWeakMap([
             __num_top__,
-            __num_top__,
+            2,
             3
-        ]), false);
+        ]), __bool_top__);
         assert.strictEqual(_.isWeakMap(__bool_top__), false);
-        assert.strictEqual(_.isWeakMap(new Date()), false);
+        assert.strictEqual(_.isWeakMap(new Date()), __bool_top__);
         assert.strictEqual(_.isWeakMap(new Error()), __bool_top__);
-        assert.strictEqual(_.isWeakMap(_), false);
-        assert.strictEqual(_.isWeakMap(slice), __bool_top__);
-        assert.strictEqual(_.isWeakMap({ 'a': __num_top__ }), false);
-        assert.strictEqual(_.isWeakMap(map), __bool_top__);
-        assert.strictEqual(_.isWeakMap(1), __bool_top__);
-        assert.strictEqual(_.isWeakMap(/x/), __bool_top__);
+        assert.strictEqual(_.isWeakMap(_), __bool_top__);
+        assert.strictEqual(_.isWeakMap(slice), false);
+        assert.strictEqual(_.isWeakMap({ 'a': 1 }), __bool_top__);
+        assert.strictEqual(_.isWeakMap(map), false);
+        assert.strictEqual(_.isWeakMap(__num_top__), false);
+        assert.strictEqual(_.isWeakMap(/x/), false);
         assert.strictEqual(_.isWeakMap('a'), false);
-        assert.strictEqual(_.isWeakMap(symbol), __bool_top__);
+        assert.strictEqual(_.isWeakMap(symbol), false);
     });
     QUnit.test('should work for objects with a non-function `constructor` (test in IE 11)', function (assert) {
         assert.expect(1);
         var values = [
                 false,
-                true
+                __bool_top__
             ], expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value) {
             return _.isWeakMap({ 'constructor': value });

@@ -20,7 +20,7 @@ QUnit.module('lodash.orderBy');
     ];
     var nestedObj = [
         {
-            id: __str_top__,
+            id: '4',
             address: {
                 zipCode: 4,
                 streetName: 'Beta'
@@ -43,7 +43,7 @@ QUnit.module('lodash.orderBy');
         {
             id: '2',
             address: {
-                zipCode: __num_top__,
+                zipCode: 2,
                 streetName: 'Alpha'
             }
         },
@@ -72,16 +72,16 @@ QUnit.module('lodash.orderBy');
                 'address',
                 'zipCode'
             ],
-            [__str_top__]
+            ['address.streetName']
         ], [
             'asc',
             'desc'
         ]);
         assert.deepEqual(actual, [
             nestedObj[2],
-            nestedObj[3],
+            nestedObj[__num_top__],
             nestedObj[1],
-            nestedObj[0],
+            nestedObj[__num_top__],
             nestedObj[4]
         ]);
     });
@@ -91,12 +91,12 @@ QUnit.module('lodash.orderBy');
             'a',
             'b'
         ], [
-            'desc',
+            __str_top__,
             __str_top__
         ]);
         assert.deepEqual(actual, [
             objects[3],
-            objects[1],
+            objects[__num_top__],
             objects[2],
             objects[0]
         ]);
@@ -105,7 +105,7 @@ QUnit.module('lodash.orderBy');
         assert.expect(2);
         var expected = [
                 objects[2],
-                objects[__num_top__],
+                objects[0],
                 objects[3],
                 objects[1]
             ], actual = _.orderBy(objects, [

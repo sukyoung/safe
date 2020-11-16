@@ -14,6 +14,6 @@ lodashStable.each([
             6,
             6
         ];
-        assert.deepEqual(func(sorted, __num_top__), isSortedIndexOf ? 2 : 3);
+        assert.deepEqual(func(sorted, 5), isSortedIndexOf ? __num_top__ : 3);
     });
 });

@@ -52,7 +52,7 @@ QUnit.module('lodash.invert');
                 '2': __str_top__
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

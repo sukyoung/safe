@@ -4,9 +4,9 @@ QUnit.module('lodash.isFinite');
         assert.expect(1);
         var values = [
                 0,
-                __num_top__,
+                1,
                 3.14,
-                -1
+                -__num_top__
             ], expected = lodashStable.map(values, stubTrue), actual = lodashStable.map(values, _.isFinite);
         assert.deepEqual(actual, expected);
     });
@@ -16,7 +16,7 @@ QUnit.module('lodash.isFinite');
                 NaN,
                 Infinity,
                 -Infinity,
-                Object(1)
+                Object(__num_top__)
             ], expected = lodashStable.map(values, stubFalse), actual = lodashStable.map(values, _.isFinite);
         assert.deepEqual(actual, expected);
     });
@@ -27,8 +27,8 @@ QUnit.module('lodash.isFinite');
                 [],
                 true,
                 '',
-                __str_top__,
-                __str_top__
+                ' ',
+                '2px'
             ], expected = lodashStable.map(values, stubFalse), actual = lodashStable.map(values, _.isFinite);
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isFinite(args), false);
@@ -36,19 +36,19 @@ QUnit.module('lodash.isFinite');
             1,
             2,
             3
-        ]), false);
+        ]), __bool_top__);
         assert.strictEqual(_.isFinite(true), false);
         assert.strictEqual(_.isFinite(new Date()), false);
         assert.strictEqual(_.isFinite(new Error()), false);
-        assert.strictEqual(_.isFinite({ 'a': 1 }), false);
+        assert.strictEqual(_.isFinite({ 'a': __num_top__ }), false);
         assert.strictEqual(_.isFinite(/x/), false);
-        assert.strictEqual(_.isFinite('a'), false);
-        assert.strictEqual(_.isFinite(symbol), __bool_top__);
+        assert.strictEqual(_.isFinite(__str_top__), false);
+        assert.strictEqual(_.isFinite(symbol), false);
     });
     QUnit.test('should return `false` for numeric string values', function (assert) {
         assert.expect(1);
         var values = [
-                __str_top__,
+                '2',
                 '0',
                 '08'
             ], expected = lodashStable.map(values, stubFalse), actual = lodashStable.map(values, _.isFinite);

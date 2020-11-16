@@ -3,11 +3,11 @@ QUnit.module('lodash(...) methods that return the wrapped modified array');
     var funcs = [
         'push',
         'reverse',
-        __str_top__,
+        'sort',
         'unshift'
     ];
     lodashStable.each(funcs, function (methodName) {
-        QUnit.test('`_(...).' + methodName + '` should return a new wrapper', function (assert) {
+        QUnit.test(__str_top__ + methodName + '` should return a new wrapper', function (assert) {
             assert.expect(2);
             if (!isNpm) {
                 var array = [

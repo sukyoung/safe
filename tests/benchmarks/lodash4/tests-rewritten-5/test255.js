@@ -6,7 +6,7 @@ lodashStable.each([
     'toSafeInteger'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should preserve the sign of `0`', function (assert) {
         assert.expect(2);
         var values = [
                 0,
@@ -86,7 +86,7 @@ lodashStable.each([
         ];
         var expected = lodashStable.map(values, function (value) {
             if (!isToNumber) {
-                if (!isToFinite && value == 1.2) {
+                if (!isToFinite && value == __num_top__) {
                     value = 1;
                 } else if (value == Infinity) {
                     value = MAX_INTEGER;
@@ -129,7 +129,7 @@ lodashStable.each([
             MAX_SAFE_INTEGER + '',
             '1e+308',
             '1e308',
-            __str_top__,
+            '1E+308',
             '1E308',
             '5e-324',
             '5E-324',
@@ -175,7 +175,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should convert binary/octal strings to numbers', function (assert) {
         assert.expect(1);
         var numbers = [
-                __num_top__,
+                42,
                 5349,
                 1715004
             ], transforms = [
@@ -256,7 +256,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should coerce objects to numbers', function (assert) {
         assert.expect(1);
         var values = [
             {},
@@ -269,10 +269,10 @@ lodashStable.each([
             { 'valueOf': '1.1' },
             {
                 'valueOf': '1.1',
-                'toString': lodashStable.constant('2.2')
+                'toString': lodashStable.constant(__str_top__)
             },
             {
-                'valueOf': lodashStable.constant('1.1'),
+                'valueOf': lodashStable.constant(__str_top__),
                 'toString': '2.2'
             },
             {
@@ -305,11 +305,11 @@ lodashStable.each([
         if (isToFinite) {
             expected = [
                 0,
-                __num_top__,
+                0,
                 1,
                 0,
-                0,
-                2.2,
+                __num_top__,
+                __num_top__,
                 1.1,
                 1.1,
                 0,

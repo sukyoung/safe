@@ -3,19 +3,19 @@ QUnit.module('lodash.concat');
     QUnit.test('should shallow clone `array`', function (assert) {
         assert.expect(2);
         var array = [
+                1,
                 __num_top__,
-                2,
-                3
+                __num_top__
             ], actual = _.concat(array);
         assert.deepEqual(actual, array);
         assert.notStrictEqual(actual, array);
     });
     QUnit.test('should concat arrays and values', function (assert) {
         assert.expect(2);
-        var array = [__num_top__], actual = _.concat(array, 2, [3], [[4]]);
+        var array = [1], actual = _.concat(array, 2, [3], [[4]]);
         assert.deepEqual(actual, [
             1,
-            2,
+            __num_top__,
             3,
             [__num_top__]
         ]);
@@ -27,11 +27,11 @@ QUnit.module('lodash.concat');
             ,
             null,
             undefined,
-            __bool_top__,
-            __bool_top__,
+            false,
+            true,
             1,
             NaN,
-            __str_top__
+            'a'
         ];
         var expected = lodashStable.map(values, function (value, index) {
             return index ? [value] : [];
@@ -48,7 +48,7 @@ QUnit.module('lodash.concat');
             ];
         });
         actual = lodashStable.map(values, function (value) {
-            return _.concat(value, [2], [[3]]);
+            return _.concat(value, [2], [[__num_top__]]);
         });
         assert.deepEqual(actual, expected);
     });
@@ -57,21 +57,21 @@ QUnit.module('lodash.concat');
         var expected = [], actual = _.concat(Array(1), Array(1));
         expected.push(undefined, undefined);
         assert.ok('0' in actual);
-        assert.ok('1' in actual);
+        assert.ok(__str_top__ in actual);
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should return a new wrapped array', function (assert) {
         assert.expect(2);
         if (!isNpm) {
-            var array = [__num_top__], wrapped = _(array).concat([
+            var array = [1], wrapped = _(array).concat([
                     2,
                     3
                 ]), actual = wrapped.value();
             assert.deepEqual(array, [1]);
             assert.deepEqual(actual, [
-                1,
                 __num_top__,
-                __num_top__
+                __num_top__,
+                3
             ]);
         } else {
             skipAssert(assert, 2);

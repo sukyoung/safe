@@ -4,15 +4,15 @@ QUnit.module('lodash.zipWith');
         assert.expect(2);
         var array1 = [
                 1,
-                2,
+                __num_top__,
                 3
             ], array2 = [
                 4,
                 5,
-                __num_top__
+                6
             ], array3 = [
+                7,
                 __num_top__,
-                8,
                 9
             ];
         var actual = _.zipWith(array1, array2, array3, function (a, b, c) {
@@ -21,7 +21,7 @@ QUnit.module('lodash.zipWith');
         assert.deepEqual(actual, [
             12,
             __num_top__,
-            18
+            __num_top__
         ]);
         var actual = _.zipWith(array1, [], function (a, b) {
             return a + (b || __num_top__);
@@ -29,15 +29,15 @@ QUnit.module('lodash.zipWith');
         assert.deepEqual(actual, [
             __num_top__,
             2,
-            __num_top__
+            3
         ]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);
         var args;
         _.zipWith([
-            __num_top__,
-            __num_top__
+            1,
+            2
         ], [
             3,
             4
@@ -48,7 +48,7 @@ QUnit.module('lodash.zipWith');
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [
-            1,
+            __num_top__,
             3,
             5
         ]);
@@ -56,11 +56,11 @@ QUnit.module('lodash.zipWith');
     QUnit.test('should perform a basic zip when `iteratee` is nullish', function (assert) {
         assert.expect(1);
         var array1 = [
-                1,
-                __num_top__
+                __num_top__,
+                2
             ], array2 = [
                 3,
-                4
+                __num_top__
             ], values = [
                 ,
                 null,

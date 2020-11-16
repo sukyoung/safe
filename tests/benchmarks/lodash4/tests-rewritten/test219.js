@@ -56,7 +56,7 @@ QUnit.module('lodash.size');
                 map.clear();
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work with sets', function (assert) {
@@ -72,7 +72,7 @@ QUnit.module('lodash.size');
                 set.clear();
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should not treat objects with negative lengths as array-like', function (assert) {

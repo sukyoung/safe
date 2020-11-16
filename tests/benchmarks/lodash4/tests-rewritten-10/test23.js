@@ -2,11 +2,11 @@ QUnit.module('lodash.chunk');
 (function () {
     var array = [
         0,
-        1,
+        __num_top__,
         2,
-        3,
-        4,
-        5
+        __num_top__,
+        __num_top__,
+        __num_top__
     ];
     QUnit.test('should return chunked arrays', function (assert) {
         assert.expect(1);
@@ -14,11 +14,11 @@ QUnit.module('lodash.chunk');
         assert.deepEqual(actual, [
             [
                 0,
-                1,
-                __num_top__
+                __num_top__,
+                2
             ],
             [
-                __num_top__,
+                3,
                 4,
                 5
             ]
@@ -29,7 +29,7 @@ QUnit.module('lodash.chunk');
         var actual = _.chunk(array, 4);
         assert.deepEqual(actual, [
             [
-                __num_top__,
+                0,
                 1,
                 2,
                 3
@@ -44,10 +44,10 @@ QUnit.module('lodash.chunk');
         assert.expect(1);
         var expected = lodashStable.map(falsey, function (value) {
             return value === undefined ? [
-                [0],
+                [__num_top__],
                 [1],
                 [__num_top__],
-                [__num_top__],
+                [3],
                 [4],
                 [5]
             ] : [];
@@ -59,7 +59,7 @@ QUnit.module('lodash.chunk');
     });
     QUnit.test('should ensure the minimum `size` is `0`', function (assert) {
         assert.expect(1);
-        var values = lodashStable.reject(falsey, lodashStable.isUndefined).concat(-1, -Infinity), expected = lodashStable.map(values, stubArray);
+        var values = lodashStable.reject(falsey, lodashStable.isUndefined).concat(-__num_top__, -Infinity), expected = lodashStable.map(values, stubArray);
         var actual = lodashStable.map(values, function (n) {
             return _.chunk(array, n);
         });
@@ -72,8 +72,8 @@ QUnit.module('lodash.chunk');
             [1],
             [2],
             [3],
-            [__num_top__],
-            [5]
+            [4],
+            [__num_top__]
         ]);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
@@ -81,21 +81,21 @@ QUnit.module('lodash.chunk');
         var actual = lodashStable.map([
             [
                 1,
-                2
+                __num_top__
             ],
             [
-                __num_top__,
-                __num_top__
+                3,
+                4
             ]
         ], _.chunk);
         assert.deepEqual(actual, [
             [
-                [__num_top__],
+                [1],
                 [2]
             ],
             [
                 [3],
-                [__num_top__]
+                [4]
             ]
         ]);
     });

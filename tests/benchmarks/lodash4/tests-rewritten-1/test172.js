@@ -3,9 +3,9 @@ QUnit.module('lodash.omitBy');
     QUnit.test('should work with a predicate argument', function (assert) {
         assert.expect(1);
         var object = {
-            'a': __num_top__,
+            'a': 1,
             'b': 2,
-            'c': 3,
+            'c': __num_top__,
             'd': 4
         };
         var actual = _.omitBy(object, function (n) {

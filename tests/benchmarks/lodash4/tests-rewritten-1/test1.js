@@ -31,8 +31,8 @@ QUnit.module('isIndex');
                     ['0001'],
                     [-1],
                     [
-                        3,
-                        __num_top__
+                        __num_top__,
+                        3
                     ],
                     [1.1],
                     [MAX_SAFE_INTEGER]

@@ -15,7 +15,7 @@ QUnit.module('lodash(...).sort');
                 __num_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should accept falsey arguments', function (assert) {

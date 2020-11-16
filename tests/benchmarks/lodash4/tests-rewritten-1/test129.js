@@ -21,7 +21,7 @@ QUnit.module('lodash.isWeakMap');
             2,
             3
         ]), false);
-        assert.strictEqual(_.isWeakMap(true), __bool_top__);
+        assert.strictEqual(_.isWeakMap(true), false);
         assert.strictEqual(_.isWeakMap(new Date()), false);
         assert.strictEqual(_.isWeakMap(new Error()), false);
         assert.strictEqual(_.isWeakMap(_), false);
@@ -36,7 +36,7 @@ QUnit.module('lodash.isWeakMap');
     QUnit.test('should work for objects with a non-function `constructor` (test in IE 11)', function (assert) {
         assert.expect(1);
         var values = [
-                false,
+                __bool_top__,
                 true
             ], expected = lodashStable.map(values, stubFalse);
         var actual = lodashStable.map(values, function (value) {

@@ -72,7 +72,7 @@ QUnit.module('lodash.countBy');
             '1': 1,
             '2': 2
         });
-        assert.deepEqual(_.countBy(array, 1), {
+        assert.deepEqual(_.countBy(array, __num_top__), {
             'a': 2,
             'b': 1
         });
@@ -92,7 +92,7 @@ QUnit.module('lodash.countBy');
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            var array = lodashStable.range(LARGE_ARRAY_SIZE).concat(lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / __num_top__), LARGE_ARRAY_SIZE), lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / 1.5), LARGE_ARRAY_SIZE));
+            var array = lodashStable.range(LARGE_ARRAY_SIZE).concat(lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / 2), LARGE_ARRAY_SIZE), lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / 1.5), LARGE_ARRAY_SIZE));
             var actual = _(array).countBy().map(square).filter(isEven).take().value();
             assert.deepEqual(actual, _.take(_.filter(_.map(_.countBy(array), square), isEven)));
         } else {

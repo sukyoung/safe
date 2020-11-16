@@ -1,6 +1,6 @@
 QUnit.module('omit methods');
 lodashStable.each([
-    __str_top__,
+    'omit',
     'omitBy'
 ], function (methodName) {
     var expected = {
@@ -59,7 +59,7 @@ lodashStable.each([
                 { '0': 'b' },
                 { '0': 'b' },
                 { '-0': 'a' },
-                { '-0': 'a' }
+                { '-0': __str_top__ }
             ];
         var actual = lodashStable.map(props, function (key) {
             return func(object, resolve(object, key));

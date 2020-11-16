@@ -120,7 +120,7 @@ lodashStable.each([
             assert.strictEqual(func(object, symbol), __bool_top__);
             assert.strictEqual(func(object, symbol2), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {

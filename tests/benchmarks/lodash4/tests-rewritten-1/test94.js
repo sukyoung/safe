@@ -9,7 +9,7 @@ QUnit.module('lodash.invertBy');
         assert.expect(1);
         var expected = {
             'group1': [
-                __str_top__,
+                'a',
                 'c'
             ],
             'group2': ['b']
@@ -58,7 +58,7 @@ QUnit.module('lodash.invertBy');
                     'a',
                     'c'
                 ],
-                '2': ['b']
+                '2': [__str_top__]
             });
         } else {
             skipAssert(assert, 2);

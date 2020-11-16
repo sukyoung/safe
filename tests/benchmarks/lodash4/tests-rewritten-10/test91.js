@@ -3,14 +3,14 @@ QUnit.module('lodash.intersectionBy');
     QUnit.test('should accept an `iteratee`', function (assert) {
         assert.expect(2);
         var actual = _.intersectionBy([
-            __num_top__,
+            2.1,
             __num_top__
         ], [
             __num_top__,
             __num_top__
         ], Math.floor);
         assert.deepEqual(actual, [2.1]);
-        actual = _.intersectionBy([{ 'x': 1 }], [
+        actual = _.intersectionBy([{ 'x': __num_top__ }], [
             { 'x': __num_top__ },
             { 'x': __num_top__ }
         ], __str_top__);

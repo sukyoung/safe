@@ -82,7 +82,7 @@ QUnit.module('lodash.isMatchWith');
     });
     QUnit.test('should handle comparisons when `customizer` returns `undefined`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.isMatchWith({ 'a': __num_top__ }, { 'a': 1 }, noop), true);
+        assert.strictEqual(_.isMatchWith({ 'a': 1 }, { 'a': 1 }, noop), true);
     });
     QUnit.test('should not handle comparisons when `customizer` returns `true`', function (assert) {
         assert.expect(2);
@@ -183,7 +183,7 @@ QUnit.module('lodash.isMatchWith');
                         array[0][1],
                         array[0][1],
                         1,
-                        array[0],
+                        array[__num_top__],
                         array[0]
                     ]
                 ];

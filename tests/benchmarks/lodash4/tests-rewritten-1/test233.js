@@ -11,7 +11,7 @@ lodashStable.each([
     var pair = {
         'stubArray': [
             [],
-            'an empty array'
+            __str_top__
         ],
         'stubFalse': [
             false,
@@ -19,7 +19,7 @@ lodashStable.each([
         ],
         'stubObject': [
             {},
-            __str_top__
+            'an empty object'
         ],
         'stubString': [
             '',

@@ -4,7 +4,7 @@ lodashStable.each([
     'reject'
 ], function (methodName) {
     var array = [
-            1,
+            __num_top__,
             2,
             3,
             4
@@ -12,7 +12,7 @@ lodashStable.each([
             { 'a': 0 },
             { 'a': 1 }
         ];
-    QUnit.test('`_.' + methodName + '` should not modify the resulting value from within `predicate`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should not modify the resulting value from within `predicate`', function (assert) {
         assert.expect(1);
         var actual = func([0], function (value, index, array) {
             array[index] = 1;
@@ -20,27 +20,27 @@ lodashStable.each([
         });
         assert.deepEqual(actual, [0]);
     });
-    QUnit.test('`_.' + methodName + '` should work with `_.property` shorthands', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         assert.deepEqual(func(objects, 'a'), [objects[isFilter ? 1 : 0]]);
     });
     QUnit.test('`_.' + methodName + '` should work with `_.matches` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(func(objects, objects[__num_top__]), [objects[isFilter ? 1 : __num_top__]]);
+        assert.deepEqual(func(objects, objects[1]), [objects[isFilter ? 1 : 0]]);
     });
-    QUnit.test('`_.' + methodName + '` should not modify wrapped values', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should not modify wrapped values', function (assert) {
         assert.expect(2);
         if (!isNpm) {
             var wrapped = _(array);
             var actual = wrapped[methodName](function (n) {
-                return n < 3;
+                return n < __num_top__;
             });
             assert.deepEqual(actual.value(), isFilter ? [
                 1,
-                __num_top__
+                2
             ] : [
-                __num_top__,
-                4
+                3,
+                __num_top__
             ]);
             actual = wrapped[methodName](function (n) {
                 return n > 2;
@@ -49,7 +49,7 @@ lodashStable.each([
                 3,
                 4
             ] : [
-                __num_top__,
+                1,
                 2
             ]);
         } else {
@@ -79,17 +79,17 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(5);
         if (!isNpm) {
-            var args, array = lodashStable.range(LARGE_ARRAY_SIZE + 1), expected = [
-                    1,
+            var args, array = lodashStable.range(LARGE_ARRAY_SIZE + __num_top__), expected = [
                     __num_top__,
-                    lodashStable.map(array.slice(__num_top__), square)
+                    0,
+                    lodashStable.map(array.slice(1), square)
                 ];
             _(array).slice(1)[methodName](function (value, index, array) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, [
                 1,
-                0,
+                __num_top__,
                 array.slice(1)
             ]);
             args = undefined;
@@ -106,14 +106,14 @@ lodashStable.each([
             _(array).slice(1).map(square)[methodName](function (value) {
                 args || (args = slice.call(arguments));
             }).value();
-            assert.deepEqual(args, [__num_top__]);
+            assert.deepEqual(args, [1]);
             args = undefined;
             _(array).slice(1).map(square)[methodName](function () {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 5);
         }
     });
 });

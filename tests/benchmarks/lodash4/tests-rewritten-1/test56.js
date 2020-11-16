@@ -71,7 +71,7 @@ QUnit.module('lodash.every');
                 'b': 2
             }
         ];
-        assert.strictEqual(_.every(objects, 'a'), false);
+        assert.strictEqual(_.every(objects, __str_top__), false);
         assert.strictEqual(_.every(objects, 'b'), true);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
@@ -91,7 +91,7 @@ QUnit.module('lodash.every');
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var actual = lodashStable.map([[__num_top__]], _.every);
+        var actual = lodashStable.map([[1]], _.every);
         assert.deepEqual(actual, [true]);
     });
 }());

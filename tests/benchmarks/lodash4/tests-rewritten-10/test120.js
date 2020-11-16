@@ -2,19 +2,19 @@ QUnit.module('lodash.isObject');
 (function () {
     QUnit.test('should return `true` for objects', function (assert) {
         assert.expect(13);
-        assert.strictEqual(_.isObject(args), true);
+        assert.strictEqual(_.isObject(args), __bool_top__);
         assert.strictEqual(_.isObject([
             1,
             2,
             3
-        ]), __bool_top__);
+        ]), true);
         assert.strictEqual(_.isObject(Object(false)), true);
         assert.strictEqual(_.isObject(new Date()), true);
-        assert.strictEqual(_.isObject(new Error()), true);
-        assert.strictEqual(_.isObject(_), true);
-        assert.strictEqual(_.isObject(slice), true);
-        assert.strictEqual(_.isObject({ 'a': 1 }), __bool_top__);
-        assert.strictEqual(_.isObject(Object(0)), __bool_top__);
+        assert.strictEqual(_.isObject(new Error()), __bool_top__);
+        assert.strictEqual(_.isObject(_), __bool_top__);
+        assert.strictEqual(_.isObject(slice), __bool_top__);
+        assert.strictEqual(_.isObject({ 'a': __num_top__ }), true);
+        assert.strictEqual(_.isObject(Object(__num_top__)), true);
         assert.strictEqual(_.isObject(/x/), true);
         assert.strictEqual(_.isObject(Object('a')), true);
         if (document) {
@@ -39,20 +39,20 @@ QUnit.module('lodash.isObject');
     QUnit.test('should work with objects from another realm', function (assert) {
         assert.expect(8);
         if (realm.element) {
-            assert.strictEqual(_.isObject(realm.element), __bool_top__);
+            assert.strictEqual(_.isObject(realm.element), true);
         } else {
             skipAssert(assert);
         }
         if (realm.object) {
-            assert.strictEqual(_.isObject(realm.boolean), __bool_top__);
+            assert.strictEqual(_.isObject(realm.boolean), true);
             assert.strictEqual(_.isObject(realm.date), true);
             assert.strictEqual(_.isObject(realm.function), true);
-            assert.strictEqual(_.isObject(realm.number), true);
+            assert.strictEqual(_.isObject(realm.number), __bool_top__);
             assert.strictEqual(_.isObject(realm.object), __bool_top__);
-            assert.strictEqual(_.isObject(realm.regexp), true);
-            assert.strictEqual(_.isObject(realm.string), __bool_top__);
+            assert.strictEqual(_.isObject(realm.regexp), __bool_top__);
+            assert.strictEqual(_.isObject(realm.string), true);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 7);
         }
     });
 }());

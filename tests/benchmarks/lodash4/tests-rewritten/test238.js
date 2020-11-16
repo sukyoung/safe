@@ -79,7 +79,7 @@ QUnit.module('lodash.tail');
             assert.deepEqual(actual, _.tail(_.filter(array, isEven)));
             assert.deepEqual(values, array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should not execute subsequent iteratees on an empty array in a lazy sequence', function (assert) {
@@ -95,7 +95,7 @@ QUnit.module('lodash.tail');
             assert.ok(pass);
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
 }());

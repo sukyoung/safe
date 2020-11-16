@@ -27,7 +27,7 @@ QUnit.module('lodash.meanBy');
             [__num_top__],
             [1]
         ];
-        assert.strictEqual(_.meanBy(arrays, 0), __num_top__);
-        assert.strictEqual(_.meanBy(objects, 'a'), __num_top__);
+        assert.strictEqual(_.meanBy(arrays, 0), 2);
+        assert.strictEqual(_.meanBy(objects, __str_top__), __num_top__);
     });
 }());

@@ -1,6 +1,6 @@
 QUnit.module('sortedIndex methods');
 lodashStable.each([
-    'sortedIndex',
+    __str_top__,
     'sortedLastIndex'
 ], function (methodName) {
     var func = _[methodName], isSortedIndex = methodName == 'sortedIndex';
@@ -8,7 +8,7 @@ lodashStable.each([
         assert.expect(1);
         var array = [
                 30,
-                50
+                __num_top__
             ], values = [
                 30,
                 40,
@@ -27,7 +27,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should work with an array of strings', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with an array of strings', function (assert) {
         assert.expect(1);
         var array = [
                 'a',
@@ -37,7 +37,7 @@ lodashStable.each([
                 'b',
                 'c'
             ], expected = isSortedIndex ? [
-                0,
+                __num_top__,
                 1,
                 1
             ] : [
@@ -50,13 +50,13 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should accept a nullish `array` and a `value`', function (assert) {
         assert.expect(1);
         var values = [
                 null,
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant([
-                __num_top__,
+                0,
                 0,
                 0
             ]));
@@ -108,7 +108,7 @@ lodashStable.each([
         ], function (array) {
             assert.deepEqual(_.sortBy(array), expected);
             assert.strictEqual(func(expected, 3), 2);
-            assert.strictEqual(func(expected, symbol3), isSortedIndex ? __num_top__ : Symbol ? 5 : 6);
+            assert.strictEqual(func(expected, symbol3), isSortedIndex ? 3 : Symbol ? __num_top__ : 6);
             assert.strictEqual(func(expected, null), isSortedIndex ? Symbol ? 5 : 3 : 6);
             assert.strictEqual(func(expected, undefined), isSortedIndex ? 6 : 7);
             assert.strictEqual(func(expected, NaN), isSortedIndex ? 7 : 9);
@@ -122,16 +122,16 @@ lodashStable.each([
         ];
         assert.strictEqual(func(array, null), isSortedIndex ? 0 : 2);
         assert.strictEqual(func(array, 1), 0);
-        assert.strictEqual(func(array, 'a'), 0);
+        assert.strictEqual(func(array, 'a'), __num_top__);
     });
-    QUnit.test('`_.' + methodName + '` should align with `_.sortBy` for symbols', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should align with `_.sortBy` for symbols', function (assert) {
         assert.expect(3);
-        var symbol1 = Symbol ? Symbol('a') : null, symbol2 = Symbol ? Symbol('b') : null, symbol3 = Symbol ? Symbol('c') : null, array = [
+        var symbol1 = Symbol ? Symbol('a') : null, symbol2 = Symbol ? Symbol(__str_top__) : null, symbol3 = Symbol ? Symbol('c') : null, array = [
                 symbol1,
                 symbol2
             ];
         assert.strictEqual(func(array, symbol3), isSortedIndex ? 0 : 2);
         assert.strictEqual(func(array, 1), 0);
-        assert.strictEqual(func(array, 'a'), 0);
+        assert.strictEqual(func(array, 'a'), __num_top__);
     });
 });

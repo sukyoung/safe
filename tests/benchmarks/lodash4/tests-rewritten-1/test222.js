@@ -90,7 +90,7 @@ QUnit.module('lodash.sortBy');
                 NaN,
                 2
             ], expected = [
-                1,
+                __num_top__,
                 2,
                 3,
                 4,
@@ -175,7 +175,7 @@ QUnit.module('lodash.sortBy');
             [
                 1,
                 2,
-                __num_top__
+                3
             ],
             [
                 1,

@@ -15,7 +15,7 @@ QUnit.module('lodash.isEmpty');
             assert.strictEqual(_.isEmpty(new Buffer(__num_top__)), __bool_top__);
             assert.strictEqual(_.isEmpty(new Buffer(__num_top__)), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should return `false` for non-empty values', function (assert) {
@@ -65,7 +65,7 @@ QUnit.module('lodash.isEmpty');
                 map.clear();
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should work with sets', function (assert) {
@@ -81,7 +81,7 @@ QUnit.module('lodash.isEmpty');
                 set.clear();
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should not treat objects with negative lengths as array-like', function (assert) {

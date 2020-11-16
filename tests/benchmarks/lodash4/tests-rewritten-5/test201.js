@@ -2,7 +2,7 @@ QUnit.module('lodash.reduceRight');
 (function () {
     var array = [
         1,
-        __num_top__,
+        2,
         3
     ];
     QUnit.test('should use the last element of a collection as the default `accumulator`', function (assert) {
@@ -16,7 +16,7 @@ QUnit.module('lodash.reduceRight');
             args || (args = slice.call(arguments));
         }, 0);
         assert.deepEqual(args, [
-            0,
+            __num_top__,
             3,
             2,
             array
@@ -26,8 +26,8 @@ QUnit.module('lodash.reduceRight');
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [
-            3,
             __num_top__,
+            2,
             1,
             array
         ]);
@@ -37,10 +37,10 @@ QUnit.module('lodash.reduceRight');
         var args, object = {
                 'a': 1,
                 'b': 2
-            }, isFIFO = lodashStable.keys(object)[__num_top__] == 'a';
+            }, isFIFO = lodashStable.keys(object)[0] == 'a';
         var expected = isFIFO ? [
             0,
-            __num_top__,
+            2,
             'b',
             object
         ] : [
@@ -56,12 +56,12 @@ QUnit.module('lodash.reduceRight');
         args = undefined;
         expected = isFIFO ? [
             2,
-            1,
+            __num_top__,
             'a',
             object
         ] : [
             1,
-            2,
+            __num_top__,
             'b',
             object
         ];

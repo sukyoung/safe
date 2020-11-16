@@ -76,12 +76,12 @@ lodashStable.each([
         }
         assert.deepEqual(actual, source);
     });
-    QUnit.test('`_.' + methodName + '` should treat sparse array sources as dense', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var array = [1];
         array[2] = 3;
         assert.deepEqual(func({}, array), {
-            '0': __num_top__,
+            '0': 1,
             '1': undefined,
             '2': 3
         });

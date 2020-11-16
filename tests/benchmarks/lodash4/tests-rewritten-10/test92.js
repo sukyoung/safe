@@ -9,7 +9,7 @@ QUnit.module('lodash.intersectionWith');
                 },
                 {
                     'x': __num_top__,
-                    'y': __num_top__
+                    'y': 1
                 }
             ], others = [
                 {
@@ -17,16 +17,16 @@ QUnit.module('lodash.intersectionWith');
                     'y': __num_top__
                 },
                 {
-                    'x': 1,
+                    'x': __num_top__,
                     'y': __num_top__
                 }
             ], actual = _.intersectionWith(objects, others, lodashStable.isEqual);
-        assert.deepEqual(actual, [objects[0]]);
+        assert.deepEqual(actual, [objects[__num_top__]]);
     });
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var array = [-__num_top__], largeArray = lodashStable.times(LARGE_ARRAY_SIZE, stubZero), others = [
-                [__num_top__],
+                [0],
                 largeArray
             ], expected = lodashStable.map(others, lodashStable.constant([__str_top__]));
         var actual = lodashStable.map(others, function (other) {

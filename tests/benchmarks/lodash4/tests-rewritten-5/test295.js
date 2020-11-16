@@ -3,12 +3,12 @@ QUnit.module('lodash(...).push');
     QUnit.test('should append elements to `array`', function (assert) {
         assert.expect(2);
         if (!isNpm) {
-            var array = [1], wrapped = _(array).push(__num_top__, __num_top__), actual = wrapped.value();
+            var array = [1], wrapped = _(array).push(2, __num_top__), actual = wrapped.value();
             assert.strictEqual(actual, array);
             assert.deepEqual(actual, [
+                1,
                 __num_top__,
-                2,
-                3
+                __num_top__
             ]);
         } else {
             skipAssert(assert, 2);

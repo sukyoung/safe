@@ -16,12 +16,12 @@ QUnit.module('lodash.overArgs');
         var over = _.overArgs(fn, undefined, null);
         assert.deepEqual(over('a', 'b'), [
             'a',
-            'b'
+            __str_top__
         ]);
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        var over = _.overArgs(fn, __str_top__, 'a');
+        var over = _.overArgs(fn, 'b', 'a');
         assert.deepEqual(over({ 'b': 2 }, { 'a': 1 }), [
             2,
             1
@@ -39,7 +39,7 @@ QUnit.module('lodash.overArgs');
         assert.expect(1);
         var over = _.overArgs(fn, [
             [
-                'b',
+                __str_top__,
                 1
             ],
             [
@@ -47,7 +47,7 @@ QUnit.module('lodash.overArgs');
                 1
             ]
         ]);
-        assert.deepEqual(over({ 'b': 2 }, { 'a': 1 }), [
+        assert.deepEqual(over({ 'b': __num_top__ }, { 'a': 1 }), [
             false,
             true
         ]);
@@ -76,7 +76,7 @@ QUnit.module('lodash.overArgs');
         ], String);
         assert.deepEqual(over(5, 10, 15), [
             10,
-            __num_top__,
+            100,
             '15'
         ]);
     });
@@ -95,13 +95,13 @@ QUnit.module('lodash.overArgs');
         assert.deepEqual(over(5, 10, 18), [
             5,
             10,
-            18
+            __num_top__
         ]);
     });
     QUnit.test('should not pass `undefined` if there are more transforms than arguments', function (assert) {
         assert.expect(1);
         var over = _.overArgs(fn, doubled, identity);
-        assert.deepEqual(over(__num_top__), [10]);
+        assert.deepEqual(over(5), [10]);
     });
     QUnit.test('should provide the correct argument to each transform', function (assert) {
         assert.expect(1);

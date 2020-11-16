@@ -32,7 +32,7 @@ QUnit.module('lodash.propertyOf');
         Foo.prototype.b = 2;
         var propOf = _.propertyOf(new Foo());
         lodashStable.each([
-            __str_top__,
+            'b',
             ['b']
         ], function (path) {
             assert.strictEqual(propOf(path), 2);
@@ -60,7 +60,7 @@ QUnit.module('lodash.propertyOf');
             }, props = [
                 -0,
                 Object(-0),
-                0,
+                __num_top__,
                 Object(0)
             ];
         var actual = lodashStable.map(props, function (key) {

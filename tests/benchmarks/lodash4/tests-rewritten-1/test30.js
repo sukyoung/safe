@@ -54,7 +54,7 @@ lodashStable.each([
             };
         }
         Foo.prototype.b = function (value) {
-            return value > __num_top__;
+            return value > 8;
         };
         var objects = [
             {
@@ -76,7 +76,7 @@ lodashStable.each([
             objects[2]
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should not invoke `source` predicates for missing `object` properties', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         var count = 0;
         var par = conforms({

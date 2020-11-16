@@ -1,10 +1,10 @@
 QUnit.module('lodash.assignWith and lodash.assignInWith');
 lodashStable.each([
-    __str_top__,
+    'assignWith',
     'assignInWith'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + '` should work with a `customizer` callback', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var actual = func({
             'a': 1,

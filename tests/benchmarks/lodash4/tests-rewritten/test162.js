@@ -37,7 +37,7 @@ QUnit.module('lodash.mixin');
             assert.notOk(__str_top__ in _.prototype);
             reset(_);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should mixin chaining methods by reference', function (assert) {
@@ -49,7 +49,7 @@ QUnit.module('lodash.mixin');
             assert.strictEqual(_(array).a().value(), __str_top__);
             reset(_);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should use a default `object` of `this`', function (assert) {
@@ -120,7 +120,7 @@ QUnit.module('lodash.mixin');
                     }
                     reset(func);
                 } else {
-                    skipAssert(assert, __num_top__);
+                    skipAssert(assert, 2);
                 }
             });
         });

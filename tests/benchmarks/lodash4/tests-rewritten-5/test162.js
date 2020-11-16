@@ -21,11 +21,11 @@ QUnit.module('lodash.mixin');
     Wrapper.prototype.value = function () {
         return getUnwrappedValue(this);
     };
-    var array = [__str_top__], source = {
+    var array = ['a'], source = {
             'a': function (array) {
                 return array[0];
             },
-            'b': __str_top__
+            'b': 'B'
         };
     QUnit.test('should mixin `source` methods into lodash', function (assert) {
         assert.expect(4);
@@ -57,8 +57,8 @@ QUnit.module('lodash.mixin');
         var object = lodashStable.create(_);
         object.mixin(source);
         assert.strictEqual(object.a(array), 'a');
-        assert.notOk('a' in _);
-        assert.notOk(__str_top__ in _.prototype);
+        assert.notOk(__str_top__ in _);
+        assert.notOk('a' in _.prototype);
         reset(_);
     });
     QUnit.test('should accept an `object`', function (assert) {
@@ -94,7 +94,7 @@ QUnit.module('lodash.mixin');
     QUnit.test('should accept an `options`', function (assert) {
         assert.expect(8);
         function message(func, chain) {
-            return (func === _ ? 'lodash' : 'given') + __str_top__ + (chain ? '' : 'not ') + 'chain';
+            return (func === _ ? __str_top__ : 'given') + ' function should ' + (chain ? '' : 'not ') + 'chain';
         }
         lodashStable.each([
             _,
@@ -115,7 +115,7 @@ QUnit.module('lodash.mixin');
                         assert.strictEqual(actual.value(), __str_top__, message(func, true));
                         assert.ok(actual instanceof func, message(func, true));
                     } else {
-                        assert.strictEqual(actual, 'a', message(func, false));
+                        assert.strictEqual(actual, 'a', message(func, __bool_top__));
                         assert.notOk(actual instanceof func, message(func, false));
                     }
                     reset(func);
@@ -128,7 +128,7 @@ QUnit.module('lodash.mixin');
     QUnit.test('should not extend lodash when an `object` is given with an empty `options` object', function (assert) {
         assert.expect(1);
         _.mixin({ 'a': noop }, {});
-        assert.notOk('a' in _);
+        assert.notOk(__str_top__ in _);
         reset(_);
     });
     QUnit.test('should not error for non-object `options` values', function (assert) {

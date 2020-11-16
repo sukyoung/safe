@@ -11,7 +11,7 @@ lodashStable.each([
                 50
             ], values = [
                 30,
-                40,
+                __num_top__,
                 50
             ], expected = isSortedIndex ? [
                 0,
@@ -38,7 +38,7 @@ lodashStable.each([
                 'c'
             ], expected = isSortedIndex ? [
                 0,
-                __num_top__,
+                1,
                 1
             ] : [
                 1,
@@ -50,7 +50,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test(__str_top__ + methodName + '` should accept a nullish `array` and a `value`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should accept a nullish `array` and a `value`', function (assert) {
         assert.expect(1);
         var values = [
                 null,
@@ -73,7 +73,7 @@ lodashStable.each([
         assert.expect(12);
         var symbol1 = Symbol ? Symbol('a') : null, symbol2 = Symbol ? Symbol('b') : null, symbol3 = Symbol ? Symbol('c') : null, expected = [
                 1,
-                __str_top__,
+                '2',
                 {},
                 symbol1,
                 symbol2,
@@ -97,7 +97,7 @@ lodashStable.each([
             [
                 '2',
                 null,
-                1,
+                __num_top__,
                 symbol1,
                 NaN,
                 {},
@@ -130,7 +130,7 @@ lodashStable.each([
                 symbol1,
                 symbol2
             ];
-        assert.strictEqual(func(array, symbol3), isSortedIndex ? 0 : 2);
+        assert.strictEqual(func(array, symbol3), isSortedIndex ? __num_top__ : 2);
         assert.strictEqual(func(array, 1), 0);
         assert.strictEqual(func(array, 'a'), 0);
     });

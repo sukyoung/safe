@@ -32,7 +32,7 @@ QUnit.module('iteration methods');
     ];
     var arrayMethods = [
         'findIndex',
-        __str_top__,
+        'findLastIndex',
         'maxBy',
         'minBy'
     ];
@@ -47,7 +47,7 @@ QUnit.module('iteration methods');
         'forEachRight',
         'groupBy',
         'keyBy',
-        __str_top__,
+        'map',
         'partition',
         'reduce',
         'reduceRight',
@@ -74,7 +74,7 @@ QUnit.module('iteration methods');
         'findLastKey',
         'forIn',
         'forInRight',
-        'forOwn',
+        __str_top__,
         'forOwnRight',
         'mapKeys',
         'mapValues',
@@ -85,7 +85,7 @@ QUnit.module('iteration methods');
         'findLast',
         'findLastIndex',
         'findLastKey',
-        'forEachRight',
+        __str_top__,
         'forInRight',
         'forOwnRight'
     ];
@@ -116,8 +116,8 @@ QUnit.module('iteration methods');
                 1,
                 2,
                 3
-            ], func = _[methodName], isBy = /(^partition|By)$/.test(methodName), isFind = /^find/.test(methodName), isOmitPick = /^(?:omit|pick)By$/.test(methodName), isSome = methodName == __str_top__;
-        QUnit.test('`_.' + methodName + '` should provide correct iteratee arguments', function (assert) {
+            ], func = _[methodName], isBy = /(^partition|By)$/.test(methodName), isFind = /^find/.test(methodName), isOmitPick = /^(?:omit|pick)By$/.test(methodName), isSome = methodName == 'some';
+        QUnit.test(__str_top__ + methodName + '` should provide correct iteratee arguments', function (assert) {
             assert.expect(1);
             if (func) {
                 var args, expected = [
@@ -136,7 +136,7 @@ QUnit.module('iteration methods');
                     expected[1] += '';
                 }
                 if (isBy) {
-                    expected.length = isOmitPick ? 2 : 1;
+                    expected.length = isOmitPick ? 2 : __num_top__;
                 }
                 assert.deepEqual(args, expected);
             } else {
@@ -156,7 +156,7 @@ QUnit.module('iteration methods');
                     ],
                     [
                         undefined,
-                        __str_top__,
+                        '1',
                         array
                     ],
                     [
@@ -232,7 +232,7 @@ QUnit.module('iteration methods');
                 2,
                 3
             ], isBaseEach = methodName == '_baseEach';
-        QUnit.test(__str_top__ + methodName + '` should return a wrapped value when implicitly chaining', function (assert) {
+        QUnit.test('`_.' + methodName + '` should return a wrapped value when implicitly chaining', function (assert) {
             assert.expect(1);
             if (!(isBaseEach || isNpm)) {
                 var wrapped = _(array)[methodName](noop);
@@ -257,7 +257,7 @@ QUnit.module('iteration methods');
                 skipAssert(assert);
             }
         });
-        QUnit.test('`_.' + methodName + '` should return a wrapped value when explicitly chaining', function (assert) {
+        QUnit.test(__str_top__ + methodName + '` should return a wrapped value when explicitly chaining', function (assert) {
             assert.expect(2);
             if (!isNpm) {
                 var wrapped = _(array).chain(), actual = wrapped[methodName](noop);

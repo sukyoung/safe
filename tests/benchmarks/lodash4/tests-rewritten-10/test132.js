@@ -4,11 +4,11 @@ QUnit.module('lodash.iteratee');
         assert.expect(1);
         var fn = function () {
                 return slice.call(arguments);
-            }, iteratee = _.iteratee(fn), actual = iteratee('a', 'b', 'c', 'd', 'e', __str_top__);
+            }, iteratee = _.iteratee(fn), actual = iteratee('a', __str_top__, 'c', 'd', 'e', 'f');
         assert.deepEqual(actual, [
             'a',
             'b',
-            __str_top__,
+            'c',
             'd',
             'e',
             'f'
@@ -41,10 +41,10 @@ QUnit.module('lodash.iteratee');
         });
         assert.strictEqual(matches({
             'a': 1,
-            'b': 2,
+            'b': __num_top__,
             'c': 3
         }), true);
-        assert.strictEqual(matches({ 'b': 2 }), false);
+        assert.strictEqual(matches({ 'b': __num_top__ }), false);
     });
     QUnit.test('should not change `_.matches` behavior if `source` is modified', function (assert) {
         assert.expect(9);
@@ -56,25 +56,25 @@ QUnit.module('lodash.iteratee');
                 }
             },
             {
-                'a': 1,
+                'a': __num_top__,
                 'b': 2
             },
-            { 'a': 1 }
+            { 'a': __num_top__ }
         ];
         lodashStable.each(sources, function (source, index) {
             var object = lodashStable.cloneDeep(source), matches = _.iteratee(source);
-            assert.strictEqual(matches(object), __bool_top__);
+            assert.strictEqual(matches(object), true);
             if (index) {
                 source.a = 2;
                 source.b = 1;
                 source.c = 3;
             } else {
-                source.a.b = 1;
+                source.a.b = __num_top__;
                 source.a.c = 2;
-                source.a.d = __num_top__;
+                source.a.d = 3;
             }
             assert.strictEqual(matches(object), true);
-            assert.strictEqual(matches(source), __bool_top__);
+            assert.strictEqual(matches(source), false);
         });
     });
     QUnit.test('should return an iteratee created by `_.matchesProperty` when `func` is an array', function (assert) {
@@ -89,26 +89,26 @@ QUnit.module('lodash.iteratee');
         assert.strictEqual(matches(array), true);
         matches = _.iteratee([
             '0',
-            'a'
+            __str_top__
         ]);
         assert.strictEqual(matches(array), true);
         matches = _.iteratee([
             1,
             undefined
         ]);
-        assert.strictEqual(matches(array), true);
+        assert.strictEqual(matches(array), __bool_top__);
     });
     QUnit.test('should support deep paths for `_.matchesProperty` shorthands', function (assert) {
         assert.expect(1);
         var object = {
                 'a': {
                     'b': {
-                        'c': __num_top__,
+                        'c': 1,
                         'd': 2
                     }
                 }
             }, matches = _.iteratee([
-                __str_top__,
+                'a.b',
                 { 'c': 1 }
             ]);
         assert.strictEqual(matches(object), true);
@@ -118,7 +118,7 @@ QUnit.module('lodash.iteratee');
         var sources = [
             {
                 'a': {
-                    'b': 2,
+                    'b': __num_top__,
                     'c': 3
                 }
             },
@@ -149,7 +149,7 @@ QUnit.module('lodash.iteratee');
     });
     QUnit.test('should return an iteratee created by `_.property` when `func` is a number or string', function (assert) {
         assert.expect(2);
-        var array = [__str_top__], prop = _.iteratee(0);
+        var array = ['a'], prop = _.iteratee(0);
         assert.strictEqual(prop(array), 'a');
         prop = _.iteratee('0');
         assert.strictEqual(prop(array), 'a');
@@ -169,9 +169,9 @@ QUnit.module('lodash.iteratee');
         var expected = [
                 1,
                 2,
-                __num_top__
+                3
             ], object = {
-                'a': __num_top__,
+                'a': 1,
                 'iteratee': _.iteratee(_.partial(fn, 2))
             };
         assert.deepEqual(object.iteratee(3), expected);
@@ -182,7 +182,7 @@ QUnit.module('lodash.iteratee');
         assert.expect(1);
         var iteratee = _.iteratee;
         delete _.iteratee;
-        assert.deepEqual(_.map([{ 'a': 1 }], 'a'), [1]);
+        assert.deepEqual(_.map([{ 'a': 1 }], 'a'), [__num_top__]);
         _.iteratee = iteratee;
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {

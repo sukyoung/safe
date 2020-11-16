@@ -6,12 +6,12 @@ QUnit.module('lodash.result');
     };
     QUnit.test('should invoke function values', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.result(object, __str_top__), __str_top__);
+        assert.strictEqual(_.result(object, __str_top__), 'b');
     });
     QUnit.test('should invoke default function values', function (assert) {
         assert.expect(1);
         var actual = _.result(object, 'c', object.b);
-        assert.strictEqual(actual, 'b');
+        assert.strictEqual(actual, __str_top__);
     });
     QUnit.test('should invoke nested function values', function (assert) {
         assert.expect(2);
@@ -19,7 +19,7 @@ QUnit.module('lodash.result');
         lodashStable.each([
             __str_top__,
             [
-                __str_top__,
+                'a',
                 __str_top__
             ]
         ], function (path) {
@@ -37,7 +37,7 @@ QUnit.module('lodash.result');
             }
         };
         lodashStable.each([
-            'a.b',
+            __str_top__,
             [
                 __str_top__,
                 __str_top__

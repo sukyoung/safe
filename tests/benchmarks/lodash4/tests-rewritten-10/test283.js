@@ -12,26 +12,26 @@ QUnit.module('lodash.words');
     });
     QUnit.test('should support a `pattern`', function (assert) {
         assert.expect(2);
-        assert.deepEqual(_.words('abcd', /ab|cd/g), [
-            __str_top__,
+        assert.deepEqual(_.words(__str_top__, /ab|cd/g), [
+            'ab',
             'cd'
         ]);
-        assert.deepEqual(_.words('abcd', 'ab|cd'), ['ab']);
+        assert.deepEqual(_.words(__str_top__, 'ab|cd'), ['ab']);
     });
     QUnit.test('should work with compound words', function (assert) {
         assert.expect(12);
         assert.deepEqual(_.words('12ft'), [
-            __str_top__,
+            '12',
             'ft'
         ]);
         assert.deepEqual(_.words('aeiouAreVowels'), [
             'aeiou',
-            __str_top__,
+            'Are',
             'Vowels'
         ]);
-        assert.deepEqual(_.words(__str_top__), [
+        assert.deepEqual(_.words('enable 6h format'), [
             'enable',
-            __str_top__,
+            '6',
             'h',
             'format'
         ]);
@@ -56,14 +56,14 @@ QUnit.module('lodash.words');
             'too',
             'Legit',
             '2',
-            __str_top__
+            'Quit'
         ]);
         assert.deepEqual(_.words('walk500Miles'), [
             'walk',
             '500',
             'Miles'
         ]);
-        assert.deepEqual(_.words('xhr2Request'), [
+        assert.deepEqual(_.words(__str_top__), [
             'xhr',
             '2',
             'Request'
@@ -76,7 +76,7 @@ QUnit.module('lodash.words');
             'Xml',
             'HTTP'
         ]);
-        assert.deepEqual(_.words('XmlHttp'), [
+        assert.deepEqual(_.words(__str_top__), [
             'Xml',
             'Http'
         ]);
@@ -124,7 +124,7 @@ QUnit.module('lodash.words');
                     var words = [
                         'a',
                         'b' + apos + postfix,
-                        'c'
+                        __str_top__
                     ];
                     return lodashStable.map(words, function (word) {
                         return word[index ? 'toUpperCase' : 'toLowerCase']();
@@ -138,7 +138,7 @@ QUnit.module('lodash.words');
         assert.expect(2);
         var ordinals = [
             '1st',
-            '2nd',
+            __str_top__,
             '3rd',
             '4th'
         ];
@@ -165,9 +165,9 @@ QUnit.module('lodash.words');
     QUnit.test('should not treat punctuation as words', function (assert) {
         assert.expect(1);
         var marks = [
-            __str_top__,
+            '\u2012',
             '\u2013',
-            __str_top__,
+            '\u2014',
             '\u2015',
             '\u2024',
             '\u2025',
@@ -188,17 +188,17 @@ QUnit.module('lodash.words');
         assert.deepEqual(actual, [
             ['a'],
             ['b'],
-            ['c']
+            [__str_top__]
         ]);
     });
     QUnit.test('should prevent ReDoS', function (assert) {
         assert.expect(2);
         var largeWordLen = 50000, largeWord = _.repeat('A', largeWordLen), maxMs = 1000, startTime = lodashStable.now();
-        assert.deepEqual(_.words(largeWord + 'ÆiouAreVowels'), [
+        assert.deepEqual(_.words(largeWord + __str_top__), [
             largeWord,
             'Æiou',
-            'Are',
-            __str_top__
+            __str_top__,
+            'Vowels'
         ]);
         var endTime = lodashStable.now(), timeSpent = endTime - startTime;
         assert.ok(timeSpent < maxMs, 'operation took ' + timeSpent + 'ms');

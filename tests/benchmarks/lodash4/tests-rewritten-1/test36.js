@@ -18,7 +18,7 @@ lodashStable.each([
         }
         assert.strictEqual(actual, 3);
     });
-    QUnit.test(__str_top__ + methodName + '` should work for function names that shadow those on `Object.prototype`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work for function names that shadow those on `Object.prototype`', function (assert) {
         assert.expect(1);
         var curried = _.curry(function hasOwnProperty(a, b, c) {
             return [
@@ -32,7 +32,7 @@ lodashStable.each([
             2,
             3
         ];
-        assert.deepEqual(curried(1)(2)(3), expected);
+        assert.deepEqual(curried(1)(__num_top__)(3), expected);
     });
     QUnit.test('`_.' + methodName + '` should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(2);

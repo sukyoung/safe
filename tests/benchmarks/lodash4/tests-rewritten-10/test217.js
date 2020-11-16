@@ -10,8 +10,8 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should set property values', function (assert) {
         assert.expect(4);
         lodashStable.each([
-            __str_top__,
-            [__str_top__]
+            'a',
+            ['a']
         ], function (path) {
             var object = { 'a': oldValue }, actual = func(object, path, updater);
             assert.strictEqual(actual, object);
@@ -47,7 +47,7 @@ lodashStable.each([
             skipAssert(assert, 2);
         }
     });
-    QUnit.test(__str_top__ + methodName + '` should set deep property values', function (assert) {
+    QUnit.test('`_.' + methodName + '` should set deep property values', function (assert) {
         assert.expect(4);
         lodashStable.each([
             'a.b',
@@ -61,31 +61,31 @@ lodashStable.each([
             assert.strictEqual(object.a.b, value);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should set a key over a path', function (assert) {
+    QUnit.test('`_.' + methodName + '` should set a key over a path', function (assert) {
         assert.expect(4);
         lodashStable.each([
             'a.b',
-            [__str_top__]
+            ['a.b']
         ], function (path) {
             var object = { 'a.b': oldValue }, actual = func(object, path, updater);
             assert.strictEqual(actual, object);
             assert.deepEqual(object, { 'a.b': value });
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should not coerce array paths to strings', function (assert) {
+    QUnit.test('`_.' + methodName + '` should not coerce array paths to strings', function (assert) {
         assert.expect(1);
         var object = {
             'a,b,c': 1,
             'a': { 'b': { 'c': 1 } }
         };
         func(object, [
-            __str_top__,
+            'a',
             'b',
             'c'
         ], updater);
         assert.strictEqual(object.a.b.c, value);
     });
-    QUnit.test('`_.' + methodName + '` should not ignore empty brackets', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should not ignore empty brackets', function (assert) {
         assert.expect(1);
         var object = {};
         func(object, 'a[]', updater);
@@ -104,7 +104,7 @@ lodashStable.each([
             ]
         ], function (pair, index) {
             var object = {};
-            func(object, pair[0], updater);
+            func(object, pair[__num_top__], updater);
             assert.deepEqual(object, index ? {} : { '': value });
             func(object, pair[1], updater);
             assert.deepEqual(object, { '': value });
@@ -122,14 +122,14 @@ lodashStable.each([
                 'c',
                 '[\'d\']',
                 '\ne\n',
-                'f',
+                __str_top__,
                 'g'
             ]
         ];
         lodashStable.each(paths, function (path) {
             func(object, path, updater);
-            assert.strictEqual(object.a[-1.23]['["b"]'].c['[\'d\']']['\ne\n'].f.g, value);
-            object.a[-1.23][__str_top__].c['[\'d\']']['\ne\n'].f.g = oldValue;
+            assert.strictEqual(object.a[-__num_top__]['["b"]'].c[__str_top__]['\ne\n'].f.g, value);
+            object.a[-__num_top__]['["b"]'].c['[\'d\']']['\ne\n'].f.g = oldValue;
         });
     });
     QUnit.test('`_.' + methodName + '` should create parts of `path` that are missing', function (assert) {
@@ -138,7 +138,7 @@ lodashStable.each([
         lodashStable.each([
             'a[1].b.c',
             [
-                'a',
+                __str_top__,
                 '1',
                 'b',
                 'c'
@@ -191,7 +191,7 @@ lodashStable.each([
         lodashStable.each([
             'a.b',
             [
-                __str_top__,
+                'a',
                 'b'
             ]
         ], function (path) {
@@ -206,7 +206,7 @@ lodashStable.each([
         var object = {};
         func(object, [
             '1a',
-            '2b',
+            __str_top__,
             '3c'
         ], updater);
         assert.deepEqual(object, { '1a': { '2b': { '3c': value } } });
@@ -222,7 +222,7 @@ lodashStable.each([
             var object = {}, pass = true, updater = isUpdate ? lodashStable.constant(value) : value;
             defineProperty(object, 'a', {
                 'configurable': true,
-                'enumerable': true,
+                'enumerable': __bool_top__,
                 'get': lodashStable.constant(value),
                 'set': function () {
                     pass = false;

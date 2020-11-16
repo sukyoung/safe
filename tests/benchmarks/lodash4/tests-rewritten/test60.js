@@ -139,7 +139,7 @@ lodashStable.each([
                 assert.strictEqual(wrapped[methodName](), func(lodashStable.filter(array, isEven)));
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 });

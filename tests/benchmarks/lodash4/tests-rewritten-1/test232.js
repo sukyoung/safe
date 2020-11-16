@@ -10,7 +10,7 @@ lodashStable.each([
         assert.strictEqual(func(Object(string), chr), true);
         assert.strictEqual(func({ 'toString': lodashStable.constant(string) }, chr), true);
     });
-    QUnit.test('`_.' + methodName + '` should coerce `target` to a string', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         assert.strictEqual(func(string, Object(chr)), true);
         assert.strictEqual(func(string, { 'toString': lodashStable.constant(chr) }), true);
@@ -37,7 +37,7 @@ lodashStable.each([
             Infinity
         ];
         assert.ok(lodashStable.every(positions, function (position) {
-            return func(string, __str_top__, position);
+            return func(string, '', position);
         }));
     });
 });

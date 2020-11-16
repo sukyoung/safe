@@ -4,7 +4,7 @@ QUnit.module('lodash.isNil');
         assert.expect(3);
         assert.strictEqual(_.isNil(null), true);
         assert.strictEqual(_.isNil(), true);
-        assert.strictEqual(_.isNil(undefined), __bool_top__);
+        assert.strictEqual(_.isNil(undefined), true);
     });
     QUnit.test('should return `false` for non-nullish values', function (assert) {
         assert.expect(13);
@@ -17,7 +17,7 @@ QUnit.module('lodash.isNil');
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isNil(args), false);
         assert.strictEqual(_.isNil([
-            1,
+            __num_top__,
             2,
             3
         ]), false);

@@ -3,7 +3,7 @@ QUnit.module('lodash.dropRightWhile');
     var array = [
         1,
         2,
-        __num_top__,
+        3,
         4
     ];
     var objects = [
@@ -13,10 +13,10 @@ QUnit.module('lodash.dropRightWhile');
         },
         {
             'a': 1,
-            'b': 1
+            'b': __num_top__
         },
         {
-            'a': 2,
+            'a': __num_top__,
             'b': 2
         }
     ];
@@ -38,24 +38,24 @@ QUnit.module('lodash.dropRightWhile');
         });
         assert.deepEqual(args, [
             4,
-            3,
+            __num_top__,
             array
         ]);
     });
     QUnit.test('should work with `_.matches` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.dropRightWhile(objects, { 'b': 2 }), objects.slice(0, __num_top__));
+        assert.deepEqual(_.dropRightWhile(objects, { 'b': 2 }), objects.slice(0, 2));
     });
     QUnit.test('should work with `_.matchesProperty` shorthands', function (assert) {
         assert.expect(1);
         assert.deepEqual(_.dropRightWhile(objects, [
-            __str_top__,
-            2
+            'b',
+            __num_top__
         ]), objects.slice(0, 2));
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.dropRightWhile(objects, __str_top__), objects.slice(0, 1));
+        assert.deepEqual(_.dropRightWhile(objects, 'b'), objects.slice(0, 1));
     });
     QUnit.test('should return a wrapped value when chaining', function (assert) {
         assert.expect(2);
@@ -65,8 +65,8 @@ QUnit.module('lodash.dropRightWhile');
             });
             assert.ok(wrapped instanceof _);
             assert.deepEqual(wrapped.value(), [
-                __num_top__,
-                2
+                1,
+                __num_top__
             ]);
         } else {
             skipAssert(assert, 2);

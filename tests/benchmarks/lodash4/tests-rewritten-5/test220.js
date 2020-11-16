@@ -14,7 +14,7 @@ QUnit.module('lodash.slice');
     QUnit.test('should work with a positive `start`', function (assert) {
         assert.expect(2);
         assert.deepEqual(_.slice(array, 1), [
-            __num_top__,
+            2,
             3
         ]);
         assert.deepEqual(_.slice(array, 1, 3), [
@@ -43,7 +43,7 @@ QUnit.module('lodash.slice');
     });
     QUnit.test('should work with a negative `start`', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.slice(array, -1), [3]);
+        assert.deepEqual(_.slice(array, -__num_top__), [3]);
     });
     QUnit.test('should work with a negative `start` <= negative `length`', function (assert) {
         assert.expect(3);
@@ -100,7 +100,7 @@ QUnit.module('lodash.slice');
         assert.expect(3);
         lodashStable.each([
             -3,
-            -__num_top__,
+            -4,
             -Infinity
         ], function (end) {
             assert.deepEqual(_.slice(array, 0, end), []);
@@ -114,7 +114,7 @@ QUnit.module('lodash.slice');
                 1.6
             ],
             [
-                __str_top__,
+                '0',
                 1
             ],
             [
@@ -161,13 +161,13 @@ QUnit.module('lodash.slice');
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(38);
         if (!isNpm) {
-            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + 1), length = array.length, wrapped = _(array);
+            var array = lodashStable.range(1, LARGE_ARRAY_SIZE + __num_top__), length = array.length, wrapped = _(array);
             lodashStable.each([
                 'map',
                 'filter'
             ], function (methodName) {
                 assert.deepEqual(wrapped[methodName]().slice(__num_top__, -1).value(), array.slice(0, -1));
-                assert.deepEqual(wrapped[methodName]().slice(__num_top__).value(), array.slice(1));
+                assert.deepEqual(wrapped[methodName]().slice(1).value(), array.slice(1));
                 assert.deepEqual(wrapped[methodName]().slice(1, 3).value(), array.slice(1, 3));
                 assert.deepEqual(wrapped[methodName]().slice(-1).value(), array.slice(-1));
                 assert.deepEqual(wrapped[methodName]().slice(length).value(), array.slice(length));
@@ -179,7 +179,7 @@ QUnit.module('lodash.slice');
                 assert.deepEqual(wrapped[methodName]().slice(null).value(), array.slice(null));
                 assert.deepEqual(wrapped[methodName]().slice(0, 1).value(), array.slice(0, 1));
                 assert.deepEqual(wrapped[methodName]().slice(NaN, '1').value(), array.slice(NaN, '1'));
-                assert.deepEqual(wrapped[methodName]().slice(0.1, 1.1).value(), array.slice(0.1, 1.1));
+                assert.deepEqual(wrapped[methodName]().slice(0.1, 1.1).value(), array.slice(0.1, __num_top__));
                 assert.deepEqual(wrapped[methodName]().slice('0', 1).value(), array.slice('0', 1));
                 assert.deepEqual(wrapped[methodName]().slice(0, '1').value(), array.slice(0, '1'));
                 assert.deepEqual(wrapped[methodName]().slice('1').value(), array.slice('1'));

@@ -68,14 +68,14 @@ QUnit.module('lodash.spread');
         assert.expect(2);
         var spread = _.spread(fn, 1.6), expected = [
                 1,
-                2,
+                __num_top__,
                 3
             ];
         assert.deepEqual(spread(1, [
             2,
             3
         ]), expected);
-        assert.deepEqual(spread(__num_top__, [
+        assert.deepEqual(spread(1, [
             2,
             3
         ], 4), expected);

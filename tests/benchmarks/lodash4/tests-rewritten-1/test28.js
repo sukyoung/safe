@@ -8,7 +8,7 @@ QUnit.module('lodash.cond');
                 stubA
             ],
             [
-                lodashStable.matchesProperty('b', __num_top__),
+                lodashStable.matchesProperty('b', 1),
                 stubB
             ],
             [
@@ -19,7 +19,7 @@ QUnit.module('lodash.cond');
         assert.strictEqual(cond({
             'a': 1,
             'b': 2,
-            'c': 3
+            'c': __num_top__
         }), 'a');
         assert.strictEqual(cond({
             'a': 0,

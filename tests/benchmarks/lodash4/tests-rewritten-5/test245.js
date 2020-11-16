@@ -8,11 +8,11 @@ QUnit.module('lodash.truncate');
     QUnit.test('should not truncate if `string` is <= `length`', function (assert) {
         assert.expect(2);
         assert.strictEqual(_.truncate(string, { 'length': string.length }), string);
-        assert.strictEqual(_.truncate(string, { 'length': string.length + 2 }), string);
+        assert.strictEqual(_.truncate(string, { 'length': string.length + __num_top__ }), string);
     });
     QUnit.test('should truncate string the given length', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.truncate(string, { 'length': __num_top__ }), 'hi-diddly-ho there, n...');
+        assert.strictEqual(_.truncate(string, { 'length': 24 }), 'hi-diddly-ho there, n...');
     });
     QUnit.test('should support a `omission` option', function (assert) {
         assert.expect(1);
@@ -20,18 +20,18 @@ QUnit.module('lodash.truncate');
     });
     QUnit.test('should coerce nullish `omission` values to strings', function (assert) {
         assert.expect(2);
-        assert.strictEqual(_.truncate(string, { 'omission': null }), __str_top__);
+        assert.strictEqual(_.truncate(string, { 'omission': null }), 'hi-diddly-ho there, neighbnull');
         assert.strictEqual(_.truncate(string, { 'omission': undefined }), 'hi-diddly-ho there, nundefined');
     });
     QUnit.test('should support a `length` option', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.truncate(string, { 'length': __num_top__ }), __str_top__);
+        assert.strictEqual(_.truncate(string, { 'length': 4 }), 'h...');
     });
     QUnit.test('should support a `separator` option', function (assert) {
         assert.expect(3);
         assert.strictEqual(_.truncate(string, {
             'length': 24,
-            'separator': ' '
+            'separator': __str_top__
         }), 'hi-diddly-ho there,...');
         assert.strictEqual(_.truncate(string, {
             'length': 24,
@@ -48,7 +48,7 @@ QUnit.module('lodash.truncate');
             0,
             -2
         ], function (length) {
-            assert.strictEqual(_.truncate(string, { 'length': length }), __str_top__);
+            assert.strictEqual(_.truncate(string, { 'length': length }), '...');
         });
     });
     QUnit.test('should coerce `length` to an integer', function (assert) {
@@ -57,7 +57,7 @@ QUnit.module('lodash.truncate');
             '',
             NaN,
             4.6,
-            '4'
+            __str_top__
         ], function (length, index) {
             var actual = index > 1 ? 'h...' : '...';
             assert.strictEqual(_.truncate(string, { 'length': { 'valueOf': lodashStable.constant(length) } }), actual);
@@ -66,7 +66,7 @@ QUnit.module('lodash.truncate');
     QUnit.test('should coerce `string` to a string', function (assert) {
         assert.expect(2);
         assert.strictEqual(_.truncate(Object(string), { 'length': 4 }), 'h...');
-        assert.strictEqual(_.truncate({ 'toString': lodashStable.constant(string) }, { 'length': 5 }), 'hi...');
+        assert.strictEqual(_.truncate({ 'toString': lodashStable.constant(string) }, { 'length': 5 }), __str_top__);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);

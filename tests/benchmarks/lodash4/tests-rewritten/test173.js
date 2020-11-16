@@ -87,7 +87,7 @@ lodashStable.each([
             assert.strictEqual(actual[symbol2], __num_top__);
             assert.notOk(symbol3 in actual);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -117,7 +117,7 @@ lodashStable.each([
             assert.notOk(symbol2 in actual);
             assert.notOk(symbol3 in actual);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 8);
         }
     });
     QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {

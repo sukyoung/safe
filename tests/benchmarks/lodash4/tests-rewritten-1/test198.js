@@ -24,7 +24,7 @@ lodashStable.each([
     });
     QUnit.test('`_.' + methodName + '` should infer the sign of `step` when only `start` and `end` are given', function (assert) {
         assert.expect(2);
-        assert.deepEqual(func(__num_top__, 5), resolve([
+        assert.deepEqual(func(1, 5), resolve([
             1,
             2,
             3,
@@ -66,7 +66,7 @@ lodashStable.each([
             1
         ]);
     });
-    QUnit.test('`_.' + methodName + '` should work with a `step` larger than `end`', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         assert.deepEqual(func(1, 5, 20), [1]);
     });

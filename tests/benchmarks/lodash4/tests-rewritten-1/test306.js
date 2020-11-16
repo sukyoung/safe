@@ -34,7 +34,7 @@ QUnit.module('lodash methods');
         'once',
         'overArgs',
         'partial',
-        'partialRight',
+        __str_top__,
         'rearg',
         'rest',
         'spread'
@@ -154,7 +154,7 @@ QUnit.module('lodash methods');
         lodashStable.each(noBinding, function (methodName) {
             var fn = function () {
                     return this.a;
-                }, func = _[methodName], isNegate = methodName == 'negate', object = { 'a': 1 }, expected = isNegate ? __bool_top__ : 1;
+                }, func = _[methodName], isNegate = methodName == 'negate', object = { 'a': 1 }, expected = isNegate ? false : 1;
             var wrapper = func(_.bind(fn, object));
             assert.strictEqual(wrapper(), expected, '`_.' + methodName + '` can consume a bound function');
             wrapper = _.bind(func(fn), object);

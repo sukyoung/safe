@@ -36,11 +36,11 @@ QUnit.module('lodash.isFinite');
             1,
             2,
             3
-        ]), false);
+        ]), __bool_top__);
         assert.strictEqual(_.isFinite(true), false);
         assert.strictEqual(_.isFinite(new Date()), false);
         assert.strictEqual(_.isFinite(new Error()), false);
-        assert.strictEqual(_.isFinite({ 'a': 1 }), __bool_top__);
+        assert.strictEqual(_.isFinite({ 'a': 1 }), false);
         assert.strictEqual(_.isFinite(/x/), false);
         assert.strictEqual(_.isFinite('a'), false);
         assert.strictEqual(_.isFinite(symbol), false);

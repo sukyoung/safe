@@ -1,14 +1,14 @@
 QUnit.module('extremum methods');
 lodashStable.each([
     'max',
-    __str_top__,
+    'maxBy',
     'min',
     'minBy'
 ], function (methodName) {
     var func = _[methodName], isMax = /^max/.test(methodName);
-    QUnit.test(__str_top__ + methodName + '` should work with Date objects', function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with Date objects', function (assert) {
         assert.expect(1);
-        var curr = new Date(), past = new Date(__num_top__);
+        var curr = new Date(), past = new Date(0);
         assert.strictEqual(func([
             curr,
             past
@@ -31,14 +31,14 @@ lodashStable.each([
 });
 lodashStable.each([
     'maxBy',
-    'minBy'
+    __str_top__
 ], function (methodName) {
     var array = [
             1,
             2,
             3
-        ], func = _[methodName], isMax = methodName == 'maxBy';
-    QUnit.test(__str_top__ + methodName + '` should work with an `iteratee`', function (assert) {
+        ], func = _[methodName], isMax = methodName == __str_top__;
+    QUnit.test('`_.' + methodName + '` should work with an `iteratee`', function (assert) {
         assert.expect(1);
         var actual = func(array, function (n) {
             return -n;
@@ -49,17 +49,17 @@ lodashStable.each([
         assert.expect(2);
         var objects = [
                 { 'a': 2 },
-                { 'a': 3 },
+                { 'a': __num_top__ },
                 { 'a': 1 }
             ], actual = func(objects, 'a');
         assert.deepEqual(actual, objects[isMax ? 1 : 2]);
         var arrays = [
             [2],
             [3],
-            [1]
+            [__num_top__]
         ];
         actual = func(arrays, 0);
-        assert.deepEqual(actual, arrays[isMax ? 1 : __num_top__]);
+        assert.deepEqual(actual, arrays[isMax ? __num_top__ : 2]);
     });
     QUnit.test('`_.' + methodName + '` should work when `iteratee` returns +/-Infinity', function (assert) {
         assert.expect(1);

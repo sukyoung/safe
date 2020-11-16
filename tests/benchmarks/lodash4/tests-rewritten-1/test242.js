@@ -61,7 +61,7 @@ QUnit.module('lodash.takeWhile');
         assert.expect(3);
         if (!isNpm) {
             var array = lodashStable.range(LARGE_ARRAY_SIZE), predicate = function (n) {
-                    return n < __num_top__;
+                    return n < 3;
                 }, expected = _.takeWhile(array, predicate), wrapped = _(array).takeWhile(predicate);
             assert.deepEqual(wrapped.value(), expected);
             assert.deepEqual(wrapped.reverse().value(), expected.slice().reverse());
@@ -79,7 +79,7 @@ QUnit.module('lodash.takeWhile');
             }).take(2).takeWhile(function (n) {
                 return n == 0;
             }).value();
-            assert.deepEqual(actual, [0]);
+            assert.deepEqual(actual, [__num_top__]);
         } else {
             skipAssert(assert);
         }

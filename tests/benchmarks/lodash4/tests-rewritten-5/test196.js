@@ -3,7 +3,7 @@ QUnit.module('lodash.pullAt');
     QUnit.test('should modify the array and return removed elements', function (assert) {
         assert.expect(2);
         var array = [
-                1,
+                __num_top__,
                 2,
                 3
             ], actual = _.pullAt(array, [
@@ -35,14 +35,14 @@ QUnit.module('lodash.pullAt');
                 1,
                 3,
                 11,
-                7,
+                __num_top__,
                 5,
                 9
             ]);
         assert.deepEqual(array, [
-            __num_top__,
+            1,
             3,
-            5,
+            __num_top__,
             7,
             9,
             11
@@ -122,7 +122,7 @@ QUnit.module('lodash.pullAt');
             0
         ], 2), [
             'd',
-            __str_top__,
+            'a',
             'c'
         ]);
         assert.deepEqual(array, ['b']);
@@ -154,7 +154,7 @@ QUnit.module('lodash.pullAt');
             return value === 0 || lodashStable.isArray(value);
         }).concat(-1, 1.1);
         var array = lodashStable.transform(values, function (result, value) {
-            result[value] = __num_top__;
+            result[value] = 1;
         }, []);
         var expected = lodashStable.map(values, stubOne), actual = _.pullAt(array, values);
         assert.deepEqual(actual, expected);
@@ -166,8 +166,8 @@ QUnit.module('lodash.pullAt');
         assert.expect(1);
         var props = [
             -0,
-            Object(-0),
-            __num_top__,
+            Object(-__num_top__),
+            0,
             Object(0)
         ];
         var actual = lodashStable.map(props, function (key) {
@@ -197,10 +197,10 @@ QUnit.module('lodash.pullAt');
     });
     QUnit.test('should work with a falsey `array` when keys are given', function (assert) {
         assert.expect(1);
-        var values = falsey.slice(), expected = lodashStable.map(values, lodashStable.constant(Array(4)));
+        var values = falsey.slice(), expected = lodashStable.map(values, lodashStable.constant(Array(__num_top__)));
         var actual = lodashStable.map(values, function (array) {
             try {
-                return _.pullAt(array, 0, __num_top__, 'pop', 'push');
+                return _.pullAt(array, 0, 1, 'pop', 'push');
             } catch (e) {
             }
         });

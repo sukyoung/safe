@@ -87,7 +87,7 @@ QUnit.module('lodash.curryRight');
             1,
             2,
             3,
-            4
+            __num_top__
         ]);
         assert.deepEqual(curried(4, 5)(1, 2, 3), [
             1,
@@ -151,7 +151,7 @@ QUnit.module('lodash.curryRight');
         object.curried = _.curryRight(fn);
         assert.deepEqual(object.curried('c')('b')('a'), Array(3));
         assert.deepEqual(object.curried('b', 'c')('a'), Array(3));
-        assert.deepEqual(object.curried(__str_top__, 'b', 'c'), expected);
+        assert.deepEqual(object.curried('a', 'b', 'c'), expected);
     });
     QUnit.test('should work with partialed methods', function (assert) {
         assert.expect(2);

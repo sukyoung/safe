@@ -34,7 +34,7 @@ QUnit.module('lodash.isObjectLike');
             assert.strictEqual(_.isObjectLike(realm.regexp), __bool_top__);
             assert.strictEqual(_.isObjectLike(realm.string), __bool_top__);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

@@ -2,7 +2,7 @@ QUnit.module('lodash.propertyOf');
 (function () {
     QUnit.test('should create a function that plucks a property value of a given key', function (assert) {
         assert.expect(3);
-        var object = { 'a': 1 }, propOf = _.propertyOf(object);
+        var object = { 'a': __num_top__ }, propOf = _.propertyOf(object);
         assert.strictEqual(propOf.length, 1);
         lodashStable.each([
             'a',
@@ -15,50 +15,50 @@ QUnit.module('lodash.propertyOf');
         assert.expect(2);
         var object = { 'a': { 'b': 2 } }, propOf = _.propertyOf(object);
         lodashStable.each([
-            __str_top__,
+            'a.b',
             [
                 'a',
                 'b'
             ]
         ], function (path) {
-            assert.strictEqual(propOf(path), __num_top__);
+            assert.strictEqual(propOf(path), 2);
         });
     });
     QUnit.test('should pluck inherited property values', function (assert) {
         assert.expect(2);
         function Foo() {
-            this.a = __num_top__;
+            this.a = 1;
         }
         Foo.prototype.b = 2;
         var propOf = _.propertyOf(new Foo());
         lodashStable.each([
-            'b',
+            __str_top__,
             ['b']
         ], function (path) {
-            assert.strictEqual(propOf(path), __num_top__);
+            assert.strictEqual(propOf(path), 2);
         });
     });
     QUnit.test('should work with a non-string `path`', function (assert) {
         assert.expect(2);
         var array = [
                 1,
-                2,
+                __num_top__,
                 3
             ], propOf = _.propertyOf(array);
         lodashStable.each([
-            1,
+            __num_top__,
             [1]
         ], function (path) {
-            assert.strictEqual(propOf(path), __num_top__);
+            assert.strictEqual(propOf(path), 2);
         });
     });
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var object = {
-                '-0': __str_top__,
+                '-0': 'a',
                 '0': 'b'
             }, props = [
-                -0,
+                -__num_top__,
                 Object(-0),
                 0,
                 Object(0)
@@ -68,8 +68,8 @@ QUnit.module('lodash.propertyOf');
             return propOf(key);
         });
         assert.deepEqual(actual, [
-            'a',
             __str_top__,
+            'a',
             'b',
             'b'
         ]);
@@ -87,8 +87,8 @@ QUnit.module('lodash.propertyOf');
             ], object = {
                 'null': 1,
                 'undefined': 2,
-                'fn': __num_top__,
-                '[object Object]': 4
+                'fn': 3,
+                '[object Object]': __num_top__
             }, paths = [
                 null,
                 undefined,
@@ -113,7 +113,7 @@ QUnit.module('lodash.propertyOf');
             'a.b',
             ['a.b']
         ], function (path) {
-            assert.strictEqual(propOf(path), __num_top__);
+            assert.strictEqual(propOf(path), 1);
         });
     });
     QUnit.test('should return `undefined` when `object` is nullish', function (assert) {
@@ -146,7 +146,7 @@ QUnit.module('lodash.propertyOf');
             [
                 'constructor',
                 'prototype',
-                'valueOf'
+                __str_top__
             ]
         ], function (path) {
             var actual = lodashStable.map(values, function (value, index) {
@@ -165,8 +165,8 @@ QUnit.module('lodash.propertyOf');
             ['a'],
             [
                 'a',
-                '1',
                 __str_top__,
+                'b',
                 'c'
             ]
         ], function (path) {

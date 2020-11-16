@@ -18,7 +18,7 @@ lodashStable.each([
             assert.strictEqual(mapCount, isFind ? __num_top__ : __num_top__);
             assert.strictEqual(actual, isFind ? __num_top__ : square(LARGE_ARRAY_SIZE));
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
 });

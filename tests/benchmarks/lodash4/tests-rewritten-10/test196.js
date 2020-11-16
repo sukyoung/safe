@@ -3,7 +3,7 @@ QUnit.module('lodash.pullAt');
     QUnit.test('should modify the array and return removed elements', function (assert) {
         assert.expect(2);
         var array = [
-                1,
+                __num_top__,
                 2,
                 3
             ], actual = _.pullAt(array, [
@@ -22,8 +22,8 @@ QUnit.module('lodash.pullAt');
                 1,
                 2,
                 3,
-                4,
                 __num_top__,
+                5,
                 6,
                 7,
                 8,
@@ -36,7 +36,7 @@ QUnit.module('lodash.pullAt');
                 3,
                 11,
                 7,
-                __num_top__,
+                5,
                 9
             ]);
         assert.deepEqual(array, [
@@ -44,14 +44,14 @@ QUnit.module('lodash.pullAt');
             3,
             5,
             7,
-            9,
+            __num_top__,
             11
         ]);
         assert.deepEqual(actual, [
             2,
             4,
             12,
-            8,
+            __num_top__,
             6,
             10
         ]);
@@ -61,7 +61,7 @@ QUnit.module('lodash.pullAt');
         var array = [
                 1,
                 2,
-                __num_top__,
+                3,
                 4
             ], actual = _.pullAt(array, [
                 0,
@@ -69,7 +69,7 @@ QUnit.module('lodash.pullAt');
                 0,
                 1,
                 0,
-                2
+                __num_top__
             ]);
         assert.deepEqual(array, [4]);
         assert.deepEqual(actual, [
@@ -84,7 +84,7 @@ QUnit.module('lodash.pullAt');
     QUnit.test('should use `undefined` for nonexistent indexes', function (assert) {
         assert.expect(2);
         var array = [
-                __str_top__,
+                'a',
                 'b',
                 'c'
             ], actual = _.pullAt(array, [
@@ -102,7 +102,7 @@ QUnit.module('lodash.pullAt');
     QUnit.test('should flatten `indexes`', function (assert) {
         assert.expect(4);
         var array = [
-            __str_top__,
+            'a',
             'b',
             'c'
         ];
@@ -110,22 +110,22 @@ QUnit.module('lodash.pullAt');
             'c',
             'a'
         ]);
-        assert.deepEqual(array, ['b']);
+        assert.deepEqual(array, [__str_top__]);
         array = [
             'a',
             'b',
-            __str_top__,
-            __str_top__
+            'c',
+            'd'
         ];
         assert.deepEqual(_.pullAt(array, [
             3,
             0
-        ], __num_top__), [
+        ], 2), [
             'd',
             'a',
             'c'
         ]);
-        assert.deepEqual(array, [__str_top__]);
+        assert.deepEqual(array, ['b']);
     });
     QUnit.test('should return an empty array when no indexes are given', function (assert) {
         assert.expect(4);
@@ -152,7 +152,7 @@ QUnit.module('lodash.pullAt');
         assert.expect(2);
         var values = lodashStable.reject(empties, function (value) {
             return value === 0 || lodashStable.isArray(value);
-        }).concat(-1, 1.1);
+        }).concat(-__num_top__, 1.1);
         var array = lodashStable.transform(values, function (result, value) {
             result[value] = 1;
         }, []);
@@ -168,16 +168,16 @@ QUnit.module('lodash.pullAt');
             -0,
             Object(-0),
             0,
-            Object(0)
+            Object(__num_top__)
         ];
         var actual = lodashStable.map(props, function (key) {
             var array = [-1];
-            array['-0'] = -2;
+            array['-0'] = -__num_top__;
             return _.pullAt(array, key);
         });
         assert.deepEqual(actual, [
             [-2],
-            [-__num_top__],
+            [-2],
             [-1],
             [-1]
         ]);
@@ -187,7 +187,7 @@ QUnit.module('lodash.pullAt');
         var array = [];
         array.a = { 'b': 2 };
         var actual = _.pullAt(array, 'a.b');
-        assert.deepEqual(actual, [2]);
+        assert.deepEqual(actual, [__num_top__]);
         assert.deepEqual(array.a, {});
         try {
             actual = _.pullAt(array, 'a.b.c');

@@ -1,6 +1,6 @@
 QUnit.module('isIterateeCall');
 (function () {
-    var array = [1], func = _._isIterateeCall, object = { 'a': __num_top__ };
+    var array = [__num_top__], func = _._isIterateeCall, object = { 'a': 1 };
     QUnit.test('should return `true` for iteratee calls', function (assert) {
         assert.expect(3);
         function Foo() {
@@ -9,7 +9,7 @@ QUnit.module('isIterateeCall');
         if (func) {
             assert.strictEqual(func(1, 0, array), true);
             assert.strictEqual(func(1, 'a', object), true);
-            assert.strictEqual(func(__num_top__, 'a', new Foo()), true);
+            assert.strictEqual(func(1, 'a', new Foo()), true);
         } else {
             skipAssert(assert, 3);
         }
@@ -19,8 +19,8 @@ QUnit.module('isIterateeCall');
         if (func) {
             assert.strictEqual(func(2, 0, array), false);
             assert.strictEqual(func(1, 1.1, array), false);
-            assert.strictEqual(func(__num_top__, 0, { 'length': MAX_SAFE_INTEGER + 1 }), false);
-            assert.strictEqual(func(__num_top__, 'b', object), __bool_top__);
+            assert.strictEqual(func(1, 0, { 'length': MAX_SAFE_INTEGER + __num_top__ }), false);
+            assert.strictEqual(func(1, 'b', object), false);
         } else {
             skipAssert(assert, 4);
         }
@@ -28,7 +28,7 @@ QUnit.module('isIterateeCall');
     QUnit.test('should work with `NaN` values', function (assert) {
         assert.expect(2);
         if (func) {
-            assert.strictEqual(func(NaN, 0, [NaN]), true);
+            assert.strictEqual(func(NaN, __num_top__, [NaN]), true);
             assert.strictEqual(func(NaN, 'a', { 'a': NaN }), true);
         } else {
             skipAssert(assert, 2);
@@ -38,7 +38,7 @@ QUnit.module('isIterateeCall');
         assert.expect(1);
         if (func) {
             try {
-                var actual = func(1, { 'toString': null }, [1]);
+                var actual = func(__num_top__, { 'toString': null }, [1]);
             } catch (e) {
                 var message = e.message;
             }

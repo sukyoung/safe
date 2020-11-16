@@ -17,9 +17,9 @@ QUnit.module('lodash.invokeMap');
         assert.expect(1);
         var array = [function () {
                     return slice.call(arguments);
-                }], actual = _.invokeMap(array, __str_top__, null, 'a', 'b', 'c');
+                }], actual = _.invokeMap(array, 'call', null, 'a', 'b', 'c');
         assert.deepEqual(actual, [[
-                __str_top__,
+                'a',
                 'b',
                 'c'
             ]]);
@@ -33,7 +33,7 @@ QUnit.module('lodash.invokeMap');
         ];
         var actual = _.invokeMap(array, function (left, right) {
             return left + this.toUpperCase() + right;
-        }, '(', ')');
+        }, __str_top__, ')');
         assert.deepEqual(actual, [
             '(A)',
             __str_top__,
@@ -43,9 +43,9 @@ QUnit.module('lodash.invokeMap');
     QUnit.test('should work with an object for `collection`', function (assert) {
         assert.expect(1);
         var object = {
-                'a': __num_top__,
+                'a': 1,
                 'b': 2,
-                'c': 3
+                'c': __num_top__
             }, actual = _.invokeMap(object, 'toFixed', 1);
         assert.deepEqual(actual, [
             '1.0',
@@ -118,9 +118,9 @@ QUnit.module('lodash.invokeMap');
         assert.expect(4);
         if (!isNpm) {
             var array = [
-                    'a',
+                    __str_top__,
                     'b',
-                    __str_top__
+                    'c'
                 ], wrapped = _(array), actual = wrapped.invokeMap('toUpperCase');
             assert.ok(actual instanceof _);
             assert.deepEqual(actual.valueOf(), [

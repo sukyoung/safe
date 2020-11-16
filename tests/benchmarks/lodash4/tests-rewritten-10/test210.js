@@ -6,9 +6,9 @@ QUnit.module('lodash.rest');
     QUnit.test('should apply a rest parameter to `func`', function (assert) {
         assert.expect(1);
         var rest = _.rest(fn);
-        assert.deepEqual(rest(__num_top__, 2, __num_top__, 4), [
-            __num_top__,
-            __num_top__,
+        assert.deepEqual(rest(1, 2, __num_top__, 4), [
+            1,
+            2,
             [
                 3,
                 4
@@ -17,7 +17,7 @@ QUnit.module('lodash.rest');
     });
     QUnit.test('should work with `start`', function (assert) {
         assert.expect(1);
-        var rest = _.rest(fn, __num_top__);
+        var rest = _.rest(fn, 1);
         assert.deepEqual(rest(1, 2, __num_top__, 4), [
             1,
             [
@@ -30,26 +30,26 @@ QUnit.module('lodash.rest');
     QUnit.test('should treat `start` as `0` for `NaN` or negative values', function (assert) {
         assert.expect(1);
         var values = [
-                -1,
+                -__num_top__,
                 NaN,
                 'a'
             ], expected = lodashStable.map(values, lodashStable.constant([[
                     1,
                     2,
                     __num_top__,
-                    __num_top__
+                    4
                 ]]));
         var actual = lodashStable.map(values, function (value) {
             var rest = _.rest(fn, value);
-            return rest(1, 2, 3, 4);
+            return rest(__num_top__, 2, 3, 4);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should coerce `start` to an integer', function (assert) {
         assert.expect(1);
         var rest = _.rest(fn, 1.6);
-        assert.deepEqual(rest(1, 2, 3), [
-            1,
+        assert.deepEqual(rest(__num_top__, 2, 3), [
+            __num_top__,
             [
                 2,
                 3
@@ -70,13 +70,13 @@ QUnit.module('lodash.rest');
         var rest = _.rest(function (a, b, c, d) {
             return slice.call(arguments);
         });
-        assert.deepEqual(rest(__num_top__, 2, 3, 4, 5), [
+        assert.deepEqual(rest(__num_top__, __num_top__, 3, __num_top__, 5), [
             1,
             2,
             3,
             [
                 4,
-                __num_top__
+                5
             ]
         ]);
     });

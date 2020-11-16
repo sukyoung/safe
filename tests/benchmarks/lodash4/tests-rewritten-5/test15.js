@@ -40,7 +40,7 @@ QUnit.module('lodash.bind');
             bound = index ? _.bind(fn, undefined) : _.bind(fn);
             actual = bound('b');
             assert.ok(actual[0] === undefined || actual[0] && actual[0].Array);
-            assert.strictEqual(actual[__num_top__], 'b');
+            assert.strictEqual(actual[1], 'b');
         });
     });
     QUnit.test('should partially apply arguments ', function (assert) {
@@ -53,10 +53,10 @@ QUnit.module('lodash.bind');
         bound = _.bind(fn, object, 'a');
         assert.deepEqual(bound('b'), [
             object,
-            'a',
+            __str_top__,
             'b'
         ]);
-        bound = _.bind(fn, object, 'a', __str_top__);
+        bound = _.bind(fn, object, 'a', 'b');
         assert.deepEqual(bound(), [
             object,
             'a',
@@ -121,7 +121,7 @@ QUnit.module('lodash.bind');
             }, bound = _.bind(fn, {});
         assert.strictEqual(bound.length, 0);
         bound = _.bind(fn, {}, 1);
-        assert.strictEqual(bound.length, __num_top__);
+        assert.strictEqual(bound.length, 0);
     });
     QUnit.test('should ignore binding when called with the `new` operator', function (assert) {
         assert.expect(3);
@@ -164,7 +164,7 @@ QUnit.module('lodash.bind');
                     ];
                 case 3:
                     return [
-                        new boundFoo(1, 2, 3).a,
+                        new boundFoo(1, 2, __num_top__).a,
                         new boundBar(1, 2, 3).a
                     ];
                 case 4:
@@ -189,8 +189,8 @@ QUnit.module('lodash.bind');
                     ];
                 case 8:
                     return [
-                        new boundFoo(1, 2, 3, 4, 5, 6, 7, 8).a,
-                        new boundBar(1, 2, 3, 4, 5, 6, __num_top__, 8).a
+                        new boundFoo(1, 2, 3, 4, 5, 6, __num_top__, 8).a,
+                        new boundBar(1, 2, 3, 4, 5, 6, 7, 8).a
                     ];
                 }
             } catch (e) {
@@ -241,14 +241,14 @@ QUnit.module('lodash.bind');
         assert.deepEqual(actual, expected);
         Ctor = _.bind(Date, null, 2012, 4, 23);
         try {
-            actual = new Ctor(0, 0, 0, 0);
+            actual = new Ctor(0, __num_top__, 0, 0);
         } catch (e) {
         }
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should not error when calling bound class constructors with the `new` operator', function (assert) {
         assert.expect(1);
-        var createCtor = lodashStable.attempt(Function, '"use strict";return class A{}');
+        var createCtor = lodashStable.attempt(Function, __str_top__);
         if (typeof createCtor == 'function') {
             var bound = _.bind(createCtor()), count = 8, expected = lodashStable.times(count, stubTrue);
             var actual = lodashStable.times(count, function (index) {
@@ -292,7 +292,7 @@ QUnit.module('lodash.bind');
                 'c'
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
 }());

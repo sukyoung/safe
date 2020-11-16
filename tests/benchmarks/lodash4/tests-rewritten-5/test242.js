@@ -4,11 +4,11 @@ QUnit.module('lodash.takeWhile');
         1,
         2,
         3,
-        __num_top__
+        4
     ];
     var objects = [
         {
-            'a': __num_top__,
+            'a': 2,
             'b': 2
         },
         {
@@ -23,7 +23,7 @@ QUnit.module('lodash.takeWhile');
     QUnit.test('should take elements while `predicate` returns truthy', function (assert) {
         assert.expect(1);
         var actual = _.takeWhile(array, function (n) {
-            return n < __num_top__;
+            return n < 3;
         });
         assert.deepEqual(actual, [
             1,
@@ -55,7 +55,7 @@ QUnit.module('lodash.takeWhile');
     });
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.takeWhile(objects, 'b'), objects.slice(0, 2));
+        assert.deepEqual(_.takeWhile(objects, __str_top__), objects.slice(0, 2));
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(3);
@@ -75,7 +75,7 @@ QUnit.module('lodash.takeWhile');
         if (!isNpm) {
             var array = lodashStable.range(LARGE_ARRAY_SIZE);
             var actual = _(array).takeWhile(function (n) {
-                return n < 4;
+                return n < __num_top__;
             }).take(2).takeWhile(function (n) {
                 return n == 0;
             }).value();
@@ -87,9 +87,9 @@ QUnit.module('lodash.takeWhile');
     QUnit.test('should provide correct `predicate` arguments in a lazy sequence', function (assert) {
         assert.expect(5);
         if (!isNpm) {
-            var args, array = lodashStable.range(LARGE_ARRAY_SIZE + 1), expected = [
+            var args, array = lodashStable.range(LARGE_ARRAY_SIZE + __num_top__), expected = [
                     1,
-                    __num_top__,
+                    0,
                     lodashStable.map(array.slice(1), square)
                 ];
             _(array).slice(1).takeWhile(function (value, index, array) {
@@ -100,7 +100,7 @@ QUnit.module('lodash.takeWhile');
                 0,
                 array.slice(1)
             ]);
-            _(array).slice(1).map(square).takeWhile(function (value, index, array) {
+            _(array).slice(__num_top__).map(square).takeWhile(function (value, index, array) {
                 args = slice.call(arguments);
             }).value();
             assert.deepEqual(args, expected);
@@ -108,10 +108,10 @@ QUnit.module('lodash.takeWhile');
                 args = slice.call(arguments);
             }).value();
             assert.deepEqual(args, expected);
-            _(array).slice(__num_top__).map(square).takeWhile(function (value) {
+            _(array).slice(1).map(square).takeWhile(function (value) {
                 args = slice.call(arguments);
             }).value();
-            assert.deepEqual(args, [1]);
+            assert.deepEqual(args, [__num_top__]);
             _(array).slice(1).map(square).takeWhile(function () {
                 args = slice.call(arguments);
             }).value();

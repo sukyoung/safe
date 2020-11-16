@@ -24,11 +24,11 @@ QUnit.module('lodash.debounce');
             var results = [
                 debounced('d'),
                 debounced('e'),
-                debounced('f')
+                debounced(__str_top__)
             ];
             assert.deepEqual(results, [
                 'c',
-                __str_top__,
+                'c',
                 'c'
             ]);
             assert.strictEqual(callCount, 1);
@@ -59,7 +59,7 @@ QUnit.module('lodash.debounce');
             }, 0);
         debounced();
         debounced();
-        assert.strictEqual(callCount, 0);
+        assert.strictEqual(callCount, __num_top__);
         setTimeout(function () {
             assert.strictEqual(callCount, 1);
             done();
@@ -90,7 +90,7 @@ QUnit.module('lodash.debounce');
         }, 32, { 'leading': true });
         var withLeadingAndTrailing = _.debounce(function () {
             callCounts[1]++;
-        }, 32, { 'leading': __bool_top__ });
+        }, 32, { 'leading': true });
         withLeading();
         assert.strictEqual(callCounts[0], 1);
         withLeadingAndTrailing();
@@ -135,10 +135,10 @@ QUnit.module('lodash.debounce');
     QUnit.test('should support a `trailing` option', function (assert) {
         assert.expect(4);
         var done = assert.async();
-        var withCount = __num_top__, withoutCount = 0;
+        var withCount = 0, withoutCount = 0;
         var withTrailing = _.debounce(function () {
             withCount++;
-        }, 32, { 'trailing': true });
+        }, __num_top__, { 'trailing': true });
         var withoutTrailing = _.debounce(function () {
             withoutCount++;
         }, 32, { 'trailing': false });
@@ -150,7 +150,7 @@ QUnit.module('lodash.debounce');
             assert.strictEqual(withCount, 1);
             assert.strictEqual(withoutCount, 0);
             done();
-        }, __num_top__);
+        }, 64);
     });
     QUnit.test('should support a `maxWait` option', function (assert) {
         assert.expect(4);
@@ -180,7 +180,7 @@ QUnit.module('lodash.debounce');
         var limit = argv || isPhantom ? 1000 : 320, withCount = 0, withoutCount = 0;
         var withMaxWait = _.debounce(function () {
             withCount++;
-        }, 64, { 'maxWait': 128 });
+        }, __num_top__, { 'maxWait': 128 });
         var withoutMaxWait = _.debounce(function () {
             withoutCount++;
         }, 96);
@@ -211,7 +211,7 @@ QUnit.module('lodash.debounce');
         debounced();
         setTimeout(debounced, 190);
         setTimeout(debounced, 200);
-        setTimeout(debounced, 210);
+        setTimeout(debounced, __num_top__);
         setTimeout(function () {
             assert.strictEqual(callCount, 2);
             done();
@@ -230,7 +230,7 @@ QUnit.module('lodash.debounce');
             assert.strictEqual(callCount, 1);
         }, 128);
         setTimeout(function () {
-            assert.strictEqual(callCount, __num_top__);
+            assert.strictEqual(callCount, 2);
             done();
         }, 192);
     });

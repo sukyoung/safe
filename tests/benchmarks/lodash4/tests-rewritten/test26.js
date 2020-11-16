@@ -22,7 +22,7 @@ QUnit.module('lodash.compact');
                 __str_top__
             ]);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {

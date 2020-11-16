@@ -23,11 +23,11 @@ QUnit.module('lodash.xorBy');
         assert.expect(1);
         var args;
         _.xorBy([
-            2.1,
+            __num_top__,
             1.2
         ], [
             2.3,
-            __num_top__
+            3.4
         ], function () {
             args || (args = slice.call(arguments));
         });

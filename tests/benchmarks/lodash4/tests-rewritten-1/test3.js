@@ -20,7 +20,7 @@ QUnit.module('map caches');
         ];
     });
     function createCaches(pairs) {
-        var largeStack = new mapCaches.Stack(pairs), length = pairs ? pairs.length : __num_top__;
+        var largeStack = new mapCaches.Stack(pairs), length = pairs ? pairs.length : 0;
         lodashStable.times(LARGE_ARRAY_SIZE - length, function () {
             largeStack.set({}, {});
         });
@@ -58,7 +58,7 @@ QUnit.module('map caches');
         QUnit.test('should support changing values of ' + kind, function (assert) {
             assert.expect(10);
             lodashStable.each(keys, function (key) {
-                cache.set(key, 1).set(key, 2);
+                cache.set(key, 1).set(key, __num_top__);
                 assert.strictEqual(cache.get(key), 2);
             });
         });

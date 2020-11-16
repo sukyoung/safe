@@ -21,7 +21,7 @@ QUnit.module('lodash.mixin');
     Wrapper.prototype.value = function () {
         return getUnwrappedValue(this);
     };
-    var array = [__str_top__], source = {
+    var array = ['a'], source = {
             'a': function (array) {
                 return array[0];
             },
@@ -94,7 +94,7 @@ QUnit.module('lodash.mixin');
     QUnit.test('should accept an `options`', function (assert) {
         assert.expect(8);
         function message(func, chain) {
-            return (func === _ ? 'lodash' : 'given') + ' function should ' + (chain ? '' : 'not ') + 'chain';
+            return (func === _ ? 'lodash' : 'given') + ' function should ' + (chain ? '' : 'not ') + __str_top__;
         }
         lodashStable.each([
             _,

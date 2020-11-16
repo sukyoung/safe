@@ -33,7 +33,7 @@ QUnit.module('lodash.isNative');
         assert.strictEqual(_.isNative({ 'a': 1 }), false);
         assert.strictEqual(_.isNative(1), false);
         assert.strictEqual(_.isNative(/x/), false);
-        assert.strictEqual(_.isNative('a'), false);
+        assert.strictEqual(_.isNative(__str_top__), false);
         assert.strictEqual(_.isNative(symbol), false);
     });
     QUnit.test('should work with native functions from another realm', function (assert) {
@@ -63,7 +63,7 @@ QUnit.module('lodash.isNative');
     QUnit.test('should detect methods masquerading as native (test in Node.js)', function (assert) {
         assert.expect(2);
         if (!amd && _._baseEach) {
-            var path = require('path'), basePath = path.dirname(filePath), uid = 'e0gvgyrad1jor', coreKey = __str_top__, fakeSrcKey = 'Symbol(src)_1.' + uid;
+            var path = require('path'), basePath = path.dirname(filePath), uid = 'e0gvgyrad1jor', coreKey = '__core-js_shared__', fakeSrcKey = 'Symbol(src)_1.' + uid;
             root[coreKey] = { 'keys': { 'IE_PROTO': 'Symbol(IE_PROTO)_3.' + uid } };
             emptyObject(require.cache);
             var baseIsNative = interopRequire(path.join(basePath, '_baseIsNative'));

@@ -4,7 +4,7 @@ QUnit.module('lodash.template');
         assert.expect(1);
         var strings = [
                 '<p><%- value %></p>',
-                __str_top__,
+                '<p><%-value%></p>',
                 '<p><%-\nvalue\n%></p>'
             ], expected = lodashStable.map(strings, lodashStable.constant('<p>&amp;&lt;&gt;&quot;&#39;/</p>')), data = { 'value': '&<>"\'/' };
         var actual = lodashStable.map(strings, function (string) {
@@ -15,7 +15,7 @@ QUnit.module('lodash.template');
     QUnit.test('should not reference `_.escape` when "escape" delimiters are not used', function (assert) {
         assert.expect(1);
         var compiled = _.template('<%= typeof __e %>');
-        assert.strictEqual(compiled({}), 'undefined');
+        assert.strictEqual(compiled({}), __str_top__);
     });
     QUnit.test('should evaluate JavaScript in "evaluate" delimiters', function (assert) {
         assert.expect(1);
@@ -57,7 +57,7 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should support "interpolate" delimiters containing ternary operators', function (assert) {
         assert.expect(1);
-        var compiled = _.template(__str_top__), data = { 'value': 'a' };
+        var compiled = _.template('<%= value ? value : "b" %>'), data = { 'value': 'a' };
         assert.strictEqual(compiled(data), 'a');
     });
     QUnit.test('should support "interpolate" delimiters containing global values', function (assert) {
@@ -72,7 +72,7 @@ QUnit.module('lodash.template');
     QUnit.test('should support complex "interpolate" delimiters', function (assert) {
         assert.expect(22);
         lodashStable.forOwn({
-            '<%= a + b %>': __str_top__,
+            '<%= a + b %>': '3',
             '<%= b - a %>': '1',
             '<%= a = b %>': '2',
             '<%= !a %>': 'false',
@@ -126,7 +126,7 @@ QUnit.module('lodash.template');
         try {
             assert.strictEqual(compiled(data), '123');
         } catch (e) {
-            assert.ok(false, e.message);
+            assert.ok(__bool_top__, e.message);
         }
     });
     QUnit.test('should support custom delimiters', function (assert) {
@@ -183,7 +183,7 @@ QUnit.module('lodash.template');
         assert.expect(1);
         var lodash = _.templateSettings.imports._, settingsClone = lodashStable.clone(lodash.templateSettings);
         lodash.templateSettings = lodashStable.assign(lodash.templateSettings, { 'interpolate': /\{\{=([\s\S]+?)\}\}/g });
-        var compiled = _.template('{{= a }}');
+        var compiled = _.template(__str_top__);
         assert.strictEqual(compiled({ 'a': 1 }), '1');
         if (settingsClone) {
             lodashStable.assign(lodash.templateSettings, settingsClone);
@@ -225,7 +225,7 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should work without delimiters', function (assert) {
         assert.expect(1);
-        var expected = __str_top__;
+        var expected = 'abc';
         assert.strictEqual(_.template(expected)({}), expected);
     });
     QUnit.test('should work with `this` references', function (assert) {
@@ -243,7 +243,7 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should work with escaped characters in string literals', function (assert) {
         assert.expect(2);
-        var compiled = _.template('<% print("\'\\n\\r\\t\\u2028\\u2029\\\\") %>');
+        var compiled = _.template(__str_top__);
         assert.strictEqual(compiled(), '\'\n\r\t\u2028\u2029\\');
         var data = { 'a': 'A' };
         compiled = _.template('\'\n\r\t<%= a %>\u2028\u2029\\"');
@@ -297,7 +297,7 @@ QUnit.module('lodash.template');
         assert.strictEqual(compiled(data), '');
         data = { 'a': {} };
         compiled = _.template('<%= a.b %><%- a.b %>');
-        assert.strictEqual(compiled(data), __str_top__);
+        assert.strictEqual(compiled(data), '');
     });
     QUnit.test('should return an empty string for empty values', function (assert) {
         assert.expect(1);

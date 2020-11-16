@@ -5,25 +5,25 @@ QUnit.module('lodash.xorWith');
         var objects = [
                 {
                     'x': __num_top__,
-                    'y': __num_top__
+                    'y': 2
                 },
                 {
-                    'x': __num_top__,
+                    'x': 2,
                     'y': 1
                 }
             ], others = [
                 {
-                    'x': __num_top__,
+                    'x': 1,
                     'y': 1
                 },
                 {
                     'x': __num_top__,
-                    'y': 2
+                    'y': __num_top__
                 }
             ], actual = _.xorWith(objects, others, lodashStable.isEqual);
         assert.deepEqual(actual, [
-            objects[1],
-            others[0]
+            objects[__num_top__],
+            others[__num_top__]
         ]);
     });
 }());

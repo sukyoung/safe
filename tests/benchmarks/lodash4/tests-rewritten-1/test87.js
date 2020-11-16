@@ -26,7 +26,7 @@ QUnit.module('lodash.includes');
         });
         QUnit.test('should work with ' + key + ' and floor `position` values', function (assert) {
             assert.expect(1);
-            assert.strictEqual(_.includes(collection, 2, 1.2), true);
+            assert.strictEqual(_.includes(collection, 2, 1.2), __bool_top__);
         });
         QUnit.test('should work with ' + key + ' and return an unwrapped value implicitly when chaining', function (assert) {
             assert.expect(1);
@@ -76,7 +76,7 @@ QUnit.module('lodash.includes');
             ];
         var expected = lodashStable.map(indexes, function (index) {
             return [
-                __bool_top__,
+                false,
                 false,
                 index == length
             ];

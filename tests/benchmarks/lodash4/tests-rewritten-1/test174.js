@@ -11,13 +11,13 @@ QUnit.module('lodash.once');
     });
     QUnit.test('should ignore recursive calls', function (assert) {
         assert.expect(2);
-        var count = __num_top__;
+        var count = 0;
         var once = _.once(function () {
             once();
             return ++count;
         });
         assert.strictEqual(once(), 1);
-        assert.strictEqual(count, 1);
+        assert.strictEqual(count, __num_top__);
     });
     QUnit.test('should not throw more than once', function (assert) {
         assert.expect(2);

@@ -19,8 +19,8 @@ QUnit.module('lodash.groupBy');
     QUnit.test('should use `_.identity` when `iteratee` is nullish', function (assert) {
         assert.expect(1);
         var array = [
-                6,
                 __num_top__,
+                4,
                 6
             ], values = [
                 ,
@@ -41,14 +41,14 @@ QUnit.module('lodash.groupBy');
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         var actual = _.groupBy([
-            'one',
+            __str_top__,
             'two',
             'three'
-        ], 'length');
+        ], __str_top__);
         assert.deepEqual(actual, {
             '3': [
                 'one',
-                'two'
+                __str_top__
             ],
             '5': ['three']
         });
@@ -56,7 +56,7 @@ QUnit.module('lodash.groupBy');
     QUnit.test('should only add values to own, not inherited, properties', function (assert) {
         assert.expect(2);
         var actual = _.groupBy(array, function (n) {
-            return Math.floor(n) > 4 ? 'hasOwnProperty' : 'constructor';
+            return Math.floor(n) > 4 ? 'hasOwnProperty' : __str_top__;
         });
         assert.deepEqual(actual.constructor, [4.2]);
         assert.deepEqual(actual.hasOwnProperty, [
@@ -68,11 +68,11 @@ QUnit.module('lodash.groupBy');
         assert.expect(2);
         var array = [
             [
-                1,
-                __str_top__
+                __num_top__,
+                'a'
             ],
             [
-                __num_top__,
+                2,
                 'a'
             ],
             [
@@ -83,7 +83,7 @@ QUnit.module('lodash.groupBy');
         assert.deepEqual(_.groupBy(array, 0), {
             '1': [[
                     1,
-                    __str_top__
+                    'a'
                 ]],
             '2': [
                 [
@@ -91,7 +91,7 @@ QUnit.module('lodash.groupBy');
                     'a'
                 ],
                 [
-                    __num_top__,
+                    2,
                     'b'
                 ]
             ]
@@ -100,10 +100,10 @@ QUnit.module('lodash.groupBy');
             'a': [
                 [
                     1,
-                    'a'
+                    __str_top__
                 ],
                 [
-                    __num_top__,
+                    2,
                     'a'
                 ]
             ],
@@ -116,14 +116,14 @@ QUnit.module('lodash.groupBy');
     QUnit.test('should work with an object for `collection`', function (assert) {
         assert.expect(1);
         var actual = _.groupBy({
-            'a': __num_top__,
+            'a': 6.1,
             'b': 4.2,
-            'c': 6.3
+            'c': __num_top__
         }, Math.floor);
         assert.deepEqual(actual, {
-            '4': [__num_top__],
+            '4': [4.2],
             '6': [
-                __num_top__,
+                6.1,
                 6.3
             ]
         });
@@ -131,7 +131,7 @@ QUnit.module('lodash.groupBy');
     QUnit.test('should work in a lazy sequence', function (assert) {
         assert.expect(1);
         if (!isNpm) {
-            var array = lodashStable.range(LARGE_ARRAY_SIZE).concat(lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / 2), LARGE_ARRAY_SIZE), lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / 1.5), LARGE_ARRAY_SIZE));
+            var array = lodashStable.range(LARGE_ARRAY_SIZE).concat(lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / __num_top__), LARGE_ARRAY_SIZE), lodashStable.range(Math.floor(LARGE_ARRAY_SIZE / 1.5), LARGE_ARRAY_SIZE));
             var iteratee = function (value) {
                     value.push(value[0]);
                     return value;

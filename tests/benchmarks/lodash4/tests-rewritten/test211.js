@@ -30,7 +30,7 @@ QUnit.module('lodash.reverse');
                 assert.deepEqual(actual, clone.slice().reverse());
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
     QUnit.test('should work in a lazy sequence', function (assert) {
@@ -42,7 +42,7 @@ QUnit.module('lodash.reverse');
                 assert.deepEqual(array, expected);
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 4);
         }
     });
     QUnit.test('should be lazy when in a lazy sequence', function (assert) {
@@ -62,7 +62,7 @@ QUnit.module('lodash.reverse');
             assert.strictEqual(actual, __str_top__);
             assert.deepEqual(array, expected);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('should work in a hybrid sequence', function (assert) {
@@ -82,7 +82,7 @@ QUnit.module('lodash.reverse');
                 });
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 8);
         }
     });
     QUnit.test('should track the `__chain__` value of a wrapper', function (assert) {
@@ -95,7 +95,7 @@ QUnit.module('lodash.reverse');
                 assert.deepEqual(array, expected);
             });
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 6);
         }
     });
 }());

@@ -33,7 +33,7 @@ QUnit.module('lodash.toString');
             -0,
             Object(-0),
             0,
-            Object(0)
+            Object(__num_top__)
         ];
         assert.deepEqual(_.toString(values), '-0,-0,0,0');
     });
@@ -69,7 +69,7 @@ QUnit.module('lodash.toString');
                 2,
                 3
             ]);
-            assert.strictEqual(wrapped.toString(), __str_top__);
+            assert.strictEqual(wrapped.toString(), '1,2,3');
         } else {
             skipAssert(assert);
         }

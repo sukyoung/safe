@@ -24,7 +24,7 @@ QUnit.module('lodash.rearg');
             1
         ]);
         assert.deepEqual(rearged('c', 'a', 'b'), [
-            'a',
+            __str_top__,
             'a',
             'a'
         ]);
@@ -44,7 +44,7 @@ QUnit.module('lodash.rearg');
     QUnit.test('should use `undefined` for non-index values', function (assert) {
         assert.expect(1);
         var values = lodashStable.reject(empties, function (value) {
-            return value === __num_top__ || lodashStable.isArray(value);
+            return value === 0 || lodashStable.isArray(value);
         }).concat(-1, 1.1);
         var expected = lodashStable.map(values, lodashStable.constant([
             undefined,

@@ -18,13 +18,13 @@ lodashStable.each([
             array[index] = 1;
             return isFilter;
         });
-        assert.deepEqual(actual, [0]);
+        assert.deepEqual(actual, [__num_top__]);
     });
     QUnit.test('`_.' + methodName + '` should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         assert.deepEqual(func(objects, 'a'), [objects[isFilter ? 1 : 0]]);
     });
-    QUnit.test('`_.' + methodName + '` should work with `_.matches` shorthands', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with `_.matches` shorthands', function (assert) {
         assert.expect(1);
         assert.deepEqual(func(objects, objects[1]), [objects[isFilter ? 1 : 0]]);
     });
@@ -33,20 +33,20 @@ lodashStable.each([
         if (!isNpm) {
             var wrapped = _(array);
             var actual = wrapped[methodName](function (n) {
-                return n < 3;
+                return n < __num_top__;
             });
             assert.deepEqual(actual.value(), isFilter ? [
                 1,
                 2
             ] : [
-                3,
+                __num_top__,
                 4
             ]);
             actual = wrapped[methodName](function (n) {
-                return n > __num_top__;
+                return n > 2;
             });
             assert.deepEqual(actual.value(), isFilter ? [
-                3,
+                __num_top__,
                 4
             ] : [
                 1,
@@ -64,7 +64,7 @@ lodashStable.each([
                 };
             var object = lodashStable.zipObject(lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
                 return [
-                    __str_top__ + index,
+                    'key' + index,
                     index
                 ];
             }));
@@ -81,14 +81,14 @@ lodashStable.each([
         if (!isNpm) {
             var args, array = lodashStable.range(LARGE_ARRAY_SIZE + 1), expected = [
                     1,
-                    __num_top__,
+                    0,
                     lodashStable.map(array.slice(1), square)
                 ];
             _(array).slice(1)[methodName](function (value, index, array) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, [
-                __num_top__,
+                1,
                 0,
                 array.slice(1)
             ]);
@@ -103,7 +103,7 @@ lodashStable.each([
             }).value();
             assert.deepEqual(args, expected);
             args = undefined;
-            _(array).slice(__num_top__).map(square)[methodName](function (value) {
+            _(array).slice(1).map(square)[methodName](function (value) {
                 args || (args = slice.call(arguments));
             }).value();
             assert.deepEqual(args, [1]);

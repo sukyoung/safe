@@ -1,10 +1,10 @@
 lodashStable.each([
     'find',
-    'findIndex',
-    'findKey',
     __str_top__,
+    'findKey',
+    'findLast',
     'findLastIndex',
-    __str_top__
+    'findLastKey'
 ], function (methodName) {
     QUnit.module('lodash.' + methodName);
     var array = [
@@ -23,7 +23,7 @@ lodashStable.each([
             'b': 1
         },
         {
-            'a': 2,
+            'a': __num_top__,
             'b': 2
         }
     ];
@@ -31,10 +31,10 @@ lodashStable.each([
         'find': [
             objects[1],
             undefined,
-            objects[2]
+            objects[__num_top__]
         ],
         'findIndex': [
-            1,
+            __num_top__,
             -1,
             2
         ],
@@ -59,19 +59,19 @@ lodashStable.each([
             '2'
         ]
     }[methodName];
-    QUnit.test(__str_top__ + methodName + '` should return the found value', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return the found value', function (assert) {
         assert.expect(1);
         assert.strictEqual(func(objects, function (object) {
             return object.a;
         }), expected[0]);
     });
-    QUnit.test('`_.' + methodName + '` should return `' + expected[1] + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `' + expected[1] + '` if value is not found', function (assert) {
         assert.expect(1);
         assert.strictEqual(func(objects, function (object) {
             return object.a === 3;
         }), expected[1]);
     });
-    QUnit.test('`_.' + methodName + '` should work with `_.matches` shorthands', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         assert.strictEqual(func(objects, { 'b': 2 }), expected[2]);
     });
@@ -82,13 +82,13 @@ lodashStable.each([
             2
         ]), expected[2]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with `_.property` shorthands', function (assert) {
         assert.expect(1);
         assert.strictEqual(func(objects, 'b'), expected[0]);
     });
     QUnit.test('`_.' + methodName + '` should return `' + expected[1] + '` for empty collections', function (assert) {
         assert.expect(1);
-        var emptyValues = lodashStable.endsWith(methodName, 'Index') ? lodashStable.reject(empties, lodashStable.isPlainObject) : empties, expecting = lodashStable.map(emptyValues, lodashStable.constant(expected[__num_top__]));
+        var emptyValues = lodashStable.endsWith(methodName, 'Index') ? lodashStable.reject(empties, lodashStable.isPlainObject) : empties, expecting = lodashStable.map(emptyValues, lodashStable.constant(expected[1]));
         var actual = lodashStable.map(emptyValues, function (value) {
             try {
                 return func(value, { 'a': 3 });
@@ -100,11 +100,11 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should return an unwrapped value when implicitly chaining', function (assert) {
         assert.expect(1);
         var expected = {
-            'find': 1,
+            'find': __num_top__,
             'findIndex': 0,
             'findKey': '0',
             'findLast': 4,
-            'findLastIndex': __num_top__,
+            'findLastIndex': 3,
             'findLastKey': '3'
         }[methodName];
         if (!isNpm) {
@@ -113,7 +113,7 @@ lodashStable.each([
             skipAssert(assert);
         }
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return a wrapped value when explicitly chaining', function (assert) {
         assert.expect(1);
         if (!isNpm) {
             assert.ok(_(array).chain()[methodName]() instanceof _);
@@ -157,8 +157,8 @@ _.each([
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [
-            __str_top__,
-            __num_top__,
+            'a',
+            0,
             array
         ]);
     });
@@ -166,11 +166,11 @@ _.each([
 _.each([
     'find',
     'findKey',
-    'findLast',
+    __str_top__,
     'findLastKey'
 ], function (methodName) {
     var func = _[methodName];
-    QUnit.test('`_.' + methodName + '` should work with an object for `collection`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should work with an object for `collection`', function (assert) {
         assert.expect(1);
         var actual = func({
             'a': 1,
@@ -183,7 +183,7 @@ _.each([
             'find': 1,
             'findKey': 'a',
             'findLast': 2,
-            'findLastKey': 'b'
+            'findLastKey': __str_top__
         }[methodName];
         assert.strictEqual(actual, expected);
     });

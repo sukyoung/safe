@@ -4,7 +4,7 @@ QUnit.module('lodash.last');
         1,
         2,
         3,
-        4
+        __num_top__
     ];
     QUnit.test('should return the last element', function (assert) {
         assert.expect(1);
@@ -20,7 +20,7 @@ QUnit.module('lodash.last');
         assert.expect(1);
         var array = [
                 [
-                    __num_top__,
+                    1,
                     2,
                     3
                 ],

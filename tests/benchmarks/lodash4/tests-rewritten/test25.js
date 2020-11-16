@@ -124,7 +124,7 @@ QUnit.module('clone methods');
                 assert.strictEqual(actual.byteLength, arrayBuffer.byteLength);
                 assert.notStrictEqual(actual, arrayBuffer);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 2);
             }
         });
         QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -140,7 +140,7 @@ QUnit.module('clone methods');
                 buffer[__num_top__] = __num_top__;
                 assert.strictEqual(actual[__num_top__], isDeep ? __num_top__ : __num_top__);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 4);
             }
         });
         QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -241,7 +241,7 @@ QUnit.module('clone methods');
                 assert.deepEqual(actual.a.b[symbol2], object.a.b[symbol2]);
                 assert.deepEqual(actual.a.b[symbol3], object.a.b[symbol3]);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 7);
             }
         });
         QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -253,7 +253,7 @@ QUnit.module('clone methods');
                 assert.strictEqual(typeof actual.valueOf(), __str_top__);
                 assert.notStrictEqual(actual, object);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 4);
             }
         });
         QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
@@ -313,7 +313,7 @@ QUnit.module('clone methods');
                 assert.deepEqual(actual, object);
                 assert.notStrictEqual(actual, object);
             } else {
-                skipAssert(assert, __num_top__);
+                skipAssert(assert, 2);
             }
         });
         lodashStable.each(arrayViews, function (type) {
@@ -329,7 +329,7 @@ QUnit.module('clone methods');
                         assert.strictEqual(actual.byteOffset, view.byteOffset);
                         assert.strictEqual(actual.length, view.length);
                     } else {
-                        skipAssert(assert, __num_top__);
+                        skipAssert(assert, 5);
                     }
                 });
             });
@@ -346,7 +346,7 @@ QUnit.module('clone methods');
                     assert.notStrictEqual(actual, object);
                     assert.deepEqual(func(value), expected);
                 } else {
-                    skipAssert(assert, __num_top__);
+                    skipAssert(assert, 3);
                 }
             });
         });

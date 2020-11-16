@@ -33,7 +33,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should return unique values of a sorted array', function (assert) {
         assert.expect(1);
         var array = [
-            __num_top__,
+            1,
             2,
             2
         ];
@@ -78,7 +78,7 @@ lodashStable.each([
     QUnit.test('`_.' + methodName + '` should work with large arrays of `-0` as `0`', function (assert) {
         assert.expect(1);
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
-            return isEven(index) ? -0 : 0;
+            return isEven(index) ? -0 : __num_top__;
         });
         var actual = lodashStable.map(func(largeArray), lodashStable.toString);
         assert.deepEqual(actual, ['0']);

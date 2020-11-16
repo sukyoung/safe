@@ -113,7 +113,7 @@ QUnit.module('lodash.merge');
                 '2': 3,
                 '3': 4
             }, actual = _.merge(object1, object2);
-        assert.notOk('3' in args);
+        assert.notOk(__str_top__ in args);
         assert.notOk(_.isArguments(actual.value));
         assert.deepEqual(actual.value, expected);
         object1.value = args;
@@ -144,7 +144,7 @@ QUnit.module('lodash.merge');
                 0,
                 0,
                 0,
-                __num_top__,
+                0,
                 0,
                 0,
                 0
@@ -163,7 +163,7 @@ QUnit.module('lodash.merge');
         var expected = lodashStable.map(typedArrays, function (type, index) {
             var array = arrays[index].slice();
             array[0] = 1;
-            return root[type] ? { 'value': array } : __bool_top__;
+            return root[type] ? { 'value': array } : false;
         });
         var actual = lodashStable.map(typedArrays, function (type) {
             var Ctor = root[type];
@@ -224,15 +224,15 @@ QUnit.module('lodash.merge');
     });
     QUnit.test('should deep clone array/typed-array/plain-object source values', function (assert) {
         assert.expect(1);
-        var typedArray = Uint8Array ? new Uint8Array([1]) : { 'buffer': [__num_top__] };
+        var typedArray = Uint8Array ? new Uint8Array([__num_top__]) : { 'buffer': [1] };
         var props = [
-                __str_top__,
+                '0',
                 'buffer',
                 'a'
             ], values = [
                 [{ 'a': 1 }],
                 typedArray,
-                { 'a': [1] }
+                { 'a': [__num_top__] }
             ], expected = lodashStable.map(values, stubTrue);
         var actual = lodashStable.map(values, function (value, index) {
             var key = props[index], object = _.merge({}, { 'value': value }), subValue = value[key], newValue = object.value, newSubValue = newValue[key];
@@ -273,7 +273,7 @@ QUnit.module('lodash.merge');
         assert.deepEqual(actual.a, [[
                 3,
                 4,
-                3
+                __num_top__
             ]]);
     });
     QUnit.test('should merge plain objects onto non-plain objects', function (assert) {
@@ -320,7 +320,7 @@ QUnit.module('lodash.merge');
         ];
         array[1] = undefined;
         actual = _.merge([
-            4,
+            __num_top__,
             5,
             6
         ], array);
@@ -391,7 +391,7 @@ QUnit.module('lodash.merge');
             ], expected = lodashStable.map(pairs, stubTrue);
         var actual = lodashStable.map(pairs, function (pair) {
             try {
-                return _.merge(pair[0], pair[1]).el === pair[__num_top__].el;
+                return _.merge(pair[0], pair[1]).el === pair[1].el;
             } catch (e) {
             }
         });

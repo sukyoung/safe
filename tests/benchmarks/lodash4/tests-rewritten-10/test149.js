@@ -3,13 +3,13 @@ lodashStable.each([
     'matches',
     'isMatch'
 ], function (methodName) {
-    var isMatches = methodName == __str_top__;
+    var isMatches = methodName == 'matches';
     function matches(source) {
         return isMatches ? _.matches(source) : function (object) {
             return _.isMatch(object, source);
         };
     }
-    QUnit.test(__str_top__ + methodName + '` should perform a deep comparison between `source` and `object`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should perform a deep comparison between `source` and `object`', function (assert) {
         assert.expect(5);
         var object = {
                 'a': 1,
@@ -47,8 +47,8 @@ lodashStable.each([
         function Foo() {
             this.a = 1;
         }
-        Foo.prototype.b = __num_top__;
-        var object = { 'a': new Foo() }, par = matches({ 'a': { 'b': __num_top__ } });
+        Foo.prototype.b = 2;
+        var object = { 'a': new Foo() }, par = matches({ 'a': { 'b': 2 } });
         assert.strictEqual(par(object), true);
     });
     QUnit.test('`_.' + methodName + '` should not match by inherited `source` properties', function (assert) {
@@ -77,19 +77,19 @@ lodashStable.each([
                 'f': { 'g': 6 }
             }, object2 = {
                 'a': 0,
-                'b': __num_top__,
+                'b': 1,
                 'c': 3,
                 'd': '4',
                 'e': ['5'],
                 'f': { 'g': '6' }
             }, par = matches(object1);
-        assert.strictEqual(par(object1), true);
+        assert.strictEqual(par(object1), __bool_top__);
         assert.strictEqual(par(object2), false);
     });
     QUnit.test('`_.' + methodName + '` should match `-0` as `0`', function (assert) {
         assert.expect(2);
         var object1 = { 'a': -0 }, object2 = { 'a': 0 }, par = matches(object1);
-        assert.strictEqual(par(object2), true);
+        assert.strictEqual(par(object2), __bool_top__);
         par = matches(object2);
         assert.strictEqual(par(object1), true);
     });
@@ -139,13 +139,13 @@ lodashStable.each([
         }
         var object = new Foo({
                 'a': new Foo({
-                    'b': 2,
+                    'b': __num_top__,
                     'c': 3
                 })
             }), par = matches({ 'a': { 'b': 2 } });
         assert.strictEqual(par(object), true);
     });
-    QUnit.test('`_.' + methodName + '` should partial match arrays', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should partial match arrays', function (assert) {
         assert.expect(3);
         var objects = [
                 { 'a': ['b'] },
@@ -167,12 +167,12 @@ lodashStable.each([
         actual = lodashStable.filter(objects, matches({
             'a': [
                 'd',
-                __str_top__
+                'b'
             ]
         }));
         assert.deepEqual(actual, []);
     });
-    QUnit.test('`_.' + methodName + '` should partial match arrays with duplicate values', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var objects = [
                 {
@@ -189,8 +189,8 @@ lodashStable.each([
                 }
             ], actual = lodashStable.filter(objects, matches({
                 'a': [
-                    2,
-                    2
+                    __num_top__,
+                    __num_top__
                 ]
             }));
         assert.deepEqual(actual, [objects[1]]);
@@ -207,7 +207,7 @@ lodashStable.each([
                     {
                         'b': 4,
                         'c': 5,
-                        'd': 6
+                        'd': __num_top__
                     }
                 ]
             },
@@ -219,7 +219,7 @@ lodashStable.each([
                     },
                     {
                         'b': 4,
-                        'c': __num_top__,
+                        'c': 6,
                         'd': 7
                     }
                 ]
@@ -236,7 +236,7 @@ lodashStable.each([
         }));
         assert.deepEqual(actual, [objects[0]]);
     });
-    QUnit.test('`_.' + methodName + '` should partial match maps', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(3);
         if (Map) {
             var objects = [
@@ -253,7 +253,7 @@ lodashStable.each([
             map.delete('b');
             actual = lodashStable.filter(objects, matches({ 'a': map }));
             assert.deepEqual(actual, objects);
-            map.set('c', __num_top__);
+            map.set('c', 3);
             actual = lodashStable.filter(objects, matches({ 'a': map }));
             assert.deepEqual(actual, []);
         } else {
@@ -281,7 +281,7 @@ lodashStable.each([
             actual = lodashStable.filter(objects, matches({ 'a': set }));
             assert.deepEqual(actual, []);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 3);
         }
     });
     QUnit.test('`_.' + methodName + '` should match `undefined` values', function (assert) {
@@ -340,7 +340,7 @@ lodashStable.each([
                 'a': 1,
                 'b': undefined
             });
-            assert.strictEqual(par(1), true);
+            assert.strictEqual(par(1), __bool_top__);
         } catch (e) {
             assert.ok(false, e.message);
         }
@@ -352,7 +352,7 @@ lodashStable.each([
             par = matches({ 'a': { 'c': undefined } });
             assert.strictEqual(par(1), true);
         } catch (e) {
-            assert.ok(__bool_top__, e.message);
+            assert.ok(false, e.message);
         }
         delete numberProto.a;
         delete numberProto.b;

@@ -6,15 +6,15 @@ QUnit.module('lodash.pullAllBy');
             { 'x': __num_top__ },
             { 'x': __num_top__ },
             { 'x': __num_top__ },
-            { 'x': 1 }
+            { 'x': __num_top__ }
         ];
         var actual = _.pullAllBy(array, [
             { 'x': __num_top__ },
-            { 'x': 3 }
+            { 'x': __num_top__ }
         ], function (object) {
             return object.x;
         });
-        assert.deepEqual(actual, [{ 'x': __num_top__ }]);
+        assert.deepEqual(actual, [{ 'x': 2 }]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);
@@ -26,7 +26,7 @@ QUnit.module('lodash.pullAllBy');
             ];
         _.pullAllBy(array, [
             { 'x': __num_top__ },
-            { 'x': __num_top__ }
+            { 'x': 3 }
         ], function () {
             args || (args = slice.call(arguments));
         });

@@ -1,8 +1,8 @@
 QUnit.module('intersection methods');
 lodashStable.each([
     'intersection',
-    'intersectionBy',
-    __str_top__
+    __str_top__,
+    'intersectionWith'
 ], function (methodName) {
     var func = _[methodName];
     QUnit.test('`_.' + methodName + '` should return the intersection of two arrays', function (assert) {
@@ -11,8 +11,8 @@ lodashStable.each([
             2,
             1
         ], [
-            2,
-            __num_top__
+            __num_top__,
+            3
         ]);
         assert.deepEqual(actual, [2]);
     });
@@ -32,7 +32,7 @@ lodashStable.each([
         ]);
         assert.deepEqual(actual, [3]);
     });
-    QUnit.test(__str_top__ + methodName + '` should return an array of unique values', function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         var actual = func([
             1,
@@ -42,17 +42,17 @@ lodashStable.each([
             2
         ], [
             5,
-            __num_top__,
             2,
+            __num_top__,
             1,
             4
         ], [
             2,
             1,
-            1
+            __num_top__
         ]);
         assert.deepEqual(actual, [
-            __num_top__,
+            1,
             2
         ]);
     });
@@ -61,8 +61,8 @@ lodashStable.each([
         var actual = func([
             1,
             1,
-            3,
             __num_top__,
+            2,
             2
         ]);
         assert.deepEqual(actual, [
@@ -77,7 +77,7 @@ lodashStable.each([
                 0,
                 1,
                 null,
-                3
+                __num_top__
             ], expected = [
                 1,
                 3
@@ -85,11 +85,11 @@ lodashStable.each([
         assert.deepEqual(func(array, args), expected);
         assert.deepEqual(func(args, array), expected);
     });
-    QUnit.test('`_.' + methodName + '` should treat `-0` as `0`', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should treat `-0` as `0`', function (assert) {
         assert.expect(1);
         var values = [
-                -__num_top__,
-                __num_top__
+                -0,
+                0
             ], expected = lodashStable.map(values, lodashStable.constant(['0']));
         var actual = lodashStable.map(values, function (value) {
             return lodashStable.map(func(values, [value]), lodashStable.toString);
@@ -104,7 +104,7 @@ lodashStable.each([
             3
         ], [
             NaN,
-            __num_top__,
+            5,
             NaN
         ]);
         assert.deepEqual(actual, [NaN]);

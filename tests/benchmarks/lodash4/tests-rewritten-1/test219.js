@@ -9,7 +9,7 @@ QUnit.module('lodash.size');
         assert.expect(1);
         assert.strictEqual(_.size({
             'one': 1,
-            'two': 2,
+            'two': __num_top__,
             'three': 3
         }), 3);
     });
@@ -50,7 +50,7 @@ QUnit.module('lodash.size');
                 new Map(),
                 realm.map
             ], function (map) {
-                map.set('a', __num_top__);
+                map.set('a', 1);
                 map.set('b', 2);
                 assert.strictEqual(_.size(map), 2);
                 map.clear();

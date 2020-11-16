@@ -1,19 +1,19 @@
 QUnit.module('sortedIndexOf methods');
 lodashStable.each([
-    __str_top__,
+    'sortedIndexOf',
     'sortedLastIndexOf'
 ], function (methodName) {
     var func = _[methodName], isSortedIndexOf = methodName == __str_top__;
-    QUnit.test('`_.' + methodName + '` should perform a binary search', function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should perform a binary search', function (assert) {
         assert.expect(1);
         var sorted = [
-            __num_top__,
             4,
+            4,
+            __num_top__,
             5,
-            __num_top__,
-            __num_top__,
-            6
+            6,
+            __num_top__
         ];
-        assert.deepEqual(func(sorted, 5), isSortedIndexOf ? 2 : 3);
+        assert.deepEqual(func(sorted, __num_top__), isSortedIndexOf ? 2 : 3);
     });
 });

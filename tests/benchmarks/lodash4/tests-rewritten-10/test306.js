@@ -18,8 +18,8 @@ QUnit.module('lodash methods');
         'flowRight',
         'memoize',
         'negate',
-        'once',
         __str_top__,
+        'partial',
         'partialRight',
         'rearg',
         'rest',
@@ -32,7 +32,7 @@ QUnit.module('lodash methods');
         'memoize',
         'negate',
         'once',
-        'overArgs',
+        __str_top__,
         'partial',
         'partialRight',
         'rearg',
@@ -45,23 +45,23 @@ QUnit.module('lodash methods');
     ].concat(checkFuncs);
     var returnArrays = [
         'at',
+        'chunk',
         __str_top__,
-        'compact',
-        'difference',
         __str_top__,
+        'drop',
         'filter',
-        'flatten',
+        __str_top__,
         'functions',
         'initial',
         'intersection',
         'invokeMap',
         'keys',
-        __str_top__,
+        'map',
         'orderBy',
         'pull',
         'pullAll',
         'pullAt',
-        __str_top__,
+        'range',
         'rangeRight',
         'reject',
         'remove',
@@ -70,14 +70,14 @@ QUnit.module('lodash methods');
         'tail',
         'take',
         'times',
-        __str_top__,
+        'toArray',
         'toPairs',
         'toPairsIn',
         'union',
         'uniq',
         'values',
         'without',
-        __str_top__,
+        'xor',
         'zip'
     ];
     var acceptFalsey = lodashStable.difference(allMethods, rejectFalsey);
@@ -91,7 +91,7 @@ QUnit.module('lodash methods');
             });
             if (methodName == 'noConflict') {
                 root._ = oldDash;
-            } else if (methodName == 'pull' || methodName == 'pullAll') {
+            } else if (methodName == 'pull' || methodName == __str_top__) {
                 expected = falsey;
             }
             if (lodashStable.includes(returnArrays, methodName) && methodName != 'sample') {
@@ -101,7 +101,7 @@ QUnit.module('lodash methods');
         });
         lodashStable.each([
             'chain',
-            __str_top__,
+            'noConflict',
             'runInContext'
         ], function (methodName) {
             if (!_[methodName]) {
@@ -119,7 +119,7 @@ QUnit.module('lodash methods');
         lodashStable.each(returnArrays, function (methodName) {
             var actual, func = _[methodName];
             switch (methodName) {
-            case 'invokeMap':
+            case __str_top__:
                 actual = func(array, 'toFixed');
                 break;
             case 'sample':
@@ -167,9 +167,9 @@ QUnit.module('lodash methods');
         assert.expect(1);
         var shortNames = [
             '_',
+            'at',
             __str_top__,
-            'eq',
-            'gt',
+            __str_top__,
             'lt'
         ];
         assert.ok(lodashStable.every(_.functions(_), function (methodName) {

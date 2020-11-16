@@ -23,17 +23,17 @@ QUnit.module('lodash.property');
             ]
         ], function (path) {
             var prop = _.property(path);
-            assert.strictEqual(prop(object), 2);
+            assert.strictEqual(prop(object), __num_top__);
         });
     });
     QUnit.test('should pluck inherited property values', function (assert) {
         assert.expect(2);
         function Foo() {
         }
-        Foo.prototype.a = 1;
+        Foo.prototype.a = __num_top__;
         lodashStable.each([
             'a',
-            [__str_top__]
+            ['a']
         ], function (path) {
             var prop = _.property(path);
             assert.strictEqual(prop(new Foo()), 1);
@@ -42,7 +42,7 @@ QUnit.module('lodash.property');
     QUnit.test('should work with a non-string `path`', function (assert) {
         assert.expect(2);
         var array = [
-            __num_top__,
+            1,
             2,
             3
         ];
@@ -58,7 +58,7 @@ QUnit.module('lodash.property');
         assert.expect(1);
         var object = {
                 '-0': 'a',
-                '0': __str_top__
+                '0': 'b'
             }, props = [
                 -0,
                 Object(-0),
@@ -71,7 +71,7 @@ QUnit.module('lodash.property');
         });
         assert.deepEqual(actual, [
             'a',
-            'a',
+            __str_top__,
             'b',
             'b'
         ]);
@@ -90,7 +90,7 @@ QUnit.module('lodash.property');
                 'null': 1,
                 'undefined': 2,
                 'fn': 3,
-                '[object Object]': 4
+                '[object Object]': __num_top__
             }, paths = [
                 null,
                 undefined,
@@ -145,9 +145,9 @@ QUnit.module('lodash.property');
                 undefined
             ], expected = lodashStable.map(values, noop);
         lodashStable.each([
-            __str_top__,
+            'constructor.prototype.valueOf',
             [
-                __str_top__,
+                'constructor',
                 'prototype',
                 'valueOf'
             ]
@@ -165,7 +165,7 @@ QUnit.module('lodash.property');
         lodashStable.each([
             'a',
             'a[1].b.c',
-            ['a'],
+            [__str_top__],
             [
                 'a',
                 '1',

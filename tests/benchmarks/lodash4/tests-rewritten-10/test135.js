@@ -3,7 +3,7 @@ QUnit.module('lodash.keyBy');
     var array = [
         {
             'dir': 'left',
-            'code': 97
+            'code': __num_top__
         },
         {
             'dir': 'right',
@@ -15,7 +15,7 @@ QUnit.module('lodash.keyBy');
         var expected = {
             'a': {
                 'dir': 'left',
-                'code': __num_top__
+                'code': 97
             },
             'd': {
                 'dir': 'right',
@@ -30,7 +30,7 @@ QUnit.module('lodash.keyBy');
     QUnit.test('should use `_.identity` when `iteratee` is nullish', function (assert) {
         assert.expect(1);
         var array = [
-                4,
+                __num_top__,
                 6,
                 6
             ], values = [
@@ -38,8 +38,8 @@ QUnit.module('lodash.keyBy');
                 null,
                 undefined
             ], expected = lodashStable.map(values, lodashStable.constant({
-                '4': 4,
-                '6': __num_top__
+                '4': __num_top__,
+                '6': 6
             }));
         var actual = lodashStable.map(values, function (value, index) {
             return index ? _.keyBy(array, value) : _.keyBy(array);
@@ -51,23 +51,23 @@ QUnit.module('lodash.keyBy');
         var expected = {
                 'left': {
                     'dir': 'left',
-                    'code': 97
+                    'code': __num_top__
                 },
                 'right': {
-                    'dir': __str_top__,
+                    'dir': 'right',
                     'code': 100
                 }
-            }, actual = _.keyBy(array, __str_top__);
+            }, actual = _.keyBy(array, 'dir');
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should only add values to own, not inherited, properties', function (assert) {
         assert.expect(2);
         var actual = _.keyBy([
             6.1,
-            __num_top__,
-            __num_top__
+            4.2,
+            6.3
         ], function (n) {
-            return Math.floor(n) > 4 ? 'hasOwnProperty' : 'constructor';
+            return Math.floor(n) > 4 ? 'hasOwnProperty' : __str_top__;
         });
         assert.deepEqual(actual.constructor, 4.2);
         assert.deepEqual(actual.hasOwnProperty, 6.3);
@@ -76,22 +76,22 @@ QUnit.module('lodash.keyBy');
         assert.expect(2);
         var array = [
             [
-                1,
+                __num_top__,
                 'a'
             ],
             [
-                2,
+                __num_top__,
                 __str_top__
             ],
             [
-                2,
+                __num_top__,
                 'b'
             ]
         ];
         assert.deepEqual(_.keyBy(array, 0), {
             '1': [
                 1,
-                __str_top__
+                'a'
             ],
             '2': [
                 2,
@@ -100,7 +100,7 @@ QUnit.module('lodash.keyBy');
         });
         assert.deepEqual(_.keyBy(array, 1), {
             'a': [
-                __num_top__,
+                2,
                 'a'
             ],
             'b': [
@@ -113,11 +113,11 @@ QUnit.module('lodash.keyBy');
         assert.expect(1);
         var actual = _.keyBy({
             'a': 6.1,
-            'b': 4.2,
+            'b': __num_top__,
             'c': 6.3
         }, Math.floor);
         assert.deepEqual(actual, {
-            '4': __num_top__,
+            '4': 4.2,
             '6': 6.3
         });
     });

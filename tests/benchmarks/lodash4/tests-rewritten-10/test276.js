@@ -4,15 +4,15 @@ QUnit.module('lodash.unzipWith');
         assert.expect(1);
         var array = [
             [
-                __num_top__,
+                1,
                 4
             ],
             [
-                2,
-                5
+                __num_top__,
+                __num_top__
             ],
             [
-                __num_top__,
+                3,
                 6
             ]
         ];
@@ -21,7 +21,7 @@ QUnit.module('lodash.unzipWith');
         });
         assert.deepEqual(actual, [
             __num_top__,
-            __num_top__
+            15
         ]);
     });
     QUnit.test('should provide correct `iteratee` arguments', function (assert) {
@@ -36,25 +36,25 @@ QUnit.module('lodash.unzipWith');
             [
                 2,
                 4,
-                6
+                __num_top__
             ]
         ], function () {
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [
-            __num_top__,
-            __num_top__
+            1,
+            2
         ]);
     });
     QUnit.test('should perform a basic unzip when `iteratee` is nullish', function (assert) {
         assert.expect(1);
         var array = [
                 [
-                    __num_top__,
-                    3
+                    1,
+                    __num_top__
                 ],
                 [
-                    2,
+                    __num_top__,
                     __num_top__
                 ]
             ], values = [

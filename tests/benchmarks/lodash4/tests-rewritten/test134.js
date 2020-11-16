@@ -16,7 +16,7 @@ QUnit.module('lodash.join');
             assert.strictEqual(wrapped.join(__str_top__), __str_top__);
             assert.strictEqual(wrapped.value(), array);
         } else {
-            skipAssert(assert, __num_top__);
+            skipAssert(assert, 2);
         }
     });
     QUnit.test('should return a wrapped value when explicitly chaining', function (assert) {

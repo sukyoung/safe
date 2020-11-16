@@ -4,9 +4,9 @@ QUnit.module('lodash.iteratee');
         assert.expect(1);
         var fn = function () {
                 return slice.call(arguments);
-            }, iteratee = _.iteratee(fn), actual = iteratee('a', 'b', 'c', 'd', 'e', 'f');
+            }, iteratee = _.iteratee(fn), actual = iteratee('a', 'b', 'c', 'd', __str_top__, 'f');
         assert.deepEqual(actual, [
-            'a',
+            __str_top__,
             'b',
             'c',
             'd',
@@ -59,7 +59,7 @@ QUnit.module('lodash.iteratee');
                 'a': 1,
                 'b': 2
             },
-            { 'a': __num_top__ }
+            { 'a': 1 }
         ];
         lodashStable.each(sources, function (source, index) {
             var object = lodashStable.cloneDeep(source), matches = _.iteratee(source);
@@ -70,7 +70,7 @@ QUnit.module('lodash.iteratee');
                 source.c = 3;
             } else {
                 source.a.b = 1;
-                source.a.c = __num_top__;
+                source.a.c = 2;
                 source.a.d = 3;
             }
             assert.strictEqual(matches(object), true);
@@ -126,14 +126,14 @@ QUnit.module('lodash.iteratee');
                 'a': 1,
                 'b': 2
             },
-            { 'a': 1 }
+            { 'a': __num_top__ }
         ];
         lodashStable.each(sources, function (source, index) {
             var object = { 'a': lodashStable.cloneDeep(source) }, matches = _.iteratee([
-                    'a',
+                    __str_top__,
                     source
                 ]);
-            assert.strictEqual(matches(object), __bool_top__);
+            assert.strictEqual(matches(object), true);
             if (index) {
                 source.a = 2;
                 source.b = 1;
@@ -167,7 +167,7 @@ QUnit.module('lodash.iteratee');
             return result;
         };
         var expected = [
-                __num_top__,
+                1,
                 2,
                 3
             ], object = {
@@ -176,13 +176,13 @@ QUnit.module('lodash.iteratee');
             };
         assert.deepEqual(object.iteratee(3), expected);
         object.iteratee = _.iteratee(_.partialRight(fn, 3));
-        assert.deepEqual(object.iteratee(__num_top__), expected);
+        assert.deepEqual(object.iteratee(2), expected);
     });
     QUnit.test('should use internal `iteratee` if external is unavailable', function (assert) {
         assert.expect(1);
         var iteratee = _.iteratee;
         delete _.iteratee;
-        assert.deepEqual(_.map([{ 'a': 1 }], 'a'), [1]);
+        assert.deepEqual(_.map([{ 'a': __num_top__ }], 'a'), [1]);
         _.iteratee = iteratee;
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {

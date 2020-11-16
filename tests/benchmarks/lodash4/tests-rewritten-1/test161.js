@@ -3,7 +3,7 @@ lodashStable.each([
     'max',
     'maxBy',
     'min',
-    'minBy'
+    __str_top__
 ], function (methodName) {
     var func = _[methodName], isMax = /^max/.test(methodName);
     QUnit.test('`_.' + methodName + '` should work with Date objects', function (assert) {
@@ -48,7 +48,7 @@ lodashStable.each([
     QUnit.test('should work with `_.property` shorthands', function (assert) {
         assert.expect(2);
         var objects = [
-                { 'a': __num_top__ },
+                { 'a': 2 },
                 { 'a': 3 },
                 { 'a': 1 }
             ], actual = func(objects, 'a');

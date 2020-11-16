@@ -25,10 +25,10 @@ QUnit.module('lodash.noConflict');
     QUnit.test('should work with a `root` of `this`', function (assert) {
         assert.expect(2);
         if (!coverage && !document && !isModularize && realm.object) {
-            var fs = require(__str_top__), vm = require('vm'), expected = {}, context = vm.createContext({
+            var fs = require('fs'), vm = require('vm'), expected = {}, context = vm.createContext({
                     '_': expected,
                     'console': console
-                }), source = fs.readFileSync(filePath, 'utf8');
+                }), source = fs.readFileSync(filePath, __str_top__);
             vm.runInContext(source + '\nthis.lodash = this._.noConflict()', context);
             assert.strictEqual(context._, expected);
             assert.ok(context.lodash);

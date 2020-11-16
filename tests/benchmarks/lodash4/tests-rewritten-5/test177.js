@@ -11,13 +11,13 @@ QUnit.module('lodash.overSome');
         assert.expect(2);
         var count = 0, countFalse = function () {
                 count++;
-                return __bool_top__;
+                return false;
             }, countTrue = function () {
                 count++;
                 return true;
             }, over = _.overSome(countFalse, countTrue, countFalse);
-        assert.strictEqual(over(), true);
-        assert.strictEqual(count, 2);
+        assert.strictEqual(over(), __bool_top__);
+        assert.strictEqual(count, __num_top__);
     });
     QUnit.test('should return `false` if all predicates return falsey', function (assert) {
         assert.expect(2);
@@ -49,11 +49,11 @@ QUnit.module('lodash.overSome');
         var over = _.overSome({ 'b': 2 }, { 'a': 1 });
         assert.strictEqual(over({
             'a': 0,
-            'b': __num_top__
+            'b': 2
         }), true);
         assert.strictEqual(over({
             'a': 0,
-            'b': __num_top__
+            'b': 0
         }), false);
     });
     QUnit.test('should work with `_.matchesProperty` shorthands', function (assert) {
@@ -73,7 +73,7 @@ QUnit.module('lodash.overSome');
             'b': 2
         }), true);
         assert.strictEqual(over({
-            'a': 0,
+            'a': __num_top__,
             'b': 0
         }), false);
     });
@@ -105,7 +105,7 @@ QUnit.module('lodash.overSome');
     QUnit.test('should flatten `predicates`', function (assert) {
         assert.expect(1);
         var over = _.overSome(stubFalse, [stubTrue]);
-        assert.strictEqual(over(), true);
+        assert.strictEqual(over(), __bool_top__);
     });
     QUnit.test('should provide arguments to predicates', function (assert) {
         assert.expect(1);

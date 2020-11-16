@@ -85,7 +85,7 @@ QUnit.module('custom `_.iteratee` methods');
                 { 'a': 1 }
             ];
             _.iteratee = getPropA;
-            assert.deepEqual(_.filter(objects), [objects[__num_top__]]);
+            assert.deepEqual(_.filter(objects), [objects[1]]);
             _.iteratee = iteratee;
         } else {
             skipAssert(assert);
@@ -447,7 +447,7 @@ QUnit.module('custom `_.iteratee` methods');
         assert.expect(1);
         if (!isModularize) {
             _.iteratee = getPropB;
-            assert.deepEqual(_.unionBy(objects.slice(0, 1), [objects[2]]), [
+            assert.deepEqual(_.unionBy(objects.slice(0, 1), [objects[__num_top__]]), [
                 objects[0],
                 objects[2]
             ]);

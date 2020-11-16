@@ -7,7 +7,7 @@ lodashStable.each([
     var func = _[methodName], isPad = methodName == 'pad', isStart = methodName == 'padStart', string = 'abc';
     QUnit.test('`_.' + methodName + '` should not pad if string is >= `length`', function (assert) {
         assert.expect(2);
-        assert.strictEqual(func(string, __num_top__), string);
+        assert.strictEqual(func(string, 2), string);
         assert.strictEqual(func(string, 3), string);
     });
     QUnit.test('`_.' + methodName + '` should treat negative `length` as `0`', function (assert) {
@@ -19,13 +19,13 @@ lodashStable.each([
             assert.strictEqual(func(string, length), string);
         });
     });
-    QUnit.test('`_.' + methodName + '` should coerce `length` to a number', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(2);
         lodashStable.each([
-            '',
+            __str_top__,
             '4'
         ], function (length) {
-            var actual = length ? isStart ? ' abc' : 'abc ' : string;
+            var actual = length ? isStart ? __str_top__ : 'abc ' : string;
             assert.strictEqual(func(string, length), actual);
         });
     });
@@ -35,13 +35,13 @@ lodashStable.each([
             undefined,
             '_-'
         ], function (chars) {
-            var expected = chars ? isPad ? '__' : chars : __str_top__;
+            var expected = chars ? isPad ? __str_top__ : chars : '  ';
             assert.strictEqual(func(null, 2, chars), expected);
-            assert.strictEqual(func(undefined, __num_top__, chars), expected);
+            assert.strictEqual(func(undefined, 2, chars), expected);
             assert.strictEqual(func('', 2, chars), expected);
         });
     });
-    QUnit.test(__str_top__ + methodName + '` should return `string` when `chars` coerces to an empty string', function (assert) {
+    QUnit.test('`_.' + methodName + '` should return `string` when `chars` coerces to an empty string', function (assert) {
         assert.expect(1);
         var values = [
                 '',

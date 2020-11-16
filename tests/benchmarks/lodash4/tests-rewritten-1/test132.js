@@ -40,7 +40,7 @@ QUnit.module('lodash.iteratee');
             'b': 2
         });
         assert.strictEqual(matches({
-            'a': 1,
+            'a': __num_top__,
             'b': 2,
             'c': 3
         }), true);
@@ -144,7 +144,7 @@ QUnit.module('lodash.iteratee');
                 source.a.d = 3;
             }
             assert.strictEqual(matches(object), true);
-            assert.strictEqual(matches({ 'a': source }), __bool_top__);
+            assert.strictEqual(matches({ 'a': source }), false);
         });
     });
     QUnit.test('should return an iteratee created by `_.property` when `func` is a number or string', function (assert) {

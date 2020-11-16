@@ -1,11 +1,11 @@
 QUnit.module('lodash.flattenDepth');
 (function () {
     var array = [
-        __num_top__,
+        1,
         [
-            __num_top__,
+            2,
             [
-                __num_top__,
+                3,
                 [__num_top__]
             ],
             5
@@ -18,9 +18,9 @@ QUnit.module('lodash.flattenDepth');
             2,
             [
                 3,
-                [4]
+                [__num_top__]
             ],
-            __num_top__
+            5
         ]);
     });
     QUnit.test('should treat a `depth` of < `1` as a shallow clone', function (assert) {
@@ -32,7 +32,7 @@ QUnit.module('lodash.flattenDepth');
             assert.deepEqual(_.flattenDepth(array, depth), [
                 1,
                 [
-                    2,
+                    __num_top__,
                     [
                         3,
                         [4]
@@ -44,11 +44,11 @@ QUnit.module('lodash.flattenDepth');
     });
     QUnit.test('should coerce `depth` to an integer', function (assert) {
         assert.expect(1);
-        assert.deepEqual(_.flattenDepth(array, 2.2), [
+        assert.deepEqual(_.flattenDepth(array, __num_top__), [
             1,
             2,
             __num_top__,
-            [4],
+            [__num_top__],
             __num_top__
         ]);
     });

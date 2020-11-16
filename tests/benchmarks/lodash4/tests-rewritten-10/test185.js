@@ -6,7 +6,7 @@ QUnit.module('methods using `createWrapper`');
     var ph1 = _.bind.placeholder, ph2 = _.bindKey.placeholder, ph3 = _.partial.placeholder, ph4 = _.partialRight.placeholder;
     QUnit.test('should work with combinations of partial functions', function (assert) {
         assert.expect(1);
-        var a = _.partial(fn), b = _.partialRight(a, __num_top__), c = _.partial(b, 1);
+        var a = _.partial(fn), b = _.partialRight(a, 3), c = _.partial(b, 1);
         assert.deepEqual(c(2), [
             1,
             2,
@@ -53,33 +53,33 @@ QUnit.module('methods using `createWrapper`');
         assert.expect(3);
         var expected = [
                 1,
-                __num_top__,
+                2,
                 3,
                 4,
                 5,
-                __num_top__
+                6
             ], object = { 'fn': fn };
         var a = _.bindKey(object, 'fn', ph2, 2), b = _.partialRight(a, ph4, 6), c = _.partial(b, 1, ph3, 4);
         assert.deepEqual(c(3, 5), expected);
         a = _.bind(fn, object, ph1, 2);
         b = _.partialRight(a, ph4, 6);
-        c = _.partial(b, 1, ph3, 4);
-        assert.deepEqual(c(3, 5), expected);
+        c = _.partial(b, __num_top__, ph3, 4);
+        assert.deepEqual(c(3, __num_top__), expected);
         a = _.partial(fn, ph3, 2);
         b = _.bind(a, object, 1, ph1, 4);
         c = _.partialRight(b, ph4, 6);
-        assert.deepEqual(c(__num_top__, __num_top__), expected);
+        assert.deepEqual(c(3, 5), expected);
     });
     QUnit.test('should work with combinations of functions with overlapping placeholders', function (assert) {
         assert.expect(3);
         var expected = [
                 1,
                 2,
-                3,
+                __num_top__,
                 4
             ], object = { 'fn': fn };
-        var a = _.bindKey(object, 'fn', ph2, 2), b = _.partialRight(a, ph4, __num_top__), c = _.partial(b, ph3, 3);
-        assert.deepEqual(c(__num_top__), expected);
+        var a = _.bindKey(object, 'fn', ph2, 2), b = _.partialRight(a, ph4, 4), c = _.partial(b, ph3, 3);
+        assert.deepEqual(c(1), expected);
         a = _.bind(fn, object, ph1, 2);
         b = _.partialRight(a, ph4, 4);
         c = _.partial(b, ph3, 3);
@@ -94,7 +94,7 @@ QUnit.module('methods using `createWrapper`');
         var fn = function () {
             return this.a;
         };
-        var a = _.bind(fn, { 'a': 1 }), b = _.bind(a, { 'a': 2 }), c = _.bind(b, { 'a': 3 });
+        var a = _.bind(fn, { 'a': __num_top__ }), b = _.bind(a, { 'a': __num_top__ }), c = _.bind(b, { 'a': 3 });
         assert.strictEqual(c(), 1);
     });
     QUnit.test('should work when hot', function (assert) {
@@ -105,7 +105,7 @@ QUnit.module('methods using `createWrapper`');
                 push.apply(result, arguments);
                 return result;
             };
-            var object = {}, bound1 = index ? _.bind(fn, object, __num_top__) : _.bind(fn, object), expected = [
+            var object = {}, bound1 = index ? _.bind(fn, object, 1) : _.bind(fn, object), expected = [
                     object,
                     1,
                     2,
@@ -113,7 +113,7 @@ QUnit.module('methods using `createWrapper`');
                 ];
             var actual = _.last(lodashStable.times(HOT_COUNT, function () {
                 var bound2 = index ? _.bind(bound1, null, 2) : _.bind(bound1);
-                return index ? bound2(3) : bound2(1, 2, 3);
+                return index ? bound2(3) : bound2(__num_top__, 2, 3);
             }));
             assert.deepEqual(actual, expected);
             actual = _.last(lodashStable.times(HOT_COUNT, function () {
@@ -142,12 +142,12 @@ QUnit.module('methods using `createWrapper`');
                     3
                 ];
             var actual = _.last(lodashStable.times(HOT_COUNT, function () {
-                return curried(__num_top__)(2)(3);
+                return curried(1)(2)(__num_top__);
             }));
             assert.deepEqual(actual, expected);
             actual = _.last(lodashStable.times(HOT_COUNT, function () {
                 var curried = _[methodName](fn);
-                return curried(1)(2)(3);
+                return curried(__num_top__)(2)(3);
             }));
             assert.deepEqual(actual, expected);
         });
@@ -172,7 +172,7 @@ QUnit.module('methods using `createWrapper`');
             }));
             assert.deepEqual(actual, expected);
             actual = _.last(lodashStable.times(HOT_COUNT, function () {
-                var par1 = func(fn, 1), par2 = func(par1, 2);
+                var par1 = func(fn, __num_top__), par2 = func(par1, 2);
                 return par2(3);
             }));
             assert.deepEqual(actual, expected);

@@ -4,7 +4,7 @@ QUnit.module('lodash.isError');
         assert.expect(1);
         var expected = lodashStable.map(errors, stubTrue);
         var actual = lodashStable.map(errors, function (error) {
-            return _.isError(error) === __bool_top__;
+            return _.isError(error) === true;
         });
         assert.deepEqual(actual, expected);
     });
@@ -19,20 +19,20 @@ QUnit.module('lodash.isError');
             return index ? _.isError(value) : _.isError();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isError(args), false);
+        assert.strictEqual(_.isError(args), __bool_top__);
         assert.strictEqual(_.isError([
             1,
             __num_top__,
             3
-        ]), __bool_top__);
+        ]), false);
         assert.strictEqual(_.isError(true), false);
         assert.strictEqual(_.isError(new Date()), false);
         assert.strictEqual(_.isError(_), false);
-        assert.strictEqual(_.isError(slice), false);
-        assert.strictEqual(_.isError({ 'a': 1 }), false);
-        assert.strictEqual(_.isError(1), __bool_top__);
+        assert.strictEqual(_.isError(slice), __bool_top__);
+        assert.strictEqual(_.isError({ 'a': 1 }), __bool_top__);
+        assert.strictEqual(_.isError(1), false);
         assert.strictEqual(_.isError(/x/), false);
-        assert.strictEqual(_.isError('a'), __bool_top__);
+        assert.strictEqual(_.isError('a'), false);
         assert.strictEqual(_.isError(symbol), false);
     });
     QUnit.test('should return `false` for plain objects', function (assert) {
@@ -47,7 +47,7 @@ QUnit.module('lodash.isError');
         if (realm.errors) {
             var expected = lodashStable.map(realm.errors, stubTrue);
             var actual = lodashStable.map(realm.errors, function (error) {
-                return _.isError(error) === true;
+                return _.isError(error) === __bool_top__;
             });
             assert.deepEqual(actual, expected);
         } else {

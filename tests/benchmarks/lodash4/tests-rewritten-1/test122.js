@@ -53,7 +53,7 @@ QUnit.module('lodash.isPlainObject');
     QUnit.test('should return `false` for non-Object objects', function (assert) {
         assert.expect(3);
         assert.strictEqual(_.isPlainObject(arguments), false);
-        assert.strictEqual(_.isPlainObject(Error), __bool_top__);
+        assert.strictEqual(_.isPlainObject(Error), false);
         assert.strictEqual(_.isPlainObject(Math), false);
     });
     QUnit.test('should return `false` for non-objects', function (assert) {
@@ -64,7 +64,7 @@ QUnit.module('lodash.isPlainObject');
         });
         assert.deepEqual(actual, expected);
         assert.strictEqual(_.isPlainObject(true), false);
-        assert.strictEqual(_.isPlainObject('a'), false);
+        assert.strictEqual(_.isPlainObject('a'), __bool_top__);
         assert.strictEqual(_.isPlainObject(symbol), false);
     });
     QUnit.test('should return `false` for objects with a read-only `Symbol.toStringTag` property', function (assert) {

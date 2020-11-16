@@ -13,10 +13,10 @@ QUnit.module('lodash.isNull');
             return index ? _.isNull(value) : _.isNull();
         });
         assert.deepEqual(actual, expected);
-        assert.strictEqual(_.isNull(args), __bool_top__);
+        assert.strictEqual(_.isNull(args), false);
         assert.strictEqual(_.isNull([
             1,
-            2,
+            __num_top__,
             3
         ]), false);
         assert.strictEqual(_.isNull(true), false);

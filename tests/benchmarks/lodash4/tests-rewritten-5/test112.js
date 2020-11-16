@@ -13,8 +13,8 @@ QUnit.module('lodash.isLength');
         assert.expect(1);
         var values = [
                 -__num_top__,
-                '1',
-                __num_top__,
+                __str_top__,
+                1.1,
                 MAX_SAFE_INTEGER + __num_top__
             ], expected = lodashStable.map(values, stubFalse), actual = lodashStable.map(values, _.isLength);
         assert.deepEqual(actual, expected);

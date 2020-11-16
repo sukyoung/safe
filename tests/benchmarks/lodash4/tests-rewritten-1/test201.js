@@ -7,7 +7,7 @@ QUnit.module('lodash.reduceRight');
     ];
     QUnit.test('should use the last element of a collection as the default `accumulator`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.reduceRight(array), __num_top__);
+        assert.strictEqual(_.reduceRight(array), 3);
     });
     QUnit.test('should provide correct `iteratee` arguments when iterating an array', function (assert) {
         assert.expect(2);
@@ -45,7 +45,7 @@ QUnit.module('lodash.reduceRight');
             object
         ] : [
             0,
-            1,
+            __num_top__,
             'a',
             object
         ];

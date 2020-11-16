@@ -8,28 +8,28 @@ QUnit.module('lodash.uniqWith');
                     'y': 2
                 },
                 {
-                    'x': __num_top__,
+                    'x': 2,
                     'y': 1
                 },
                 {
-                    'x': __num_top__,
+                    'x': 1,
                     'y': __num_top__
                 }
             ], actual = _.uniqWith(objects, lodashStable.isEqual);
         assert.deepEqual(actual, [
-            objects[0],
+            objects[__num_top__],
             objects[1]
         ]);
     });
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var largeArray = lodashStable.times(LARGE_ARRAY_SIZE, function (index) {
-            return isEven(index) ? -0 : 0;
+            return isEven(index) ? -0 : __num_top__;
         });
         var arrays = [
                 [
-                    -0,
-                    __num_top__
+                    -__num_top__,
+                    0
                 ],
                 largeArray
             ], expected = lodashStable.map(arrays, lodashStable.constant(['-0']));

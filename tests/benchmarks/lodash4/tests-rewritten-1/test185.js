@@ -34,7 +34,7 @@ QUnit.module('methods using `createWrapper`');
         a = _.bind(fn, object);
         b = _.partialRight(a, 4);
         c = _.partial(b, 2);
-        assert.deepEqual(c(3), expected);
+        assert.deepEqual(c(__num_top__), expected);
         a = _.partial(fn, 2);
         b = _.bind(a, object);
         c = _.partialRight(b, 4);
@@ -147,7 +147,7 @@ QUnit.module('methods using `createWrapper`');
             assert.deepEqual(actual, expected);
             actual = _.last(lodashStable.times(HOT_COUNT, function () {
                 var curried = _[methodName](fn);
-                return curried(1)(2)(__num_top__);
+                return curried(1)(2)(3);
             }));
             assert.deepEqual(actual, expected);
         });

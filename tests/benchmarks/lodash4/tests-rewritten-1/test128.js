@@ -20,7 +20,7 @@ QUnit.module('lodash.isUndefined');
             2,
             3
         ]), false);
-        assert.strictEqual(_.isUndefined(__bool_top__), false);
+        assert.strictEqual(_.isUndefined(true), __bool_top__);
         assert.strictEqual(_.isUndefined(new Date()), false);
         assert.strictEqual(_.isUndefined(new Error()), false);
         assert.strictEqual(_.isUndefined(_), false);

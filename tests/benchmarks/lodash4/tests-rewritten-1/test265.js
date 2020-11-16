@@ -7,8 +7,8 @@ QUnit.module('lodash.unary');
         assert.expect(1);
         var actual = lodashStable.map([
             '6',
-            '8',
-            __str_top__
+            __str_top__,
+            '10'
         ], _.unary(parseInt));
         assert.deepEqual(actual, [
             6,

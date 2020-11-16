@@ -14,12 +14,12 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should not reference `_.escape` when "escape" delimiters are not used', function (assert) {
         assert.expect(1);
-        var compiled = _.template(__str_top__);
+        var compiled = _.template('<%= typeof __e %>');
         assert.strictEqual(compiled({}), 'undefined');
     });
     QUnit.test('should evaluate JavaScript in "evaluate" delimiters', function (assert) {
         assert.expect(1);
-        var compiled = _.template('<ul><%      for (var key in collection) {        %><li><%= collection[key] %></li><%      } %></ul>');
+        var compiled = _.template(__str_top__);
         var data = {
                 'collection': {
                     'a': 'A',
@@ -75,12 +75,12 @@ QUnit.module('lodash.template');
             '<%= a + b %>': '3',
             '<%= b - a %>': '1',
             '<%= a = b %>': '2',
-            '<%= !a %>': __str_top__,
+            '<%= !a %>': 'false',
             '<%= ~a %>': '-2',
             '<%= a * b %>': '2',
             '<%= a / b %>': '0.5',
             '<%= a % b %>': '1',
-            '<%= a >> b %>': __str_top__,
+            '<%= a >> b %>': '0',
             '<%= a << b %>': '4',
             '<%= a & b %>': '0',
             '<%= a ^ b %>': '3',
@@ -105,7 +105,7 @@ QUnit.module('lodash.template');
     QUnit.test('should support ES6 template delimiters', function (assert) {
         assert.expect(2);
         var data = { 'value': 2 };
-        assert.strictEqual(_.template('1${value}3')(data), __str_top__);
+        assert.strictEqual(_.template('1${value}3')(data), '123');
         assert.strictEqual(_.template('${"{" + value + "\\}"}')(data), '{2}');
     });
     QUnit.test('should support the "imports" option', function (assert) {
@@ -115,7 +115,7 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should support the "variable" options', function (assert) {
         assert.expect(1);
-        var compiled = _.template('<% _.each( data.a, function( value ) { %>' + '<%= value.valueOf() %>' + '<% }) %>', { 'variable': 'data' });
+        var compiled = _.template('<% _.each( data.a, function( value ) { %>' + '<%= value.valueOf() %>' + '<% }) %>', { 'variable': __str_top__ });
         var data = {
             'a': [
                 1,
@@ -138,7 +138,7 @@ QUnit.module('lodash.template');
                 'evaluate': /\{\{([\s\S]+?)\}\}/g,
                 'interpolate': /\{\{=([\s\S]+?)\}\}/g
             });
-            var expected = '<ul><li>0: a &amp; A</li><li>1: b &amp; B</li></ul>', compiled = _.template('<ul>{{ _.each(collection, function(value, index) {}}<li>{{= index }}: {{- value }}</li>{{}); }}</ul>', index ? null : settings), data = {
+            var expected = __str_top__, compiled = _.template('<ul>{{ _.each(collection, function(value, index) {}}<li>{{= index }}: {{- value }}</li>{{}); }}</ul>', index ? null : settings), data = {
                     'collection': [
                         'a & A',
                         'b & B'
@@ -173,7 +173,7 @@ QUnit.module('lodash.template');
                 'index': 1,
                 'collection': [
                     'a',
-                    __str_top__,
+                    'b',
                     'c'
                 ]
             });
@@ -230,7 +230,7 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should work with `this` references', function (assert) {
         assert.expect(2);
-        var compiled = _.template('a<%= this.String("b") %>c');
+        var compiled = _.template(__str_top__);
         assert.strictEqual(compiled(), 'abc');
         var object = { 'b': 'B' };
         object.compiled = _.template('A<%= this.b %>C', { 'variable': 'obj' });
@@ -247,7 +247,7 @@ QUnit.module('lodash.template');
         assert.strictEqual(compiled(), '\'\n\r\t\u2028\u2029\\');
         var data = { 'a': 'A' };
         compiled = _.template('\'\n\r\t<%= a %>\u2028\u2029\\"');
-        assert.strictEqual(compiled(data), __str_top__);
+        assert.strictEqual(compiled(data), '\'\n\r\tA\u2028\u2029\\"');
     });
     QUnit.test('should handle \\u2028 & \\u2029 characters', function (assert) {
         assert.expect(1);
@@ -279,7 +279,7 @@ QUnit.module('lodash.template');
             };
         compiled(data);
         assert.deepEqual(actual, [
-            __str_top__,
+            'a',
             'b',
             'c'
         ]);
@@ -306,7 +306,7 @@ QUnit.module('lodash.template');
                 null,
                 undefined,
                 ''
-            ], expected = lodashStable.map(values, stubString), data = { 'a': 1 };
+            ], expected = lodashStable.map(values, stubString), data = { 'a': __num_top__ };
         var actual = lodashStable.map(values, function (value, index) {
             var compiled = index ? _.template(value) : _.template();
             return compiled(data);
@@ -348,9 +348,9 @@ QUnit.module('lodash.template');
     });
     QUnit.test('should not error for non-object `data` and `options` values', function (assert) {
         assert.expect(2);
-        _.template(__str_top__)(1);
+        _.template('')(__num_top__);
         assert.ok(true, '`data` value');
-        _.template('', 1)(1);
+        _.template(__str_top__, 1)(1);
         assert.ok(true, '`options` value');
     });
     QUnit.test('should expose the source on compiled templates', function (assert) {

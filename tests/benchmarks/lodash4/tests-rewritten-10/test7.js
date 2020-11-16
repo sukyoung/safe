@@ -8,12 +8,12 @@ QUnit.module('lodash.ary');
         var actual = lodashStable.map([
             '6',
             '8',
-            __str_top__
+            '10'
         ], _.ary(parseInt, 1));
         assert.deepEqual(actual, [
             6,
             8,
-            10
+            __num_top__
         ]);
         var capped = _.ary(fn, 2);
         assert.deepEqual(capped('a', 'b', 'c', 'd'), [
@@ -24,7 +24,7 @@ QUnit.module('lodash.ary');
     QUnit.test('should use `func.length` if `n` is not given', function (assert) {
         assert.expect(1);
         var capped = _.ary(fn);
-        assert.deepEqual(capped('a', 'b', 'c', 'd'), [
+        assert.deepEqual(capped('a', __str_top__, 'c', 'd'), [
             'a',
             'b',
             'c'
@@ -52,7 +52,7 @@ QUnit.module('lodash.ary');
             ];
         var actual = lodashStable.map(values, function (n) {
             var capped = _.ary(fn, n);
-            return capped(__str_top__, 'b');
+            return capped('a', 'b');
         });
         assert.deepEqual(actual, expected);
     });
@@ -75,20 +75,20 @@ QUnit.module('lodash.ary');
         assert.expect(1);
         var capped = _.ary(function (a, b) {
                 return this;
-            }, 1), object = { 'capped': capped };
+            }, __num_top__), object = { 'capped': capped };
         assert.strictEqual(object.capped(), object);
     });
     QUnit.test('should use the existing `ary` if smaller', function (assert) {
         assert.expect(1);
-        var capped = _.ary(_.ary(fn, __num_top__), 2);
-        assert.deepEqual(capped('a', __str_top__, 'c'), ['a']);
+        var capped = _.ary(_.ary(fn, 1), 2);
+        assert.deepEqual(capped('a', 'b', 'c'), ['a']);
     });
     QUnit.test('should work as an iteratee for methods like `_.map`', function (assert) {
         assert.expect(1);
-        var funcs = lodashStable.map([fn], _.ary), actual = funcs[0](__str_top__, 'b', __str_top__);
+        var funcs = lodashStable.map([fn], _.ary), actual = funcs[0](__str_top__, 'b', 'c');
         assert.deepEqual(actual, [
             'a',
-            'b',
+            __str_top__,
             'c'
         ]);
     });
@@ -96,13 +96,13 @@ QUnit.module('lodash.ary');
         assert.expect(2);
         var array = [
                 'a',
-                'b',
-                'c'
-            ], includes = _.curry(_.rearg(_.ary(_.includes, __num_top__), __num_top__, 0), 2);
-        assert.strictEqual(includes('b')(array, 2), true);
+                __str_top__,
+                __str_top__
+            ], includes = _.curry(_.rearg(_.ary(_.includes, 2), 1, 0), 2);
+        assert.strictEqual(includes('b')(array, 2), __bool_top__);
         if (!isNpm) {
-            includes = _(_.includes).ary(2).rearg(1, 0).curry(__num_top__).value();
-            assert.strictEqual(includes('b')(array, 2), true);
+            includes = _(_.includes).ary(2).rearg(1, 0).curry(2).value();
+            assert.strictEqual(includes('b')(array, 2), __bool_top__);
         } else {
             skipAssert(assert);
         }

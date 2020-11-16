@@ -3,18 +3,18 @@ QUnit.module('lodash.reduce');
     var array = [
         1,
         2,
-        3
+        __num_top__
     ];
     QUnit.test('should use the first element of a collection as the default `accumulator`', function (assert) {
         assert.expect(1);
-        assert.strictEqual(_.reduce(array), __num_top__);
+        assert.strictEqual(_.reduce(array), 1);
     });
     QUnit.test('should provide correct `iteratee` arguments when iterating an array', function (assert) {
         assert.expect(2);
         var args;
         _.reduce(array, function () {
             args || (args = slice.call(arguments));
-        }, 0);
+        }, __num_top__);
         assert.deepEqual(args, [
             0,
             1,
@@ -26,7 +26,7 @@ QUnit.module('lodash.reduce');
             args || (args = slice.call(arguments));
         });
         assert.deepEqual(args, [
-            1,
+            __num_top__,
             2,
             1,
             array
@@ -36,16 +36,16 @@ QUnit.module('lodash.reduce');
         assert.expect(2);
         var args, object = {
                 'a': 1,
-                'b': __num_top__
+                'b': 2
             }, firstKey = _.head(_.keys(object));
         var expected = firstKey == 'a' ? [
             0,
-            __num_top__,
+            1,
             'a',
             object
         ] : [
-            __num_top__,
-            __num_top__,
+            0,
+            2,
             'b',
             object
         ];
@@ -57,12 +57,12 @@ QUnit.module('lodash.reduce');
         expected = firstKey == 'a' ? [
             1,
             2,
-            'b',
+            __str_top__,
             object
         ] : [
             2,
             1,
-            'a',
+            __str_top__,
             object
         ];
         _.reduce(object, function () {

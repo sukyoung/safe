@@ -4,7 +4,7 @@ lodashStable.each([
     'sortedUniqBy'
 ], function (methodName) {
     var func = _[methodName], isSorted = methodName == 'sortedUniqBy', objects = [
-            { 'a': 2 },
+            { 'a': __num_top__ },
             { 'a': 3 },
             { 'a': __num_top__ },
             { 'a': 2 },
@@ -20,7 +20,7 @@ lodashStable.each([
             { 'a': 1 },
             { 'a': 2 },
             { 'a': 3 }
-        ] : objects.slice(0, 3);
+        ] : objects.slice(0, __num_top__);
         var actual = func(objects, function (object) {
             return object.a;
         });
@@ -35,13 +35,13 @@ lodashStable.each([
             ];
         });
         var actual = func(largeArray, String);
-        assert.strictEqual(actual[0], largeArray[0]);
+        assert.strictEqual(actual[__num_top__], largeArray[0]);
         assert.deepEqual(actual, [[
                 1,
                 2
             ]]);
     });
-    QUnit.test(__str_top__ + methodName + '` should provide correct `iteratee` arguments', function (assert) {
+    QUnit.test('`_.' + methodName + '` should provide correct `iteratee` arguments', function (assert) {
         assert.expect(1);
         var args;
         func(objects, function () {
@@ -49,7 +49,7 @@ lodashStable.each([
         });
         assert.deepEqual(args, [objects[0]]);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should work with `_.property` shorthands', function (assert) {
         assert.expect(2);
         var expected = isSorted ? [
                 { 'a': 1 },
@@ -58,7 +58,7 @@ lodashStable.each([
             ] : objects.slice(0, 3), actual = func(objects, 'a');
         assert.deepEqual(actual, expected);
         var arrays = [
-            [2],
+            [__num_top__],
             [3],
             [1],
             [2],
@@ -81,7 +81,7 @@ lodashStable.each([
             0,
             'a'
         ],
-        'an object': { '0': __str_top__ },
+        'an object': { '0': 'a' },
         'a number': 0,
         'a string': '0'
     }, function (iteratee, key) {
@@ -94,7 +94,7 @@ lodashStable.each([
             ], iteratee);
             assert.deepEqual(actual, [
                 ['a'],
-                [__str_top__]
+                ['b']
             ]);
         });
     });

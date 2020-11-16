@@ -42,7 +42,7 @@ lodashStable.each([
         var fn = function () {
                 return slice.call(arguments);
             }, par = func(fn, ph, 'b', ph);
-        assert.deepEqual(par('a', 'c'), [
+        assert.deepEqual(par(__str_top__, 'c'), [
             'a',
             'b',
             'c'
@@ -74,7 +74,7 @@ lodashStable.each([
             ]);
         }
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should use `_.placeholder` when set', function (assert) {
         assert.expect(1);
         if (!isModularize) {
             var _ph = _.placeholder = {}, fn = function () {
@@ -85,9 +85,9 @@ lodashStable.each([
                     ph,
                     'c'
                 ] : [
-                    'a',
-                    'c',
                     __str_top__,
+                    'c',
+                    'b',
                     ph
                 ];
             assert.deepEqual(par('a', 'c'), expected);
@@ -111,23 +111,23 @@ lodashStable.each([
         assert.ok(new par() instanceof Foo);
         assert.strictEqual(new par(true), object);
     });
-    QUnit.test('`_.' + methodName + '` should clone metadata for created functions', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(3);
         function greet(greeting, name) {
             return greeting + ' ' + name;
         }
         var par1 = func(greet, 'hi'), par2 = func(par1, 'barney'), par3 = func(par1, 'pebbles');
         assert.strictEqual(par1('fred'), isPartial ? 'hi fred' : 'fred hi');
-        assert.strictEqual(par2(), isPartial ? __str_top__ : 'barney hi');
+        assert.strictEqual(par2(), isPartial ? 'hi barney' : 'barney hi');
         assert.strictEqual(par3(), isPartial ? 'hi pebbles' : 'pebbles hi');
     });
-    QUnit.test('`_.' + methodName + '` should work with curried functions', function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(2);
         var fn = function (a, b, c) {
                 return a + b + c;
             }, curried = _.curry(func(fn, 1), 2);
         assert.strictEqual(curried(2, 3), 6);
-        assert.strictEqual(curried(2)(__num_top__), 6);
+        assert.strictEqual(curried(2)(3), 6);
     });
     QUnit.test('should work with placeholders and curried functions', function (assert) {
         assert.expect(1);
@@ -136,7 +136,7 @@ lodashStable.each([
             }, curried = _.curry(fn), par = func(curried, ph, 'b', ph, 'd');
         assert.deepEqual(par('a', 'c'), [
             'a',
-            __str_top__,
+            'b',
             'c',
             'd'
         ]);

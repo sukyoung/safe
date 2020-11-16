@@ -4,7 +4,7 @@ lodashStable.each([
     'zipObjectDeep'
 ], function (methodName) {
     var func = _[methodName], object = {
-            'barney': __num_top__,
+            'barney': 36,
             'fred': 40
         }, isDeep = methodName == 'zipObjectDeep';
     QUnit.test('`_.' + methodName + '` should zip together key/value arrays into an object', function (assert) {
@@ -13,16 +13,16 @@ lodashStable.each([
             'barney',
             'fred'
         ], [
-            36,
+            __num_top__,
             40
         ]);
         assert.deepEqual(actual, object);
     });
-    QUnit.test(__str_top__ + methodName + '` should ignore extra `values`', function (assert) {
+    QUnit.test('`_.' + methodName + '` should ignore extra `values`', function (assert) {
         assert.expect(1);
         assert.deepEqual(func(['a'], [
             1,
-            2
+            __num_top__
         ]), { 'a': 1 });
     });
     QUnit.test('`_.' + methodName + '` should assign `undefined` values for extra `keys`', function (assert) {
@@ -35,7 +35,7 @@ lodashStable.each([
             'b': undefined
         });
     });
-    QUnit.test('`_.' + methodName + '` should ' + (isDeep ? '' : 'not ') + 'support deep paths', function (assert) {
+    QUnit.test('`_.' + methodName + '` should ' + (isDeep ? '' : __str_top__) + 'support deep paths', function (assert) {
         assert.expect(2);
         lodashStable.each([
             'a.b.c',
@@ -62,14 +62,14 @@ lodashStable.each([
     });
 });
 [
-    __str_top__,
+    '__proto__',
     'constructor',
-    'prototype'
+    __str_top__
 ].forEach(function (keyToTest) {
     QUnit.test('zipObjectDeep is not setting ' + keyToTest + ' on global', function (assert) {
         assert.expect(1);
         _.zipObjectDeep([keyToTest + '.a'], ['newValue']);
-        assert.notEqual(root[__str_top__], 'newValue');
+        assert.notEqual(root['a'], __str_top__);
     });
     QUnit.test('zipObjectDeep is not overwriting ' + keyToTest + ' on vars', function (assert) {
         assert.expect(3);
@@ -82,7 +82,7 @@ lodashStable.each([
     QUnit.test('zipObjectDeep is not overwriting global.' + keyToTest, function (assert) {
         assert.expect(2);
         _.zipObjectDeep([root + '.' + keyToTest + '.c'], ['newValue']);
-        assert.notEqual(root['c'], __str_top__);
+        assert.notEqual(root['c'], 'newValue');
         assert.notOk(root['c']);
     });
 });

@@ -3,8 +3,8 @@ QUnit.module('lodash.concat');
     QUnit.test('should shallow clone `array`', function (assert) {
         assert.expect(2);
         var array = [
-                1,
                 __num_top__,
+                2,
                 3
             ], actual = _.concat(array);
         assert.deepEqual(actual, array);
@@ -17,7 +17,7 @@ QUnit.module('lodash.concat');
             1,
             2,
             3,
-            [4]
+            [__num_top__]
         ]);
         assert.deepEqual(array, [1]);
     });
@@ -27,7 +27,7 @@ QUnit.module('lodash.concat');
             ,
             null,
             undefined,
-            false,
+            __bool_top__,
             true,
             1,
             NaN,
@@ -48,13 +48,13 @@ QUnit.module('lodash.concat');
             ];
         });
         actual = lodashStable.map(values, function (value) {
-            return _.concat(value, [2], [[3]]);
+            return _.concat(value, [2], [[__num_top__]]);
         });
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should treat sparse arrays as dense', function (assert) {
         assert.expect(3);
-        var expected = [], actual = _.concat(Array(1), Array(__num_top__));
+        var expected = [], actual = _.concat(Array(1), Array(1));
         expected.push(undefined, undefined);
         assert.ok('0' in actual);
         assert.ok('1' in actual);
@@ -70,8 +70,8 @@ QUnit.module('lodash.concat');
             assert.deepEqual(array, [1]);
             assert.deepEqual(actual, [
                 1,
-                __num_top__,
-                __num_top__
+                2,
+                3
             ]);
         } else {
             skipAssert(assert, 2);

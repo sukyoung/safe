@@ -15,27 +15,27 @@ QUnit.module('lodash.toString');
     QUnit.test('should preserve the sign of `0`', function (assert) {
         assert.expect(1);
         var values = [
-                -0,
-                Object(-__num_top__),
-                __num_top__,
+                -__num_top__,
+                Object(-0),
+                0,
                 Object(0)
             ], expected = [
-                '-0',
+                __str_top__,
                 __str_top__,
                 '0',
-                '0'
+                __str_top__
             ], actual = lodashStable.map(values, _.toString);
         assert.deepEqual(actual, expected);
     });
     QUnit.test('should preserve the sign of `0` in an array', function (assert) {
         assert.expect(1);
         var values = [
-            -__num_top__,
-            Object(-0),
+            -0,
+            Object(-__num_top__),
             __num_top__,
             Object(0)
         ];
-        assert.deepEqual(_.toString(values), __str_top__);
+        assert.deepEqual(_.toString(values), '-0,-0,0,0');
     });
     QUnit.test('should not error on symbols', function (assert) {
         assert.expect(1);
@@ -53,7 +53,7 @@ QUnit.module('lodash.toString');
         assert.expect(1);
         if (Symbol) {
             try {
-                assert.strictEqual(_.toString([symbol]), __str_top__);
+                assert.strictEqual(_.toString([symbol]), 'Symbol(a)');
             } catch (e) {
                 assert.ok(false, e.message);
             }
@@ -66,10 +66,10 @@ QUnit.module('lodash.toString');
         if (!isNpm) {
             var wrapped = _([
                 __num_top__,
-                2,
+                __num_top__,
                 __num_top__
             ]);
-            assert.strictEqual(wrapped.toString(), __str_top__);
+            assert.strictEqual(wrapped.toString(), '1,2,3');
         } else {
             skipAssert(assert);
         }

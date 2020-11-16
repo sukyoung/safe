@@ -20,6 +20,6 @@ QUnit.module('lodash.functions');
             this.b = __str_top__;
         }
         Foo.prototype.c = noop;
-        assert.deepEqual(_.functions(new Foo()), ['a']);
+        assert.deepEqual(_.functions(new Foo()), [__str_top__]);
     });
 }());

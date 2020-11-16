@@ -1,6 +1,6 @@
 QUnit.module('sum methods');
 lodashStable.each([
-    'sum',
+    __str_top__,
     __str_top__
 ], function (methodName) {
     var array = [
@@ -8,11 +8,11 @@ lodashStable.each([
             __num_top__,
             2
         ], func = _[methodName];
-    QUnit.test('`_.' + methodName + '` should return the sum of an array of numbers', function (assert) {
+    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
         assert.expect(1);
         assert.strictEqual(func(array), 12);
     });
-    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should return `0` when passing empty `array` values', function (assert) {
         assert.expect(1);
         var expected = lodashStable.map(empties, stubZero);
         var actual = lodashStable.map(empties, function (value) {
@@ -20,14 +20,14 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should skip `undefined` values', function (assert) {
         assert.expect(1);
         assert.strictEqual(func([
-            __num_top__,
+            1,
             undefined
         ]), __num_top__);
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
         assert.expect(1);
         assert.deepEqual(func([
             1,
@@ -38,7 +38,7 @@ lodashStable.each([
         assert.expect(1);
         assert.strictEqual(func([
             '1',
-            __str_top__
+            '2'
         ]), '12');
     });
 });

@@ -61,7 +61,7 @@ QUnit.module('lodash.drop');
                 [
                     4,
                     5,
-                    6
+                    __num_top__
                 ],
                 [
                     7,
@@ -80,7 +80,7 @@ QUnit.module('lodash.drop');
             ],
             [
                 8,
-                __num_top__
+                9
             ]
         ]);
     });

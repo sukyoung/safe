@@ -2,7 +2,7 @@ QUnit.module('set methods');
 lodashStable.each([
     'update',
     'updateWith',
-    'set',
+    __str_top__,
     'setWith'
 ], function (methodName) {
     var func = _[methodName], isUpdate = /^update/.test(methodName);
@@ -40,7 +40,7 @@ lodashStable.each([
         assert.expect(2);
         if (Symbol) {
             var object = {};
-            object[symbol] = 1;
+            object[symbol] = __num_top__;
             assert.strictEqual(_.unset(object, symbol), true);
             assert.notOk(symbol in object);
         } else {
@@ -61,7 +61,7 @@ lodashStable.each([
             assert.strictEqual(object.a.b, value);
         });
     });
-    QUnit.test('`_.' + methodName + __str_top__, function (assert) {
+    QUnit.test(__str_top__ + methodName + '` should set a key over a path', function (assert) {
         assert.expect(4);
         lodashStable.each([
             'a.b',
@@ -129,7 +129,7 @@ lodashStable.each([
         lodashStable.each(paths, function (path) {
             func(object, path, updater);
             assert.strictEqual(object.a[-1.23]['["b"]'].c['[\'d\']']['\ne\n'].f.g, value);
-            object.a[-1.23]['["b"]'].c['[\'d\']']['\ne\n'].f.g = oldValue;
+            object.a[-1.23][__str_top__].c['[\'d\']']['\ne\n'].f.g = oldValue;
         });
     });
     QUnit.test('`_.' + methodName + '` should create parts of `path` that are missing', function (assert) {
@@ -138,7 +138,7 @@ lodashStable.each([
         lodashStable.each([
             'a[1].b.c',
             [
-                'a',
+                __str_top__,
                 '1',
                 'b',
                 'c'
@@ -186,7 +186,7 @@ lodashStable.each([
         });
         assert.deepEqual(actual, expected);
     });
-    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
+    QUnit.test('`_.' + methodName + '` should overwrite primitives in the path', function (assert) {
         assert.expect(2);
         lodashStable.each([
             'a.b',
@@ -219,8 +219,8 @@ lodashStable.each([
             { 'a': 1 },
             NaN
         ], function (value) {
-            var object = {}, pass = __bool_top__, updater = isUpdate ? lodashStable.constant(value) : value;
-            defineProperty(object, __str_top__, {
+            var object = {}, pass = true, updater = isUpdate ? lodashStable.constant(value) : value;
+            defineProperty(object, 'a', {
                 'configurable': true,
                 'enumerable': true,
                 'get': lodashStable.constant(value),
