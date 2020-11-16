@@ -29,7 +29,6 @@ if [ $DS ]; then
 fi
 
 echo "Analyzing files..."
-echo $NAME
 ./analyze $@ $NAME
 
 if [ -f jalangi.result ]; then
