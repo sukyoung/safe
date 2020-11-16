@@ -224,7 +224,7 @@ object DefaultContext extends ContextDomain {
           case (loc, env) =>
             val k = loc.toString
             val v =
-              if (merged contains loc) uomap.toJSON(env)
+              if (merged contains loc) fail
               else env.toJSON
             k -> v
         }),
