@@ -1019,8 +1019,8 @@ case class Semantics(
             case (ConFin(strset), ConFin(sepset)) => {
               val arrs = {
                 for (s <- strset; p <- sepset) yield {
-                  val arr = (s.str + " ").split(p.str)
-                  if (arr.last == " ") arr(arr.length - 1) = ""
+                  var arr = (s.str).split(p.str)
+                  if (p.str != "" && s.str.endsWith(p.str)) arr :+= ""
                   arr
                 }
               }
