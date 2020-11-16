@@ -124,12 +124,15 @@ function check() {
 
   // reaad alarms
   jalangi_alarms = read_jalangi('jalangi.result');
-  jalangi_alarms = alarm_sort(jalangi_alarms);
+  jalangi_alarms = alarm_sort(Array.from(new Set([...jalangi_alarms])));
 
   safe_alarms = [];
   if (ds_mode) safe_alarms = safe_alarms.concat(read_jalangi('ds-jalangi.result'));
   safe_alarms = safe_alarms.concat(read_safe(safe_result));
-  safe_alarms = alarm_sort(safe_alarms);
+  safe_alarms = alarm_sort(Array.from(new Set([...safe_alarms])));
+
+  // branch coverage
+  println(`JALANGI / SAFE = ${jalangi_alarms.length} / ${safe_alarms.length}`);
 
   // unsound
   unsound_alarms = jalangi_alarms.filter(x => !safe_alarms.includes(x));

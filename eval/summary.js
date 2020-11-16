@@ -1,21 +1,19 @@
 const fs = require('fs');
 
 // helpers
-let content = '';
+let cur = [];
+let content = [cur];
 function toArray(args) {
   let arr = [];
   for (let i = 0; i < args.length; i++) arr.push(args[i]);
   return arr;
 }
 function getPath(filename) { return base + '/' + filename; }
-function add() { content += toArray(arguments).map(x => x + '\t').join(); }
-function newline() { content += '\n'; }
+function add() { toArray(arguments).forEach(x => cur.push(x)); }
+function newline() { cur = []; content.push(cur); }
 function read(filename) { return fs.readFileSync(getPath(filename)).toString(); }
 function readLines(filename) { return read(filename).split('\n'); }
-function isTimeout() {
-  let safe = read(ds_mode ? 'ds-safe.result' : 'safe.result');
-  return safe.includes('Timeout');
-}
+function isTimeout() { return read(SAFE).includes('Timeout'); }
 function exists(filename) { return fs.existsSync(getPath(filename)); }
 function write(filename, data) {
   return fs.writeFileSync(`${dirname}/${filename}`, data);
@@ -52,6 +50,8 @@ let ds_mode = (
   process.argv.includes('-ds') ||
   process.argv.includes('--dynamic-shortcut')
 );
+let SAFE = ds_mode ? 'ds-safe.result' : 'safe.result';
+let DIFF = 'diff.result';
 
 fs.readdirSync(dirname).forEach(name => {
   if (!name.startsWith('test')) return;
@@ -61,7 +61,7 @@ fs.readdirSync(dirname).forEach(name => {
   base = `${dirname}/${name}`;
   add(id);
 
-  if (!exists('diff.result')) {
+  if (!exists(DIFF)) {
     // timeout case
     if (isTimeout()) { add('T'); timeout.push(id); }
     // error case
@@ -70,8 +70,7 @@ fs.readdirSync(dirname).forEach(name => {
     return;
   }
 
-  let lines = readLines('diff.result');
-  let [miss, over] = lines.filter(line => line.includes('safe'));
+  let [miss, over] = readLines(DIFF).filter(l => l.includes('safe'));
   miss = Number(miss.split(': ')[1]);
   over = Number(over.split(': ')[1]);
 
@@ -81,11 +80,38 @@ fs.readdirSync(dirname).forEach(name => {
   // sound case
   add('S'); sound.push(id);
 
+  // time
+  let [ds_time, total_time] = readLines(SAFE)
+    .filter(l => l.includes('TIME : '))[0]
+    .match(/\d+/g);
+  add(ds_time);
+  add(total_time);
+
+  // ds count
+  let [succ_ds, total_ds] = readLines(SAFE)
+    .filter(l => l.includes('COUNT: '))[0]
+    .match(/\d+/g);
+  add(succ_ds);
+  add(total_ds);
+
+  // branch coverage
+  let [jalangi_branch, safe_branch] = readLines(DIFF)
+    .filter(l => l.includes('JALANGI / SAFE = '))[0]
+    .match(/\d+/g);
+  add(jalangi_branch);
+  add(safe_branch);
+
   newline();
 });
 
 // summary.tsv
-write('summary.tsv', content);
+
+content.sort((x, y) => x[0] - y[0]);
+content = [[
+  '#', 'status', 'ds-time', 'total-time', 'succ-ds', 'total-ds',
+  'jalangi-branch', 'safe-branch'
+]].concat(content);
+write('summary.tsv', content.map(l => l.join('\t')).join('\n'));
 
 // result
 writeJson('sound.json', sort(sound));
