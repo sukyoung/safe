@@ -25,6 +25,14 @@ function writeJson(filename, data) {
 }
 function sort(arr) { return arr.sort((x, y) => x - y); }
 
+const excluded = (() => {
+  const SAFE_HOME = process.env.SAFE_HOME;
+  const filename = `${SAFE_HOME}/tests/benchmarks/lodash4/excluded.json`;
+  const excluded = JSON.parse(fs.readFileSync(filename).toString());
+  excluded.total = new Set([...excluded.eval, ...excluded.proto, ...excluded.implicit_call]);
+  return excluded;
+})();
+
 // total counts
 var total = 0;
 var sound = [];
@@ -34,6 +42,12 @@ var unsound = [];
 
 // argurments
 let dirname = 'result';
+let argv = Array.from(process.argv);
+argv.shift();
+argv.shift();
+argv.forEach(arg => {
+  if (!arg.startsWith('-')) dirname = arg;
+})
 let ds_mode = (
   process.argv.includes('-ds') ||
   process.argv.includes('--dynamic-shortcut')
@@ -41,6 +55,7 @@ let ds_mode = (
 
 fs.readdirSync(dirname).forEach(name => {
   if (!name.startsWith('test')) return;
+  if (excluded.total.has(name)) return;
   total++;
   id = Number(name.substring(4));
   base = `${dirname}/${name}`;
