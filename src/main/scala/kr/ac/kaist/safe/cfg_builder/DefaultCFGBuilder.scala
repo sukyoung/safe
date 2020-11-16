@@ -426,6 +426,7 @@ class DefaultCFGBuilder(
           case INTERNAL_SPLIT => (Some(newASite), lmap)
           case INTERNAL_TO_OBJ => (Some(newASite), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case INTERNAL_ITER_INIT => (Some(newASite), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_REGEX_EXEC => (Some(newASite), lmap)
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = args.map(ir2cfgExpr)
