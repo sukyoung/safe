@@ -11,7 +11,7 @@ case $i in
   --no-instrument)
     NO_INSTRUMENT=$i
   ;;
-  -a|--abstract)
+  -a|--abstract|-a=*|--abstract=*)
     ABSTRACT=$i
   ;;
   -t=*|--time=*)
