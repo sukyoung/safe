@@ -75,6 +75,16 @@
   Date.now = __getTime__;
   this.Date = Date;
 
+  var self = this;
+  var origRandom = this.Math.random;
+  function random() {
+    if("__num_top__" in self) {
+      return self.__num_top__;
+    }
+    return origRandom.call(this);
+  }
+  this.Math.random = random;
+
   // Light modeling of QUnit test module
   var QUnit = {};
   QUnit.module = function module(name) { print('[MODULE] ' + name); }
