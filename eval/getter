@@ -1,0 +1,35 @@
+#!/bin/bash
+
+LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+TEST=$LODASH/tests
+
+mkdir -p result_gs
+if [ "${#}" -eq 1 ]; then
+  file=$TEST/test$1.js
+  echo $file
+  ./merge -l $file
+  node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
+    --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+    --analysis $JALANGI_HOME/src/js/sample_analyses/dlint/GetterSetter.js \
+    target.js
+
+  exit
+fi
+
+
+for file in $TEST/*; do
+  if [ -f "$file" ]; then
+    base=`basename $file`
+    name="${base%.*}"
+
+    echo $file
+    ./merge -l $file
+    node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
+      --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+      --analysis $JALANGI_HOME/src/js/sample_analyses/dlint/GetterSetter.js \
+      target.js 2>&1 | tee result
+
+    mkdir -p result_gs/$name
+    mv result result_gs/$name
+  fi
+done
