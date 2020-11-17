@@ -95,6 +95,8 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
       "stop when it throw an exception."),
     ("exitReachable", BoolOption(c => c.exitReachable = true),
       "check whether the exit block is reachable."),
+    ("debug", BoolOption(c => analysisDebug = true),
+      "turn on the debug mode."),
     ("dynamicShortcut", BoolOption(c => dynamicShortcut = true),
       "utilize dynamic shortcut.")
   )

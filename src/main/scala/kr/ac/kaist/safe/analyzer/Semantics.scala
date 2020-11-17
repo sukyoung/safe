@@ -309,10 +309,15 @@ case class Semantics(
             result
           } catch {
             case e: ToJSONFail =>
-              println(s"[WARNING] toJSON Failed @ ${e.getStackTrace.toList.mkString("\n")}")
-              println
-              println(s"[Target] ${e.target}")
-              println
+              if (analysisDebug) {
+                println(s"[WARNING] toJSON Failed @ ${e.getStackTrace.toList.mkString("\n")}")
+                println
+                println(s"[Target] ${e.target}")
+                println
+              } else if (!toJSONFailed) {
+                println(s"[WARNING] toJSON Failed")
+                toJSONFailed = true
+              }
               (newSt, AbsState.Bot)
           }
           else (newSt, AbsState.Bot)

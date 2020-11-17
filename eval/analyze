@@ -6,7 +6,8 @@ WRAPPED=
 NAME=
 TIME_LIMIT=5m
 LODASH=
-SAFE_CONSOLE=
+SAFE_OPTION="-analyzer:exitReachable"
+CONSOLE=
 
 for i in "$@"
 do
@@ -31,7 +32,11 @@ case $i in
     shift
   ;;
   -c|--console)
-    SAFE_CONSOLE="-analyzer:console"
+    SAFE_OPTION="-analyzer:console $SAFE_OPTION"
+    CONSOLE=$i
+  ;;
+  -d|--debug)
+    SAFE_OPTION="-analyzer:debug $SAFE_OPTION"
   ;;
 esac
 done
@@ -48,10 +53,10 @@ if [ $DS ]; then
   fi
 else
   echo "Analyzing with SAFE..."
-  if [ $SAFE_CONSOLE ]; then
-    $SAFE_HOME/bin/safe bugDetect $SAFE_CONSOLE -analyzer:exitReachable target.js | tee safe.result
+  if [ $CONSOLE ]; then
+    $SAFE_HOME/bin/safe bugDetect $SAFE_OPTION target.js | tee safe.result
   else
-    timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect -analyzer:exitReachable target.js > safe.result
+    timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect $SAFE_OPTION target.js > safe.result
   fi
   if [ $? -eq 124 ]; then
     echo "[Timeout] $TIME_LIMIT" >> safe.result

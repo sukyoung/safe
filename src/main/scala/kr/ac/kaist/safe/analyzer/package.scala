@@ -27,6 +27,10 @@ package object analyzer {
   ////////////////////////////////////////////////////////////////////////////////
   var dynamicShortcut = false
 
+  // debug mode
+  var analysisDebug = false
+  var toJSONFailed = false
+
   // count
   var dsCount = 0
   var dsSuccessCount = 0
