@@ -4,6 +4,7 @@ NO_INSTRUMENT=
 ABSTRACT=
 TIME_LIMIT=5m
 SAFE_OPTION="-analyzer:dynamicShortcut -analyzer:exitReachable"
+SERVER_OPTION=
 CONSOLE=
 
 for i in "$@"
@@ -23,6 +24,7 @@ case $i in
     SAFE_OPTION="-analyzer:console $SAFE_OPTION"
   ;;
   -d|--debug)
+    SERVER_OPTION="-v"
     SAFE_OPTION="-analyzer:debug $SAFE_OPTION"
   ;;
 esac
@@ -35,7 +37,7 @@ fi
 
 echo "Start server..."
 cd $DS_HOME
-node server.js -v &
+node server.js $SERVER_OPTION &
 pid=$!
 cd $SAFE_HOME/eval
 
