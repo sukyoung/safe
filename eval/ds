@@ -35,7 +35,7 @@ fi
 
 echo "Start server..."
 cd $DS_HOME
-node server.js &
+node server.js -v &
 pid=$!
 cd $SAFE_HOME/eval
 
