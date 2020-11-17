@@ -57,11 +57,16 @@ applicable.
 
 \paragraph{Pruning Analysis Scopes}
 Another approach to utilize dynamic analysis for JavaScript static analysis is
-to prune the scope of analysis.  \citet{blended} introduced \textit{blended
-taint analysis} that specializes JavaScript dynamic language features such as
-dynamic code generation (e.g. \jscode{eval}) or variadic function calls.  They
-first performs dynamic analysis to collect traces with concrete values used in
-dynamic language features and restrict the semantics of features based on the
+to prune the scope of analysis.  \citet{determinacy} proposed dynamic
+determinacy analysis that infer determinacy facts via concrete executions that a
+variable or expression at a given location holds the same value in all possible
+execution of the program.  They specialized target source codes with determinacy
+facts so that static analyses could benefit from eliminations of dynamic code
+generation (e.g. \jscode{eval}) and constant property names.  \citet{blended}
+introduced \textit{blended taint analysis} that specializes JavaScript dynamic
+language features such as dynamic code generation or variadic function calls.
+They first performs dynamic analysis to collect traces with concrete values used
+in dynamic language features and restrict the semantics of features based on the
 collected traces during static analysis.  \citet{battles, eha} utilizes three
 different points to reduce analysis scopes: initial states, dynamically loaded
 files, and event handlers.  They dumped the initial states from a specific web
