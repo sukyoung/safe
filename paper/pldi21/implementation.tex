@@ -12,13 +12,15 @@ shortcut on existing JavaScript analyzers.
 
 \paragraph{Sealed Symbolic Values.}
 The main challenge of implementing dynamic shortcut is to support the sealed
-symbolic execution on the existing JavaScript engine.  We leverage the \jscode{Proxy}
-object introduced in ECMAScript 6 (2015, ES6)~\cite{es6}, which allows
-developers to handle the internal behaviors of specific objects (such as
-property reads and writes, implicit conversions, etc.).  When the dynamic
-analyzer constructs the execution environments at the start of the dynamic
-shortcut, it creates revoked \jscode{Proxy} objects to represent abstract values
-via the following \jscode{generateSymbol} function:
+symbolic execution on the existing JavaScript engine.  To represent an abstract
+value, we leverage the \jscode{Proxy} object introduced in ECMAScript 6
+(2015, ES6)~\cite{es6}, which allows developers to handle the internal behaviors
+of specific objects (such as property reads and writes, implicit conversions,
+etc.).  We are inspired by \textsc{Mimic}~\cite{mimic} using \jscode{Proxy} to
+capture accesses from the inside of opaque functions.  When the dynamic analyzer
+constructs the execution environments at the start of the dynamic shortcut, it
+creates revoked \jscode{Proxy} objects to represent each abstract values via the
+following \jscode{generateSymbol} function:
 \begin{lstlisting}[style=myJSstyle]
 function generateSymbol() {
   const r = Proxy.revocable(function() {}, {});
@@ -31,11 +33,15 @@ var z = x + 1;
 \end{lstlisting}
 The function creates a sealed symbol as a revocable proxy object with a dummy
 function object without any handlers and revokes it by
-\jscode{revocable.revoke()} to not allow any access of the symbol.  Thus, the
-variable \jscode{y} successfully points to the same symbol stored in \jscode{x}
-but the program throws a \jscode{TypeError} in line 8 because \jscode{x + 1}
-requires the actual value of the symbol.  Using this idea, we successfully
-extend the JavaScript engine to support a sealed symbolic execution.
+\jscode{revocable.revoke()} to not allow any access of the symbol.  The revoked
+object throws a \jscode{TypeError} when the object faces 13 kinds of operations
+so we can determine whether or not the seal is open.  For example, the variable
+\jscode{y} successfully points to the same symbol stored in \jscode{x} but the
+program throws the \jscode{TypeError} in line 8 because \jscode{x + 1} requires
+the actual value of the symbol.  Moreover, we instrument unary and binary
+operations on Jalangi to fully cover accesses on the symbol beyond 13 traps
+provided by \jscode{Proxy}.  Using this idea, we successfully extend the
+JavaScript engine to support a sealed symbolic execution.
 
 
 \paragraph{Abstract Locations for Objects.}
