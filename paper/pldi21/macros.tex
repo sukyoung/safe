@@ -227,16 +227,16 @@
 \newcommand{\concerto}{\textsc{Concerto}}
 
 % Table 1
-\newcommand{\myhead}{
-  \multicolumn{1}{c|}{\textbf{Object}} &
-  \multicolumn{1}{c|@{~}}{\textbf{Function}} &
-  \multicolumn{4}{@{~}c@{~}?}{\textbf{\# Replaced}} &
-  \multicolumn{1}{c|}{\textbf{Object}} &
-  \multicolumn{1}{c|@{~}}{\textbf{Function}} &
-  \multicolumn{4}{@{~}c@{~}?}{\textbf{\# Replaced}} &
-  \multicolumn{1}{c|}{\textbf{Object}} &
-  \multicolumn{1}{c|@{~}}{\textbf{Function}} &
-  \multicolumn{4}{@{~}c@{~}}{\textbf{\# Replaced}}\\\hline
+\newcommand{\myhead}[3]{
+  \multicolumn{1}{c|}{\textbf{#1}} &
+  \multicolumn{1}{c|@{~}}{\textbf{#2}} &
+  \multicolumn{4}{@{~}c@{~}?}{\textbf{#3}} &
+  \multicolumn{1}{c|}{\textbf{#1}} &
+  \multicolumn{1}{c|@{~}}{\textbf{#2}} &
+  \multicolumn{4}{@{~}c@{~}?}{\textbf{#3}} &
+  \multicolumn{1}{c|}{\textbf{#1}} &
+  \multicolumn{1}{c|@{~}}{\textbf{#2}} &
+  \multicolumn{4}{@{~}c@{~}}{\textbf{#3}}\\\hline
 }
 \newcommand{\mydata}[6]{
   \multirow{#1}{*}{\jscode{#2}} &

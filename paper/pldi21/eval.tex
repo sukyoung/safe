@@ -113,6 +113,62 @@ between 41 and 50, the ratio of average communication cost is rised to
 
 \subsection{Precision Improvement}
 
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img/precision-fail}
+    \vspace*{-1.5em}
+    \caption{\# Failed Assertions.}
+    \label{fig:precision-fail}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img/precision-branch}
+    \vspace*{-1.5em}
+    \caption{\# Covered Branches.}
+    \label{fig:precision-branch}
+  \end{subfigure}
+  \vspace*{-1em}
+  \caption{The comparison of analysis precision without (no-DS) and with (DS)
+  dynamic shortcut for \inred{82} \textit{abstracted} tests analyzable by both
+  analyses}
+  \label{fig:precision}
+  \vspace*{-1.5em}
+\end{figure}
+
+\begin{table*}
+  \centering
+  \caption{The number of \textit{abstracted} tests using dynamic shortcut
+  instead of manual modeling for each JavaScript built-in library.}
+  \label{table:func-replace}
+  \vspace*{-1em}
+  \scriptsize
+  \[
+    \begin{array}{c|l|@{~}r@{~}c@{~}r@{~}r@{~}?c|l|@{~}r@{~}c@{~}r@{~}r@{~}?c|l|@{~}r@{~}c@{~}r@{~}r@{~}}
+
+      \myhead{Object}       {Function}        {\# Replaced}
+
+      \mysucc{2}{Boolean}   {Boolean}         {214}{214}{100} & \mydata{1}{}            {new Object}        {214}{214}{100} & \mymult{2}{Number}      {valueOf}       {214}{214}{100} \mylineff
+      \mydata{1}{}          {new Boolean}     {214}{214}{100} & \mydata{1}{}            {getPrototypeOf}    {214}{214}{100} & \myname{1}{.prototype}                                  \mylinetft
+      \mydata{1}{Array}     {isArray}         {214}{214}{100} & \mydata{1}{}            {create}            {214}{214}{100} & \mymult{2}{RegExp}      {toString}      {214}{214}{100} \mylinetf
+      \mydata{1}{}          {toString}        { 92}{139}{ 66} & \mydata{1}{Object}      {preventExtensions} {214}{214}{100} & \myname{1}{.prototype}                                  \mylinefft
+      \mydata{1}{}          {toLocaleString}  {193}{214}{ 90} & \mydata{1}{}            {isFrozen}          {214}{214}{100} & \mydata{2}{String}      {String}        {214}{214}{100} \mylinefff
+      \mydata{1}{}          {concat}          {214}{214}{100} & \mydata{1}{}            {isExtensible}      {214}{214}{100} & \mydata{1}{}            {fromCharCode}  {214}{214}{100} \mylinefft
+      \mydata{1}{}          {join}            {214}{214}{100} & \mydata{1}{}            {keys}              {214}{214}{100} & \mydata{1}{}            {charAt}        {214}{214}{100} \mylineftf
+      \mysucc{1}{Array}     {pop}             {214}{214}{100} & \mydata{1}{Object}      {valueOf}           {214}{214}{100} & \mydata{1}{}            {charCodeAt}    {214}{214}{100} \mylinefff
+      \mydata{1}{.prototype}{push}            {214}{214}{100} & \mydata{1}{.prototype}  {isPrototypeOf}     {214}{214}{100} & \mydata{1}{}            {indexOf}       {214}{214}{100} \mylineftf
+      \mydata{1}{}          {slice}           {214}{214}{100} & \mydata{1}{}            {acos}              {214}{214}{100} & \mysucc{1}{}            {match}         {214}{214}{100} \mylinefff
+      \mydata{1}{}          {splice}          {214}{214}{100} & \mysucc{1}{}            {atan2}             {214}{214}{100} & \mydata{1}{String}      {replace}       {214}{214}{100} \mylinefff
+      \mydata{1}{}          {map}             {214}{214}{100} & \mydata{1}{}            {cos}               {214}{214}{100} & \mydata{1}{.prototype}  {splice}        {214}{214}{100} \mylinefff
+      \mydata{1}{}          {reduce}          {214}{214}{100} & \mydata{1}{Math}        {exp}               {214}{214}{100} & \mydata{1}{}            {split}         {214}{214}{100} \mylinetff
+      \mysucc{1}{global}    {eval}            {214}{214}{100} & \mydata{1}{}            {floor}             {214}{214}{100} & \mysucc{1}{}            {substring}     {214}{214}{100} \mylinetff
+      \mydata{1}{}          {new Date}        {214}{214}{100} & \mydata{1}{}            {max}               {214}{214}{100} & \mydata{1}{}            {toLowerCase}   {214}{214}{100} \mylinefff
+      \mydata{1}{Date}      {parse}           {214}{214}{100} & \mydata{1}{}            {min}               {214}{214}{100} & \mydata{1}{}            {toUpperCase}   {214}{214}{100} \mylinef
+      \mydata{1}{}          {now}             {214}{214}{100}
+    \end{array}
+  \]
+  \vspace*{-1em}
+\end{table*}
+
 To evaluate the precision improvement of dynamic shortcut, we used two different
 metrics to measure the precision of the analysis results: 1) the number of false
 alarms for assertions in tests and 2) the number of branch covered by analysis.
@@ -144,59 +200,38 @@ dynamic shortcut successfully cut down the number of covered branches at least
 \inred{0.81}\textsc{x}, at most \inred{0.51}\textsc{x}, and
 \inred{0.68}\textsc{x} on average.
 
-\begin{figure}
-  \centering
-  \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/precision-fail}
-    \vspace*{-1.5em}
-    \caption{\# Failed Assertions.}
-    \label{fig:precision-fail}
-  \end{subfigure}
-  \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/precision-branch}
-    \vspace*{-1.5em}
-    \caption{\# Covered Branches.}
-    \label{fig:precision-branch}
-  \end{subfigure}
-  \vspace*{-1em}
-  \caption{The comparison of analysis precision without (no-DS) and with (DS)
-  dynamic shortcut for \inred{82} \textit{abstracted} tests analyzable by both
-  analyses}
-  \label{fig:precision}
-  \vspace*{-1.5em}
-\end{figure}
+\inred{TODO - Case Study.}
 
 
 \subsection{Opaque Function Coverage}
 
-\begin{table*}
-  \centering
-  \scriptsize
-  \[
-    \begin{array}{c|l|@{~}r@{~}c@{~}r@{~}r@{~}?c|l|@{~}r@{~}c@{~}r@{~}r@{~}?c|l|@{~}r@{~}c@{~}r@{~}r@{~}}
-      \myhead
-      \mysucc{2}{Boolean}   {Boolean}         {214}{214}{100} & \mydata{1}{}            {new Object}        {214}{214}{100} & \mymult{2}{Number}      {valueOf}       {214}{214}{100} \mylineff
-      \mydata{1}{}          {new Boolean}     {214}{214}{100} & \mydata{1}{}            {getPrototypeOf}    {214}{214}{100} & \myname{1}{.prototype}                                  \mylinetft
-      \mydata{1}{Array}     {isArray}         {214}{214}{100} & \mydata{1}{}            {create}            {214}{214}{100} & \mymult{2}{RegExp}      {toString}      {214}{214}{100} \mylinetf
-      \mydata{1}{}          {toString}        {214}{214}{100} & \mydata{1}{Object}      {preventExtensions} {214}{214}{100} & \myname{1}{.prototype}                                  \mylinefft
-      \mydata{1}{}          {toLocaleString}  {214}{214}{ 90} & \mydata{1}{}            {isFrozen}          {214}{214}{100} & \mydata{2}{String}      {String}        {214}{214}{100} \mylinefff
-      \mydata{1}{}          {concat}          {214}{214}{100} & \mydata{1}{}            {isExtensible}      {214}{214}{100} & \mydata{1}{}            {fromCharCode}  {214}{214}{100} \mylinefft
-      \mydata{1}{}          {join}            {214}{214}{100} & \mydata{1}{}            {keys}              {214}{214}{100} & \mydata{1}{}            {charAt}        {214}{214}{100} \mylineftf
-      \mysucc{1}{Array}     {pop}             {214}{214}{100} & \mydata{1}{Object}      {valueOf}           {214}{214}{100} & \mydata{1}{}            {charCodeAt}    {214}{214}{100} \mylinefff
-      \mydata{1}{.prototype}{push}            {214}{214}{100} & \mydata{1}{.prototype}  {isPrototypeOf}     {214}{214}{100} & \mydata{1}{}            {indexOf}       {214}{214}{100} \mylineftf
-      \mydata{1}{}          {slice}           {214}{214}{100} & \mydata{1}{}            {acos}              {214}{214}{100} & \mysucc{1}{}            {match}         {214}{214}{100} \mylinefff
-      \mydata{1}{}          {splice}          {214}{214}{100} & \mysucc{1}{}            {atan2}             {214}{214}{100} & \mydata{1}{String}      {replace}       {214}{214}{100} \mylinefff
-      \mydata{1}{}          {map}             {214}{214}{100} & \mydata{1}{}            {cos}               {214}{214}{100} & \mydata{1}{.prototype}  {splice}        {214}{214}{100} \mylinefff
-      \mydata{1}{}          {reduce}          {214}{214}{100} & \mydata{1}{Math}        {exp}               {214}{214}{100} & \mydata{1}{}            {split}         {214}{214}{100} \mylinetff
-      \mysucc{1}{global}    {eval}            {214}{214}{100} & \mydata{1}{}            {floor}             {214}{214}{100} & \mysucc{1}{}            {substring}     {214}{214}{100} \mylinetff
-      \mydata{1}{}          {new Date}        {214}{214}{100} & \mydata{1}{}            {max}               {214}{214}{100} & \mydata{1}{}            {toLowerCase}   {214}{214}{100} \mylinefff
-      \mydata{1}{Date}      {parse}           {214}{214}{100} & \mydata{1}{}            {min}               {214}{214}{100} & \mydata{1}{}            {toUpperCase}   {214}{214}{100} \mylinef
-      \mydata{1}{}          {now}             {214}{214}{100}
-    \end{array}
-  \]
-  \caption{\todo}
-  \label{fig:abs-analysis-ratio}
-  \vspace*{-1.5em}
-\end{table*}
+The dynamic shortcut does not only improve performance or precision of analysis
+but also reduce the effort to model the behavior of opaque functions.
+JavaScript programs often use JavaScript built-in libraries or host-dependent
+functions but they are opaque codes; it means that they are executable but
+written in a different programming languages.  A typical solution is to
+manually model their behaviors to statically analyze for JavaScript programs
+using such functions.  The dynamic shortcut can reduce such efforts if some
+opaque functions are analyzed by only dynamic analysis instead of static
+analysis.
 
-\todo
+Table~\ref{table:func-replace} describes the dynamic shortcut effectively lessen
+the burden of manual modeling for JavaScript built-in functions.  Among Lodash 4
+\inred{219} abstracted tests analyzable with dynamic shortcut, we measured the
+number of tests using only dynamic shortcut instead of manual modeling for each
+JavaScript built-in library.  For each raw, \textbf{Object} column denotes the
+built-in object, \textbf{Function} function name, \textbf{\# Replaced} the
+number of tests successfully replacing the modeling via dynamic shortcut with
+the total number of tests using the target function.  For example, the fourth
+row in the left side describes that \jscode{Array.prototype.toString} is used in
+\inred{139} Lodash 4 abstracted tests and the static analysis with dynamic
+shortcut successfully analyze \inred{92} tests among them.  It means that
+\inred{66}\% of tests using \jscode{Array.prototype.toString} could be analyzed
+without the manual modeling of the built-in function.
+
+Moreover, \inred{6} functions out of \inred{49} JavaScript built-in functions
+are analyzed by only dynamic shortcut instead of manual modeling for all Lodash
+4 tests.  Each raw colored colored with \inred{yellow} describes such case in
+Table~\ref{table:func-replace}.  It means that the manual modeling of \inred{6} 
+JavaScript built-in functions is does not required to analyze all Lodash 4
+abstracted tests. \inred{TODO - Explain the detail for each case.}
