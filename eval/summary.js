@@ -1,5 +1,13 @@
 const fs = require('fs');
 
+Set.prototype.union = function(setB) {
+    var union = new Set(this);
+    for (var elem of setB) {
+        union.add(elem);
+    }
+    return union;
+}
+
 // helpers
 let cur = [];
 let content = [cur];
@@ -52,6 +60,7 @@ let ds_mode = (
 );
 let SAFE = ds_mode ? 'ds-safe.result' : 'safe.result';
 let DIFF = 'diff.result';
+let DS = 'ds-jalangi.result';
 
 fs.readdirSync(dirname).forEach(name => {
   if (!name.startsWith('test')) return;
@@ -82,24 +91,79 @@ fs.readdirSync(dirname).forEach(name => {
 
   // time
   let [ds_time, total_time] = readLines(SAFE)
-    .filter(l => l.includes('TIME : '))[0]
+    .filter(l => l.startsWith('TIME: '))[0]
     .match(/\d+/g);
-  add(ds_time);
-  add(total_time);
+
+  if(ds_mode) {
+    // ds-analysis-time
+    var aa = readLines(DS);
+    let ds_analysis_time = readLines(DS)
+      .filter(l => l.startsWith('TIME: '))
+      .reduce((sum, l) => {
+        return sum + (+(l.match(/\d+/g)[0]))
+      }, 0);
+    add(ds_analysis_time);
+    let comm_time = ds_time - ds_analysis_time;
+    add(comm_time);
+    add(total_time);
+  } else {
+    add(ds_time);
+    add("");
+    add(total_time);
+  }
 
   // ds count
   let [succ_ds, total_ds] = readLines(SAFE)
     .filter(l => l.includes('COUNT: '))[0]
     .match(/\d+/g);
   add(succ_ds);
-  add(total_ds);
+  //add(total_ds);
+
+  let safe_fails = readLines(SAFE)
+    .filter(l => l.startsWith('FAIL: '))
+    .reduce((acc, l) => {
+      return acc.add(+l.toString().split(": ").pop());
+    }, new Set());
+  // failed assertion
+  if(ds_mode) {
+    let ds_jalangi_fails = readLines(DS)
+      .filter(l => l.startsWith('FAIL: '))
+      .reduce((acc, l) => {
+        return acc.add(+l.toString().split(": ").pop());
+      }, new Set());
+    add(safe_fails.union(ds_jalangi_fails).size);
+  } else {
+    add(safe_fails.size);
+  }
 
   // branch coverage
   let [jalangi_branch, safe_branch] = readLines(DIFF)
     .filter(l => l.includes('JALANGI / SAFE = '))[0]
     .match(/\d+/g);
-  add(jalangi_branch);
-  add(safe_branch);
+  if(ds_mode)
+    add(jalangi_branch);
+  else
+    add(safe_branch);
+
+  // ds builtin functions
+  if(ds_mode) {
+    let ds_jalangi_builtins = readLines(DS)
+      .filter(l => l.startsWith('BUILTIN: '))
+      .reduce((acc, l) => {
+        return acc.add(+l.toString().split(": ").pop());
+      }, new Set());
+    // ds builtin functions
+    add([...ds_jalangi_builtins].map((f) => `[${f}]`).join(""));
+  } else {
+    add("");
+  }
+  // safe builtin functions
+  let safe_builtins = readLines(SAFE)
+    .filter(l => l.startsWith('BUILTIN: '))
+    .reduce((acc, l) => {
+      return acc.add(+l.toString().split(": ").pop());
+    }, new Set());
+  add([...safe_builtins].map((f) => `[${f}]`).join(""));
 
   newline();
 });
@@ -108,8 +172,8 @@ fs.readdirSync(dirname).forEach(name => {
 
 content.sort((x, y) => x[0] - y[0]);
 content = [[
-  '#', 'status', 'ds-time', 'total-time', 'succ-ds', 'total-ds',
-  'jalangi-branch', 'safe-branch'
+  '#', 'status', 'ds-time', 'comm-time', 'total-time', '#DS', '#fail',
+  '#branch', 'ds-func', 'abs-func'
 ]].concat(content);
 write('summary.tsv', content.map(l => l.join('\t')).join('\n'));
 
