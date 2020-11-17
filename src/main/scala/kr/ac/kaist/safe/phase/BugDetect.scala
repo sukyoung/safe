@@ -50,18 +50,18 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
     checkers.foreach(checker => checker(cfg, semantics))
 
     // Touched built-in functions
-    touchedFuncs.foreach(fid => println(s"Touched built-in function: $fid"))
+    touchedFuncs.foreach(fid => println(s"BUILTIN: $fid"))
 
     // False alarms for Lodash tests
     val FAIL_FID = 6
     cfg.getFunc(FAIL_FID).map(func => {
       semantics.getState(func.entry).foreach {
-        case (tp, _) => println(tp)
+        case (tp, _) => println(s"FAIL: $tp")
       }
     })
 
     println(s"COUNT: $dsSuccessCount / $dsCount")
-    println(s"TIME : $dsDuration ms / $totalDuration ms")
+    println(s"TIME: $dsDuration ms / $totalDuration ms")
     println(s"--------------------------------------------------")
     println(s"[BugDetect] END")
     println(s"--------------------------------------------------")
