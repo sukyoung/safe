@@ -1,22 +1,37 @@
 \documentclass[11pt]{article}
 \usepackage[a4paper,left=20mm,right=20mm,top=30mm,bottom=25mm]{geometry}
 
-\usepackage{mathtools}
 \usepackage[T1]{fontenc}
+\usepackage[ruled, vlined]{algorithm2e}
 \usepackage{amsfonts}
+\usepackage{amsmath,amsfonts}
 \usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage{mathpartir}
-\usepackage{verbatim}
-\usepackage{hyperref}
-\usepackage{xspace}
-\usepackage{stmaryrd}
-\usepackage{tikz}
-\usepackage{dirtree}
-\usepackage{multicol}
-\usepackage{array}
-\usepackage{galois}
 \usepackage{amsthm}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{bussproofs}
+\usepackage{caption}
+\usepackage{colortbl}
+\usepackage{dirtree}
+\usepackage{float}
+\usepackage{galois}
+\usepackage{graphicx}
+\usepackage{hhline}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{makecell}
+\usepackage{mathpartir}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{stmaryrd}
+\usepackage{subcaption}
+\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{xcolor}
+\usepackage{xspace}
+
 
 \usetikzlibrary{arrows}
 \tikzset{
@@ -24,15 +39,17 @@
   arn_n/.style = {treenode, circle, black, draw=black, text width=1.5em},
 }
 
+\input{../macros}
+
 \begin{document}
 
-\input{macros}
+\title{Soundness Proof of Dynamic Shortcut}
 
-\title{Dynamic Shortcut Soundness Proof}
+\author{Anonymous Author(s)}
+\date{}
+% \author{Dongjun Youn$^*$ \and Jihyeok Park$^*$ \and Sukyoung Ryu$^*$}
+% \date{$^*$KAIST, South Korea}
 
-\author{Dongjun Youn$^*$ \and Jihyeok Park$^*$ \and Sukyoung Ryu$^*$}
-
-\date{$^*$KAIST, South Korea}
 \maketitle
 
 \input{proof}

@@ -51,6 +51,7 @@ __latexindent_temp.tex
 
 ## Generated pdf file
 paper/*/main.pdf
+paper/**/report.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
