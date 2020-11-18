@@ -254,7 +254,16 @@ case class Semantics(
 
           var touchedFunc = func.id < 0
 
-          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0) try {
+          var notModelCallSite = cp.tracePartition match {
+            case ProductTP(CallSiteContext(callsiteList, _), _) =>
+              callsiteList match {
+                case h :: t => h.func.id >= 0
+                case Nil => true
+              }
+            case _ => true
+          }
+
+          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0 && notModelCallSite) try {
             val fid = cp.block.func.id;
             dsTriedCPs += cp
             val startTime = System.currentTimeMillis
