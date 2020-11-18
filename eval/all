@@ -39,12 +39,12 @@ for file in $TEST/*; do
       mv *.result result/$name
 
       ELAPSED_TIME=`expr $SECONDS - $START_TIME`
-      echo "$ELAPSED_TIME seconds elpased." | tee -a $LOG
+      echo "$ELAPSED_TIME seconds elapsed." | tee -a $LOG
+
+      node summary.js $@
     fi
   fi
 done
-
-node summary.js $@
 
 TOTAL_ELAPSED_TIME=`expr $SECONDS - $TOTAL_START_TIME`
 echo "--------------------------------------------------" | tee -a $LOG
