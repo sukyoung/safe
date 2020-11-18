@@ -44,16 +44,20 @@ provided by \jscode{Proxy}.  Using this idea, we successfully extend the
 JavaScript engine to support a sealed symbolic execution.
 
 
-\paragraph{Abstract Locations for Objects.}
-During dynamic analysis, each JavaScript object should be designated by the
-corresponding abstract location used in the static analysis.  In this paper, we
-define abstract locations using the allocation site
-abstraction~\cite{allocation-site} with heap cloning~\cite{heap-cloning} for
-each abstract context in the static analyzer.  Thus, we instrument the given
-JavaScript program to annotate each object created during dynamic analysis with
-its allocation site and context information.  After the sealed symbolic
-execution, the dynamic analyzer collects the objects based on their annotated
-information for each abstract location.
+\paragraph{Synchronization of Control Points.}
+For seamless interactions between the static analyzer and dynamic shortcuts,
+the synchronization of control points is a prerequisite.
+The static analyzer compiles a target JavaScript program to intermediate
+representation and builds a control flow graph.  It produces annotations for
+control points on the CFG including functions, call sites, and object allocation
+sites.  During the sealed symbolic execution, the dynamic analyzer requires
+those annotations to calculate sensitive location names of newly created object
+and lexical environments.  The key to place annotations on the instrumented code
+is the span information of the original AST node.  Both the CFG of SAFE and
+instrumented code of Jalangi maintain the span information, but they use
+different parsers resulting mismatches for some corner cases.  Thus, we
+preprocess to synchronize control points of two analyzers by the closest match
+of the span information rather than the exact match.
 
 
 \paragraph{Optimizations.}
@@ -110,3 +114,17 @@ the result of the execution.  In the experiments, we set the time limit as
 % points.  After finishing the sealed symbolic execution, it sends a newly
 % constructed JSON object to SAFE to update the abstract states in the function
 % exit point.
+
+
+%\paragraph{Abstract Locations for Objects.}
+%During dynamic analysis, each JavaScript object should be designated by the
+%corresponding abstract location used in the static analysis.  In this paper, we
+%define abstract locations using the allocation site
+%abstraction~\cite{allocation-site} with heap cloning~\cite{heap-cloning} for
+%each abstract context in the static analyzer.  Thus, we instrument the given
+%JavaScript program to annotate each object created during dynamic analysis with
+%its allocation site and context information.  After the sealed symbolic
+%execution, the dynamic analyzer collects the objects based on their annotated
+%information for each abstract location.
+
+
