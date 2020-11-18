@@ -282,6 +282,8 @@ case class Semantics(
 
             dsCount += 1
 
+            println(s"[DS] [${func.id}] ${func.simpleName} @ ${func.span}")
+
             val newTP = cp.tracePartition
             val exitCP = ControlPoint(func.exit, newTP)
 
