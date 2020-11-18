@@ -1,0 +1,372 @@
+%\section{Semantics of \( \ires \)}\label{sec:proof}
+
+%\subsection{Notations}
+
+Let's assume that $\viewmap$ partitions $\dom$, that is,
+there exists exactly one $\view\ s.t. \; \viewmap(\view)=\elem$
+for every $\elem \in \dom$.
+
+\bigskip
+
+Definition.
+\[
+  \combgamma(\combelem) = \{
+    \st \in \stset \mid
+    \symbst \in \combelem \wedge
+    \saconverter(\symbst) = (\view, \abselem) \wedge
+    \st \in \delta(\view) \wedge
+    \st \in \gamma(\abselem)
+  \}
+\]
+
+Property of $\combgamma$:
+\[
+  \combgamma(\combelem_1 \cup \combelem_2) = \combgamma(\combelem_1) \cup \combgamma(\combelem_2)
+\]
+
+\begin{proof}
+
+\[
+  \begin{array}{rcl}
+    \st \in \combgamma(\combelem_1 \cup \combelem_2)
+    &\iff& \exists \symbst,\view,\abselem. \symbst \in (\combelem_1 \cup \combelem_2) \wedge
+      \saconverter(\symbst) = (\view, \abselem) \wedge
+      \st \in \delta(\view) \wedge
+      \st \in \gamma(\abselem) \\
+    &\iff& \exists \symbst,\view,\abselem. (\symbst \in \combelem_1 \lor \symbst \in \combelem_2) \wedge
+      \saconverter(\symbst) = (\view, \abselem) \wedge
+      \st \in \delta(\view) \wedge
+      \st \in \gamma(\abselem) \\
+    &\iff& \exists \symbst,\view,\abselem. \symbst \in \combelem_1 \wedge
+      \saconverter(\symbst) = (\view, \abselem) \wedge
+      \st \in \delta(\view) \wedge
+      \st \in \gamma(\abselem) \; \lor\\
+    && \symbst \in \combelem_2 \wedge
+      \saconverter(\symbst) = (\view, \abselem) \wedge
+      \st \in \delta(\view) \wedge
+      \st \in \gamma(\abselem) \\
+    &\iff& \exists \symbst,\view,\abselem. \symbst \in \combelem_1 \wedge
+      \saconverter(\symbst) = (\view, \abselem) \wedge
+      \st \in \delta(\view) \wedge
+      \st \in \gamma(\abselem) \; \lor \\
+    && \exists \symbst,\view,\abselem. \symbst \in \combelem_2 \wedge
+      \saconverter(\symbst) = (\view, \abselem) \wedge
+      \st \in \delta(\view) \wedge
+      \st \in \gamma(\abselem) \\
+    &\iff& \st \in \combgamma(\combelem_1) \lor \st \in \combgamma(\combelem_2) \\
+    &\iff& \st \in \combgamma(\combelem_1) \cup \combgamma(\combelem_2)
+  \end{array}
+\]
+\end{proof}
+
+\newtheorem{theorem}{Theorem}
+
+\begin{theorem}
+  The extended view transistion function satisfies the soundness condition:
+  
+  for all $\combelem$, $\view$ and $\view'$,
+  \[
+    \step(\combgamma(\combelem) \cap \viewmap(\view))
+    \cap \viewmap(\view') \subseteq \combgamma \circ
+    \combviewtrans{\view}{\view'}(\combelem)
+  \]
+\end{theorem}
+
+\begin{proof}
+
+Let's define
+
+\[
+  \combviewtrans{\view}{\view'}_S(\combelem) = \{
+      \symbst' \mid \symbst \in \combelem \wedge
+      \saconverter(\symbst) = (\view, \_) \wedge
+      \symbst \symbtrans \symbst' \wedge
+      \saconverter(\symbst') = (\view', \_)
+    \}
+\]
+
+and
+\[
+  \combviewtrans{\view}{\view'}_D(\combelem) = 
+  \left\{
+    \begin{array}{ll}
+      \{ \asconverter(\view', \viewtrans{\view}{\view'}(\bigjoin \{
+        \abselem \mid \symbst \in \combelem \wedge \saconverter(\symbst) = (\view, \abselem) \}) \}
+      & \text{if} \; \combelem \neq \varnothing\\
+      \varnothing & \text{otherwise}\\
+    \end{array}
+    \right.
+% \{
+%  \asconverter(\view', \viewtrans{\view}{\view'}(\bigjoin \{
+%    \abselem \mid \symbst \in \combelem \wedge \saconverter(\symbst) = (\view, \abselem) \}) \}
+\]
+
+Then,
+\[
+  \combviewtrans{\view}{\view'}(\combelem) =
+  \combviewtrans{\view}{\view'}_S(S) \cup
+  \combviewtrans{\view}{\view'}_D(D)
+\]
+
+\newtheorem{lemma}{Lemma}
+\begin{lemma}
+\[
+  \step(\combgamma(\combelem) \cap \viewmap(\view))
+  \cap \viewmap(\view') \subseteq \combgamma \circ
+  \combviewtrans{\view}{\view'}_S(\combelem)
+\]
+\end{lemma}
+
+\begin{proof}
+
+Let
+\[
+  \combstep(\combelem) = \{
+      \symbst' \mid \symbst \in \combelem \wedge
+      \symbst \symbtrans \symbst'
+    \}
+\]
+
+Note that 
+$\step \circ \combgamma \subseteq \combgamma \circ \combstep$
+by property of $\symbtrans$. (\todo)
+
+\bigskip
+
+Let $\combelem'$ be subset of $\combelem$ s.t.
+\[
+  \combelem' = \{
+      \symbst \in \combelem \mid
+      \saconverter(\symbst) = (\view, \_)
+    \}
+\]
+
+Then,
+\[
+  \step (\combgamma (\combelem) \cap \viewmap(\view)) =
+  \step \circ \combgamma (\combelem') \subseteq
+  \combgamma \circ \combstep(\combelem') =
+  \combgamma \circ \combstep_\view(\combelem)
+\]
+
+where $\combstep_\view(\combelem) = \{
+      \symbst' \mid \symbst \in \combelem \wedge
+      \saconverter(\symbst) = (\view, \_) \wedge
+      \symbst \symbtrans \symbst'
+    \}$.
+
+\bigskip
+
+Therefore,
+\[
+  \step (\combgamma (\combelem) \cap \viewmap(\view)) \subseteq
+  \combgamma \circ \combstep_\view(\combelem)
+\]
+
+and
+\[
+  \step (\combgamma (\combelem) \cap \viewmap(\view)) \cap \viewmap(\view') \subseteq
+  \combgamma \circ \combstep_\view(\combelem) \cap \viewmap(\view') =
+  \combgamma \circ \combviewtrans{\view}{\view'}_S(\combelem)
+\]
+\end{proof}
+
+\begin{lemma}
+\[
+  \step(\combgamma(\combelem) \cap \viewmap(\view))
+  \cap \viewmap(\view') \subseteq \combgamma \circ
+  \combviewtrans{\view}{\view'}_D(\combelem)
+\]
+\end{lemma}
+
+\begin{proof}
+It is trivial if $\combelem$ is empty. (Both sides become empty set.)
+
+Otherwise,
+let $A = \{ \abselem \mid \symbst \in \combelem \wedge \saconverter(\symbst) = (\view, \abselem) \}$,
+then
+\[
+  \begin{array}{rcl}
+    \combgamma \circ \combviewtrans{\view}{\view'}_D(\combelem)
+    &=& \{
+        \st \in \stset \mid
+        \symbst \in \combviewtrans{\view}{\view'}_D(\combelem) \wedge
+        \saconverter(\symbst) = (\view'', \abselem) \wedge
+        \st \in \delta(\view'') \wedge
+        \st \in \gamma(\abselem)
+        \}\\
+    &=& \{
+        \st \in \stset \mid
+        \saconverter( \asconverter(\view', \viewtrans{\view}{\view'}(\bigjoin A))) = (\view'', \abselem) \wedge
+        \st \in \delta(\view'') \wedge
+        \st \in \gamma(\abselem)
+        \}\\
+    &=& \{
+        \st \in \stset \mid
+        (\view', \viewtrans{\view}{\view'}(\bigjoin A)) = (\view'', \abselem) \wedge
+        \st \in \delta(\view'') \wedge
+        \st \in \gamma(\abselem)
+        \}\\
+    &=& \viewmap(\view') \cap \gamma(\viewtrans{\view}{\view'}(\bigjoin A) \})\\
+    &\supseteq& \step(\gamma(\bigjoin A )
+      \cap \viewmap(\view)) \cap \viewmap(\view') \qquad \text{by condition of} \viewtrans{\view}{\view'} \\
+ \end{array}
+\]
+
+Therefore, it is enough to show that
+\[
+  \combgamma(\combelem) \cap \viewmap(\view) \subseteq
+  \gamma(\bigjoin A )
+\]
+
+Then,
+\[
+  \begin{array}{rclr}
+    \combgamma(\combelem) \cap \viewmap(\view)
+    &=& \{
+          \st \in \stset \mid
+          \abselem \in A \wedge
+          \st \in \gamma(\abselem)
+        \} \\
+    &=& \underset{\abselem \in A}{\bigcup}{\gamma(\abselem)} \\
+    &\subseteq& \gamma(\underset{\abselem \in A}{\bigjoin}{\abselem})
+      & \text{by condition of $\gamma$ and $\join$} \\
+    &=& \gamma (\bigjoin A)
+  \end{array}
+\]
+
+which is the desired result.
+\end{proof}
+
+Now, we can prove the theorem using two lemmas.
+
+\[
+  \begin{array}{rclr}
+    \step(\combgamma(\combelem) \cap \viewmap(\view)) \cap \viewmap(\view')
+    &=& \step(\combgamma(S \cup D) \cap \viewmap(\view)) \cap \viewmap(\view')\\
+    &=& \step(\combgamma(S) \cap \viewmap(\view)) \cap \viewmap(\view') \cup
+        \step(\combgamma(D) \cap \viewmap(\view)) \cap \viewmap(\view')\\
+    &\subseteq& \combgamma \circ \combviewtrans{\view}{\view'}_S(S) \cup
+        \step(\combgamma(D) \cap \viewmap(\view)) \cap \viewmap(\view') & \text{by Lemma1}\\
+    &\subseteq& \combgamma \circ \combviewtrans{\view}{\view'}_S(S) \cup
+        \combgamma \circ \combviewtrans{\view}{\view'}_D(D) & \text{by Lemma2}\\
+    &=& \combgamma(\combviewtrans{\view}{\view'}_S(S) \cup \combviewtrans{\view}{\view'}_D(D))\\
+    &=& \combgamma(\combviewtrans{\view}{\view'}(\combelem))
+  \end{array}
+\]
+
+\end{proof}
+
+\begin{theorem}
+\[
+  \step \circ \scombgamma \subseteq \scombgamma \circ \scombstep
+\]
+\end{theorem}
+
+\begin{proof}
+Note that if $\viewmap$ is partition of $\dom$,
+\[
+  \begin{array}{rcl}
+    \scombgamma(\scombelem)
+    &=& \{ \st \in \stset \mid \forall \view \in \viewset. \;
+    \st \in \viewmap(\view) \Rightarrow \st \in \combgamma \circ \scombelem(\view) \}\\
+    &=& \underset{\view \in \viewset}{\bigcup}
+      {(\viewmap(\view) \cap \combgamma(\scombelem(\view)))}
+  \end{array}
+\]
+
+Now,
+\[
+  \begin{array}{rclr}
+    \step(\scombgamma(\scombelem))
+    &=& \step(\underset{\view \in \viewset}{\bigcup}
+      {(\viewmap(\view) \cap \combgamma(\scombelem(\view)))})\\
+    &=& \underset{\view \in \viewset}{\bigcup}
+      {\step(\viewmap(\view) \cap \combgamma(\scombelem(\view)))}\\
+    &=& \underset{\view' \in \viewset}{\bigcup}
+      {(\viewmap(\view') \cap
+      \underset{\view \in \viewset}{\bigcup}
+        {(\step(\viewmap(\view) \cap \combgamma(\scombelem(\view))) \cap \viewmap(\view'))})}\\
+    &\subseteq& \underset{\view' \in \viewset}{\bigcup}
+      {(\viewmap(\view') \cap \underset{\view \in \viewset}{\bigcup}
+        {\combgamma \circ \combviewtrans{\view}{\view'} \circ \scombelem(\view)})} & \text{by Theorem 1}\\
+    &=& \underset{\view' \in \viewset}{\bigcup}{(\viewmap(\view') \cap
+      \combgamma(\underset{\view \in \viewset}{\bigcup}{\combviewtrans{\view}{\view'} \circ \scombelem(\view)}))} \\
+    &=& \underset{\view' \in \viewset}{\bigcup}{(\viewmap(\view') \cap
+      \combgamma(\scombstep(\scombelem)(\view'))}\\
+    &=& \scombgamma(\scombstep(\scombelem)) 
+ 
+  \end{array}
+\]
+\end{proof}
+
+$\todo$ : Termination proof?
+
+\begin{comment}
+
+Definition2
+\[
+  \combstep(\combelem) = \{
+    \symbst' \mid \symbst \in S \wedge
+    \symbst \symbtrans \symbst'
+    \}
+    \cup
+    (g \circ \sabsstep \circ f)(D)
+\]
+
+where
+$S = \combelem\mid_{\checker}$ and
+$D = \combelem\mid_{\neg\checker}$
+and two domain converters
+$\combdom \galois{f}{g} \sabsdom$
+are defined as ...
+
+\newtheorem{theorem}{Theorem}
+\begin{theorem}
+\[
+  \step \circ \combgamma \subseteq \combgamma \circ \combstep
+\]
+\end{theorem}
+
+Proof.
+
+Let's define
+\[
+  \symbolic{\combstep}(\combelem) = \{
+    \symbst' \mid \symbst \in \combelem \wedge
+    \symbst \symbtrans \symbst'
+  \}
+\]
+
+and
+\[
+  \abs{\combstep}(\combelem) = (g \circ \sabsstep \circ f)(\combelem)
+\]
+
+then we can see that
+\[
+  \combstep(\combelem) = \symbolic{\combstep}(S) \cup \abs{\combstep}(D)
+\]
+
+Lemma. 
+\[
+  \step \circ \combgamma \subseteq \combgamma \circ \abs{\combstep}
+\]
+
+Proof of Lemma.
+
+
+
+Then, 
+\[
+  \begin{array}{rcll}
+    \step\circ\combgamma(\combelem) &=& \step\circ\combgamma(S \cup D)\\
+    &=& \step\circ\combgamma(S)  \cup \step\circ\combgamma(D) & (by Definition of \step and \combgamma) (TODO)\\
+    &\subseteq& \combgamma\circ\symbolic{\combstep}(S) \cup \step\circ\combgamma(D) & (by property of \symbtrans)\\
+    &\subseteq& \combgamma\circ\symbolic{\combstep}(S) \cup \combgamma\circ\abs{\combstep}(D) & (by lemma)\\
+    &=& \combgamma(\symbolic{\combstep}(S) \cup \abs{\combstep}(D))\\
+    &=& \combgamma\circ\combstep(\combelem)\\
+  \end{array}
+\]
+
+\end{comment}

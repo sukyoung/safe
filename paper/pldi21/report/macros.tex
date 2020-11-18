@@ -1,0 +1,233 @@
+\begin{comment}
+
+% thicker vertical line
+\newcolumntype{?}{!{\vrule width 1pt}}
+
+% Styles
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstdefinelanguage{JavaScript}{
+  keywords={async, await, break, case, catch, class, const, continue, debugger,
+    default, delete, do, else, enum, export, extends, false, finally, for,
+    function, if, import, in, instanceof, new, null, return, super, switch, this,
+    throw, true, try, typeof, var, void, while, with, yield},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{dkgreen}\ttfamily,
+  stringstyle=\color{purple}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinestyle{myJSstyle}{
+  language=JavaScript,
+  numbers=left,
+  stepnumber=1,
+  extendedchars=true,
+  basicstyle=\footnotesize\ttfamily,
+  showstringspaces=false,
+  showspaces=false,
+  tabsize=2,
+  breaklines=true,
+  showtabs=false,
+  captionpos=b
+}
+
+
+\end{comment}
+
+% Basic
+%\DeclareMathAlphabet{\mathpzc}{T1}{pzc}{m}{it}
+\newcommand{\powerset}[1]{\mathcal{P}(#1)}
+\newcommand{\imbox}[1]{\mbox{\small \textit{#1}}}
+\newcommand{\name}[1]{\textsf{#1}}
+\newcommand{\inred}[1]{{\color{red}{#1}}}
+\newcommand{\todo}{\inred{TODO}}
+\newcommand{\abs}[1]{{#1}^{\#}}
+\newcommand{\finmap}{{\xrightarrow[]{\text{fin}}}}
+\newcommand{\mapstos}{\;\dot{\mapsto}\;}
+\newcommand{\Dom}{\name{Dom}}
+
+% Tool
+\newcommand{\tool}{\inred{\text{SAFE}_\name{DS}}}
+
+% Keywords
+\newcommand{\jscode}[1]{\text{\lstinline[style=myJSstyle,numbers=none]!#1!}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\kwif}{\code{if}}
+\newcommand{\kwelse}{\code{if}}
+\newcommand{\kwret}{\code{ret}}
+\newcommand{\kwobj}{\code{\{\}}}
+\newcommand{\kwtrue}{\code{true}}
+\newcommand{\kwfalse}{\code{false}}
+
+% Notations
+\newcommand{\prog}{P}
+\newcommand{\labset}{\mathcal{L}}
+\newcommand{\lab}{\mathpzc{l}}
+\newcommand{\labdot}[1]{{{\bullet_{\lab_{#1}}}}}
+\newcommand{\ilab}{\lab_\iota}
+\newcommand{\labnext}{\name{next}}
+\newcommand{\op}{\name{op}}
+\newcommand{\ops}{\dot{\name{op}}}
+\newcommand{\inst}{i}
+\newcommand{\expr}{e}
+\newcommand{\refer}{r}
+
+% Numbers
+\newcommand{\numset}{\mathbb{N}}
+
+% States
+\newcommand{\stset}{\mathbb{S}}
+\newcommand{\st}{\sigma}
+\newcommand{\istset}{\stset_\iota}
+\newcommand{\ist}{\st_\iota}
+
+% Memories
+\newcommand{\memset}{\mathbb{M}}
+\newcommand{\absmemset}{\abs{\memset}}
+\newcommand{\mem}{m}
+\newcommand{\absmem}{\abs{\mem}}
+
+% Contexts
+\newcommand{\ctxtset}{\mathbb{C}}
+\newcommand{\absctxtset}{\abs{\ctxtset}}
+\newcommand{\ctxt}{c}
+\newcommand{\absctxt}{\abs{\ctxt}}
+\newcommand{\eabsctxt}{\absctxt_\name{env}}
+
+% Transition Relations
+\newcommand{\trans}{\leadsto}
+\newcommand{\rutrans}{%
+            \mathrel{\raisebox{.1em}{%
+            \rotatebox[origin=c]{30}{$\trans$}}}}
+\newcommand{\rdtrans}{%
+            \mathrel{\raisebox{.1em}{%
+            \rotatebox[origin=c]{-30}{$\trans$}}}}
+
+% Complete Lattice
+\newcommand{\join}{\sqcup}
+\newcommand{\meet}{\sqcap}
+\newcommand{\bigjoin}{\bigsqcup}
+\newcommand{\bigmeet}{\bigsqcap}
+\newcommand{\order}{\sqsubseteq}
+
+% Concrete Domains
+\newcommand{\dom}{\mathbb{D}}
+\newcommand{\elem}{d}
+\newcommand{\ielem}{\elem_\iota}
+
+% Abstract Domains
+\newcommand{\absdom}{\abs{\dom}}
+\newcommand{\abselem}{\abs{\elem}}
+\newcommand{\iabselem}{\abs{\elem}_\iota}
+
+% Concrete Semantics
+\newcommand{\sem}[1]{[\![{#1}]\!]}
+\newcommand{\transfer}{F}
+\newcommand{\step}{\name{step}}
+
+% Abstract Semantics
+\newcommand{\abssem}[1]{\abs{\sem{#1}}}
+\newcommand{\abstransfer}{\abs{\transfer}}
+\newcommand{\absstep}{\abs{\step}}
+
+% Abstract Sensitivity
+\newcommand{\viewmap}{\delta}
+\newcommand{\sabsdom}{\absdom_\viewmap}
+\newcommand{\sabselem}{\abselem_\viewmap}
+\newcommand{\viewset}{\Pi}
+\newcommand{\view}{\pi}
+\newcommand{\sabsstep}{\absstep_\viewmap}
+\newcommand{\viewtrans}[2]{\abssem{#1 \rightarrow #2}}
+
+% Flow Sensitivity
+\newcommand{\fs}{\name{FS}}
+\newcommand{\fsviewmap}{\viewmap^\fs}
+
+% Locations
+\newcommand{\locset}{\mathbb{L}}
+\newcommand{\loc}{l}
+\newcommand{\abslocset}{\abs\locset}
+\newcommand{\absloc}{\abs\loc}
+
+% Variables
+\newcommand{\varset}{\mathbb{X}}
+\newcommand{\varx}{\code{x}}
+
+% Values
+\newcommand{\valset}{\mathbb{V}}
+\newcommand{\val}{v}
+\newcommand{\pvalset}{\valset_\name{p}}
+\newcommand{\pval}{\val_\name{p}}
+\newcommand{\fvalset}{\mathbb{F}}
+\newcommand{\fval}[2]{\lambda #1. #2}
+\newcommand{\strset}{\valset_\name{str}}
+\newcommand{\str}{\val_\name{str}}
+\newcommand{\absvalset}{\abs{\valset}}
+\newcommand{\absval}{\abs{\val}}
+
+% Addresses
+\newcommand{\addrset}{\mathbb{A}}
+\newcommand{\eaddrset}{\addrset_\name{env}}
+\newcommand{\oaddrset}{\addrset_\name{obj}}
+\newcommand{\addr}{a}
+\newcommand{\tladdr}{\addr_{\name{top}}}
+\newcommand{\absaddrset}{\abs{\addrset}}
+\newcommand{\absaddr}{\abs{\addr}}
+\newcommand{\eabsaddr}{\absaddr_\name{env}}
+\newcommand{\rabsaddr}{\absaddr_\name{ret}}
+\newcommand{\oabsaddr}{\absaddr_\name{obj}}
+
+% Abstract Counting
+\newcommand{\abscount}{\abs{n}}
+\newcommand{\inc}{\name{inc}}
+\newcommand{\abscountset}{\abs{\mathbb{N}}}
+\newcommand{\abszero}{\abs{0}}
+\newcommand{\absone}{\abs{1}}
+\newcommand{\absmany}{\abs{\geq\!\!2}}
+
+% Sealed Symbolic Interpretation
+\newcommand{\symb}{\omega}
+\newcommand{\symbset}{\Omega}
+\newcommand{\symbolic}[1]{{#1}_\symb}
+\newcommand{\symbstset}{\symbolic{\stset}}
+\newcommand{\symbst}{\symbolic{\st}}
+\newcommand{\nsymbst}[1]{\st_{\symb,#1}}
+\newcommand{\symbmemset}{\symbolic{\memset}}
+\newcommand{\symbtrans}{\symbolic{\trans}}
+\newcommand{\excst}{\bot_\st}
+\newcommand{\symbevt}{\symb_\jscode{evt}}
+\newcommand{\symbint}{\symb_\jscode{int}}
+
+% Combined Analysis
+\newcommand{\comb}[1]{\widetilde{#1}}
+\newcommand{\combdom}{\comb{\dom}}
+\newcommand{\combelem}{\comb{\elem}}
+\newcommand{\combgamma}{\comb{\gamma}}
+\newcommand{\combstep}{\comb{\step}}
+\newcommand{\scombstep}{\comb{\step}_\viewmap}
+\newcommand{\scombgamma}{\combgamma_\viewmap}
+\newcommand{\scombelem}{\comb{\elem}_\viewmap}
+\newcommand{\converter}{\tau}
+\newcommand{\saconverter}{\abs{\converter}}
+\newcommand{\asconverter}{\symbolic{\converter}}
+\newcommand{\combviewtrans}[2]{\sem{\comb{#1 \rightarrow #2}}}
+
+% Rules
+\newcommand{\referrule}[3]{#1 \vdash_\refer #2 \Rightarrow  #3}
+\newcommand{\exprrule}[3]{#1 \vdash_\expr #2 \Rightarrow #3}
+
+% Abstract Semantics
+\newcommand{\referabssem}[1]{\abssem{#1}_\refer}
+\newcommand{\exprabssem}[1]{\abssem{#1}_\expr}
+
+% Identity function
+\newcommand{\identity}{\name{id}}
+
+% Checker
+\newcommand{\checker}{\name{checker}}

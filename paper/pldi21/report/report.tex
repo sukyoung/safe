@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,left=20mm,right=20mm,top=30mm,bottom=25mm]{geometry}
+
+\usepackage{mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathpartir}
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{xspace}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{dirtree}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{galois}
+\usepackage{amsthm}
+
+\usetikzlibrary{arrows}
+\tikzset{
+  treenode/.style = {align=center, inner sep=0pt, text centered},
+  arn_n/.style = {treenode, circle, black, draw=black, text width=1.5em},
+}
+
+\begin{document}
+
+\input{macros}
+
+\title{Dynamic Shortcut Soundness Proof}
+
+\author{Dongjun Youn$^*$ \and Jihyeok Park$^*$ \and Sukyoung Ryu$^*$}
+
+\date{$^*$KAIST, South Korea}
+\maketitle
+
+\input{proof}
+
+\end{document}
