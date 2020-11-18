@@ -240,7 +240,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -260,7 +261,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -280,7 +282,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let args be an internal list that is a copy of the argument list passed to this function.
     var args = arguments;
     // 4. Let R be S.
@@ -303,7 +306,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let searchStr be ToString(searchString).
     var searchStr = @ToString(searchString);
     // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
@@ -318,7 +322,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let searchStr be ToString(searchString).
     var searchStr = @ToString(searchString);
     // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
@@ -386,7 +391,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let len be the number of characters in S.
     var len = S.length;
     // 4. Let intStart be ToInteger(start).
@@ -421,7 +427,8 @@ Function: {
   \\],
   14: [\\
   function split (separator, limit) {
-    var str = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var str = ToString(this);
     var sep = @ToString(separator);
     if (limit === undefined) return @split(str, sep);
     var lim = @ToUint32(limit);
@@ -435,7 +442,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let len be the number of characters in S.
     var len = S.length;
     // 4. Let intStart be ToInteger(start).
@@ -465,7 +473,8 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
     //4. Return L.
     return @toLowerCase(S)
@@ -478,7 +487,8 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
     //4. Return L.
     return @toLowerCase(S)
@@ -491,7 +501,8 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     //3. Let L be a String where each character of L is either the Unicode uppercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode uppercase equivalent exists.
     //4. Return L.
     return @toUpperCase(S)
@@ -504,7 +515,8 @@ Function: {
       throw new TypeError();
     }
     //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     //3. Let L be a String where each character of L is either the Unicode uppercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode uppercase equivalent exists.
     //4. Return L.
     return @toUpperCase(S)
@@ -517,7 +529,8 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var S = ToString(this);
     // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
     // 4. Return T.
     return @trim(S);
@@ -554,7 +567,8 @@ Function: {
   function substr (start, length) {
     // ECMASCript 5 Appendix B.2.3 String.prototype.substr(start, length)
     // 1. Call ToString, giving it the this value as its argument.
-    var result1 = @ToString(this);
+    var ToString = @getLoc('ToString');
+    var result1 = ToString(this);
     // 2. Call ToInteger(start).
     var result2 = @ToInteger(start);
     // 3. If length is undefined, use +; otherwise call ToInteger(length).
