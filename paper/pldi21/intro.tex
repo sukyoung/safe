@@ -74,11 +74,14 @@ concrete values.
 
 In this paper, we propose a novel \textit{dynamic shortcut} technique to
 leverage high performance of dynamic analysis for static analysis by freely
-switching between them in a sound way.  Our key observation is that we can
-use concrete semantics for specific program parts while preserving the soundness
-if they are not dependent with meaning of abstract values.  For example, the
-third line of the following program passes the abstract value \jscode{v} stored
-in \jscode{obj.p1} to the variable \jscode{x}:
+switching between them in a sound way.  The dynamic shortcut 1) dumps the
+current abstract state to the corresponding sealed symbolic state, 2) performs
+dynamic analysis, and 3) updates the abstract state with the result of dynamic
+analysis.  Our key observation is that we can use concrete semantics for
+specific program parts while preserving the soundness if they are not dependent
+with meaning of abstract values.  For example, the third line of the following
+program passes the abstract value \jscode{v} stored in \jscode{obj.p1} to the
+variable \jscode{x}:
 \begin{lstlisting}[style=myJSstyle,numbers=none]
 var v = ... // an abstract value
 var obj = { p1: v }, y = "p";
