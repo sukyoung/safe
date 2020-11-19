@@ -1,29 +1,31 @@
 \begin{abstract}
-  JavaScript becomes one of the most widely used programming languages for web
-  development, server-side programming, and even micro-controllers for IoT.
-  However, its dynamic language features degrade the scalability and precision
-  of the static analysis.  Moreover, the variety of built-in functions and host
-  environments requires excessive manual modeling of their behaviors.  To
-  alleviate this problem, several researchers utilize dynamic analysis to take
-  its advantage during JavaScript static analysis.  However, most of them cannot
-  fully utilize high performance of dynamic analysis and sacrifice the soundness
-  of static analysis.
+JavaScript becomes one of the most widely used programming languages for web
+development, server-side programming, and even micro-controllers for IoT.
+However, its extremely functional and dynamic features degrade the scalability and precision
+of static analysis.  Moreover, the variety of built-in functions and host
+environments requires excessive manual modeling of their behaviors.  To
+alleviate these problems, researchers have proposed various ways to
+leverage dynamic analysis during JavaScript static analysis.  However,
+they do not fully utilize the high performance of dynamic analysis and
+often sacrifice the soundness of static analysis.
 
-  In this paper, we propose a novel \textit{dynamic shortcut} technique to
-  leverage high performance of dynamic analysis for static analysis by freely
-  switching between them in a sound way.  It could significantly accelerate the
-  JavaScript static analysis by using the highly-optimized commercial JavaScript
-  engines for the concretely executable program parts.  Moreover, it might
-  improve the precision and lessen the modeling effort by performing dynamic
-  analysis for opaque codes.  To maximize the usage of dynamic analysis, we
-  propose \textit{sealed symbolic execution}, which is an augmented concrete
-  execution that represents abstract values as sealed symbolic values.  We
-  formally define the static analysis with dynamic shortcut using sealed
-  symbolic execution.  We actualize our method via $\tool$, which is an
-  extension of the existing JavaScript static analyzer SAFE with dynamic
-  shortcut.  For evaluation of $\tool$, we analyzed abstracted versions of
-  \inred{77} official tests of \inred{Lodash 4} library.  Our tool is
-  \inred{X.X}x faster than the original static analysis on average.  Moreover,
-  it improves \inred{XX.XX}\% of analysis precision by using dynamic analysis
-  instead of static analysis for \inred{XX.X} opaque functions on average.
+In this paper, we propose a novel technique to take advantage of the
+high performance of dynamic analysis for JavaScript static analysis
+in a sound way by using \textit{dynamic shortcuts}.  A dynamic shortcut
+consists of three parts: 1) converting an abstract state to its corresponding
+\textit{sealed symbolic state}, 2) performing \textit{sealed symbolic execution}
+on the sealed symbolic state, and 3) converting a sealed symbolic state
+to its corresponding abstract state. By taking dynamic shortcuts
+during static analysis, we can significantly improve the analysis
+scalability and precision by using highly-optimized commercial JavaScript engines
+and lessen the modeling efforts by performing sealed symbolic execution for opaque code.
+We formally define static analysis using dynamic shortcuts in the abstract
+interpretation framework.  We actualize the technique via $\tool$, an
+extended combination of SAFE and Jalangi, a static analyzer and a
+dynamic analyzer, respectively.  We evaluated $\tool$ using
+\inred{77} official tests of Lodash 4 library.
+Our experiment shows that $\tool$ is \inred{X.X}x faster than the
+baseline static analyzer on average, and it improves \inred{XX.XX}\%
+of the analysis precision on average by using sealed symbolic
+execution for \inred{XX.X} opaque functions.
 \end{abstract}
