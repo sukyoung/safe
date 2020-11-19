@@ -1,126 +1,129 @@
 \section{Introduction}\label{sec:intro}
-
-Over the past decade, the rise of JavaScript as the de facto programming
-language in web development has expanded its reach to diverse fields.
+Over the past decades, the rise of JavaScript as the de facto programming
+language for web development has expanded its reach to diverse fields.
 Node.js~\cite{nodejs} supports server-side programming, React
 Native~\cite{react-native} and Electron~\cite{electron} produce cross-platform
-applications.  Moreover, Moddable~\cite{moddable} and Espruino~\cite{espruino}
+applications, and Moddable~\cite{moddable} and Espruino~\cite{espruino}
 provide JavaScript environments in micro-controllers for IoT.  Such wide prevalent
-usage places JavaScript at \#7 in TIOBE Programming Community
+uses place JavaScript at \#7 in the TIOBE Programming Community
 index\footnote{https://www.tiobe.com/tiobe-index/}.  Thus, researchers have
 developed static analyzers such as JSAI~\cite{jsai}, TAJS~\cite{tajs},
 WALA~\cite{wala}, and SAFE~\cite{safe,safe2} to understand behaviors of
-JavaScript programs and to detect their bugs in a sound way.
+JavaScript programs and to detect their bugs in a sound manner.
 
-However, static analysis of real-world JavaScript programs suffers from its
-dynamic language features.  JavaScript supports various \textit{dynamic language
-features} such as high-order functions, first-class property names, and dynamic
-code generations.  While they provide great flexibility in development but it is
-challenging to statically analyze such features.  To overcome this problem,
+However, static analysis of real-world JavaScript programs suffers from immensely
+functional and dynamic features of JavaScript such as callback
+functions, first-class property names, and dynamic code generation.
+While they provide flexibility in software development, it is
+challenging to statically analyze such features.  To overcome these problems,
 researchers have proposed several analysis techniques: advanced string
 domains~\cite{string, regex, combining-string}, loop sensitivity~\cite{lsaECOOP,
-lsaSPE}, property relation based analysis~\cite{correlation, weaklyAPLAS,
+lsaSPE}, analysis based on property relations~\cite{correlation, weaklyAPLAS,
 weaklySPE, value-partitioning}, and on-demand backward
 analysis~\cite{value-refinement}.
 
-At the same time, various JavaScript host environments require excessively
-manual modeling of their behaviors for static analysis.  Built-in functions and
-host-dependent functions are implemented in another native language like C++
-instead of JavaScript thus their codes are \textit{opaque} during static
-analysis.  Thus, we need to manually model their behaviors but it is
-error-prone, tedious, and labor-intensive.  While several automatic modeling
-techniques~\cite{safewapi, model-ts} have been proposed, they utilize only type
-information thus they generate imprecise modeling compared to the manual
-approach.
+At the same time, various JavaScript host environments require excessive
+manual modeling of their behaviors for static analysis.  Because built-in functions and
+host-dependent functions are implemented in native language like C and
+C++ instead of JavaScript, their code is \textit{opaque} during static
+analysis.  Thus, static analyzers often model their behaviors
+manually, which is error-prone, tedious, and labor-intensive.
+While several researchers have proposed automatic modeling
+techniques~\cite{safewapi, model-ts}, since they utilize only type
+information, they generate imprecise modeling compared with the manual approach.
 
-\begin{figure}
+\begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{img/performance_v8v7}
   \vspace*{-2em}
-  \caption{The performances of dynamic analysis and static analysis for V8
-  benchmarks (version 7)}
+  \caption{Performance of a dynamic analyzer and a static analyzer for V8
+  benchmarks version 7}
   \label{fig:performance}
   \vspace*{-1em}
 \end{figure}
 
-Instead of advancing static analysis techniques, several researchers leverage
-dynamic analysis to resolve such obstacles in static analysis.  Dynamic
-analyzers such as Jalangi~\cite{jalangi} and DLint~\cite{dlint} run on a
-highly-optimized commercial JavaScript engine thus they are much faster than
-static analysis.  Figure~\ref{fig:performance} shows that the dynamic analysis
-(Jalangi) is \inred{X.X}x faster than static analysis (SAFE) for V8 benchmarks
-(version 7).  Using high performance dynamic analysis, several researchers
-reduce the scope of static analysis~\cite{determinacy, blendedJS}, construct
-initial abstract state~\cite{battles, eha}, and automatic modeling of opaque
-codes~\cite{sra}.
+To alleviate these problems, researchers have leveraged
+dynamic analysis during static analysis.  Because dynamic
+analyzers such as Jalangi~\cite{jalangi} and DLint~\cite{dlint} run on
+highly-optimized commercial JavaScript engines, they are much faster than
+static analyzers.  Figure~\ref{fig:performance} shows that the dynamic analyzer
+Jalangi is \inred{X.X}x faster than the static analyzer SAFE for V8 benchmarks
+version 7.  Using high performance dynamic analysis, researchers have
+reduced the scope of static analysis~\cite{determinacy, blendedJS} and constructed
+initial abstract states~\cite{battles, eha} and automatic modeling of opaque
+code~\cite{sra}.
 
 Unfortunately, existing techniques using dynamic analysis for static analysis
-have two limitations: 1) it cannot fully utilize the high performance of dynamic
-analysis, and 2) it sacrifices the soundness of static analysis.  Most of
-existing techniques are \textit{staged analyses} that first extract specific
-information via dynamic analysis and utilize it in static analysis;
-\citet{determinacy} identifies determinate expressions that always have the same
-value at given program point, \citet{blendedJS} extract the dynamic values to
-change expressions as certain literals, and Park et al.~\cite{battles,eha} dump
-initial states in a certain host environment or the entry of an event handler.
-However, they cannot utilize dynamic analysis any more after starting static
-analysis thus they disturb to maximize the performance advantage.  Moreover,
-they sacrifice the soundness of static analysis to perform dynamic analysis.
-For example, \citet{sra} utilize dynamic analysis for opaque codes with given
-abstract arguments during static analysis.  However, they randomly sample finite
-concrete values for given abstract arguments when they represent infinite number
-of values.  Thus, the analysis result becomes unsound because of the missing
-concrete values.
+have two limitations: 1) they do not fully utilize the high performance of dynamic
+analysis, and 2) they sacrifice the soundness of static analysis.  Most of
+them are \textit{staged analyses}, which first extract specific
+information via dynamic analysis and utilize it in static analysis.
+\citet{determinacy} identify determinate expressions that always have the same
+values at given program points, \citet{blendedJS} extract dynamic values to
+change expressions to certain literals, and Park et al.~\cite{battles,eha} dump
+the initial states of a certain host environment or the entry of an event handler.
+However, because they do not utilize dynamic analysis as soon as static
+analysis begins, they do not get performance benefits since then.  Moreover,
+they sacrifice the soundness of static analysis by performing dynamic analysis.
+For example, the SRA model~\cite{sra} uses dynamic analysis for opaque code
+with abstract arguments during static analysis.  When the abstract arguments
+represent an infinite number of values, it randomly samples finite
+concrete values for the abstract arguments, which makes the analysis
+result unsound due to missing concrete values.
 
-In this paper, we propose a novel \textit{dynamic shortcut} technique to
-leverage high performance of dynamic analysis for static analysis by freely
-switching between them in a sound way.  A dynamic shortcut consists of three
-parts that 1) dumps the current abstract state to the corresponding sealed
-symbolic state, 2) performs dynamic analysis on the sealed symbolic state, and
-3) updates the abstract state with the result of dynamic analysis.  Our key
-observation is that we can use concrete semantics for specific program parts
-while preserving the soundness if they are not dependent with meaning of
-abstract values.  For example, the third line of the following program passes
-the abstract value \jscode{v} stored in \jscode{obj.p1} to the variable
-\jscode{x}:
+In this paper, we propose a novel technique to fully utilize
+the high performance of dynamic analysis for JavaScript static
+analysis in a sound manner by using \textit{dynamic shortcuts}.
+During static analysis, one can take a dynamic shortcut, which
+consists of three parts: 1) converting the current abstract state to
+its corresponding \textit{sealed symbolic state}, 2) performing
+\textit{sealed symbolic execution} on the sealed symbolic state, and
+3) converting the result of the sealed symbolic execution to its
+corresponding abstract state.  Our key observation is that we can use
+the fast concrete execution for specific program parts while
+preserving the soundness if they do not use abstract values.
+For example, consider static analysis of the following code:
 \begin{lstlisting}[style=myJSstyle,numbers=none]
-var v = ... // an abstract value
-var obj = { p1: v }, y = "p";
-x = obj[y + 1];
+    var v = ... // an abstract value
+    var obj = { p1: v }, y = "p";
+    x = obj[y + 1];
 \end{lstlisting}
-Even though \jscode{obj} contains an abstract value \jscode{v}, the semantics of
-the third line does not dependent with the meaning of \jscode{v}.  To utilize
-this observation in dynamic shortcut, we introduce \textit{sealed symbolic
-execution}, which is an augmented concrete execution with sealed symbolic
-values.  We represent each abstract value as a sealed symbolic value, which is a
-symbolic value that detects when trying to access its actual meaning.  To
-evaluate our approach, we implemented $\tool$ by extending the existing
-JavaScript static analyzer SAFE with dynamic shortcut.  For evaluation of
-$\tool$, we analyzed abstracted versions of \inred{77} official tests of
-\inred{Lodash 4} library.
+Because \jscode{y + 1} evaluates to \jscode{"p1"},
+the third line assigns the abstract value of \jscode{v} stored in
+\jscode{obj.p1} to the variable \jscode{x}.
+Note that even though \jscode{obj} contains an abstract value \jscode{v},
+because the third line does not ``use'' the value of \jscode{v},
+we can concretely execute the code.  Based on this observation,
+we introduce sealed symbolic execution, which is concrete execution
+using \textit{sealed symbolic values}.  A sealed symbolic value is a
+representation of an abstract value in symbolic execution; it signals
+the end of the current dynamic shortcut when the sealed symbolic
+execution tries to access its value.
+To evaluate our technique, we implemented $\tool$ using both SAFE
+and Jalangi and analyzed \inred{77} official tests of Lodash 4 library.
 
-Our contributions in this paper include the following:
+The contributions of this paper include the following:
 \begin{itemize}
-  \item We present a novel \textit{dynamic shortcut} for JavaScript static
-    analysis to leverage the high performance of dynamic analysis.  We also
-    formally define it with sealed symbolic execution and prove the soundness of
-    static analysis using dynamic shortcut.
-  \item We actualize dynamic shortcut technique in $\tool$, which is an
-    extension of an existing JavaScript static analyzer SAFE with a dynamic
-    analyzer Jalangi.
-  \item For empirical evaluation, we analyzed \inred{77} official tests of
-    \inred{Lodash 4} library with randomly abstracted values.  Our tool
-    accelerates \inred{X.X}x the static analysis on average.  Moreover, it
-    improves \inred{XX.XX}\% of analysis precision by using dynamic shortcut
-    instead of manual modeling for \inred{XX.X} opaque functions on average.
+\item We present a novel technique for JavaScript static
+analysis to leverage the high performance of dynamic analysis by taking
+multiple dynamic shortcuts.  We formally define the technique and prove
+its soundness and termination.
+\item We actualize the proposed technique in $\tool$, an
+extended combination of existing analyzers SAFE and Jalangi.
+\item For empirical evaluation, we analyzed \inred{77} official tests of
+\inred{Lodash 4} library.  The experiment shows that $\tool$ outperforms
+SAFE \inred{X.X}x on average.  Moreover, by using dynamic shortcuts
+instead of manual modeling for \inred{XX.X} opaque functions,
+$\tool$ improves \inred{XX.XX}\% of the analysis precision on average.
 \end{itemize}
 
 In the remainder of this paper, Section~\ref{sec:motivation} explains the
 motivation of this work with a simple example.  Section~\ref{sec:formal}
-formalizes adding dynamic shortcuts on abstract interpretation.  We extended the
-formalization with JavaScript specific language features with a core language in
-Section~\ref{sec:javascript}.  Section~\ref{sec:implementation} describes
-key techniques to implement dynamic shortcuts for JavaScript static analysis.
-We describes evaluation result of our techniques with real-world benchmarks in
-Section~\ref{sec:eval}.  Section~\ref{sec:related} explains related works and
+formalizes the language-agnostic part of the technique in the abstract
+interpretation framework.  Then, we extend the formalization with
+JavaScript specific features in Section~\ref{sec:javascript}.
+Section~\ref{sec:implementation} describes important details of the
+$\tool$ implementation.  We explain the evaluation results of $\tool$
+with real-world benchmarks in Section~\ref{sec:eval}.
+Section~\ref{sec:related} discusses related work and
 Section~\ref{sec:conclusion} concludes.
