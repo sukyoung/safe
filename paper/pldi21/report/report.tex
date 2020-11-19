@@ -1,5 +1,6 @@
-\documentclass[11pt]{article}
-\usepackage[a4paper,left=20mm,right=20mm,top=30mm,bottom=25mm]{geometry}
+\documentclass[sigplan,10pt]{acmart}
+
+\settopmatter{printacmref=false}
 
 \usepackage[T1]{fontenc}
 \usepackage[ruled, vlined]{algorithm2e}
@@ -32,13 +33,6 @@
 \usepackage{xcolor}
 \usepackage{xspace}
 
-
-\usetikzlibrary{arrows}
-\tikzset{
-  treenode/.style = {align=center, inner sep=0pt, text centered},
-  arn_n/.style = {treenode, circle, black, draw=black, text width=1.5em},
-}
-
 \input{../macros}
 
 \begin{document}
@@ -52,6 +46,7 @@
 
 \maketitle
 
+\input{def}
 \input{proof}
 
 \end{document}
