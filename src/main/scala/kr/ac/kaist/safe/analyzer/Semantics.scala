@@ -80,6 +80,9 @@ case class Semantics(
     received.parseJson
   }
 
+  private var calledByCall: Set[Entry] = Set()
+  private var calledByConstruct: Set[Entry] = Set()
+
   lazy val engine = new ScriptEngineManager().getEngineByMimeType("text/javascript")
   def init: Unit = {
     val entry = cfg.globalFunc.entry
@@ -166,9 +169,13 @@ case class Semantics(
 
   def E(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData, st: AbsState): AbsState = {
     (cp1.block, cp2.block) match {
-      case (_, Entry(f)) => st.context match {
+      case (call: Call, entry @ Entry(f)) => st.context match {
         case _ if st.context.isBottom => AbsState.Bot
         case ctx1: AbsContext => {
+          call.callInst match {
+            case (_: CFGCall) => calledByCall += entry
+            case (_: CFGConstruct) => calledByConstruct += entry
+          }
           val objEnv = data.env.record.decEnvRec.GetBindingValue("@scope") match {
             case (value, _) => AbsLexEnv.NewDeclarativeEnvironment(value.locset)
           }
@@ -231,7 +238,7 @@ case class Semantics(
       val ctx = st.context
       val allocs = st.allocs
       cp.block match {
-        case Entry(func) => {
+        case entry @ Entry(func) => {
           val fun = cp.block.func
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
@@ -274,7 +281,7 @@ case class Semantics(
             globalLocJSON = newSt.heap.get(GLOBAL_LOC).toJSON
             if (globalLocJSON.asJsObject.fields contains uomap.UNIQUE)
               throw new ToJSONFail("GLOBAL_LOC")
-            val dump = {
+            var dump = {
               val fields = Map(
                 "fid" -> JsNumber(fid),
                 "state" -> newSt.toJSON,
@@ -288,6 +295,15 @@ case class Semantics(
                 else fields
               )
             }
+
+            // remove this object for construct
+            val thisBindingForConstruct =
+              calledByConstruct.contains(entry) && !calledByCall(entry) && dump
+                .fields("state").asJsObject
+                .fields("context").asJsObject
+                .fields("thisBinding").asJsObject
+                .fields.contains("location")
+            dump = JsObject(dump.fields + ("isConstructor" -> JsBoolean(thisBindingForConstruct)))
 
             dsCount += 1
 

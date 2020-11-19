@@ -48,4 +48,6 @@ package object analyzer {
 
   // CFG
   var globalCFG: CFG = null
+
+  def debug(msg: String): Unit = System.err.println(msg)
 }
