@@ -196,7 +196,7 @@
 \newcommand{\nsymbst}[1]{\st_{\symb,#1}}
 \newcommand{\symbmemset}{\symbolic{\memset}}
 \newcommand{\symbtrans}{\symbolic{\trans}}
-\newcommand{\excst}{\bot_\st}
+\newcommand{\excst}{\bot}
 \newcommand{\symbevt}{\symb_\jscode{evt}}
 \newcommand{\symbint}{\symb_\jscode{int}}
 
@@ -213,6 +213,10 @@
 \newcommand{\saconverter}{\abs{\converter}}
 \newcommand{\asconverter}{\symbolic{\converter}}
 \newcommand{\combviewtrans}[2]{\sem{\comb{#1 \rightarrow #2}}}
+
+% Triage
+\newcommand{\triage}{\name{triage}}
+\newcommand{\atriage}{\triage_\aelem}
 
 % Rules
 \newcommand{\referrule}[3]{#1 \vdash_\refer #2 \Rightarrow  #3}
@@ -286,3 +290,12 @@
 \newcommand{\mylinetft}{\\\hhline{------~|-----------}}
 \newcommand{\mylinettf}{\\\hhline{------------~|-----}}
 \newcommand{\mylinettt}{\\\hhline{------------------}}
+
+% Instantiation Map
+\newcommand{\imap}{m}
+\newcommand{\imapset}{\mathbb{M}_\name{inst}}
+\newcommand{\instant}[2]{#1\!\!\mid\!\!_{#2}}
+
+% Analysis Element
+\newcommand{\aelem}{\epsilon}
+\newcommand{\aelemset}{\mathbb{E}}
