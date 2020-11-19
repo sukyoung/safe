@@ -167,6 +167,8 @@
 \newcommand{\absvalset}{\abs{\valset}}
 \newcommand{\absval}{\abs{\val}}
 
+\newcommand{\valgamma}{\gamma_\val}
+
 % Addresses
 \newcommand{\addrset}{\mathbb{A}}
 \newcommand{\eaddrset}{\addrset_\name{env}}
@@ -206,13 +208,21 @@
 \newcommand{\combelem}{\comb{\elem}}
 \newcommand{\combgamma}{\comb{\gamma}}
 \newcommand{\combstep}{\comb{\step}}
-\newcommand{\scombstep}{\comb{\step}_\viewmap}
-\newcommand{\scombgamma}{\combgamma_\viewmap}
-\newcommand{\scombelem}{\comb{\elem}_\viewmap}
+\newcommand{\sgamma}{\gamma_\viewmap}
 \newcommand{\converter}{\tau}
 \newcommand{\saconverter}{\abs{\converter}}
 \newcommand{\asconverter}{\symbolic{\converter}}
 \newcommand{\combviewtrans}[2]{\sem{\comb{#1 \rightarrow #2}}}
+
+\newcommand{\symbdom}{\symbolic{\dom}}
+\newcommand{\symbelem}{\symbolic{\elem}}
+\newcommand{\symbgamma}{\symbolic{\gamma}}
+\newcommand{\symbstep}{\symbolic{\step}}
+
+% Legacy
+\newcommand{\scombstep}{\comb{\step}_\viewmap}
+\newcommand{\scombgamma}{\combgamma_\viewmap}
+\newcommand{\scombelem}{\comb{\elem}_\viewmap}
 
 % Triage
 \newcommand{\triage}{\name{triage}}
@@ -293,8 +303,11 @@
 
 % Instantiation Map
 \newcommand{\imap}{m}
-\newcommand{\imapset}{\mathbb{M}_\name{inst}}
+\newcommand{\imapset}{\mathbb{M}}
+\newcommand{\absimap}{\abs{\imap}}
+\newcommand{\absimapset}{\abs{\imapset}}
 \newcommand{\instant}[2]{#1\!\!\mid\!\!_{#2}}
+\newcommand{\imapgamma}{\gamma_\imap}
 
 % Analysis Element
 \newcommand{\aelem}{\epsilon}

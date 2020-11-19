@@ -72,11 +72,11 @@ of views for reachable states during static analysis.  It maps a finite number
 of views $\viewset$ to sets of states $\dom$. Each view $\view \in \viewset$
 represents a set of states $\viewmap(\view)$.
 A \textit{sensitive state abstraction} $\dom
-\galois{\alpha_\viewmap}{\gamma_\viewmap} \sabsdom$ is a Galois connection between
+\galois{\alpha_\viewmap}{\sgamma} \sabsdom$ is a Galois connection between
 the concrete domain $\dom$ and the sensitive abstract domain $\sabsdom$ with the
 following concretization function:
 \[
-  \gamma_\viewmap(\sabselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
+  \sgamma(\sabselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
   \; \st \in \viewmap(\view) \Rightarrow \st \in \gamma \circ \sabselem(\view) \}
 \]
 
@@ -135,35 +135,90 @@ Note that the main difference of sealed symbolic execution with the traditional
 symbolic execution is that it only supports sealed symbolic values instead of
 symbolic expressions and path constraints.
 
+We also define an \textit{abstract instantiation map} $\absimap \in \absimapset:
+\symbset \rightarrow \absvalset$ with abstract values $\absvalset$.  Its
+concretization function $\imapgamma: \absimapset \rightarrow
+\powerset{\imapset}$ is defined with the concretization function $\valgamma:
+\absvalset \rightarrow \powerset{\valset}$ for values as follows:
+\[
+  \imapgamma(\absimap) = \{
+    \imap \mid \forall \symb \in \symbset. \;
+    \imap(\symb) \in \gamma \circ \absimap(\symb)
+  \}
+\]
+We define the instantiation of a given sealed symbolic state $\symbst \in
+\symbstset$ with an abstract instantiation map $\absimap \in \absimapset$ as
+follows:
+\[
+  \instant{\symbst}{\absimap} = \{ \instant{\symbst}{\imap} \mid \imap \in
+  \imapgamma(\absimap) \}
+\]
+
+\begin{definition}[Sealed Symbolic Domain]
+  We define \textit{sealed symbolic domain} $\symbdom: \powerset{\absimapset
+  \times \symbstset}$ with the following concretization function $\symbgamma:
+  \symbdom \rightarrow \dom$ and sealed symbolic one-step execution $\symbstep:
+  \symbdom \rightarrow \symbdom$ as follows:
+  \begin{itemize}
+    \item \(
+      \symbgamma(\symbelem) = 
+      \bigcup \{ \instant{\symbst}{\absimap} \mid (\absimap, \symbst) \in
+      \symbelem\}
+    \)
+    \item \(
+      \symbstep(\symbelem) = \{ (\absimap, \symbst') \mid (\absimap, \symbst)
+      \in \symbelem \wedge \symbst \symbtrans \symbst' \}
+    \)
+  \end{itemize}
+\end{definition}
+
 
 \subsubsection{Combined Domain}
 
-We define a \textit{combined domain} $\combdom = \sabsdom \times
-\powerset{\symbstset}$ as a pair of a sensitive abstract domain and a set of
-sealed symbolic states.   The join operator of combined states is defined in an
-element-wise manner:
-\[
-  \forall (\sabselem, S), ({\sabselem}', S') \in \combdom. \;
-  (\sabselem, S) \join ({\sabselem}', S') = (\sabselem \join {\sabselem}', S \cup S')
-\]
+\begin{definition}[Combined Domain]
+  We define a \textit{combined domain} as $\combdom = \sabsdom \times \symbdom$
+  with the following concretization function and join operator:
+  \begin{itemize}
+    \item \(
+      \combgamma((\sabselem, \symbelem)) = \sgamma(\sabselem) \cup
+      \symbgamma(\symbelem)
+    \)
+    \item \(
+      (\sabselem, \symbelem) \join ({\sabselem}', \symbelem') = (\sabselem \join
+      {\sabselem}', \symbelem \cup \symbelem')
+    \)
+  \end{itemize}
+\end{definition}
 
-To freely convert a pair of view and an abstract state to its
-corresponding symbolic state and vice versa, we define two domain converters
-$\symbstset \galois{\saconverter}{\asconverter} (\viewset \times \absdom)$.  In
-the converter $\asconverter$ from abstract states to symbolic states, if an
-abstract value $\absval$ represents a singleton value, the function transforms
-the abstract value to the corresponding concrete value.  Otherwise, it converts
-the abstract value as a symbolic value in a result symbolic state.  Two
-converters convert given elements without loss of information:
+An analysis element $\aelem \in \aelemset = (\viewset \times \absdom) \uplus
+(\absimapset \times \symbstset)$ is either a pair of a view and an abstract
+state or a sealed symbolic state.  To freely convert a pair of a view and an
+abstract state to its corresponding pair of an abstract instantiation map and a
+sealed symbolic state, we define two domain converters: \begin{itemize} \item
+$\asconverter: (\viewset \times \absdom) \hookrightarrow (\absimapset \times
+\symbstset)$ \item $\saconverter: (\viewset \times \absdom) \leftarrow
+(\absimapset \times \symbstset)$ \end{itemize} The converter $\asconverter$ is a
+\textit{partial function} and it is applicable when it is possible to represent
+a given abstract state in a specific view as a pair of abstract instantiation
+map and a sealed symbolic state.  Two converters should convert given elements
+without loss of information:
 \[
-  \saconverter \circ \asconverter = \asconverter \circ \saconverter = \identity
+  \forall \view \in \viewset, \abselem \in \absdom.
+\]
+\[
+  \asconverter((\view, \abselem)) = (\absimap, \symbst)
+  \Rightarrow \left\{
+  \begin{array}{l}
+    (\view, \abselem) = \saconverter((\absimap, \symbst))\\\
+    \viewmap(\view) \cap \gamma(\abselem) = \instant{\symbst}{\absimap}\\
+  \end{array}
+  \right.
 \]
 where $\identity$ denotes the identity function.
 
-An analysis element $\aelem \in \aelemset = (\viewset \times \absdom) \uplus
-\symbstset$ is either a pair of a view and an abstract state or a sealed
-symbolic state.  We define a $\atriage$ function using two converters between
-analysis elements as follows:
+
+We define a $\atriage$ function using two converters between analysis elements
+as follows:
 \begin{definition}[$\atriage$]
   The triage function $\atriage: \aelemset \rightarrow \aelemset$ for analysis
   elements is defined as
@@ -171,16 +226,15 @@ analysis elements as follows:
     \atriage(\aelem) = \left\{
       \begin{array}{ll}
         \asconverter(\aelem)
-        & \text{if} \; \aelem = (\view, \abselem) \wedge \checker(\aelem)\\
+        & \text{if} \; \aelem = (\view, \abselem) \wedge \aelem \in
+        \Dom(\asconverter)\\
         \saconverter(\aelem)
-        & \text{if} \; \aelem = \symbst \wedge \symbst \symbtrans \symbst'\\
+        & \text{if} \; \aelem = (\absimap, \symbst) \wedge \symbst \symbtrans \symbst'\\
         \aelem
         & \text{Otherwise}
       \end{array}
     \right.
   \]
-  where the function $\checker$ decides whether to perform sealed symbolic
-  execution instead of abstract interpretation.
 \end{definition}
 Using the $\atriage$ function for analysis elements, we defined the $\triage$
 function for combined states:
@@ -188,33 +242,46 @@ function for combined states:
   The triage function $\triage: \combdom \rightarrow \combdom$ for combined
   states is defined as
   \[
-    \triage((\sabselem, S)) = \left(
-      \lambda \view. \;  \bigjoin \{ \abselem \mid (\view, \abselem) \in E \},
-      E \cap \symbstset
+    \triage((\sabselem, \symbelem)) = \left(
+      \lambda \view. \bigjoin \{ \abselem \!\mid\! (\view, \abselem) \in E \},
+      E \cap (\absimapset \times \symbstset)
     \right)
   \]
   where
   \[
     E = \dot{\atriage}(\{ (\view, \abselem) \mid \view \in \viewset \wedge
-    \sabselem(\view) = \abselem \} \cup S)
+    \sabselem(\view) = \abselem \} \cup \symbelem)
   \]
 \end{definition}
 The dot notation $\dot{f}$ denotes the element-wise extended function of a
 function $f$.
 
+\begin{definition}[Combined One-Step Execution]
+  We define the combined one-step execution $\combstep: \combdom \rightarrow
+  \combdom$ is define as follows:
+  \[
+    \combstep(\combelem) = (
+      \sabsstep(\sabselem),
+      \symbstep(\symbelem)
+    )
+  \]
+  where $(\sabselem, \symbelem) = \triage(\combelem)$.
+\end{definition}
+
 We could configure when the sealed symbolic execution or the abstract
-interpretation is performed based on the definition of the $\checker$ function.
-For example, we could define the $\checker$ that passes only function entry,
-call, and exit points to perform conversions in a function level.  For the
-soundness and the termination of the the abstract interpretation with dynamic
-shortcuts, it should satisfy the following condition:
+interpretation is performed based on the definition of the converter
+$\asconverter$.  For example, we could define the $\asconverter$ for analysis
+elements related to only function entry, call, and exit points to perform
+conversions in a function level.  For the soundness and the termination of the
+the abstract interpretation with dynamic shortcuts, it should satisfy the
+following condition:
 \begin{theorem}\label{theorem:shortcut}
   The abstract interpretation with dynamic shortcut is sound and terminates in a
-  finite time if its abstract semantics is sound and $\checker$ satisfies the
+  finite time if its abstract semantics is sound and $\saconverter$ satisfies the
   following condition:
   \[
-    \checker((\view, \abselem)) \Rightarrow \asconverter((\view, \abselem))
-    \symbtrans^k \excst \wedge 1 < k \leq N
+    \asconverter((\view, \abselem)) = (\absimap, \symbst) \Rightarrow
+    \symbst \symbtrans^k \excst \wedge 1 < k \leq N
   \]
   where $N$ is a pre-defined maximum length of the sealed symbolic execution.
 \end{theorem}
