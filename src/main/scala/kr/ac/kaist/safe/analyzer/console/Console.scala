@@ -56,16 +56,14 @@ class Console(
     val prepare = prepareToRunFixpoint
     lazy val (st, excSt) = getResult
     val alreadyVisited = (debugMode || stopAlreadyVisited) && (visited contains cur)
-    val exitExc = (debugMode || stopExitExc) && (!excSt.isBottom)
     val oneSideBot = debugMode && (
       (st.heap.isBottom && !st.context.isBottom) ||
       (st.context.isBottom && !st.heap.isBottom) ||
       (excSt.heap.isBottom && !excSt.context.isBottom) ||
       (excSt.context.isBottom && !excSt.heap.isBottom)
     )
-    if (prepare || alreadyVisited || exitExc || oneSideBot) {
+    if (prepare || alreadyVisited || oneSideBot) {
       if (alreadyVisited) println("[STOP] already visited CFGBlock.")
-      if (exitExc) println("[STOP] it creates exceptions.")
       if (oneSideBot) println("[STOP] it create one side bottom.")
       if (showIter && startTime != beforeTime) {
         val duration = System.currentTimeMillis - startTime

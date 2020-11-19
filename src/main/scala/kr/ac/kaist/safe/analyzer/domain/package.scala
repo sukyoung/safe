@@ -238,4 +238,6 @@ package object domain {
 
   // cache for JSON of GLOBAL_LOC
   var globalLocJSON: JsValue = null
+
+  def debug(msg: String): Unit = System.err.println(msg)
 }
