@@ -159,7 +159,9 @@ fs.readdirSync(dirname).forEach(name => {
     let ds_jalangi_builtins = readLines(DS)
       .filter(l => l.startsWith('BUILTIN: '))
       .reduce((acc, l) => {
-        return acc.add(+l.toString().split(": ").pop());
+        let id = +l.toString().split(": ").pop();
+        if(isNaN(id)) return acc.add(l.substring('BUILTIN: '.length));
+        return acc.add(id);
       }, new Set());
     // ds builtin functions
     add([...ds_jalangi_builtins].map((f) => `[${f}]`).join(""));
@@ -170,7 +172,9 @@ fs.readdirSync(dirname).forEach(name => {
   let safe_builtins = readLines(SAFE)
     .filter(l => l.startsWith('BUILTIN: '))
     .reduce((acc, l) => {
-      return acc.add(+l.toString().split(": ").pop());
+      let id = +l.toString().split(": ").pop();
+      if(isNaN(id)) return acc.add(l.substring('BUILTIN: '.length));
+      return acc.add(id);
     }, new Set());
   add([...safe_builtins].map((f) => `[${f}]`).join(""));
 
