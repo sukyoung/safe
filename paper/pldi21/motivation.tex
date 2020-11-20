@@ -18,13 +18,12 @@ function concat() {
 }
     \end{lstlisting}
     \vspace*{-1em}
-    \caption{Lodash's \jscode{concat} function.}
+    \caption{Lodash's \jscode{concat} function}
     \label{fig:concat}
   \end{subfigure}
   \begin{subfigure}[t]{0.5\textwidth}
     \begin{lstlisting}[style=myJSstyle,firstnumber=13]
-function changeCountry(G) {
-  ...
+function changeCountry(G) { ...
   if (G.selectedVal === "US" && state) {
     // deterministic arguments of `concat`
     state.items = _.concat([["Other", "Other"]],
@@ -34,13 +33,13 @@ function changeCountry(G) {
 }
     \end{lstlisting}
     \vspace*{-1em}
-    \caption{Load the list of states of the United States.}
+    \caption{Call of \jscode{concat} with concrete values}
     \label{fig:changeCountry}
   \end{subfigure}
   \begin{subfigure}[t]{0.5\textwidth}
     \begin{lstlisting}[style=myJSstyle,firstnumber=22]
 function getData(e) {
-  var option = ... // option of server connection
+  var option = ... // option for server connection
   post(option).then(function(e) {
     if (e.total_records && e.total_records > 0) {
       // non-deterministic arguments of `concat`
@@ -52,62 +51,61 @@ function getData(e) {
 }
     \end{lstlisting}
     \vspace*{-1em}
-    \caption{Load more Zoom events from the server.}
+    \caption{Call of \jscode{concat} with abstract values}
     \label{fig:getData}
   \end{subfigure}
   \vspace*{-1em}
-  \caption{Motivating Example: Excerpts from Lodash library and JavaScript codes
-  in \code{zoom.us} site.}
+  \caption{Lodash library function and its uses in \code{zoom.us}}
   \label{fig:example}
   \vspace*{-1em}
 \end{figure}
 
-In this section, we will explain the motivation of the dynamic shortcut for
-JavaScript static analysis with real-world examples described in
-Figure~\ref{fig:example}.  We first describe their program behaviors and then
-explain how to utilize dynamic analysis during static analysis of them.
+In this section, we explain the motivation of dynamic shortcuts
+using real-world examples shown in Figure~\ref{fig:example}.
+We first describe their behaviors and then explain how we can utilize
+dynamic shortcuts during their static analysis.
 
-For motivating examples, we excerpt the \jscode{concat} function in
-Figure~\ref{fig:concat} from Lodash library~\cite{lodash} (v4.17.20), which is
+Figure~\ref{fig:example}(a) shows the \jscode{concat} function defined
+in Lodash library~\cite{lodash} (v4.17.20); it is
 the most popular npm package\footnote{https://www.npmjs.com/browse/depended}
-and \inred{124,562} npm packages have dependency with it.  The \jscode{concat}
-function creates a new array concatenating given arrays or values.  It first
-checks the length of arguments in line 1-3. Then, it stores the first argument
-to \jscode{array} in line 4 and copies the remaining arguments to \jscode{args} in
-line 5-8.  In line 9, it checks whether \jscode{array} is an array object with
-the built-in function \jscode{isArray}.  If so, it creates a new array by
-copying the given array via or initializing with a single value in line 10.
-Finally, it flattens \jscode{args} via \jscode{baseFlatten} and pushes the
-result to the new array in line 11.
+and \inred{124,562} npm packages have a dependency on it.
+The \jscode{concat} function creates a new array concatenating given arrays or values.
+It first checks the length of \jscode{arguments} on lines 1--3.
+Then, it stores the first argument to \jscode{array} on line 4 and
+copies the remaining arguments to \jscode{args} on lines 5--8.
+On line 9, it checks whether \jscode{array} is an array object using
+the built-in function \jscode{isArray}.  If so, it creates a new array
+by copying the given array via \jscode{copyArray}; otherwise,
+it creates a singleton array \jscode{[array]}.  Finally, it flattens
+\jscode{args} via \jscode{baseFlatten} and pushes the result to the
+new array on line 11.
 
-For applications of Lodash, we excerpt two functions \jscode{changeCountry} in
-Figure~\ref{fig:changeCountry} and \jscode{getData} in Figure~\ref{fig:getData}
-from the \code{zoom.us}~\cite{zoom} site.  The website \code{zoom.us} is
-homepage of Zoom, which is a videotelephony software program developed by Zooom
-Video Communications and it is ranked as \inred{16th} popular web site according
+Figure~\ref{fig:example}(b) and Figure~\ref{fig:example}(c) show use
+cases of the \jscode{concat} function in the \code{zoom.us}~\cite{zoom} site.
+It is the homepage of Zoom, which is a videotelephony software program developed by Zoom
+Video Communications and it is ranked as the \inred{16th} popular web site according
 to Alexa\footnote{https://www.alexa.com/siteinfo/zoom.us} in November 2020.
 
-
-\paragraph{Dynamic shortcut with concrete values.}
-When the given arguments of a function are concrete values, we can perform
-dynamic analysis instead of static analysis. For example, the
-\jscode{changeCountry} function is invoked when a user selects another country
-on the drop-down list in the registration page.  It calls the \jscode{concat}
-function to update the drop-down list of states or provinces in 17-18.  However,
-when the user selects ``United States of America'' (USA), two arguments are
-pre-defined with deterministic values; the first one is an array literal
-\jscode{[["Other", "Other"]]} and the second one is an array of pairs of
-abbreviations and names of the states defined as follows:
+\paragraph{Dynamic shortcuts with concrete values.}
+When a function is called with concrete values, we can perform
+dynamic analysis instead of static analysis.
+For example, \jscode{changeCountry} in Figure~\ref{fig:example}(b)
+is invoked when a user selects a country from a drop-down list in the registration page.
+It calls the \jscode{concat} function to update the drop-down list of
+states or provinces on lines 17--18.  However, when the user selects ``United States of America,''
+which is \jscode{"US"}, two arguments are pre-defined with
+deterministic values; the first one is an array literal
+\jscode{[["Other", "Other"]]} and the second one is an array of pairs
+of abbreviations and names of the states defined as follows:
 \begin{lstlisting}[style=myJSstyle,numbers=none]
 WebinarBase.questions.state.items =
   [["AL","Alabama"], ..., ["WY", "Wyoming"]]
 \end{lstlisting}
-Moreover, \jscode{this} value is also a concrete value, the Lodash top-level
-object \jscode{\_}.  Thus, we could perform dynamic analysis by invoking the
-\jscode{concat} function with \jscode{\_} as \jscode{this} value and above two
-concrete values as arguments.  It increases performance of static analysis by
-skipping the analysis of function call in line 17-18 and utilizing the result of
-dynamic analysis.
+Moreover, \jscode{this} also has a concrete value, the Lodash top-level object \jscode{\_}.
+Thus, we can perform dynamic analysis by invoking \jscode{concat} with
+\jscode{\_} as its \jscode{this} value and the above concrete values as arguments. 
+By skipping the analysis of the function call on lines 17--18 and
+utilizing the result of dynamic analysis, it improved the analysis performance.
 
 \begin{figure}[t]
   \begin{subfigure}{0.23\textwidth}
@@ -137,56 +135,53 @@ dynamic analysis.
     \label{fig:events}
   \end{subfigure}
   \vspace*{-1em}
-  \caption{Concrete objects for arguments with sealed symbolic values.}
+  \caption{Concrete objects with sealed symbolic values}
   \label{fig:sealed}
   \vspace*{-1em}
 \end{figure}
 
-\paragraph{Dynamic shortcut with abstract values.}
-Dynamic analysis is still applicable using \textit{sealed symbolic execution}
-even if the arguments are not concrete values.  The \jscode{getData} function is
-invoked when clicking the ``Load More'' button to load more Zoom events in
-``Webinars \& Events'' page.  For each click, the \jscode{getData} sends a POST
-request to the server and receives additional event information \jscode{e} in
+\paragraph{Dynamic shortcuts with abstract values.}
+Even when a function is called with abstract values, we can still
+perform dynamic analysis using sealed symbolic execution.
+For example, \jscode{getData} in Figure~\ref{fig:example}(c) is invoked
+when a user clicks the ``Load More'' button to load more Zoom events in
+the ``Webinars \& Events'' page.  It sends a POST
+request to a server and receives additional events \jscode{e} on
 line 24.  Then, eight events in \jscode{e.events} are appended to
-\jscode{this.pastEvents} using the \jscode{concat} function in line 27-28.
+\jscode{this.pastEvents} using \jscode{concat} on lines 27--28.
 However, the arguments of \jscode{concat} are not deterministic because 1) the
 event list stored in \jscode{this.pastEvents} is continuously grown for each
-load and 2) also each event stored in \jscode{e.events} are dependent on the
+load and 2) the events stored in \jscode{e.events} are dependent on the
 data given from the server.
 
-To perform dynamic analysis with abstract values, we sealed the abstract values
-of arguments with symbolic values as described in Figure~\ref{fig:sealed}.  It
-contains two symbolic values $\symbevt$ and $\symbint$ that represent any event
-objects and integer values, respectively.  Then, dynamic analysis is
-successfully performed before copying \jscode{array} via \jscode{copyArray} in
-line 10.  First, \jscode{length} stores \jscode{2} and passes the length check
-in line 1-2. Then, \jscode{array} points to the same object of
-\jscode{this.pastEvents} in line 4, \jscode{args} stores an array with a
-single object stored in \jscode{e.events} in 5-8, and the \jscode{isArray}
-function returns \jscode{true} for \jscode{array} in line 9.  However, it fails
-to perform dynamic analysis for \jscode{copyArray} because the \jscode{length}
-property of \jscode{array} is the symbolic value $\symbint$.  Thus, the dynamic
-shortcut returns the analysis result and the static analyzer continues to
-analyze the program from line 10.  Then, only copying via \jscode{copyArray},
-flattening via \jscode{baseFlatten}, and pushing via \jscode{arrayPush} utilize
-the abstract semantics.  This is how to utilize sealed symbolic execution to
-maximize the part of dynamic analysis during static analysis.
+To perform dynamic analysis with abstract values, we seal abstract values
+with symbolic values as in Figure~\ref{fig:sealed}.  Two symbolic
+values $\symbevt$ and $\symbint$ represent an event
+object and an integer, respectively.  Then, we can perform dynamic analysis
+successfully until line 9.  On line 2, \jscode{length} is \jscode{2};
+on line 4, \jscode{array} points to \jscode{this.pastEvents};
+on lines 5--8, \jscode{args} stores an array with a single object stored in \jscode{e.events};
+and on line 9, \jscode{isArray(array)} is \jscode{true}.
+However, dynamic analysis fails for \jscode{copyArray(array)} on line 10
+because the value of the \jscode{length} property of \jscode{array} is the symbolic value $\symbint$.
+Then, we stop the sealed symbolic execution, convert the current
+sealed symbolic state to its corresponding abstract state, and resume
+the static analysis from line 10.  Because sealed symbolic execution
+leverages fast dynamic analysis as long as possible, the overall
+analysis becomes more scalable.
 
-
-\paragraph{Dynamic shortcut for opaque functions.}
-
-The previous two examples also show that dynamic shortcut can improve the
-analysis precision and lessen the effort of modeling the opaque functions.
-In line 9, the \jscode{isArray} function is a JavaScript built-in library thus
-it is written in a native language of the host environment.  Thus, we need to
-manually model its behavior to statically analyze it.  Assume that we model the
-\jscode{isArray} function to return the top boolean value that denotes both of
-\jscode{true} and \jscode{false}.  If we perform static analysis with this
-modeling, both of true branch \jscode{copyArray(array)} and false branch
-\jscode{[array]} in line 10 are always analyzed while \jscode{[array]} is never
-reachable in the motivating examples.  However, with the dynamic shortcut, the
-analyzer utilizes the concrete semantics of \jscode{isArray}.  It returns more
-precise result \jscode{true} instead of the top boolean value and it is not
-necessary to model the \jscode{isArray} function for static analysis of
-motivating examples.
+\paragraph{Dynamic shortcuts for opaque functions.}
+As the previous two examples additionally show, using dynamic shortcuts 
+lessens the burden of modeling opaque functions from static analysis, and
+it can even improve the analysis precision.
+On line 9, since the \jscode{isArray} function is a JavaScript built-in library function,
+it is implemented in a native language of the host environment, which
+often requires manual modeling of its behaviors for JavaScript static analysis.
+Assuming that a static analyzer models \jscode{isArray} to return the
+boolean top value $\top_b$ that encompasses both \jscode{true} and \jscode{false},
+static analysis of the ternary conditional expression on lines 9--10 analyzes
+both branches \jscode{copyArray(array)} and \jscode{[array]}, even though
+\jscode{[array]} is never reachable in the example code.  On the contrary,
+using dynamic shortcuts, static analysis does not need to model \jscode{isArray}.
+It can perform sealed symbolic execution for \jscode{isArray}, which
+returns a more precise result \jscode{true} than $\top_b$.
