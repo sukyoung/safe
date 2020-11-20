@@ -46,16 +46,16 @@ equipped with 4.2GHz Quad-Core Intel Core i7 and 64GB of RAM.
 
 To evaluate the effectiveness of the dynamic shortcut, we performed static
 analysis for \inred{269} Lodash 4 tests with and without dynamic shortcut.
-Figure~\ref{fig:conc-analysis-time} depicts the box plot chart for their
-analysis time and for speed up after applying the dynamic shortcut in a
-logarithmic scale.  While the base analysis (no-DS) finished \inred{199} out of
-\inred{269} tests within 5 minutes, our tool finished all tests with the dynamic
-shortcut (DS).  For \inred{199} tests analyzable by both analyses, the analysis
-took \inred{168.4} seconds and \inred{12.2} seconds on average without dynamic
-shortcut (no-DS) and with dynamic shortcut (DS), and the dynamic shortcut
-accelerates \inred{20.16}\textsf{x} the static analysis on average.  Only for
-one test using $\jscode{_.sample}$ (a Lodash 4 library that randomly samples a
-value from a given array), the static analysis using dynamic shortcut had
+Figure~\ref{fig:conc-analysis-time} depicts the histogram for their analysis
+time and the box plot for speed up after applying the dynamic shortcut.  While
+the base analysis (no-DS) finished \inred{199} out of \inred{269} tests within 5
+minutes, our tool finished all tests with the dynamic shortcut (DS).  For
+\inred{199} tests analyzable by both analyses, the analysis took \inred{168.4}
+seconds and \inred{12.2} seconds on average without dynamic shortcut (no-DS) and
+with dynamic shortcut (DS), and the dynamic shortcut accelerates
+\inred{20.16}\textsf{x} the static analysis on average.  Only for one test using
+$\jscode{_.sample}$ (a Lodash 4 library that randomly samples a value from a
+given array), the static analysis using dynamic shortcut had
 \inred{0.81}\textsf{x} speed of the base analysis because of the frequent use of
 dynamic shortcut (\inred{24} times).
 
@@ -66,49 +66,61 @@ via a single usage of dynamic shortcut without using abstract semantics.
 However, the arguments of library functions might include non-deterministic user
 inputs in the real-world JavaScript programs.  Thus, we modified Lodash 4
 official tests with abstract values to mimic the use patterns of library
-functions.  We randomly selected literals and replace subset of them to their
+functions.  We randomly selected literals and replace one of them to their
 corresponding typed abstract values.  For example, if we pick a numerical
 literal \jscode{42}, we modified it to the abstract numeric value
 $\top_{\code{num}}$, which represents the all numerical values.  In the
-remaining section, we evaluated our tool based on the randomly abstracted tests
-of Lodash 4.
+remaining section, we evaluated our tool based on the \textit{original} tests
+and the \textit{abstracted} tests of Lodash 4.
 
-For abstracted tests, the dynamic shortcut successfully accelerates the static
-analysis.  Figure~\ref{fig:abs-analysis-time} shows the analysis time for the
-abstracted tests in a logarithmic scale.  Among \inred{269} abstracted tests,
-the base analysis (no-DS) finished \inred{82} tests within 5 minutes.  On the
-other hand, the analysis using dynamic shortcut (DS) finished \inred{219} tests.
-For \inred{82} tests analyzable by both analyses, the analyses took
-\inred{168.4} seconds and \inred{12.2} seconds on average without dynamic
-shortcut (no-DS) and with dynamic shortcut (DS), and the dynamic shortcut
-accelerates \inred{20.16}\textsf{x} the static analysis on average.
+Also for abstracted tests, the dynamic shortcut successfully accelerates the
+static analysis.  Figure~\ref{fig:abs-analysis-time} shows the analysis time for
+the abstracted tests.  Among \inred{269} abstracted tests, the base analysis
+(no-DS) finished \inred{82} tests within 5 minutes.  On the other hand, the
+analysis using dynamic shortcut (DS) finished \inred{219} tests.  For \inred{82}
+tests analyzable by both analyses, the analyses took \inred{168.4} seconds and
+\inred{12.2} seconds on average without dynamic shortcut (no-DS) and with
+dynamic shortcut (DS), and the dynamic shortcut accelerates
+\inred{20.16}\textsf{x} the static analysis on average.
 
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{img/abs-analysis-ratio}
   \vspace*{-1.5em}
-  \caption{Time ratio of the finished analysis with dynamic shortcut for
-  \inred{219} Lodash 4 \textit{abstracted} tests.}
+  \caption{Analysis time ratio for \inred{219} Lodash 4 \textit{abstracted}
+  tests.}
   \label{fig:abs-analysis-ratio}
   \vspace*{-1.5em}
 \end{figure}
 
-For \inred{219} abstracted tests successfully analyzed with the dynamic
-shortcut, communication costs between static and dynamic analysis grew
-relatively to the number of dynamic shortcuts.  To communicate with the
-dynamic analyzer, the static analysis should dump the current abstract state,
-send it to the dynamic analyzer, receive the result from the dynamic analysis,
-and apply the given update information to the abstract state.  Thus, the
-communication costs will increase dependent on the number of dynamic shortcuts.
-Figure~\ref{fig:abs-analysis-ratio} shows the time ratio of dynamic and static
-analysis parts with communication costs in total analysis time.  On average, the
-dynamic analysis occupied \inred{63.30}\%, communication \inred{9.52}\%, and
-static analysis \inred{27.17}\% in total analysis time.  If the dynamic
-shortcuts are performed less than 10 times, the ratio of communication in total
-analysis time is \inred{9.50\%} on average.  The more dynamic shortcuts
-performed, the more communication cost is required.  When the number is
-between 41 and 50, the ratio of average communication cost is rised to
-\inred{10.65\%} in the total analysis time.
+Unlike Lodash 4 original tests, \inred{xx} dynamic shortcuts are invoked during
+analysis for \inred{82} abstracted tests analyzable by both analyses.  We expect
+the analysis time with dynamic shortcuts is propositioned to the number of
+dynamic shortcuts. To communicate with the dynamic analyzer, the static analysis
+should dump the current abstract state, send it to the dynamic analyzer, receive
+the result from the dynamic analysis, and apply the given update information to
+the abstract state.  Thus, the communication costs might increase dependent on
+the number of dynamic shortcuts.  To experimentally evaluate our predictions,
+we also evaluated the relationship between the number of dynamic shortcuts and
+the communication costs between static and dynamic analysis.  For \inred{xx}
+Lodash 4 original tests, the communication cost occupied only \inred{x.xx}\% of
+total analysis.  However, for \inred{xx} abstracted tests, the communication
+cost occupied \inred{xx.xx}\% in total analysis.
+Figure~\ref{fig:abs-analysis-ratio} shows the detailed analysis time ratio for
+\inred{82} Lodash 4 original tests.  The $x$-axis denotes the number of dynamic
+shortcuts with the number of corresponding tests, and $y$-axis represents the
+time ratio normalized by the total analysis time with dynamic shortcuts.  For
+all \inred{82} tests, while it shows that the dynamic static analysis occupied
+only \inred{x.xx}\% and \inred{27.17}\% in total analysis time, the
+communication cost occupied \inred{xx.xx}\%.  If the dynamic shortcuts are
+performed less than 10 times, the ratio of communication in total analysis time
+is endurable because it occupied only \inred{xx.xx\%} on average.   However,
+when \inred{21-30} dynamic shortcuts are performed, the communication occupied
+\inred{80\%} of analysis time.  Moreover, the number of dynamic shortcuts is
+more than \inred{30}, the communication time itself (DS-Comm.) is over than the
+analysis time without dynamic shortcuts (no-DS).  Based on the evaluation, we
+believe that it is possible to leverage dynamic shortcuts by optimizing the
+communication between static and dynamic analysis.
 
 
 \subsection{Precision Improvement}
@@ -116,21 +128,20 @@ between 41 and 50, the ratio of average communication cost is rised to
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/precision-fail}
+    \includegraphics[width=\linewidth]{img/conc-precision}
     \vspace*{-1.5em}
-    \caption{\# Failed Assertions.}
+    \caption{Reachable branches for \inred{xx} \textit{original} tests}
     \label{fig:precision-fail}
   \end{subfigure}
   \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/precision-branch}
+    \includegraphics[width=\linewidth]{img/abs-precision}
     \vspace*{-1.5em}
-    \caption{\# Covered Branches.}
+    \caption{Reachable branches for \inred{82} \textit{abstracted} tests}
     \label{fig:precision-branch}
   \end{subfigure}
   \vspace*{-1em}
   \caption{The comparison of analysis precision without (no-DS) and with (DS)
-  dynamic shortcut for \inred{82} \textit{abstracted} tests analyzable by both
-  analyses}
+  dynamic shortcut based on the branch coverage of analysis.}
   \label{fig:precision}
   \vspace*{-1.5em}
 \end{figure}
@@ -169,38 +180,30 @@ between 41 and 50, the ratio of average communication cost is rised to
   \vspace*{-1em}
 \end{table*}
 
-To evaluate the precision improvement of dynamic shortcut, we used two different
-metrics to measure the precision of the analysis results: 1) the number of false
-alarms for assertions in tests and 2) the number of branch covered by analysis.
-Figure~\ref{fig:precision} depicts the comparison of analysis precision without
-(no-DS) and with (DS) dynamic shortcut using two different metrics.
+To evaluate the precision improvement of dynamic shortcut, we used the number of
+branches covered by analysis to measure the precision of the analysis results.
+One of the most popular application of static analysis is dead code elimination
+by using the result of reachability analysis.  To acquire smaller codes, precise
+reachability analysis is required.  Thus, we decided to measure the analysis
+precision based on the number of branches covered by analysis.  The high
+branch coverage denotes the low analysis precision, and low branch coverage
+denotes the high precision.  Figure~\ref{fig:precision} depicts the comparison of
+the number of covered branches without (no-DS) and with (DS) dynamic shortcuts
+for \inred{xx} original tests and \inred{xx} abstracted tests.
 
-Lodash 4 official tests check the assertions based on
-QUnit\footnote{https://qunitjs.com/}, which is a powerful, easy-to-use
-JavaScript testing framework.  Since all assertions in each test are passed in
-the concrete execution, any assertion failures during static analysis should be
-false alarms.  Although we analyzed \textit{abstracted} Lodash 4 tests, the
-number of assertion failures during static anlysis could be a metric of
-imprecision of the analysis.  Figure~\ref{fig:precision-fail} shows the number
-of assertion failures in each test analyzable by both analysis with and
-without dynamic shortcut.  The $x$- and $y$-axis denote the analysis without
-(no-DS) and with (DS) dynamic shortcut and each $\times$ mark denotes each test.
-The top and bottom dotted lines denote the worst and best precision improvement,
-and the middle solid line denotes the average improvement.  Thus, dynamic
-shortcut reduces assertion failures to at least \inred{1.00}\textsc{x}, at most
-\inred{0.54}\textsc{x}, and \inred{0.92}x on average.
-
-Another metric to measure the precision of static analysis is the number of
-branches covered during analysis.  If the static analysis is sound, the more
-precise analysis covers the less number of branches.  In the similar way with
-the number of assertion failures, Figure~\ref{fig:precision-branch} depicts the
-the comparison of the number of branches during static analysis without (no-DS)
-and with (DS) dynamic shortcut.  In the view point of the branch coverage,
-dynamic shortcut successfully cut down the number of covered branches at least
+For \inred{xx} both analyzable original tests, Figure~\ref{fig:conc-precision}
+shows the number of branches covered by analysis.  The $x$- and $y$-axis denote
+the analysis without (no-DS) and with (DS) dynamic shortcuts and each $\times$
+mark denotes each test.  The top and bottom dotted lines denote the worst and
+best precision improvement, and the middle solid line denotes the average
+improvement.  Thus, dynamic shortcuts successfully reduced the number of
+branches at least \inred{1.00}\textsc{x}, at most \inred{0.54}\textsc{x}, and
+\inred{0.92}x on average.  For abstracted tests, we evaluated \inred{xx} tests
+analyzable by both analyses.  Figure~\ref{fig:precision-branch} depicts the
+results of experiments for abstracted tests and it shows that dynamic shortcuts
+also successfully cuts down the number of covered branches at least
 \inred{0.81}\textsc{x}, at most \inred{0.51}\textsc{x}, and
 \inred{0.68}\textsc{x} on average.
-
-\inred{TODO - Case Study.}
 
 
 \subsection{Opaque Function Coverage}
@@ -216,22 +219,22 @@ opaque functions are analyzed by only dynamic analysis instead of static
 analysis.
 
 Table~\ref{table:func-replace} describes the dynamic shortcut effectively lessen
-the burden of manual modeling for JavaScript built-in functions.  Among Lodash 4
-\inred{219} abstracted tests analyzable with dynamic shortcut, we measured the
+the burden of manual modeling for JavaScript built-in functions.  For Lodash 4
+\inred{xx} original tests and \inred{xx} abstracted tests, we measured the
 number of tests using only dynamic shortcut instead of manual modeling for each
 JavaScript built-in library.  For each raw, \textbf{Object} column denotes the
 built-in object, \textbf{Function} function name, \textbf{\# Replaced} the
 number of tests successfully replacing the modeling via dynamic shortcut with
 the total number of tests using the target function.  For example, the fourth
 row in the left side describes that \jscode{Array.prototype.toString} is used in
-\inred{139} Lodash 4 abstracted tests and the static analysis with dynamic
-shortcut successfully analyze \inred{92} tests among them.  It means that
-\inred{66}\% of tests using \jscode{Array.prototype.toString} could be analyzed
-without the manual modeling of the built-in function.
+\inred{139} original tests and \inred{xxx} abstracted tests. Amogn them,
+\inred{44} original tests \inred{xx} abstracted tests are successfully analyzed
+by dynamic shortcuts instead of using the modeling of
+\jscode{Array.prototype.toString}.
 
-Moreover, \inred{6} functions out of \inred{49} JavaScript built-in functions
-are analyzed by only dynamic shortcut instead of manual modeling for all Lodash
-4 tests.  Each raw colored colored with \inred{yellow} describes such case in
-Table~\ref{table:func-replace}.  It means that the manual modeling of \inred{6} 
-JavaScript built-in functions is does not required to analyze all Lodash 4
-abstracted tests. \inred{TODO - Explain the detail for each case.}
+Moreover, several built-in functions are analyzed by only dynamic shortcuts in
+all tests.  Among \inred{49} JavaScript built-in functions, \inred{xx} and
+\inred{xx} functions are analyzed by only dynamic shortcut instead of manual
+modeling for all original or all abstracted tests.  Each cell colored by
+\inred{yellow} describes fully replaceable cases in
+Table~\ref{table:func-replace}.
