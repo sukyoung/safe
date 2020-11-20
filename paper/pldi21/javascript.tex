@@ -70,15 +70,14 @@ consists of a parameter and a body label.  In the core language, the closed
 scoping is used for functions for brevity thus only parameters and local
 variables are accessible in the function body.
 
-We formulate the concrete semantics of the core language as described in
-Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
-states is defined with the semantics of references and expressions using two
-different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
+We formulate the concrete semantics of the core language.  The transition
+relation between concrete states is defined with the semantics of references and
+expressions using two different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
 \fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
 $\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
-the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
-environment address.  The function $\labnext$ returns the next label of a
-given label in the current program $\prog$.
+the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level environment
+address.  The function $\labnext$ returns the next label of a given label in the
+current program $\prog$.
 
 
 \subsection{Abstract Semantics}
@@ -124,15 +123,14 @@ their abstract counts representing how many times each abstract address has been
 allocated; $\abszero$ denotes that it has never been allocated, $\absone$ once,
 and $\absmany$ more than or equals to twice.
 
-We define the semantics of view transition for the core language in
-Figure~\ref{fig:core-view-trans}.  For abstract memories, we use the notation
-$\absmem[L \mapstos \absval]$ to represent the update of multiple abstract
-locations in $L$ with the abstract value $\absval$.  It performs the strong
-update if the abstract address for an abstract location $(\absaddr, \_) \in L$
-is singleton: $\abscount(\absaddr) = \absone$.  Otherwise, it performs the weak
-update for the soundness.  Moreover, we define the increment function $\inc:
-\abscountset \times \absaddrset \rightarrow \abscountset$ of the abstract counter
-defined as follows:
+We define the semantics of view transition for the core language.  For abstract
+memories, we use the notation $\absmem[L \mapstos \absval]$ to represent the
+update of multiple abstract locations in $L$ with the abstract value $\absval$.
+It performs the strong update if the abstract address for an abstract location
+$(\absaddr, \_) \in L$ is singleton: $\abscount(\absaddr) = \absone$.
+Otherwise, it performs the weak update for the soundness.  Moreover, we define
+the increment function $\inc: \abscountset \times \absaddrset \rightarrow
+\abscountset$ of the abstract counter defined as follows:
 \[
   \inc(\abscount)(\absaddr_0) = \lambda \absaddr \in \absaddrset. \; \left\{
     \begin{array}{ll}
@@ -161,41 +159,18 @@ counters for addresses as follows:
   \end{array}
 \]
 We define the converter $\asconverter: (\viewset \times \absdom) \rightarrow
-\symbstset$ from abstract states to corresponding symbolic states as follows:
-\[
-  \asconverter((\lab, (\absmem, \absctxt, \absaddr, \abscount))) = (\lab,
-  \asconverter^\memset(\absmem), \asconverter^\ctxtset(\absctxt),
-  \asconverter^\addrset(\absaddr), \abscount)\\
-\]
-The converter for memories $\asconverter^\memset$ is defined with the converter
-for values $\asconverter^\valset$ where:
-\[
-  \asconverter^\valset(\absval) = \left\{
-    \begin{array}{ll}
-      \val & \text{if} \; \absval = \{ \val \}\\
-      \absval & \text{otherwise}\\
-    \end{array}
-  \right.
-\]
-In a similar way, the converter for contexts $\asconverter^\ctxtset$ is defined
-as follows:
-\[
-  \asconverter^\ctxtset(\absctxt)(\absaddr) = \left\{
-    \begin{array}{ll}
-      (\absaddr, \lab, \loc) & \text{if} \; \absctxt(\absaddr) = \{ (\absaddr,
-      \lab, \{ \loc \}) \}\\
-      \absctxt(\absaddr) & \text{otherwise}\\
-    \end{array}
-  \right.
-\]
-The opposite converter $\saconverter: \symbstset \rightarrow (\viewset \times
-\absdom)$ from symbolic states to abstract states is defined as the inverse
-function of $\asconverter$: $\saconverter = \asconverter^{-1}$.
-The symbolic transition relation $\symbtrans$ is an extension of the original
-concrete transition relation $\trans$.  When the exact values of symbolic values
-are required, symbolic states have the symbolic transition relation with the
-exception state $\excst$.  For example, we add the following rule for $\kwret$
-statements:
+(\absimapset \times \symbstset)$ from pairs of views and abstract states to the
+corresponding pairs of abstract instantiation maps and sealed symbolic states.
+The algorithm is to traverse the averall structure, to remain a single value,
+but changes to each abstract value represents multiple values to a new symbol
+and adds the mapping from the new symbol to the original abstract value.  In a
+reverse way, the opposite converter $\saconverter: (\absimapset \times
+\symbstset)  \rightarrow (\viewset \times \absdom)$ recovers the abstract values
+based on the given abstract instantiation map.  The symbolic transition relation
+$\symbtrans$ is an extension of the original concrete transition relation
+$\trans$.  When the exact values of symbolic values are required, symbolic
+states have the symbolic transition relation with the exception state $\excst$.
+For example, we add the following rule for $\kwret$ statements:
 \begin{mathpar}
   \inferrule
   {
