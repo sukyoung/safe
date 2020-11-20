@@ -43,7 +43,7 @@ states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
 
 For example, the code in Figure~\ref{fig:running-example} is a simple program
 that applies the mathematical absolute value function to the variable $\varx$.
-The question mark $?$ denotes the user input that returns an integer.  States
+The question mark $?$ denotes a user input that returns an integer.  States
 are pairs of labels and integers $\varx$: $\stset = \labset \times \mathbb{N}$.
 The initial states are $\istset = \{ (\lab_0, 0) \}$ which means the program
 starts with the variable $\varx$ that stores 0 at $\lab_0$.  If the user input is
@@ -122,7 +122,7 @@ analysis:
 
 One of the most widely-used analysis sensitivity is \textit{flow sensitivity}
 defined with the flow-sensitive view abstraction $\fsviewmap: \labset
-\rightarrow \dom$ where
+\rightarrow \dom$ where:
 \[
   \forall \lab\in\labset. \; \fsviewmap(\lab) = \{ \st \mid \st = (\lab, \_) \}
 \]
@@ -140,7 +140,7 @@ becomes as follows:
 
 To handle abstract values in concrete semantics, we define \textit{sealed
 symbolic execution} by extending the transition relation $\trans$ as a symbolic
-transition relation $\symbtrans$ on symbolic states.  First, we extends the
+transition relation $\symbtrans$ on symbolic states.  First, we extend the
 concrete states $\stset$ to symbolic states with \textit{sealed symbolic values}
 $\symbset$.  A symbolic transition relation $\symbtrans \subseteq \symbstset
 \times (\symbstset \uplus \{ \excst \})$ is exactly the same with the original

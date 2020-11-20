@@ -1,25 +1,23 @@
 \section{Implementation}\label{sec:implementation}
-
-We have implemented the dynamic shortcut for JavaScript static analysis
-presented in Section~\ref{sec:javascript} in a prototype implementation called
+We implemented JavaScript static analysis using dynamic shortcuts
+presented in Section~\ref{sec:javascript} in a prototype implementation dubbed
 $\tool$.  The tool is an extension of an existing state-of-the-art JavaScript
 static analyzer SAFE~\cite{safe, safe2} with a dynamic analyzer
-Jalangi~\cite{jalangi}, and it is open source and available online~\footnote{The
+Jalangi~\cite{jalangi}, and it is an open-source project and available online~\footnote{The
 URL of the tool is anonymized due to a double-blind review process.}.  In this
-section, we introduce challenges and solutions when implementing dynamic
-shortcut on existing JavaScript analyzers.
-
+section, we introduce challenges and solutions in implementing dynamic
+shortcuts on existing JavaScript analyzers.
 
 \paragraph{Sealed Symbolic Values.}
-The main challenge of implementing dynamic shortcut is to support the sealed
-symbolic execution on the existing JavaScript engine.  To represent an abstract
+The main challenge of implementing dynamic shortcuts is to support sealed
+symbolic execution on an existing JavaScript engine.  To represent an abstract
 value, we leverage the \jscode{Proxy} object introduced in ECMAScript 6
-(2015, ES6)~\cite{es6}, which allows developers to handle the internal behaviors
-of specific objects (such as property reads and writes, implicit conversions,
-etc.).  We are inspired by \textsc{Mimic}~\cite{mimic} using \jscode{Proxy} to
-capture accesses from the inside of opaque functions.  When the dynamic analyzer
-constructs the execution environments at the start of the dynamic shortcut, it
-creates revoked \jscode{Proxy} objects to represent each abstract values via the
+(2015, ES6)~\cite{es6}, which allows developers to handle internal behaviors
+of specific objects such as property reads and writes and implicit conversions.
+We are inspired by \textsc{Mimic}~\cite{mimic}, which used \jscode{Proxy} to
+capture accesses from internals of opaque functions.  When the dynamic analyzer
+constructs an execution environment at the start of a dynamic shortcut, it
+creates revoked \jscode{Proxy} objects to represent abstract values via the
 following \jscode{generateSymbol} function:
 \begin{lstlisting}[style=myJSstyle]
 function generateSymbol() {
@@ -31,58 +29,63 @@ var x = generateSymbol();
 var y = x;
 var z = x + 1;
 \end{lstlisting}
-The function creates a sealed symbol as a revocable proxy object with a dummy
-function object without any handlers and revokes it by
-\jscode{revocable.revoke()} to not allow any access of the symbol.  The revoked
-object throws a \jscode{TypeError} when the object faces 13 kinds of operations
-so we can determine whether or not the seal is open.  For example, the variable
-\jscode{y} successfully points to the same symbol stored in \jscode{x} but the
-program throws the \jscode{TypeError} in line 8 because \jscode{x + 1} requires
-the actual value of the symbol.  Moreover, we instrument unary and binary
-operations on Jalangi to fully cover accesses on the symbol beyond 13 traps
-provided by \jscode{Proxy}.  Using this idea, we successfully extend the
-JavaScript engine to support a sealed symbolic execution.
-
+The function creates a sealed symbol \jscode{r} as a revocable proxy object with a dummy
+function object without any handlers. It then revokes the symbol by
+\jscode{r.revoke()} not to allow any accesses of the symbol.  A revoked
+object throws a \jscode{TypeError} exception when any of 13 pre-defined operations
+are applied to the object, which enables us to determine whether an
+object is sealed or not.  For example, the variable
+\jscode{y} successfully points to the same symbol stored in \jscode{x}, but the
+program throws \jscode{TypeError} on line 8 because \jscode{x + 1} requires
+the actual value of the symbol.  In addition, we instrument unary and binary
+operations in Jalangi so that we can detect all the accesses on the
+symbol beyond the 13 operations provided by \jscode{Proxy}.
+Using this idea, we successfully extended the
+JavaScript engine to support sealed symbolic execution.
 
 \paragraph{Synchronization of Control Points.}
-For seamless interactions between the static analyzer and dynamic shortcuts,
-the synchronization of control points is a prerequisite.
-The static analyzer compiles a target JavaScript program to intermediate
-representation and builds a control flow graph.  It produces annotations for
-control points on the CFG including functions, call sites, and object allocation
-sites.  During the sealed symbolic execution, the dynamic analyzer requires
-those annotations to calculate sensitive location names of newly created object
-and lexical environments.  The key to place annotations on the instrumented code
-is the span information of the original AST node.  Both the CFG of SAFE and
-instrumented code of Jalangi maintain the span information, but they use
-different parsers resulting mismatches for some corner cases.  Thus, we
-preprocess to synchronize control points of two analyzers by the closest match
-of the span information rather than the exact match.
-
+For seamless interaction between static analysis and sealed symbolic execution,
+synchronization of control points in both worlds is a prerequisite.
+The SAFE static analyzer parses a JavaScript program to an Abstract
+Syntax Tree (AST), compiles it to its intermediate representation, and
+builds a Control Flow Graph (CFG).  It produces annotations for
+control points on the CFG including functions, call sites, and object allocation sites.
+On the contrary, the Jalangi dynamic analyzer instruments a JavaScript program 
+to keep track of necessary information at run time.  Therefore, during
+sealed symbolic execution, Jalangi requires the annotations from SAFE to compute
+abstract locations of newly created concrete objects and lexical environments.
+The key to put annotations on the instrumented code is the source-code
+location of the original AST node.  While both CFG of SAFE and
+instrumented code of Jalangi maintain the source-code location information,
+because they use different parsers we found various location mismatches for corner cases.
+Therefore, we synchronize control points of two analyzers by using the closest match
+of their source-code locations rather than using their exact match.
 
 \paragraph{Optimizations.}
-To perform dynamic shortcut, the static analyzer should communicate with the
-dynamic analyzer by passing the current abstract state and receiving the final
-result of the sealed symbolic execution.  When abstract states are massive, it
-is burden to send them as they stand.  Thus, we perform mark-and-sweep garbage
-collection to remove unreachable information in the current abstract state.
-Moreover, the abstract values are converted to the sealed symbolic values and
-their contents are not necessary in the dynamic analysis.  Thus, we replace
-abstract values with their unique identifiers and stores the table from
-identifiers to abstract values before sending the abstract state
-from the static analyzer.  Thus, the dynamic analyzer only receives identifiers
-of abstract values and wrap them as \jscode{Proxy} objects.  After finishing the
-sealed symbolic execution, the static analyzer recovers the abstract values in
-the result abstract state using the table.
-
+To use dynamic shortcuts, the static analyzer should communicate with the
+dynamic analyzer by passing abstract states and receiving results of sealed
+symbolic execution.  When abstract states are massive, sending
+abstract states and receiving sealed symbolic values as they are could
+incur large performance overhead.  Thus, we
+implemented mark-and-sweep garbage collection to remove unreachable
+information in abstract states.  In addition, because abstract values
+themselves are not used in sealed symbolic execution, we make a map
+from unique identifiers to abstract values and replace
+abstract values with their unique identifiers when we convert abstract
+values to sealed symbolic values.  Therefore, the dynamic analyzer
+receives only identifiers of abstract values and wraps them as
+\jscode{Proxy} objects.  After finishing sealed symbolic execution,
+the static analyzer recovers the abstract values in the results of
+sealed symbolic execution by replacing unique identifiers with their
+corresponding abstract values.
 
 \paragraph{Termination.}
-To guarantee the termination of static analysis with dynamic shortcut, the
-filter $\checker$ should pass the state $\symbst$ only when it terminates in a
-bound time $N$.  Since it is difficult to statically check its termination,
-we just performs the sealed symbolic execution with a time limit.  When it runs
-over the time limit, we treat it fails to pass $\checker$, otherwise we utilizes
-the result of the execution.  In the experiments, we set the time limit as
+To guarantee the termination of static analysis using dynamic shortcuts, the
+filter $\checker$ should pass a state $\symbst$ only when it terminates in a
+bound time $N$.  Since statically checking the termination property is a difficult task,
+we simply perform sealed symbolic execution with a pre-determined time limit.  When it runs
+over the time limit, we treat it as a failure to pass $\checker$; otherwise, we utilize
+the result of the sealed symbolic execution.  In our experiments, we set the time limit as
 \inred{5 seconds} for each sealed symbolic execution.
 
 
