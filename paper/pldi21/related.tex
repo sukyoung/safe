@@ -1,83 +1,85 @@
 \section{Related Work}\label{sec:related}
-
-Several researchers have introduced analysis technique to utilize dynamic
-analysis for static analysis in three different ways: combined analysis,
-automatic modeling, and pruning states.
+Researchers have introduced various analysis technique to utilize dynamic
+analysis for static analysis in three ways: combined analysis,
+automatic modeling, and pruning analysis scope.
 
 
 \paragraph{Combined Analysis}
-
-The most related previous work is the combined analysis that utilizes dynamic
-analysis during Java static analysis introduced by \citet{concerto}.  They
-proved that their combined analysis is sound and showed that it could
+The most related previous work is combined analysis that utilizes dynamic
+analysis during Java static analysis introduced by \citet{concerto}.
+They proved that their combined analysis is sound and showed that it could
 significantly improve the precision and performance of Java static analysis by
-evaluating their tool, \concerto.  However, their approach have several
-limitations compared to the dynamic shortcut.  First, they syntactically divides
-a given program to \textit{applications} parts for static analysis and
-\textit{frameworks} parts for dynamic analysis.  Thus, it is impossible to
-freely switching between static and dynamic and even impossible to perform both
-of static and dynamic analysis to the same program part in different contexts.
-Besides, they introduced \textit{mostly-concrete interpretation} similar with
-our sealed symbolic execution.  However, it supports only a special
-\textit{unknown} value that represents any possible value.  Thus, it cannot
-preserves the precision of complex abstract domains~\cite{revisit-recency,
-regex, weaklySPE} frequently used in JavaScript static analysis.  On the other
-hand, the sealed symbolic execution automatically detects whether the abstract
-semantics are required for abstract values.  Finally, \concerto preserves the
-soundness when the program satisfies the \textit{state separation hypothesis}.
-They assume that states of application and framework parts do not interrogated
-or manipulated by each other.  While it is reasonable for static analysis of
-Java applications using external libraries, the assumption is not satisfied for
-JavaScript programs in general.  Unlike their approach, our approach does not
-have any assumption between static and dynamic analysis parts.
+evaluating their tool, \concerto.  However, their approach has several
+limitations compared with dynamic shortcuts.  First, it syntactically
+divides a given program to \textit{applications} parts for static
+analysis and \textit{frameworks} parts for dynamic analysis.  Thus, it is impossible to
+freely switch between static analysis and dynamic analysis.  It is
+even impossible to perform both static and dynamic analysis of 
+the same program part in different contexts.  In addition, while they
+introduced \textit{mostly-concrete interpretation} similar to our
+sealed symbolic execution, it supports only a special \textit{unknown}
+value that represents any possible value.  Thus, it cannot preserve
+the precision of complex abstract domains~\cite{revisit-recency,
+  regex, weaklySPE} frequently used in JavaScript static analysis.
+On the contrary, sealed symbolic execution automatically detects when
+to switch to static analysis to use abstract semantics for abstract values.
+Finally, \concerto preserves the soundness when a program satisfies
+the \textit{state separation hypothesis}.  It assumes that the states
+of application parts and framework parts are not interrogated
+or manipulated by each other.  While the assumption may be reasonable
+for static analysis of Java applications using external libraries, it
+is not satisfied for JavaScript programs in general.  Unlike their
+approach, our approach does not have any assumptions between static and
+dynamic analysis parts.
 
 
 \paragraph{Automatic Modeling}
 For static analysis of JavaScript programs, modeling behaviors of built-in
-libraries or host-dependent functions is required because they are opaque
-codes.  Since manual modeling is error-prone, tedious, and labor-intensive,
-several researchers~\cite{safewapi, safets} utilize type information to
+libraries or host-dependent functions is necessary because they are opaque code.
+Since manual modeling is error-prone, tedious, and labor-intensive,
+researchers~\cite{safewapi, safets} have utilized type information to
 automatically model their behaviors.  However, type information is too imprecise
-to reflect the detailed semantics and is difficult to represent the
-side-effects.  To alleviate the problem, \citet{mimic} introduced the technique
-to infer JavaScript codes for opaque codes using concrete execution.  They
-captured the effects of opaque codes on user objects by collecting partial
-execution traces and synthesized JavaScript codes based on the extracted
-behaviors.  They also leveraged ES6 \jscode{Proxy} objects to capture the
-effects on user objects.  Instead of synthesizing JavaScript codes,
+to reflect complex semantics and is difficult to represent the side-effects.
+To alleviate the problem, \citet{mimic} introduced a technique
+to infer JavaScript code for opaque code using concrete execution.
+They captured the effects of opaque code on user objects by collecting partial
+execution traces and synthesized JavaScript code using the extracted behaviors.
+They also leveraged ES6 \jscode{Proxy} objects to capture the effects on user objects.
+Instead of synthesizing JavaScript code,
 \citet{opaque-model} presented a \textit{Sample-Run-Abstract (SRA)} approach for
-on-demand modeling thus they focused on the current abstract state during static
-analysis.  It first \textit{samples} concrete states in a well-distributed way,
-\textit{runs} each sampled state on a JavaScript engine, and \textit{abstract}
-executions results.  However, all of previous works sacrifice the soundness of
-static analysis.  On the other hand, while the dynamic shortcut is not
-applicable for all invocation of opaque functions, it is sound if it is
-applicable.
+on-demand modeling focusing on the current abstract states during static analysis.
+It first \textit{samples} concrete states in a well-distributed manner,
+\textit{runs} each sampled state on a JavaScript engine, and \textit{abstracts} execution results.
+However, all the previous work sacrifice the soundness of static analysis.
+On the contrary, while dynamic shortcuts may not be applicable to some
+invocations of opaque functions, it is sound if it is applicable.
 
 
-\paragraph{Pruning Analysis Scopes}
+\paragraph{Pruning Analysis Scope}
 Another approach to utilize dynamic analysis for JavaScript static analysis is
 to prune the scope of analysis.  \citet{determinacy} proposed dynamic
-determinacy analysis that infer determinacy facts via concrete executions that a
-variable or expression at a given location holds the same value in all possible
-execution of the program.  They specialized target source codes with determinacy
-facts so that static analyses could benefit from eliminations of dynamic code
-generation (e.g. \jscode{eval}) and constant property names.  \citet{blended}
-introduced \textit{blended taint analysis} that specializes JavaScript dynamic
+determinacy analysis, which infers determinacy facts like whether a
+variable or an expression at a given location holds the same value in
+all possible execution of a program via concrete execution.
+They specialized target source code with determinacy
+facts so that static analysis can get benefits from elimination of dynamic code
+generation such as \jscode{eval} and constant property names.
+\citet{blended} introduced \textit{blended taint analysis}, which specializes JavaScript dynamic
 language features such as dynamic code generation or variadic function calls.
-They first performs dynamic analysis to collect traces with concrete values used
-in dynamic language features and restrict the semantics of features based on the
-collected traces during static analysis.  \citet{battles, eha} utilizes three
-different points to reduce analysis scopes: initial states, dynamically loaded
-files, and event handlers.  They dumped the initial states from a specific web
-browser to focus on analyzing the behaviors of web browsers running on the
-browser.  Then, they collected paths of dynamically loaded files via concrete
-executions and utilized the path information in static analysis.  For event
-handlers, they intentionally analyzed partial execution flows using concrete
-user events.  They collected concrete states for each entry of event handler
+It first performs dynamic analysis to collect traces with concrete values used
+in dynamic language features and restricts the semantics of features based on the
+collected traces during static analysis.  \citet{battles, eha} utilize three different points to reduce
+analysis scope: initial states, dynamically loaded files, and event handlers.
+They dumped the initial states from a specific web browser to focus on
+analysis of the behaviors of web applications running on the browser.
+Then, they collected paths of dynamically loaded files via concrete
+execution and utilized the path information in static analysis.
+For event handlers, they intentionally analyzed partial execution flows using concrete user events.
+They collected concrete states for each entry of an event handler
 during dynamic analysis, merged them to a single abstract state, and analyzed
-the event handler with the abstract state.  Unfortunately, all of them does not
-preserve soundness of static analysis unlike the dynamic shortcut.
+the event handler with the abstract state.
+Unfortunately, all the above mentioned approaches do not preserve
+soundness of static analysis unlike our approach using dynamic shortcuts.
 
 
 % \subsection{Abstract Counting}
