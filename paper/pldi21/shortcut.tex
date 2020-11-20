@@ -1,9 +1,15 @@
 \section{Dynamic Shortcut}\label{sec:formal}
 
-In this section, we formally define the dynamic shortcut with sealed symbolic
-execution.  We extend the formalization of abstract interpretation of
-\citet{abs-interp-1977, abs-interp-1992} and views-based analysis sensitivity of
-\citet{sens-toplas}.
+In this section, we formally define dynamic shortcuts during static analysis by
+combining abstract interpretation with sealed symbolic execution.  We extend the
+formalization of abstract interpretation of \citet{abs-interp-1977,
+abs-interp-1992} and views-based analysis sensitivity of \citet{sens-toplas}.
+For dynamic shortcuts, we define a sealed symbolic execution and extend it to a
+sealed symbolic domain with abstract instantiation maps.  To combine the
+sensitive abstract interpretation with the sealed symbolic execution, we define
+the combined domain of sensitive abstract domain and sealed symbolic domain and
+explain it with a simple example. Finally, We prove the soundness and
+termination property of abstract interpretation using the combined domain.
 
 
 \subsection{Concrete Semantics}
@@ -23,36 +29,37 @@ follows:
 \]
 The \textit{concrete domain} $\dom = \powerset{\stset}$ is a complete lattice
 with $\cup$, $\cap$, and $\subseteq$ as its join($\join$), meet($\meet$), and
-partial order($\order$) operators.  The element $\ielem$ denotes the initial
-states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
-\dom$ transforms states using the transition relation $\trans$: $\step(\elem) =
-\{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
+partial order($\order$) operators.  The set of states $\ielem$ denotes the
+initial states $\istset$.  The \textit{one-step execution} $\step: \dom
+\rightarrow \dom$ transforms states using the transition relation $\trans$:
+$\step(\elem) = \{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
 
 \begin{figure}[H]
   \[
-    \begin{array}{l}
-      \enspace \labdot{0} \; \varx = \;? \; ;  \; \labdot{1}\\
-      \enspace \kwif \; (\; \varx \geq 0 \;) \; \labdot{2} \; \varx = \varx ;\\
-      \enspace \kwelse \; \labdot{3} \; \varx = -\varx ;  \; \labdot{4}\\
+    \begin{array}{r@{~}l@{~}c@{~}l}
+      \labdot{0} & \kwif \; (\; \varx \geq 0 \;) & \labdot{1} & \varx = \varx ;\\
+                 & \kwelse & \labdot{2} & \varx = -\varx ;\\
+      \labdot{3} & \varx = -\varx ; & \labdot{4} \\
     \end{array}
   \]
   \vspace*{-1em}
-  \caption{Conditional branch}
+  \caption{The negation of the absolute value of $\varx$}
   \label{fig:running-example}
 \end{figure}
 
 For example, the code in Figure~\ref{fig:running-example} is a simple program
-that applies the mathematical absolute value function to the variable $\varx$.
-The question mark $?$ denotes a user input that returns an integer.  States
-are pairs of labels and integers $\varx$: $\stset = \labset \times \mathbb{N}$.
-The initial states are $\istset = \{ (\lab_0, 0) \}$ which means the program
-starts with the variable $\varx$ that stores 0 at $\lab_0$.  If the user input is
-$-42$, the program is executed with the following trace:
+that calculates the negation of the absolute value of the variable $\varx$.
+States are pairs of labels and integers stored in $\varx$: $\stset = \labset
+\times \mathbb{N}$.  Assume that the initial states are $\istset = \{ (\lab_0,
+-42) \}$ which means the program starts with the variable $\varx$ that stores
+$-42$ at $\lab_0$.  Then, the program is executed with the following trace:
 \[
-  (\lab_0, 0) \trans (\lab_1, -42) \trans (\lab_3, -42) \trans (\lab_4, 42)
+  (\lab_0, -42) \trans (\lab_2, -42) \trans (\lab_3, 42) \trans (\lab_4, -42)
 \]
 
-\subsection{Abstract Interpretation}
+
+\subsection{Abstract Interpretation}\label{sec:ai}
+
 The abstract interpretation~\cite{abs-interp-1977, abs-interp-1992}
 over-approximates the transfer $\transfer$ to the \textit{abstract transfer
 function} $\abstransfer: \absdom \rightarrow \absdom$ to get the
@@ -72,21 +79,24 @@ $\absdom$ with a \textit{concretization function} $\gamma$ and an
 $\absstep: \absdom \rightarrow \absdom$.  For the sound state abstraction, the
 join operator and the abstract one-step execution should satisfy the following
 conditions:
-\begin{itemize}
-  \item $\forall \abselem_0, \abselem_1 \in \absdom. \; \gamma(\abselem_0) \cup
-    \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join \abselem_1)$
-  \item $\forall \abselem \in \absdom. \; \absstep \circ \gamma(\abselem) \subseteq
-    \gamma \circ \absstep(\abselem)$
-\end{itemize}
+\begin{align}
+  \forall \abselem_0, \abselem_1 \in \absdom & . \; \gamma(\abselem_0) \cup
+  \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join
+  \abselem_1) \label{equ:sound-join}\\
+  \forall \abselem \in \absdom & . \; \absstep \circ \gamma(\abselem) \subseteq
+  \gamma \circ \absstep(\abselem) \label{equ:sound-step}
+\end{align}
 
 A simple example abstract domain is $\absdom_\pm = \powerset{\{ -, +, 0 \}}$ with
 set operators as domain operators; $-$ denotes negative integers, $+$ positive
-integers, and $0$ zero.  If we use it for the code in
-Figure~\ref{fig:running-example}, the analysis result becomes $\{ -, +, 0 \}$
-because $\varx$ can have any integers at $\lab_1$.
+integers, and $0$ zero.  Assume that we use it for the code in
+Figure~\ref{fig:running-example} and the initial abstract state is $\iabselem =
+\{ - \}$. Then, the analysis result becomes $\{ -, + \}$ because $\varx$ can
+have positive values by executing $\varx = -\varx$ but there is no way to get
+the value $0$ in this program.
 
 
-\subsection{Analysis Sensitivity}
+\subsection{Analysis Sensitivity}\label{sec:sens}
 
 Abstract interpretation is often defined with \textit{analysis sensitivity} to
 increase the precision of static analysis.  A sensitive abstract domain
@@ -94,14 +104,15 @@ $\sabsdom: \viewset \rightarrow \absdom$ is defined with a \textit{view
 abstraction} $\viewmap: \viewset \rightarrow \dom$ that provides multiple points
 of views for reachable states during static analysis.  It maps a finite number
 of views $\viewset$ to sets of states $\dom$. Each view $\view \in \viewset$
-represents a set of states $\viewmap(\view)$.
-A \textit{sensitive state abstraction} $\dom
-\galois{\alpha_\viewmap}{\gamma_\viewmap} \sabsdom$ is a Galois connection between
-the concrete domain $\dom$ and the sensitive abstract domain $\sabsdom$ with the
-following concretization function:
+represents a set of states $\viewmap(\view)$ and also a state is always included
+in a unique view: $\forall \st \in \stset. \; \exists! \view \in
+\viewset.$ s.t. $\st \in \viewmap(\view)$.  A \textit{sensitive state
+abstraction} $\dom \galois{\alpha_\viewmap}{\gamma_\viewmap} \sabsdom$ is a
+Galois connection between the concrete domain $\dom$ and the sensitive abstract
+domain $\sabsdom$ with the following concretization function:
 \[
-  \gamma_\viewmap(\sabselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
-  \; \st \in \viewmap(\view) \Rightarrow \st \in \gamma \circ \sabselem(\view) \}
+  \sgamma(\sabselem) = \underset{\view \in \viewset}{\bigcup}
+  {\viewmap(\view) \cap \gamma \circ \sabselem(\view)}
 \]
 
 With analysis sensitivities, the abstract one-step execution $\sabsstep:
@@ -126,70 +137,111 @@ defined with the flow-sensitive view abstraction $\fsviewmap: \labset
 \[
   \forall \lab\in\labset. \; \fsviewmap(\lab) = \{ \st \mid \st = (\lab, \_) \}
 \]
-If we apply the flow sensitivity for the above example, the analysis result
-becomes as follows:
+If we apply the flow sensitivity for the above example with the initial abstract
+state $[ \lab_0 \mapsto \{ -, 0, + \} ]$, the analysis result becomes as follows:
 \[
   \begin{array}{|c||c|c|c|c|c|}\hline
     \labset & \lab_0 & \lab_1 & \lab_2 & \lab_3 & \lab_4\\\hline
-    \absdom_\pm & 0 & -, +, 0 & +, 0 & - & +, 0\\\hline
+    \absdom_\pm & -, 0, + & 0, + & - & 0, + & -, 0\\\hline
   \end{array}
 \]
 
 
 \subsection{Sealed Symbolic Execution}
 
-To handle abstract values in concrete semantics, we define \textit{sealed
-symbolic execution} by extending the transition relation $\trans$ as a symbolic
-transition relation $\symbtrans$ on symbolic states.  First, we extend the
-concrete states $\stset$ to symbolic states with \textit{sealed symbolic values}
-$\symbset$.  A symbolic transition relation $\symbtrans \subseteq \symbstset
-\times (\symbstset \uplus \{ \excst \})$ is exactly the same with the original
-transition relation $\trans$ except when the relation requires the exact value
-of sealed symbolic values.  In this case, the symbolic state has the relation a
-special exception state $\excst$ to represent that it is impossible to interpret
-in a concrete way.  Thus, a symbolic state \textit{always} has a symbolic
-transition relation with a single symbolic state, and the sealed symbolic
-execution is linear until being terminated or reaching the exception state
-$\excst$.
+We define \textit{sealed symbolic execution} by extending the transition
+relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
+states.  First, we augment concrete states $\stset$ to symbolic states
+$\symbstset$ by extending values $\valset$ with \textit{sealed symbolic values}
+$\symbset$.  We also define the symbolic transition relation $\symbtrans
+\subseteq \symbstset \times \symbstset$. We use the notation $\symbtrans^k$
+for $k$ repetition of $\symbtrans$, and  $\symbst \symbtrans \excst$ when
+$\symbst$ does not have symbolic transitions with any other sealed symbolic
+states.  We define the validity of sealed symbolic execution as follows:
+\begin{definition}[Validity]\label{def:valid-symbtrans}
+  The symbolic transition relation is \textit{valid} when the following
+  condition is satisfied for any sealed symbolic states $\symbst$ and
+  $\symbst'$:
+  \[
+    \symbst \symbtrans \symbst' \Leftrightarrow
+    \forall \imap \in \imapset. \;
+    \{ \st' \mid \instant{\symbst}{\imap} \trans \st' \}
+    = \{ \instant{\symbst'}{\imap} \}
+  \]
+  where $\imapset: \symbset \rightarrow \valset$ represent \textit{instantiation
+  maps} from symblic values to concrete values, and $\instant{\symbst}{\imap}$
+  denotes a state produced by replacing each symbolic value $\symb$ to the
+  corresponding value $\imap(\symb)$ using the instantiation map $\imap \in
+  \imapset$.
+\end{definition}
 
-The main difference of sealed symbolic execution with the traditional symbolic
-execution~\cite{symbolic} is that it only supports sealed symbolic values
-instead of symbolic expressions and path constraints.  For example, the
+Note that The main difference of sealed symbolic execution with the traditional
+symbolic execution~\cite{symbolic} is that it only supports sealed symbolic
+values instead of symbolic expressions and path constraints.  For example, the
 following trace represents the traditional symbolic execution of the running
 example in Figure~\ref{fig:running-example}:
+{
+\small
 \[
-  \begin{array}{r@{~}c@{~}l}
-    &&(\lab_2, \symb)[\symb \geq 0] \trans (\lab_4, \symb)[\symb \geq 0]
+  \begin{array}{r@{~}c@{~}c@{~}c@{~}r@{~}c@{~}r}
+    &&(\lab_1, \symb)[\symb \!\geq\! 0]
+    &\trans& (\lab_3, \phantom{-}\symb)[\symb \!\geq\! 0]
+    &\trans& (\lab_4, -\symb)[\symb \!\geq\! 0]
     \vspace*{-0.5em}\\
     &\rutrans&
     \vspace*{-0.5em}\\
-    (\lab_0, 0)[] \trans (\lab_1, \symb)[]&&
+    (\lab_0, \symb)[\varnothing]
     \vspace*{-0.5em}\\
     &\rdtrans&
     \vspace*{-0.5em}\\
-    &&(\lab_3, \symb)[\symb < 0] \trans (\lab_4, -\symb)[\symb < 0]\\
+    &&(\lab_2, \symb)[\symb \!<\! 0]
+    &\trans& (\lab_3, -\symb)[\symb \!<\! 0]
+    &\trans& (\lab_4, \phantom{-}\symb)[\symb \!<\! 0]\\
   \end{array}
 \]
-It first assigns a symbolic value $\symb$ to the variable $\varx$ at $\lab_1$.
+}
+It first assigns a symbolic value $\symb$ to the variable $\varx$ at $\lab_0$.
 For the conditional branch, it is forked by creating two symbolic states with
 different path conditions $\symb \geq 0$ and $\symb < 0$ for true and false
 branches, respectively.  After executing statements $\varx = \varx$ and $\varx =
--\varx$, the variable $\varx$ stores symbolic expressions $\symb$ and $-\symb$ at
-$\lab_4$.  However, the sealed symbolic execution stops at $\lab_1$ as follows:
+-\varx$, the variable $\varx$ stores symbolic expressions $\symb$ and $-\symb$
+at $\lab_3$. Similarly, $\varx$  stores $-\symb$ and $\symb$ at $\lab_3$.
+However, the sealed symbolic execution stops at $\lab_0$ as follows:
 \[
-  (\lab_0, 0) \; \symbtrans \; (\lab_1, \symb) \; \symbtrans \; \excst
+  (\lab_0, 0) \; \symbtrans \; \excst
 \]
 because the branch requires the actual value of the symbolic value $\symb$.
 
-To freely convert a pair of view and an abstract state to its corresponding
-symbolic state and vice versa, we define two domain converters $\symbstset
-\galois{\saconverter}{\asconverter} (\viewset \times \absdom)$.  In the
-converter $\asconverter$ from abstract states to symbolic states, if an abstract
-value $\absval$ represents a singleton value, the function transforms the
-abstract value to the corresponding concrete value.  Otherwise, it converts the
-abstract value as a symbolic value in a result symbolic state.  Two converters
-convert given elements without loss of information:
+To define an abstract domain consists of sealed symbolic states, we define
+\textit{abstract instantiation maps} $\absimapset: \symbset \rightarrow
+\absvalset$ from symbolic values to abstract values.  Its concretization
+function $\imapgamma: \absimapset \rightarrow \powerset{\imapset}$ is defined
+with the concretization function $\valgamma: \absvalset \rightarrow
+\powerset{\valset}$ for values as follows:
 \[
-  \saconverter \circ \asconverter = \asconverter \circ \saconverter = \identity
+  \imapgamma(\absimap) = \{
+    \imap \mid \forall \symb \in \symbset. \;
+    \imap(\symb) \in \gamma \circ \absimap(\symb)
+  \}
 \]
-where $\identity$ denotes the identity function.
+The instantiation of a given sealed symbolic state $\symbst \in \symbstset$ with
+an abstract instantiation map $\absimap \in \absimapset$ is defined as follows:
+\[
+  \instant{\symbst}{\absimap} = \{ \instant{\symbst}{\imap} \mid \imap \in
+  \imapgamma(\absimap) \}
+\]
+Now, we define the \textit{sealed symbolic domain} as follows:
+
+\begin{definition}[Sealed Symbolic Domain]\label{def:symbdom}
+  A \textit{sealed symbolic domain} $\symbdom: \powerset{\absimapset \times
+  \symbstset}$ is defined with the following concretization function
+  $\symbgamma: \symbdom \rightarrow \dom$ and sealed symbolic one-step execution
+  $\symbstep: \symbdom \rightarrow \symbdom$ such that
+  \begin{align}
+    \symbgamma(\symbelem) &=
+    \bigcup \{ \instant{\symbst}{\absimap} \mid (\absimap, \symbst) \in
+    \symbelem\}\\
+    \symbstep(\symbelem) &= \{ (\absimap, \symbst') \mid (\absimap, \symbst)
+    \in \symbelem \wedge \symbst \symbtrans \symbst' \}
+  \end{align}
+\end{definition}
