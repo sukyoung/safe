@@ -94,23 +94,32 @@ fs.readdirSync(dirname).forEach(name => {
     .filter(l => l.startsWith('TIME: '))[0]
     .match(/\d+/g);
 
+  let ds_state_time;
+  let ds_transfer_time;
   if(ds_mode) {
     // ds-analysis-time
-    var aa = readLines(DS);
-    let ds_analysis_time = readLines(DS)
+    let [sse_time, state_time] = readLines(DS)
       .filter(l => l.startsWith('TIME: '))
-      .reduce((sum, l) => {
-        return sum + (+(l.match(/\d+/g)[0]))
-      }, 0);
-    add(ds_analysis_time);
-    let comm_time = ds_time - ds_analysis_time;
+      .reduce(([sse, state], l, idx) => {
+        const time = +(l.match(/\d+/g)[0]);
+        if(idx % 2 === 0) {
+          return [sse + time, state];
+        } else {
+          return [sse, state + time];
+        }
+      }, [0, 0]);
+
+    add(sse_time);
+    let comm_time = ds_time - sse_time;
     add(comm_time);
-    add(total_time);
+
+    ds_transfer_time = comm_time - state_time;
+    ds_state_time = state_time;
   } else {
     add(ds_time);
     add("");
-    add(total_time);
   }
+  add(total_time);
 
   // ds count
   let [succ_ds, total_ds] = readLines(SAFE)
@@ -165,16 +174,27 @@ fs.readdirSync(dirname).forEach(name => {
     }, new Set());
   add([...safe_builtins].map((f) => `[${f}]`).join(""));
 
+  if(ds_mode) {
+    add(ds_transfer_time);
+    add(ds_state_time);
+  }
   newline();
 });
 
 // summary.tsv
 
 content.sort((x, y) => x[0] - y[0]);
+
 content = [[
-  '#', 'status', 'ds-time', 'comm-time', 'total-time', '#DS', '#fail',
+  '#', 'status', 'ds-sse-time', 'comm-time', 'total-time', '#DS', '#fail',
   '#branch', 'ds-func', 'abs-func'
 ]].concat(content);
+if(ds_mode) {
+  content[0].push(
+    'ds-transfer-time',
+    'ds-state-time'
+  );
+}
 write('summary.tsv', content.map(l => l.join('\t')).join('\n'));
 
 // result
