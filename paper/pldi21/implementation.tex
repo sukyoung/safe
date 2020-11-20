@@ -33,9 +33,9 @@ var y = x;
 var z = x + 1;
 \end{lstlisting}
 The function creates a sealed symbol as a proxy object with a dummy
-function object with a handler for all 13 traps using an access detection
+function object and a handler for all 13 traps using an access detection
 function \jscode{detect}.  A sealed symbol invokes the function \jscode{detect}
-when any of 13 pre-defined traps are operated to the object, which enables us to
+when any of 13 pre-defined traps are operated on the object, which enables us to
 determine whether an object is sealed or not.  For example, the variable
 \jscode{y} successfully points to the same symbol stored in \jscode{x}, but the
 program invokes the function \jscode{detect} on line 11 because \jscode{x + 1} requires
