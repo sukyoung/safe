@@ -10,25 +10,25 @@
   \vspace*{-1.5em}
 \end{figure}
 
-We evaluated our tool based on the following research questions:
+We evaluated our tool based on the following three research questions:
 \begin{itemize}
-  \item \textbf{RQ1) Analysis Speed-up:} How much analysis time is reduced by
-    adding dynamic shortcut to static analysis?
-  \item \textbf{RQ2) Precision Improvement:} How much analysis precision is
-    improved by replacing the manual modeling with dynamic shortcut?
-  \item \textbf{RQ3) Opaque Function Coverage:} How many opaque functions are
-    covered by dynamic shortcut without using manual modeling?
+\item \textbf{RQ1) Analysis Speed-up:} How much analysis time is reduced by
+using dynamic shortcuts during static analysis?
+\item \textbf{RQ2) Precision Improvement:} How much analysis precision is
+improved by using dynamic shortcuts instead of manual modeling?
+\item \textbf{RQ3) Opaque Function Coverage:} How many opaque functions are
+covered by dynamic shortcuts without using manual modeling?
 \end{itemize}
-We targeted the official 306 tests of Lodash 4
+We selected the official 306 tests of Lodash 4
 (v.4.17.20)\footnote{https://github.com/lodash/lodash/blob/4.17.20/test/test.js}
-used in motivating examples (Section~\ref{sec:motivation}).  The most recent
-papers for JavaScript static analysis techniques~\cite{value-refinement,
-value-partitioning} also evaluated their techniques based on them.
-Among them, we filtered out \inred{37} tests including JavaScript language
-features SAFE does not support, such as dynamic code generation using
-\jscode{Function}, getter/setter, and browser specific features
-(e.g. $\jscode{__proto__}$).  Thus, we only targeted \inred{269} out of 306
-tests for the evaluation.  We performed our experiments on an Ubuntu machine
+used in the motivating examples in Section~\ref{sec:motivation} as our evaluation target.
+The most recent papers about JavaScript static analysis techniques~\cite{value-refinement,
+value-partitioning} also used the tests to evaluate their techniques.
+Among them, we filtered out \inred{37} tests that use JavaScript language
+features SAFE does not support such as dynamic code generation using
+\jscode{Function}, getters and setters, and browser-specific features like $\jscode{__proto__}$.
+Thus, we used \inred{269} out of 306 tests for the evaluation of $\tool$.
+We performed our experiments on a Ubuntu machine
 equipped with 4.2GHz Quad-Core Intel Core i7 and 64GB of RAM.
 
 
@@ -44,8 +44,9 @@ equipped with 4.2GHz Quad-Core Intel Core i7 and 64GB of RAM.
   \vspace*{-1.5em}
 \end{figure}
 
-To evaluate the effectiveness of the dynamic shortcut, we performed static
-analysis for \inred{269} Lodash 4 tests with and without dynamic shortcut.
+To evaluate the effectiveness of using dynamic shortcuts, we performed static
+analysis of \inred{269} Lodash 4 tests with and without dynamic shortcuts.
+%
 Figure~\ref{fig:conc-analysis-time} depicts the histogram for their analysis
 time and the box plot for speed up after applying the dynamic shortcut.  While
 the base analysis (no-DS) finished \inred{199} out of \inred{269} tests within 5
