@@ -1,16 +1,291 @@
 \section{Proof of Theorem 1.4}\label{sec:proof}
 
 We formally rephrase the meaning of Theorem~\ref{theorem:shortcut} in
-Theorem~\ref{theorem:soundness} and Theorem~\ref{theorem:termination}.
-Now we assume that the converter $\asconverter$ from pairs of views and abstract states
-to pairs of abstract instantiation maps and sealed symbolic states satisfies the
-condition~\ref{expr:condition}.
+Theorem~\ref{theorem:soundness} and Theorem~\ref{theorem:termination}.  Now, we
+assume that the baseline sensitive abstract domain ensures the soundness and
+termination, the sealed symbolic execution is valid, and the converter
+$\asconverter: (\viewset \times \absdom) \hookrightarrow (\absimapset \times
+\symbstset)$ satisfies the condition~\ref{equ:cond} in the
+Theorem~\ref{theorem:shortcut}.
+
+
+\subsection{Soundness}
 
 \begin{theorem}[Soundness]\label{theorem:soundness}
+  According to the equation~\ref{equ:sound}, the abstract interpretation using
+  the combined domain $\combdom$ is \textit{sound} if and only if
+  \begin{equation}\label{equ:comb-sound1}
+    \forall \combelem_0, \combelem_1 \in \combdom. \; \combgamma(\combelem_0) \cup
+    \combgamma(\combelem_1) \subseteq \combgamma(\combelem_0 \join \combelem_1)
+  \end{equation}
+  \begin{equation}\label{equ:comb-sound2}
+    \forall \combelem \in \combdom. \; \step \circ \combgamma(\combelem) \subseteq
+    \combgamma \circ \combstep(\combelem)\\
+  \end{equation}
 \end{theorem}
+\begin{proof}
+  First, we prove that the abstract transfer function $\abstransfer$ defined
+  with the combined one-step execution $\combstep$ is sound
+  \[
+    \begin{array}{rcll}
+      \transfer \circ \combgamma(\combelem)
+      &=& \combgamma(\combelem) \cup \step \circ \combgamma(\combelem)\\
+      &\subseteq& \combgamma(\combelem) \cup \combgamma \circ \combstep(\combelem)
+      & (\because \; \text{Property~\ref{equ:comb-sound2}})\\
+      &\subseteq& \combgamma(\combelem \join \combstep(\combelem))
+      & (\because \; \text{Property~\ref{equ:comb-sound1}})\\
+      &=& \combgamma \circ \abstransfer(\combelem)\\
+    \end{array}
+  \]
+  Then, the abstract semantics $\abssem{\prog}$ is sound because it is defined
+  with a sound abstract transfer function $\abstransfer$ using the combined
+  one-step execution $\combstep$.
+\end{proof}
+
+First, we prove the Property~\ref{equ:comb-sound1} as follows:
+\begin{lemma}
+  \[
+    \forall \combelem_0, \combelem_1 \in \combdom. \; \combgamma(\combelem_0) \cup
+    \combgamma(\combelem_1) \subseteq \combgamma(\combelem_0 \join \combelem_1)
+  \]
+\end{lemma}
+\begin{proof}
+  \[
+    \begin{array}{cl}
+      \multicolumn{2}{l}{
+        \combgamma((\sabselem, \symbelem)) \cup \combgamma((\sabselem', \symbelem'))
+      }\\
+      =& \sgamma(\sabselem) \cup \symbgamma(\symbelem)
+      \cup \sgamma(\sabselem') \cup \symbgamma(\symbelem')\\
+      =& (\sgamma(\sabselem)\cup \sgamma(\sabselem'))
+      \cup (\symbgamma(\symbelem) \cup \symbgamma(\symbelem'))\\
+      \subseteq& \sgamma(\sabselem \join \sabselem')
+      \cup (\symbgamma(\symbelem) \cup \symbgamma(\symbelem'))\\
+      & \multicolumn{1}{r}{(\because \; \sabsdom \; \text{is sound})}\\
+      =& \sgamma(\sabselem \join \sabselem')
+      \cup \symbgamma(\symbelem \cup \symbelem')\\
+      =& \combgamma((\sabselem \join \sabselem', \symbelem \cup \symbelem'))\\
+      =& \combgamma((\sabselem, \symbelem) \join (\sabselem', \symbelem'))\\
+    \end{array}
+  \]
+\end{proof}
+
+To prove Property~\ref{equ:comb-sound2}, we first prove the same property for
+the sealed symbolic domain $\symbdom$ in Lemma~\ref{lemma:step-symb}.  Then, we
+prove the properties of the $\triage$ function in Lemma~\ref{lemma:triage}.
+Finally, we prove the Property~\ref{equ:comb-sound2} in
+Lemma~\ref{lemma:comb-sound2}.
+
+\begin{lemma}\label{lemma:step-symb}
+  For a given set of pairs of abstract instantiation maps and sealed symbolic
+  states $\symbelem \in \symbdom$, assume that the following condition is
+  satisfied:
+  \[
+    \forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
+    \symbstset. \; \text{s.t.} \; \symbst \symbtrans \symbst'
+  \]
+  Then, the following property holds:
+  \[
+    \step \circ \symbgamma(\symbelem) \subseteq
+    \symbgamma \circ \symbstep(\symbelem)\\
+  \]
+\end{lemma}
+\begin{proof}
+  \[
+    \begin{array}{cl}
+      \multicolumn{2}{l}{\step \circ \symbgamma(\symbelem)}\\
+      =& \step(\bigcup \{ \instant{\symbst}{\absimap} \mid (\absimap, \symbst) \in
+      \symbelem\})\\
+      =& \{ \st' \mid (\absimap, \symbst) \in \symbelem \wedge \st \in
+      \instant{\symbst}{\absimap} \wedge \st \trans \st'\})\\
+      =& \{ \st' \mid (\absimap, \symbst) \in \symbelem \wedge \imap \in
+      \imapgamma(\absimap) \wedge \instant{\symbst}{\imap} \trans \st'\})\\
+      =& \{ \st' \mid (\absimap, \symbst) \in \symbelem \wedge \imap \in
+      \imapgamma(\absimap) \wedge \instant{\symbst}{\imap} \trans \st'\\
+       & \phantom{\{ \st' \mid (\absimap, \symbst) \in \symbelem \wedge \imap \in
+      \imapgamma(\absimap)} \wedge \symbst \symbtrans \symbst' \})\\
+      & \multicolumn{1}{r}{(\because \; \text{Assumption})}\\
+      =& \{ \instant{\symbst'}{\imap} \mid (\absimap, \symbst)
+      \in \symbelem \wedge \imap \in \imapgamma(\absimap) \wedge \symbst
+      \symbtrans \symbst'\}\\
+      & \multicolumn{1}{r}{(\because \; \text{Validity of} \; \symbtrans)}\\
+      =& \bigcup \{ \instant{\symbst'}{\absimap} \mid (\absimap, \symbst)
+      \in \symbelem \wedge \symbst \symbtrans \symbst' \}\\
+      =& \symbgamma(\{ (\absimap, \symbst') \mid (\absimap, \symbst)
+      \in \symbelem \wedge \symbst \symbtrans \symbst' \})\\
+      =& \symbgamma \circ \symbstep(\symbelem)\\
+    \end{array}
+  \]
+\end{proof}
+
+\begin{lemma}\label{lemma:triage}
+  For a given combined state $\combelem \in \combdom$, the $\triage$ function
+  satisfies the following two properties:
+  \begin{itemize}
+    \item $\combgamma(\combelem) \subseteq \combgamma \circ \triage(\combelem)$
+    \item $\forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
+      \symbstset.  \; \text{s.t.} \; \symbst \symbtrans \symbst'$
+  \end{itemize}
+  where $(\sabselem, \symbelem) = \triage(\combelem)$
+\end{lemma}
+\begin{proof}
+  \[
+    \fbox{$\combgamma(\combelem) \subseteq \combgamma \circ \triage(\combelem)$}
+  \]
+  \[
+    \begin{array}{cl}
+      \multicolumn{2}{l}{\combgamma((\sabselem, \symbelem))}\\
+      =& \sgamma(\sabselem) \cup \symbgamma(\symbelem)\\
+
+      =& \left( \underset{\view \in \viewset}{\bigcup} {\viewmap(\view) \cap
+      \gamma \circ \sabselem(\view)} \right) \cup \left( \underset{(\absimap,
+      \symbst) \in \symbelem}{\bigcup} \instant{\symbst}{\absimap} \right) \\
+
+      =& \left( \underset{\view \in \viewset}{\bigcup} \aelemgamma((\view,
+      \sabselem(\view))) \right) \cup \left( \underset{(\absimap, \symbst) \in
+      \symbelem}{\bigcup} \aelemgamma((\absimap, \symbst)) \right) \\
+
+      =& \dot\aelemgamma(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \}
+      \cup \symbelem)\\
+
+      =& \dot\aelemgamma(\dot{\atriage}(\{ (\view, \sabselem(\view)) \mid \view
+      \in \viewset \} \cup \symbelem))\\
+
+       & \multicolumn{1}{r}{(\text{Trivially,} \; \forall \aelem \in \aelemset.
+       \; \aelemgamma(\aelem) = \aelemgamma \circ \atriage(\aelem))}\\
+
+      =& \dot\aelemgamma(E)\\
+       & \multicolumn{1}{r}{(\text{See the definition of $E$ in
+       Definition~\ref{def:triage}})}\\
+
+      =& \left( \underset{(\view, \abselem) \in E}{\bigcup} \aelemgamma((\view,
+      \abselem)) \right) \cup \left( \underset{(\absimap, \symbst) \in
+    E}{\bigcup} \aelemgamma((\absimap, \symbst)) \right)\\
+
+      =& \left( \underset{(\view, \abselem) \in E}{\bigcup} \viewmap(\view) \cap
+      \gamma(\abselem) \right) \cup \left( \underset{(\absimap, \symbst) \in
+      E}{\bigcup} \instant{\symbst}{\absimap} \right)\\
+
+      =& \left( \underset{\view \in \viewset}{\bigcup} { \underset{(\view,
+      \abselem) \in E}{\bigcup} \viewmap(\view) \cap \gamma(\abselem) } \right)
+      \cup \left( \underset{(\absimap, \symbst) \in E}{\bigcup}
+      \instant{\symbst}{\absimap} \right)\\
+
+      =& \left( \underset{\view \in \viewset}{\bigcup} {\viewmap(\view) \cap
+        \left(\underset{(\view, \abselem) \in
+      E}{\bigcup}{\gamma(\abselem)}\right)} \right) \cup \left(
+      \underset{(\absimap, \symbst) \in E}{\bigcup} \instant{\symbst}{\absimap}
+      \right)\\
+
+      \subseteq& \left( \underset{\view \in \viewset}{\bigcup} {\viewmap(\view)
+        \cap \gamma\left( \underset{(\view, \abselem) \in E}{\bigjoin}\abselem
+      \right)} \right) \cup \left( \underset{(\absimap, \symbst) \in E}{\bigcup}
+      \instant{\symbst}{\absimap} \right)\\
+
+      =& \sgamma\left( \lambda \view. \underset{(\view, \abselem) \in
+      E}{\bigjoin}\abselem \right) \cup \symbgamma(E \cap (\absimapset \times
+      \symbstset))\\
+
+      =& \combgamma\left( \lambda \view. \underset{(\view, \abselem) \in
+      E}{\bigjoin}\abselem, E \cap (\absimapset \times \symbstset) \right)\\
+
+      =& \combgamma \circ \triage((\sabselem, \symbelem))\\
+    \end{array}
+  \]
+  \[\]
+  \[
+    \fbox{$\forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
+    \symbstset.  \; \text{s.t.} \; \symbst \symbtrans \symbst'$}
+  \]
+
+  For a given $(\absimap, \symbst) \in \symbelem$, there exists an analysis
+  element $\aelem \in \aelemset$ such that $\atriage(\aelem) = (\absimap,
+  \symbst)$.  According to the definition of $\atriage$ in
+  Definition~\ref{def:atriage}, there are two possible cases: $\aelem =
+  (\absimap, \symbst) \wedge \exists \symbst' \in \symbstset. \; \text{s.t} \;
+  \symbst \symbtrans \symbst'$ or $\aelem = (\view, \abselem) \wedge \aelem \in
+  \Dom(\asconverter)$. We separately consider those two cases:
+  \begin{itemize}
+    \item $\aelem = (\absimap, \symbst) \wedge \exists \symbst' \in \symbstset.
+      \; \text{s.t} \; \symbst \symbtrans \symbst'$\\
+        By definition, $\exists \symbst' \in \symbstset.  \; \text{s.t} \;
+        \symbst \symbtrans \symbst'$
+    \item $\aelem = (\view, \abselem) \wedge \aelem \in \Dom(\asconverter)$\\
+      By the condition~\ref{equ:cond} in the Theorem~\ref{theorem:shortcut},\\
+      $\exists k > 1. \symbst \symbtrans^k \excst$.  Thus, $\exists \symbst' \in
+      \symbstset.  \; \text{s.t} \; \symbst \symbtrans \symbst'$
+  \end{itemize}
+\end{proof}
+
+
+\begin{lemma}\label{lemma:comb-sound2}
+  \[
+    \forall \combelem \in \combdom. \; \step \circ \combgamma(\combelem) \subseteq
+    \combgamma \circ \combstep(\combelem)\\
+  \]
+\end{lemma}
+\begin{proof}
+  \[
+    \begin{array}{cl}
+      \multicolumn{2}{l}{
+        \step \circ \combgamma(\combelem)
+      }\\
+      \subseteq& \step \circ \combgamma((\sabselem, \symbelem))\\
+       & \multicolumn{1}{r}{(\because \; \text{First property in
+       Lemma~\ref{lemma:triage}}}\\
+       & \multicolumn{1}{r}{\text{where} \; (\sabselem, \symbelem)
+       = \triage(\combelem).)}\\
+
+      =& \step(\sgamma(\sabselem) \cup \symbgamma(\symbelem))\\
+      =& \step(\sgamma(\sabselem)) \cup \step(\symbgamma(\symbelem))\\
+      \subseteq& \sgamma \circ \sabsstep(\sabselem) \cup \step(\symbgamma(\symbelem))\\
+      & \multicolumn{1}{r}{(\because \; \sabsdom \; \text{is sound.})}\\
+      \subseteq& \sgamma \circ \sabsstep(\sabselem) \cup \symbgamma \circ
+      \symbstep((\symbelem))\\
+               & \multicolumn{1}{r}{(\because \; \text{Sceond property in
+               Lemma~\ref{lemma:triage}} }\\
+               & \multicolumn{1}{r}{\text{and Lemma~\ref{lemma:step-symb}})}\\
+      =& \combgamma((\sabsstep(\sabselem), \symbstep(\symbelem)))\\
+      =& \combgamma \circ \combstep(\combelem)\\
+
+      % =& (\sgamma(\sabselem)\cup \sgamma(\sabselem'))
+      % \cup (\symbgamma(\symbelem) \cup \symbgamma(\symbelem'))\\
+      % \subseteq& \sgamma(\sabselem \join \sabselem')
+      % \cup (\symbgamma(\symbelem) \cup \symbgamma(\symbelem'))\\
+      % & \multicolumn{1}{r}{(\because \; \sabsdom \; \text{is sound.})}\\
+      % =& \sgamma(\sabselem \join \sabselem')
+      % \cup \symbgamma(\symbelem \cup \symbelem')\\
+      % =& \combgamma((\sabselem \join \sabselem', \symbelem \cup \symbelem'))\\
+      % =& \combgamma((\sabselem, \symbelem) \join (\sabselem', \symbelem'))\\
+    \end{array}
+  \]
+\end{proof}
+
+\subsection{Termination}
 
 \begin{theorem}[Termination]\label{theorem:termination}
 \end{theorem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 % Let's assume that $\viewmap$ partitions $\dom$, that is,

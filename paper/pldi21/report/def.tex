@@ -27,10 +27,10 @@ follows:
 \]
 The \textit{concrete domain} $\dom = \powerset{\stset}$ is a complete lattice
 with $\cup$, $\cap$, and $\subseteq$ as its join($\join$), meet($\meet$), and
-partial order($\order$) operators.  The element $\ielem$ denotes the initial
-states $\istset$.  The \textit{one-step execution} $\step: \dom \rightarrow
-\dom$ transforms states using the transition relation $\trans$: $\step(\elem) =
-\{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
+partial order($\order$) operators.  The set of states $\ielem$ denotes the
+initial states $\istset$.  The \textit{one-step execution} $\step: \dom
+\rightarrow \dom$ transforms states using the transition relation $\trans$:
+$\step(\elem) = \{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
 
 
 \subsubsection{Abstract Interpretation}
@@ -54,12 +54,14 @@ $\absdom$ with a \textit{concretization function} $\gamma$ and an
 $\absstep: \absdom \rightarrow \absdom$.  For the sound state abstraction, the
 join operator and the abstract one-step execution should satisfy the following
 conditions:
-\begin{itemize}
-  \item $\forall \abselem_0, \abselem_1 \in \absdom. \; \gamma(\abselem_0) \cup
-    \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join \abselem_1)$
-  \item $\forall \abselem \in \absdom. \; \absstep \circ \gamma(\abselem) \subseteq
-    \gamma \circ \absstep(\abselem)$
-\end{itemize}
+\begin{equation}\label{equ:sound}
+  \begin{array}{l}
+  - \; \forall \abselem_0, \abselem_1 \in \absdom. \; \gamma(\abselem_0) \cup
+    \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join \abselem_1)\\
+  - \; \forall \abselem \in \absdom. \; \step \circ \gamma(\abselem) \subseteq
+    \gamma \circ \absstep(\abselem)\\
+  \end{array}
+\end{equation}
 
 
 \subsubsection{Analysis Sensitivity}
@@ -70,14 +72,15 @@ $\sabsdom: \viewset \rightarrow \absdom$ is defined with a \textit{view
 abstraction} $\viewmap: \viewset \rightarrow \dom$ that provides multiple points
 of views for reachable states during static analysis.  It maps a finite number
 of views $\viewset$ to sets of states $\dom$. Each view $\view \in \viewset$
-represents a set of states $\viewmap(\view)$.
-A \textit{sensitive state abstraction} $\dom
-\galois{\alpha_\viewmap}{\sgamma} \sabsdom$ is a Galois connection between
-the concrete domain $\dom$ and the sensitive abstract domain $\sabsdom$ with the
-following concretization function:
+represents a set of states $\viewmap(\view)$ and also a state is always
+included in a unique view: $\forall \st \in \stset. \; \exists! \view \in
+\viewset.$ s.t. $\st \in \viewmap(\view)$.  A \textit{sensitive state
+abstraction} $\dom \galois{\alpha_\viewmap}{\sgamma} \sabsdom$ is a Galois
+connection between the concrete domain $\dom$ and the sensitive abstract domain
+$\sabsdom$ with the following concretization function:
 \[
-  \sgamma(\sabselem) = \{ \st \in \stset \mid \forall \view \in \viewset.
-  \; \st \in \viewmap(\view) \Rightarrow \st \in \gamma \circ \sabselem(\view) \}
+  \sgamma(\sabselem) = \underset{\view \in \viewset}{\bigcup}
+  {\viewmap(\view) \cap \gamma \circ \sabselem(\view)}
 \]
 
 With analysis sensitivities, the abstract one-step execution $\sabsstep:
@@ -115,15 +118,17 @@ $\symbset$.  We also define the symbolic transition relation $\symbtrans
 for $k$ repetition of $\symbtrans$, and  $\symbst \symbtrans \excst$ when
 $\symbst$ does not have symbolic transitions with any other symbolic states.  We
 also define the soundness of sealed symbolic execution as follows:
-\begin{definition}{(Soundness)}
-  The symbolic transition relation is \textit{sound} when the following
+\begin{definition}{(Validity)}
+  The symbolic transition relation is \textit{valid} when the following
   condition is satisfied:
   \[
-    \begin{array}{l}
-      \forall \imap \in \imapset. \; \forall \symbst, \symbst' \in \symbstset.\\
-      \symbst \symbtrans \symbst' \Rightarrow \instant{\symbst}{\imap} \trans
-      \instant{\symbst'}{\imap}
-    \end{array}
+      \forall \symbst, \symbst' \in \symbstset.\\
+  \]
+  \[
+    \symbst \symbtrans \symbst' \Leftrightarrow
+    \forall \imap \in \imapset. \;
+    \{ \st' \mid \instant{\symbst}{\imap} \trans \st' \}
+    = \{ \instant{\symbst'}{\imap} \}
   \]
   where $\imapset: \symbset \rightarrow \valset$ is instantiation maps from
   symblic values to real values, and $\instant{\symbst}{\imap}$ denotes a state
@@ -200,26 +205,33 @@ $\asconverter: (\viewset \times \absdom) \hookrightarrow (\absimapset \times
 (\absimapset \times \symbstset)$ \end{itemize} The converter $\asconverter$ is a
 \textit{partial function} and it is applicable when it is possible to represent
 a given abstract state in a specific view as a pair of abstract instantiation
-map and a sealed symbolic state.  Two converters should convert given elements
-without loss of information:
+map and a sealed symbolic state.  We define the concretization function
+$\aelemgamma: \aelemset \rightarrow \dom$ for analysis elements as follows:
+\[
+  \aelemgamma(\aelem) = \left\{
+    \begin{array}{ll}
+      \viewmap(\view) \cap \gamma(\abselem) & \text{if} \; (\view, \abselem) = \aelem\\
+      \instant{\symbst}{\absimap} & \text{if} \; (\absimap, \symbst) = \aelem\\
+    \end{array}
+  \right.
+\]
+Moreover, two converters should convert given elements without loss of
+information:
 \[
   \forall \view \in \viewset, \abselem \in \absdom.
 \]
 \[
-  \asconverter((\view, \abselem)) = (\absimap, \symbst)
-  \Rightarrow \left\{
+  \asconverter(\aelem) = \aelem' \Rightarrow \left\{
   \begin{array}{l}
-    (\view, \abselem) = \saconverter((\absimap, \symbst))\\\
-    \viewmap(\view) \cap \gamma(\abselem) = \instant{\symbst}{\absimap}\\
+    \aelem = \saconverter(\aelem')\\
+    \aelemgamma(\aelem) = \aelemgamma(\aelem')\\
   \end{array}
   \right.
 \]
-where $\identity$ denotes the identity function.
-
 
 We define a $\atriage$ function using two converters between analysis elements
 as follows:
-\begin{definition}[$\atriage$]
+\begin{definition}[$\atriage$]\label{def:atriage}
   The triage function $\atriage: \aelemset \rightarrow \aelemset$ for analysis
   elements is defined as
   \[
@@ -229,7 +241,8 @@ as follows:
         & \text{if} \; \aelem = (\view, \abselem) \wedge \aelem \in
         \Dom(\asconverter)\\
         \saconverter(\aelem)
-        & \text{if} \; \aelem = (\absimap, \symbst) \wedge \symbst \symbtrans \symbst'\\
+        & \text{if} \; \aelem = (\absimap, \symbst) \wedge \symbst \symbtrans
+        \bot\\
         \aelem
         & \text{Otherwise}
       \end{array}
@@ -238,7 +251,7 @@ as follows:
 \end{definition}
 Using the $\atriage$ function for analysis elements, we defined the $\triage$
 function for combined states:
-\begin{definition}[$\triage$]
+\begin{definition}[$\triage$]\label{def:triage}
   The triage function $\triage: \combdom \rightarrow \combdom$ for combined
   states is defined as
   \[
@@ -249,8 +262,7 @@ function for combined states:
   \]
   where
   \[
-    E = \dot{\atriage}(\{ (\view, \abselem) \mid \view \in \viewset \wedge
-    \sabselem(\view) = \abselem \} \cup \symbelem)
+    E = \dot{\atriage}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
   \]
 \end{definition}
 The dot notation $\dot{f}$ denotes the element-wise extended function of a
@@ -279,7 +291,7 @@ following condition:
   The abstract interpretation with dynamic shortcut is sound and terminates in a
   finite time if its abstract semantics is sound and $\saconverter$ satisfies the
   following condition:
-  \begin{equation}\label{expr:condition}
+  \begin{equation}\label{equ:cond}
     \asconverter((\view, \abselem)) = (\absimap, \symbst) \Rightarrow
     \symbst \symbtrans^k \excst \wedge 1 < k \leq N
   \end{equation}
