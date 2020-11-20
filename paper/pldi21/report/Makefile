@@ -12,6 +12,7 @@ all: pdf docclean
 
 pdf:
 	pdflatex $(PACKAGE)
+	pdflatex $(PACKAGE)
 
 %.cls:   %.ins %.dtx
 	pdflatex $<
