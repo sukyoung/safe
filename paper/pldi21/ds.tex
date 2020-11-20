@@ -248,8 +248,10 @@ states after the sensitive abstract states are reached the fixed point.  Thus,
 the termination of the analysis is guaranteed.  For the proof of Soundness, two
 properties (\ref{equ:sound-join}) for join operator $\join$ and
 (\ref{equ:sound-step}) for combined one-step execution are required to be
-proved.  The core idea of the proof is to prove the following lemmas for
-$\triage$ function and utilize them.
+proved.  The core idea of the proof is to use Lemma~\ref{lemma:step-symb} and
+Lemma~\ref{ref:lemma:trage} for the sealed symbolic one-step execution
+$\symbstep$ and the $\triage$ function. Because of the page limitation, we omit
+the proof in this paper and include it in a companion report~\cite{report}.
 \begin{lemma}\label{lemma:step-symb}
   Assume that the following condition is hold
   \[
