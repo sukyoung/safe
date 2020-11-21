@@ -142,8 +142,9 @@ the increment function $\inc: \abscountset \times \absaddrset \rightarrow
 
 \subsection{Sealed Symbolic Execution}
 
-We define the symbolic states with the extended concrete values and the abstract
-counters for addresses as follows:
+We define the sealed symbolic states by not only extending the concrete values
+$\valset$ with symbolic values $\symbset$ but also adding the abstract counters
+$\abscountset$ as follows:
 \[
   \begin{array}{r@{~}c@{~}l}
     \symbstset &=& \labset \times \memset \times \ctxtset \times \eaddrset
@@ -154,19 +155,24 @@ counters for addresses as follows:
     \abscountset &=& \oaddrset \rightarrow \{ \abszero, \absone, \absmany \}\\
   \end{array}
 \]
-We define the converter $\asconverter: (\viewset \times \absdom) \rightarrow
-(\absimapset \times \symbstset)$ from pairs of views and abstract states to the
-corresponding pairs of abstract instantiation maps and sealed symbolic states.
-The algorithm is to traverse the averall structure, to remain a single value,
-but changes to each abstract value represents multiple values to a new symbol
-and adds the mapping from the new symbol to the original abstract value.  In a
-reverse way, the opposite converter $\saconverter: (\absimapset \times
-\symbstset)  \rightarrow (\viewset \times \absdom)$ recovers the abstract values
-based on the given abstract instantiation map.  The symbolic transition relation
-$\symbtrans$ is an extension of the original concrete transition relation
-$\trans$.  When the exact values of symbolic values are required, symbolic
-states have the symbolic transition relation with the exception state $\excst$.
-For example, we add the following rule for $\kwret$ statements:
+The objects in JavaScript are open thus their properties can be dynamically
+added or deleted.  Moreover, the object properties are accessible via string
+values thus it is difficult to decide whether the strong udpates are possible or
+not in static analysis.  To check the possibility of strong updates during
+sealed symbolic execution, we augmented its states with the abstract counters
+$\abscountset$.  Then, we define the converter $\asconverter: (\viewset \times
+\absdom) \rightarrow (\absimapset \times \symbstset)$ by traversing the averall
+structure of given abstract states to keep singleton values but to change each
+abstract value to a unique symbolic value.  During the traverse, we also keep
+the mapping from symbolic values to the corresponding abstract values to
+construct an abstract instantiation map.  For the opposite converter
+$\saconverter: (\absimapset \times \symbstset)  \rightarrow (\viewset \times
+\absdom)$, we just recovers the abstract values using the given abstract
+instantiation map.  We only define the sealed symbolic transition relation
+$\symbtrans$ when the next step does not require actual values of any symbolic
+values.  If not, a given sealed symbolic state does not have sealed symbolic
+transitions with any other ones.  For example, we add the following rule for
+$\kwret$ statements:
 \begin{mathpar}
   \inferrule
   {
