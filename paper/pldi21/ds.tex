@@ -100,7 +100,7 @@ A \textit{combined one-step execution} $\combstep: \combdom \rightarrow
 where $(\sabselem, \symbelem) = \triage(\combelem)$.
 \end{definition}
 
-From a given $\combelem$, the $\triage$ function makes analysis elements
+From a given combined state $\combelem$, the $\triage$ function makes analysis elements
 and converts them if a new sealed symbolic execution
 begins or an existing sealed symbolic execution terminates.
 Specifically, for an analysis element $(\view, \abselem)$ in the sensitive abstract domain,
@@ -217,21 +217,20 @@ $\viewtrans{\lab_3}{\lab_4}$ from $\lab_3$ to $\lab_4$ is performed to the
 merged abstract state $0+$ and the result is $-0$.
 
 \subsection{Soundness and Termination}
-
-The converter $\asconverter$ and the sealed symbol transition $\symbtrans$ are
+The converter $\asconverter$ and the sealed symbolic transition $\symbtrans$ are
 keys to configure the introduction and termination of sealed symbolic
-executions.  To ensure the \textit{soundness} and \textit{termination} of the
-abstract interpretation defined with the combined domain of sensitive abstract
-domain and sealed symbolic domain, the following conditions should be hold.
+execution.  To ensure the \textit{soundness} and \textit{termination} of an
+abstract interpretation defined with a combined domain of a sensitive abstract
+domain and a sealed symbolic domain, the following conditions should hold.
 
 \begin{theorem}[Soundness and Termination]\label{theorem:shortcut}
-  The abstract interpretation with dynamic shortcut is \textbf{sound} and
-  \textbf{terminates} in a finite time if
+An abstract interpretation with dynamic shortcuts is \textbf{sound} and
+\textbf{terminates} in a finite time if:
   \begin{itemize}
-    \item The abstract transfer $\abstransfer$ is sound
-    \item The sensitive abstract domain $\sabsdom$ has finite height
-    \item The sealed symbolic transition $\symbtrans$ is valid
-    \item There exists $N < \infty$ such that
+    \item the abstract transfer function $\abstransfer$ is sound,
+    \item the sensitive abstract domain $\sabsdom$ has a finite height,
+    \item the sealed symbolic transition $\symbtrans$ is valid, and
+    \item there exists $N < \infty$ such that
       \[
         \forall \aelem \in \aelemset. \; \asconverter(\aelem) = (\absimap,
         \symbst) \Rightarrow \symbst
@@ -240,21 +239,24 @@ domain and sealed symbolic domain, the following conditions should be hold.
   \end{itemize}
 \end{theorem}
 
-To prove the termination of the abstract interpretation with the combined
-domain, the condition provides an upper bound of the number of sealed symbolic
-states after the sensitive abstract states are reached the fixed point.  Thus,
-the termination of the analysis is guaranteed.  For the proof of Soundness, two
-properties (\ref{equ:sound-join}) for join operator $\join$ and
-(\ref{equ:sound-step}) for combined one-step execution are required to be
-proved.  The core idea of the proof is to use Lemma~\ref{lemma:step-symb} and
-Lemma~\ref{ref:lemma:triage} for the sealed symbolic one-step execution
-$\symbstep$ and the $\triage$ function. Because of the page limitation, we omit
-the proof in this paper and include it in a companion report~\cite{report}.
+The second and the fourth conditions provide upper bounds of
+the number of sensitive abstract states and
+the number of sealed symbolic states, respectively.
+Thus, it guarantees the termination of the analysis.
+
+For soundness proof, we should prove 
+two conditions presented in Section~\ref{sec:ai}:
+(\ref{equ:sound-join}) for the join operator $\join$ and
+(\ref{equ:sound-step}) for the combined one-step execution.
+The core idea of the proof is to use Lemma~\ref{lemma:step-symb} and
+Lemma~\ref{lemma:triage} for the sealed symbolic one-step execution
+$\symbstep$ and the $\triage$ function, respectively. Due to the page limitation, we omit
+the proof in this paper and present it in a companion report~\cite{report}.
 \begin{lemma}\label{lemma:step-symb}
-  Assume that the following condition is hold
+  Assume that the following condition holds:
   \[
     \forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
-    \symbstset. \; \text{s.t.} \; \symbst \symbtrans \symbst'
+    \symbstset. \; \symbst \symbtrans \symbst'
   \]
   then the following property holds:
   \[
@@ -268,7 +270,7 @@ the proof in this paper and include it in a companion report~\cite{report}.
   \begin{itemize}
     \item $\combgamma(\combelem) \subseteq \combgamma \circ \triage(\combelem)$
     \item $\forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
-      \symbstset.  \; \text{s.t.} \; \symbst \symbtrans \symbst'$
+      \symbstset.  \; \symbst \symbtrans \symbst'$
   \end{itemize}
   where $(\sabselem, \symbelem) = \triage(\combelem)$
 \end{lemma}
