@@ -1,22 +1,22 @@
 \subsection{Opaque Function Coverage}
 To evaluate how much manual modeling efforts of opaque functions
-are reduced by dynamic shortcuts, we measured the number of tests where
-opaque functions that are analyzed only by dynamic analysis not by
+are reduced by dynamic shortcuts, we measured the number of tests for which
+opaque functions are analyzed only by dynamic analysis not by
 static analysis.  Table~\ref{table:func-replace} summarizes the result.
-For 263 original tests and 167 abstracted tests, we measured the
+For 263 original tests and 167 abstracted tests that DS finished analysis, we measured the
 number of tests that use only dynamic shortcuts instead of manual modeling
 for each JavaScript built-in library function.  For each row,
 \textbf{Object} column denotes a built-in object, \textbf{Function} a function
 name, and \textbf{\#~Replaced} the number of tests successfully replacing manual
 modeling via dynamic shortcuts over the total number of tests using the target function.
-For example, the first row in the left side describes that \jscode{Array} is used in
+For example, the first row in the leftmost side describes that \jscode{Array} is used in
 203 original tests and 116 abstracted tests.  Among them, 203 original
 tests and 90 abstracted tests are successfully analyzed by using dynamic shortcuts
 instead of manual modeling of \jscode{Array}.  Each filled cell describes
 a fully replaceable case.  Therefore, dynamic
 shortcuts effectively lessen the burden of manual modeling for JavaScript
-built-in functions.  Again, since all the original Lodash 4 tests except one
-is finisehd with a single dynamic shortcut, all the built-in fuctions
+built-in functions.  Again, since analysis of all the original Lodash 4 tests except one
+finishes with a single dynamic shortcut, all the built-in fuctions
 except \jscode{Math.floor} and \njscode{Function.prototype.call} are replaceable
-for original tests.  For abstracted tests, 12 functions out of 60 built-in
-functions are analyzed by only dynamic shortcut instead of manual modeling.
+for original tests.  For abstracted tests, 12 out of 60 built-in
+functions are analyzed by only dynamic shortcuts.
