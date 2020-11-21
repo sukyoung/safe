@@ -23,11 +23,9 @@ following \jscode{generateSymbol} function:
 function generateSymbol() {
   function detect() { /* access detection */ }
   return new Proxy(function() {}, {
-    getPrototypeOf: detect,
-    ...
+    getPrototypeOf: detect,  ...
     construct     : detect
-  });
-}
+  }); }
 var x = generateSymbol();
 var y = x;
 var z = x + 1;
@@ -38,7 +36,7 @@ function \jscode{detect}.  A sealed symbol invokes the function \jscode{detect}
 when any of 13 pre-defined traps are operated on the object, which enables us to
 determine whether an object is sealed or not.  For example, the variable
 \jscode{y} successfully points to the same symbol stored in \jscode{x}, but the
-program invokes the function \jscode{detect} on line 11 because \jscode{x + 1} requires
+program invokes the function \jscode{detect} on line 9 because \jscode{x + 1} requires
 the actual value of the symbol.  In addition, we instrument unary and binary
 operations in Jalangi so that we can detect all the accesses on the
 symbol beyond the 13 traps provided by \jscode{Proxy}.
@@ -47,11 +45,11 @@ JavaScript engine to support sealed symbolic execution.
 
 \paragraph{Synchronization of Control Points.}
 For seamless interaction between static analysis and sealed symbolic execution,
-synchronization of control points in both worlds is a prerequisite.
+synchronization of control points in both worlds is necessary.
 The SAFE static analyzer parses a JavaScript program to an Abstract
 Syntax Tree (AST), compiles it to its intermediate representation, and
 builds a Control Flow Graph (CFG).  It produces annotations for
-control points on the CFG including functions, call sites, and object allocation sites.
+control points on CFGs including functions, call sites, and object allocation sites.
 On the contrary, the Jalangi dynamic analyzer instruments a JavaScript program 
 to keep track of necessary information at run time.  Therefore, during
 sealed symbolic execution, Jalangi requires the annotations from SAFE to compute
@@ -86,9 +84,9 @@ To guarantee the termination of static analysis using dynamic shortcuts, the
 filter $\checker$ should pass a state $\symbst$ only when it terminates in a
 bound time $N$.  Since statically checking the termination property is a difficult task,
 we simply perform sealed symbolic execution with a pre-determined time limit.  When it runs
-over the time limit, we treat it as a failure to pass $\checker$; otherwise, we utilize
-the result of the sealed symbolic execution.  In our experiments, we set the time limit as
-5 seconds for each sealed symbolic execution.
+over the time limit, we treat it as a failure to pass $\checker$; otherwise, we use
+the result of sealed symbolic execution.  Our experiments used 5 seconds 
+as the time limit for each sealed symbolic execution.
 
 
 % \paragraph{Function-Level Dynamic Shortcut.}

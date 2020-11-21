@@ -1,28 +1,20 @@
 \section{Evaluation}\label{sec:eval}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\linewidth]{img/conc-analysis-time}
-  \vspace*{-1.5em}
-  \caption{Analysis time for Lodash 4 \textit{original} tests without (no-DS)
-  and with (DS) dynamic shortcuts within 5 minutes}
-  \label{fig:conc-analysis-time}
-  \vspace*{-1.5em}
-\end{figure}
-
-We evaluated our tool based on the following three research questions:
+We evaluate $\tool$ using the following research questions:
 \begin{itemize}
 \item \textbf{RQ1) Analysis Speed-up:} How much analysis time is reduced by
-using dynamic shortcuts during static analysis?
+using dynamic shortcuts?
 \item \textbf{RQ2) Precision Improvement:} How much analysis precision is
-improved by using dynamic shortcuts instead of manual modeling?
+improved by using dynamic shortcuts?
+% instead of manual modeling?
 \item \textbf{RQ3) Opaque Function Coverage:} How many opaque functions are
-covered by dynamic shortcuts without using manual modeling?
+covered only by dynamic shortcuts?
+% without using manual modeling?
 \end{itemize}
 We selected the official 306 tests of Lodash 4
 (v.4.17.20)\footnote{https://github.com/lodash/lodash/blob/4.17.20/test/test.js}
-used in the motivating examples in Section~\ref{sec:motivation} as our evaluation target.
-The most recent papers about JavaScript static analysis techniques~\cite{value-refinement,
+used in the examples in Section~\ref{sec:motivation} as our evaluation target.
+Recent work~\cite{value-refinement,
 value-partitioning} also used the tests to evaluate their techniques.
 Among them, we filtered out 37 tests that use JavaScript language
 features SAFE does not support such as dynamic code generation using
@@ -33,6 +25,16 @@ equipped with 4.2GHz Quad-Core Intel Core i7 and 64GB of RAM.
 
 
 \subsection{Analysis Speed-up}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{img/conc-analysis-time}
+  \vspace*{-1.5em}
+  \caption{Analysis time for Lodash 4 \textit{original} tests without (no-DS)
+  and with (DS) dynamic shortcuts within 5 minutes}
+  \label{fig:conc-analysis-time}
+  \vspace*{-1.5em}
+\end{figure}
 
 \begin{figure}[t]
   \centering
@@ -49,40 +51,39 @@ analysis of 269 Lodash 4 tests with and without dynamic shortcuts.
 Figure~\ref{fig:conc-analysis-time} depicts cumulative distribution charts for
 their analysis time and a box plot in a logarithmic scale for speed up after
 applying dynamic shortcuts.  In the upper chart, the $x$-axis is time and the
-$y$-axis shows the number of tests until the time.  While the baseline analysis
+$y$-axis shows the number of tests within the time.  While the baseline analysis
 (no-DS) finished analysis of 200 out of 269 tests within 5 minutes, our tool
 (DS) finished analysis of 263 tests using dynamic shortcuts.  For finished
 tests, the average analysis time is 49.57 seconds for no-DS and 2.78 seconds for
 DS.  Since only few tests analyzed in 2 to 5 minutes (8 tests for no-DS
-and no tests for DS), we only show the results until 2 minutes on the
+and no tests for DS), we only show the results within 2 minutes on the
 cumulative distribution charts to show the difference between their results more
-clearly.  Among 200 tests analyzed by no-DS, two tests are timeout in DS thus
-198 tests are analyzable by both analyzers. For them, we depicts the box plot for
-analysis speed up by applying dynamic shortcuts.  It shows that tsing dynamic
-shortcuts outperforms the baseline analyzer at most 54.98$\x$ and 19.96$\x$ on
-average.  Only for one test using $\jscode{_.sample}$, a Lodash 4 library
-function that randomly samples a value from a given array, DS showed
-0.90$\x$ speed of no-DS due to frequent use of dynamic shortcuts, that is 24
-times.
+clearly.  Among 200 tests analyzed by no-DS, two tests are timeout in DS, thus
+198 tests are analyzable by both analyzers. For them, we depict the box plot for
+analysis speed up by dynamic shortcuts.  It shows that DS
+outperforms no-DS up to 54.98$\x$ and 19.96$\x$ on
+average.  Only for one test using $\jscode{_.sample}$, which
+randomly samples a value from a given array, DS showed
+0.90$\x$ speed of no-DS due to 24 times uses of dynamic shortcuts.
 
-Note that since most Lodash 4 tests use concrete values instead of
-non-deterministic user inputs, they can be analyzed by a few number of dynamic shortcuts.
+Note that since most tests use concrete values instead of
+non-deterministic inputs, they can be analyzed by a few number of dynamic shortcuts.
 In fact, among 269 tests, 262 tests are analyzed
 by a single dynamic shortcut without using abstract semantics.
 However, in real-world JavaScript programs, arguments of library
-functions may include non-deterministic user inputs.
-To evaluate our approach in a real-world setting,
-we modified Lodash 4 official tests with abstract values to simulate actual use patterns of library functions.
-We mad abstract values by randomly selecting literals and replacing
+functions may include non-deterministic inputs.
+To evaluate $\tool$ in a real-world setting,
+we modified the tests to use abstract values.
+We made abstract values by randomly selecting literals and replacing
 one of them with its corresponding abstract value.
 For example, if we select a numeric literal \jscode{42}, we modified it to the abstract numeric value
 $\top_{\code{num}}$, which represents all the numeric values.
 In the remaining section, we evaluated $\tool$ using the \textit{original} tests
-and the \textit{abstracted} tests of Lodash 4.
+and the \textit{abstracted} tests.
 
-For abstracted tests as well, dynamic shortcuts successfully accelerated the static analysis.
+For abstracted tests as well, DS outperformed no-DS.
 Figure~\ref{fig:abs-analysis-time} shows the analysis time of the abstracted tests.
-Only 4 tests for no-DS and 9 tests for DS are finished between 2 to 5 minutes.
+Only four tests for no-DS and nine tests for DS are finished between 2 to 5 minutes.
 Among 269 abstracted tests, no-DS finished analysis of 158 tests within 5 minutes,
 but DS finished analysis of 168 tests.  For finished tests, the average analysis
 time is 44.88 seconds for no-DS and 42.28 seconds for DS. Among 158 tests analyzed by no-DS, DS
