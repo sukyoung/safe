@@ -100,14 +100,14 @@ DS outperformed no-DS up to 50.60$\x$ and 6.30$\x$ on average.
 \end{figure}
 
 \begin{table*}[t]
-  \caption{The number of \textit{abstracted} tests using dynamic shortcut
+  \caption{Number of \textit{abstracted} tests using dynamic shortcuts
   instead of manual modeling for each JavaScript built-in library}
   \label{table:func-replace}
   \vspace*{-1em}
   \centering
   \scriptsize
   \[
-    \quad
+\quad
     \begin{array}{c|l|c|c?c|l|c|c?c|l|c|c}
 
       \myhead{Object}       {Function}        {\# Replaced}
@@ -140,33 +140,34 @@ DS outperformed no-DS up to 50.60$\x$ and 6.30$\x$ on average.
 Unlike for the original tests, analysis of 143 abstracted tests invoked
 16.05 dynamic shortcuts.  Because taking a dynamic shortcut
 requires conversion between abstract states and sealed symbolic values
-and exchanging them between the static analyzer and the dynamic analyzer,
+and their exchanges between the static analyzer and the dynamic analyzer,
 using dynamic shortcuts multiple times may incur more performance
 overhead than performance benefits by using sealed symbolic execution.
-One may conjecture that the communication cost between the static
+One conjecture is that the communication cost between the static
 analyzer and the dynamic analyzer may be proportional to the number of
 dynamic shortcuts.
 
 To experimentally evaluate the conjecture, we investigated the relationship between
 the communication cost between analyzers and the number of dynamic shortcuts.
 For 198 original tests, the communication cost was only
-3.51\% compared to the analysis time without dynamic shortcuts (no-DS).  However, for 143
+3.51\% compared to the analysis time of no-DS.  However, for 143
 abstracted tests, the communication cost was 82.49\% compared to the analysis
 time of no-DS.  Figure~\ref{fig:abs-analysis-ratio} presents the
 analysis time ratio for 143 abstracted tests.
 The $x$-axis represents the time ratio normalized by the total analysis time of
-the baseline analysis (no-DS) and the $y$-axis denotes the number of dynamic
+no-DS and the $y$-axis denotes the number of dynamic
 shortcuts and the number of corresponding tests.
 For all 143 tests, the communication cost (Comm. Cost) is larger than
 both the static analysis time (Static) and the dynamic analysis
 time (Dynamic).  When dynamic shortcuts are performed less than 10 times,
 the communication cost is modest compared with the baseline static
 analysis time.  However, the more dynamic shortcuts are performed,
-the less the performance benefits by using sealed symbolic execution.
+the less the performance benefits by using dynamic shortcuts.
 Specifically, when dynamic shortcuts are performed more than
-20 times, DS-Comm. is even larger than no-DS.
+20 times, Comm. Cost is even larger than no-DS.
 Based on this evaluation result, we believe that we can leverage
-dynamic shortcuts by optimizing the communication between static and dynamic analyzers.
+dynamic shortcuts by optimizing the communication cost between
+the static analyzer and the dynamic analyzer.
 
 \begin{figure}[t]
   \centering
@@ -194,7 +195,7 @@ dynamic shortcuts by optimizing the communication between static and dynamic ana
 
 To evaluate the analysis precision improvement of dynamic shortcuts,
 we measured the number of branches covered by no-DS and DS.
-Because both no-DS and DS are designed to be sound,
+Because both no-DS and DS are sound,
 high (low) branch coverage denotes low (high) analysis precision.
 
 Figure~\ref{fig:precision} depicts the comparison of the analysis
@@ -205,11 +206,11 @@ denote the worst and the best precision improvement, respectively, and
 the middle solid line denotes the average improvement.
 For 198 original tests that are analyzable by both analyzers,
 Figure~\ref{fig:precision}(a) shows that dynamic shortcuts
-reduced the number of covered branches at most 13.13\%. However, it reduced
-the number of branches 0.46\% on average because the most of original tests
-use concrete values without any non-determinism. Unlike original tets, for 143
+reduced the number of covered branches up to 13.13\%. However, it reduced
+the number of branches 0.46\% on average because most original tests
+do not use non-determinism. Unlike original tests, for 143
 abstracted tests that are analyzable by both analyzers,
 Figure~\ref{fig:precision}(b) shows that dynamic shortcuts successfully cut down
-the number of covered branches at most 13.65\% and 1.89\% on average.  In other
-words, the dynamic shortcuts prevent to analyze 1.44 and 5.97 spurious branches
-for original and abstracted tests on average.
+the number of covered branches up to 13.65\% and 1.89\% on average.
+Thus, on average, dynamic shortcuts removed analysis of 1.44 and 5.97 spurious branches
+for original and abstracted tests, respectively.
