@@ -36,8 +36,8 @@ information, they generate imprecise modeling compared with the manual approach.
   \centering
   \includegraphics[width=\linewidth]{img/performance_v8v7}
   \vspace*{-2em}
-  \caption{Performance of a dynamic analyzer and a static analyzer for V8
-  benchmarks version 7}
+  \caption{Performance of a dynamic analyzer and a static analyzer for a subset
+  of the SunSpider benchmark}
   \label{fig:performance}
   \vspace*{-1em}
 \end{figure}
@@ -47,8 +47,8 @@ dynamic analysis during static analysis.  Because dynamic
 analyzers such as Jalangi~\cite{jalangi} and DLint~\cite{dlint} run on
 highly-optimized commercial JavaScript engines, they are much faster than
 static analyzers.  Figure~\ref{fig:performance} shows that the dynamic analyzer
-Jalangi is \inred{X.X}x faster than the static analyzer SAFE for V8 benchmarks
-version 7.  Using high performance dynamic analysis, researchers have
+Jalangi is 34.8x faster than the static analyzer SAFE for a subset of the
+SunSpider benchmark.  Using high performance dynamic analysis, researchers have
 reduced the scope of static analysis~\cite{determinacy, blendedJS} and constructed
 initial abstract states~\cite{battles, eha} and automatic modeling of opaque
 code~\cite{sra}.
@@ -100,7 +100,7 @@ representation of an abstract value in symbolic execution; it signals
 the end of the current dynamic shortcut when the sealed symbolic
 execution tries to access its value.
 To evaluate our technique, we implemented $\tool$ using both SAFE
-and Jalangi and analyzed \inred{77} official tests of Lodash 4 library.
+and Jalangi and analyzed 269 official tests of Lodash 4 library.
 
 The contributions of this paper include the following:
 \begin{itemize}
@@ -110,11 +110,12 @@ dynamic shortcuts.  We formally define the technique and prove
 its soundness and termination.
 \item We actualize the proposed technique in $\tool$, an
 extended combination of SAFE and Jalangi.
-\item For empirical evaluation, we analyzed \inred{77} official tests of
-\inred{Lodash 4} library.  The experiment shows that $\tool$ outperforms
+\item For empirical evaluation, we analyzed 269 official tests of
+Lodash 4 library.  The experiment shows that $\tool$ outperforms
 SAFE \inred{X.X}x on average.  Moreover, by using dynamic shortcuts
 instead of manual modeling for \inred{XX.X} opaque functions,
-$\tool$ improves \inred{XX.XX}\% of the analysis precision on average.
+$\tool$ improves the analysis precision to detect 5.97 more dead branches on
+average.
 \end{itemize}
 
 In the remainder of this paper, Section~\ref{sec:motivation} explains the
