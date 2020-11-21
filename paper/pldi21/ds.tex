@@ -88,9 +88,9 @@ Now, we define the \textit{combined one-step execution} $\combstep: \combdom
 It consists of two steps: 1) the \textit{\triagename} step converts
 analysis elements if a new sealed symbolic execution starts or an
 existing one stops, and 2) the \textit{execution} step performs execution of each
-analysis element using the abstract one-step execution $\absstep$ in the sensitive
+analysis element using the abstract one-step execution $\sabsstep$ in the sensitive
 abstract domain and the sealed symbolic one-step execution $\symbstep$ in the sealed
-symbolic execution.
+symbolic domain.
 \begin{definition}[Combined One-Step Execution]
 A \textit{combined one-step execution} $\combstep: \combdom \rightarrow
 \combdom$ is define as follows:

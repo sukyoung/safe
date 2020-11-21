@@ -82,7 +82,7 @@ conditions:
   \forall \abselem_0, \abselem_1 \in \absdom & . \; \gamma(\abselem_0) \cup
   \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join
   \abselem_1) \label{equ:sound-join}\\
-  \forall \abselem \in \absdom & . \; \absstep \circ \gamma(\abselem) \subseteq
+  \forall \abselem \in \absdom & . \; \step \circ \gamma(\abselem) \subseteq
   \gamma \circ \absstep(\abselem) \label{equ:sound-step}
 \end{align}
 
@@ -105,7 +105,7 @@ of views for reachable states during static analysis.  It maps a finite number
 of views $\viewset$ to sets of states $\dom$. Each view $\view \in \viewset$
 represents a set of states $\viewmap(\view)$ and each state is included
 in a unique view: $\forall \st \in \stset. \; \st \in \viewmap(\view)
-\Rightarrow \not\exists \view' \in \viewset.$ s.t. $\st \in \viewmap(\view')$.
+\Rightarrow \forall \view' \in \viewset. \st \in \viewmap(\view') \Rightarrow \view = \view'$.
 A \textit{sensitive state
 abstraction} $\dom \galois{\alpha_\viewmap}{\gamma_\viewmap} \sabsdom$ is a
 Galois connection between the concrete domain $\dom$ and the sensitive abstract
