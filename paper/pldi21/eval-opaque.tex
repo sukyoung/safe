@@ -3,23 +3,20 @@ To evaluate how much manual modeling efforts of opaque functions
 are reduced by dynamic shortcuts, we measured the number of tests where
 opaque functions that are analyzed only by dynamic analysis not by
 static analysis.  Table~\ref{table:func-replace} summarizes the result.
-For \inred{xx} original tests and \inred{xx} abstracted tests, we measured the
+For 198 original tests and 143 abstracted tests, we measured the
 number of tests that use only dynamic shortcuts instead of manual modeling
 for each JavaScript built-in library function.  For each row,
-\textbf{Object} column denotes a built-in object,
-\textbf{Function} a function name, and
-\inred{\textbf{\# Replaced} the number of tests successfully replacing manual
+\textbf{Object} column denotes a built-in object, \textbf{Function} a function
+name, and \inred{\textbf{\# Replaced} the number of tests successfully replacing manual
 modeling via dynamic shortcuts with the total number of tests using the target function.
-For example, the fourth row in the left side describes that \jscode{Array.prototype.toString} is used in
-\inred{139} original tests and \inred{xxx} abstracted tests.
- Among them, \inred{44} original tests \inred{xx} abstracted tests are successfully analyzed
-by dynamic shortcuts instead of using the modeling of
-\jscode{Array.prototype.toString}.
-Moreover, several built-in functions are analyzed by only dynamic shortcuts in
-all tests.  Among \inred{49} JavaScript built-in functions, \inred{xx} and
-\inred{xx} functions are analyzed by only dynamic shortcut instead of manual
-modeling for all original and all abstracted tests, respectively.  Each filled cell
-describes fully replaceable cases in Table~\ref{table:func-replace}.
-Therefore, dynamic shortcuts effectively lessen
-the burden of manual modeling for JavaScript built-in functions.
-}
+For example, the first row in the left side describes that \jscode{Array} is used in
+203 original tests and 116 abstracted tests.  Among them, 203 original
+tests 90 abstracted tests are successfully analyzed by dynamic shortcuts
+instead of using the modeling of \jscode{Array}.  Each filled cell describes
+fully replaceable cases in Table~\ref{table:func-replace}.  Therefore, dynamic
+shortcuts effectively lessen the burden of manual modeling for JavaScript
+built-in functions.  Again, since all the original Lodash 4 tests except one
+test is finisehd with a single dynamic shortcut, all the built-in fuctions
+except \jscode{Math.floor} and \jscode{Function.prototype.call} are replaceable
+for original tests.  For abstracted tests, 12 functions out of 60 built-in
+functions are analyzed by only dynamic shortcut instead of manual modeling.
