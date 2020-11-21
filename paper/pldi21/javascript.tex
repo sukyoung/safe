@@ -1,9 +1,9 @@
-\section{Dynamic Shortcut for JavaScript}\label{sec:javascript}
-
+\section{Dynamic Shortcuts for JavaScript}\label{sec:javascript}
 In this section, we introduce the core language of JavaScript that supports
 first-class functions, open objects, and first-class property names, and define
-sealed symbolic execution of the core language for dynamic shortcut.
-
+sealed symbolic execution of the core language for dynamic shortcuts.
+Due to the space limitation, we present the main design of the
+language in this paper and refer the interested readers to a companion report~\cite{report}.
 
 \subsection{Core Language of JavaScript}
 
@@ -66,46 +66,42 @@ address and its name, and an object property location consists of an object
 address and a string value.  A value $\val \in \valset$ is a primitive, an
 address, or a function value.  An address $\addr \in \addrset$ is an environment
 address or an object address.  A function value $\fval{x}{\lab} \in \fvalset$
-consists of a parameter and a body label.  In the core language, the closed
-scoping is used for functions for brevity thus only parameters and local
-variables are accessible in the function body.
+consists of a parameter name and a body label.  In the core language, the closed
+scoping is used for functions for brevity, thus only parameters and local
+variables are accessible in a function body.
 
 We formulate the concrete semantics of the core language.  The transition
 relation between concrete states is defined with the semantics of references and
 expressions using two different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
 \fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
 $\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
-the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level environment
-address.  The function $\labnext$ returns the next label of a given label in the
-current program $\prog$.
-
+the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level environment address.
 
 \subsection{Abstract Semantics}
-
-In abstract semantics of the core language, we use the flow sensitivity with a
+In the abstract semantics of the core language, we use the flow sensitivity with a
 flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$ that
 discriminates states using their labels: $\forall \lab \in \labset. \;
 \fsviewmap(\lab) = \{ \st \in \stset \mid \st = (\lab, \_, \_, \_) \}$. Thus, the
 sensitive abstract domain is defined as $\sabsdom = \labset \rightarrow
 \absdom$.  We define an abstract state $\abselem \in \absdom$ as a tuple of an
-abstract memory, an abstract context, an abstract address, and set of singleton
-abstract addresses as follows:
+abstract memory, an abstract context, an abstract address, and an
+abstract counter as follows:
 
 \[
-  \begin{array}{lr@{~}c@{~}l@{~}c@{~}l}
-    \text{Abstract States} & \abselem &\in& \absdom &=& \absmemset \times \absctxtset
-    \times \absaddrset \times \abscountset\\
-    \text{Abstract Memories} & \absmem &\in& \absmemset &=& \abslocset \finmap
-    \absvalset\\
-    \text{Abstract Contexts} & \absctxt &\in& \absctxtset &=& \absaddrset \finmap
-    \powerset{\absaddrset \times \viewset \times \powerset{\abslocset}}\\
-    \text{Abstract Locations} & \absloc &\in& \abslocset &=& (\absaddrset \times
-    \varset) \uplus (\absaddrset \times \strset)\\
-    \text{Abstract Values} & \absval &\in& \absvalset &=& \powerset{\pvalset
-    \uplus \absaddrset \uplus \fvalset}\\
-    \text{Abstract Addresses} & \absaddr &\in& \absaddrset &=& \labset\\
-    \text{Abstract Counters} & \abscount &\in& \abscountset &=& \absaddrset
-    \rightarrow \{ \abszero, \absone, \absmany \}\\
+  \begin{array}{l@{~}r@{~}c@{~}l@{~}c@{~}l}
+\text{Abstract states} & \abselem &\in& \absdom &=& \absmemset \times \absctxtset
+\times \absaddrset \times \abscountset\\
+\text{Abstract memories} & \absmem &\in& \absmemset &=& \abslocset \finmap
+\absvalset\\
+\text{Abstract locations} & \absloc &\in& \abslocset &=& (\absaddrset \times
+\varset) \uplus (\absaddrset \times \strset)\\
+\text{Abstract addresses} & \absaddr &\in& \absaddrset &=& \labset\\
+\text{Abstract contexts} & \absctxt &\in& \absctxtset &=& \absaddrset \finmap
+\powerset{\absaddrset \times \viewset \times \powerset{\abslocset}}\\
+\text{Abstract counters} & \abscount &\in& \abscountset &=& \absaddrset
+\rightarrow \{ \abszero, \absone, \absmany \}\\
+\text{Abstract values} & \absval &\in& \absvalset &=& \powerset{\pvalset
+\uplus \absaddrset \uplus \fvalset}\\
   \end{array}
 \]
 
@@ -118,17 +114,17 @@ $\addrset$ based on their allocation sites $\labset$.  Abstract contexts
 $\absctxtset$ are finite maps from abstract addresses to powersets of triples of
 abstract addresses, views, and powerset of abstract locations.  For abstract
 counting~\cite{abstract-gc-counting, revisit-recency} in static analysis, we
-define abstract counters $\abscountset$ that maps from abstract addresses to
+define abstract counters $\abscountset$ that are mappings from abstract addresses to
 their abstract counts representing how many times each abstract address has been
 allocated; $\abszero$ denotes that it has never been allocated, $\absone$ once,
-and $\absmany$ more than or equals to twice.
+and $\absmany$ more than or equal to twice.
 
-We define the semantics of view transition for the core language.  For abstract
+We define the semantics of the view transition for the core language.  For abstract
 memories, we use the notation $\absmem[L \mapstos \absval]$ to represent the
 update of multiple abstract locations in $L$ with the abstract value $\absval$.
 It performs the strong update if the abstract address for an abstract location
 $(\absaddr, \_) \in L$ is singleton: $\abscount(\absaddr) = \absone$.
-Otherwise, it performs the weak update for the soundness.  Moreover, we define
+Otherwise, it performs the weak update for the analysis soundness.  We use
 the increment function $\inc: \abscountset \times \absaddrset \rightarrow
 \abscountset$ of the abstract counter defined as follows:
 \[
