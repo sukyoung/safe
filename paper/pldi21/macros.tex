@@ -35,6 +35,32 @@
   showtabs=false,
   captionpos=b
 }
+\lstdefinelanguage{nJavaScript}{
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{dkgreen}\ttfamily,
+  stringstyle=\color{purple}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinestyle{nmyJSstyle}{
+  language=nJavaScript,
+  numbers=left,
+  stepnumber=1,
+  extendedchars=true,
+  basicstyle=\footnotesize\ttfamily,
+  showstringspaces=false,
+  showspaces=false,
+  xleftmargin=\parindent,
+  tabsize=2,
+  breaklines=true,
+  showtabs=false,
+  captionpos=b
+}
 
 % Basic
 \DeclareMathAlphabet{\mathpzc}{T1}{pzc}{m}{it}
@@ -53,6 +79,7 @@
 
 % Keywords
 \newcommand{\jscode}[1]{\text{\lstinline[style=myJSstyle,numbers=none]!#1!}}
+\newcommand{\njscode}[1]{\text{\lstinline[style=nmyJSstyle,numbers=none]!#1!}}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\kwif}{\code{if}}
 \newcommand{\kwelse}{\code{else}}
@@ -265,6 +292,12 @@
 }
 \newcommand{\mysucccolor}{yellow}
 
+\newcommand{\mnsutf}[5]{
+  \multirow{#1}{*}{\njscode{#2}} &
+  {\jscode{#3}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c|}    {\text{#4}} &
+  {\text{#5}}
+}
 \newcommand{\mysutf}[5]{
   \multirow{#1}{*}{\jscode{#2}} &
   {\jscode{#3}} &

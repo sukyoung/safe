@@ -18,7 +18,7 @@ Recent work~\cite{value-refinement,
 value-partitioning} also used the tests to evaluate their techniques.
 Among them, we filtered out 37 tests that use JavaScript language
 features SAFE does not support such as dynamic code generation using
-\jscode{Function}, getters and setters, and browser-specific features like $\jscode{__proto__}$.
+\njscode{Function}, getters and setters, and browser-specific features like $\jscode{__proto__}$.
 Thus, we used 269 out of 306 tests for the evaluation of $\tool$.
 We performed our experiments on a Ubuntu machine
 equipped with 4.2GHz Quad-Core Intel Core i7 and 64GB of RAM.
@@ -130,7 +130,7 @@ DS outperformed no-DS up to 50.60$\x$ and 6.30$\x$ on average.
       \mysutt{1}{}          {ceil }      { 36 /  36}{  8 /   8} & \mysutf{2}{Number}       {Number }      {  2 /   2}{  1 /   2} & \mysutf{1}{}       {test      }      {263 / 263}{158 / 167} \mylinefft
       \mysuff{1}{}          {floor}      { 16 /  17}{  4 /   5} & \mysutf{1}{}             {valueOf}      {  0 /   0}{  0 /  16} & \mysutf{1}{}       {Error         }  {  1 /   1}{  0 /   1} \mylineftf
       \mysutf{1}{Math}      {max  }      {263 / 263}{134 / 167} & \mysutt{1}{}             {toString}     {263 / 263}{167 / 167} & \mysutf{2}{Error}  {new Error     }  {  0 /   0}{  0 /   8} \mylinefff
-      \mysutf{1}{}          {min  }      { 64 /  64}{ 15 /  48} & \mysutf{1}{Function}     {apply   }     {263 / 263}{124 / 167} & \mysutf{1}{}       {new RangeError}  {  0 /   0}{  0 /   3} \mylinefff
+      \mysutf{1}{}          {min  }      { 64 /  64}{ 15 /  48} & \mnsutf{1}{Function}     {apply   }     {263 / 263}{124 / 167} & \mysutf{1}{}       {new RangeError}  {  0 /   0}{  0 /   3} \mylinefff
       \mysutt{1}{}          {pow  }      { 11 /  11}{  5 /   5} & \mysuff{1}{}             {call    }     {262 / 263}{ 50 / 167} & \mysutf{1}{}       {new TypeError }  {  0 /   0}{  0 /   9}
     \end{array}
   \]
