@@ -264,10 +264,26 @@ Lemma~\ref{lemma:comb-sound2}.
 
 \subsection{Termination}
 
+First, let's define some notations.
+
+\begin{itemize}
+\item
+Let's define initial state of combined domain as follows:
+\[
+  \icombelem = (\isabselem, \emptyset)
+\]
+\item
+Let's define $\combelem^i$, $\sabselem^i$, and $\symbelem^i$ for $i \geq 0$ as follows:
+\[
+  \combelem^i = (\sabselem^i, \symbelem^i) = \combtransfer^i(\icombelem)
+\]
+which means resulting state after applying transfer function $\combtransfer \; i$ times.
+\item
+\end{itemize}
+
 \begin{theorem}[Termination]\label{theorem:termination}
   \[
-    \exists N \in \numset. \; {\combtransfer}^N((\ielem, \emptyset))
-    = {\combtransfer}^{N+1}((\ielem, \emptyset))
+    \exists n \in \numset. \; \combelem^n = \combelem^{n+1}
   \]
 \end{theorem}
 
@@ -275,22 +291,22 @@ Lemma~\ref{lemma:comb-sound2}.
 We first begin by showing that sensitive abstract interpretation terminates in
 finite time.
 
-%\begin{lemma}[Termination of sensitive abstract interpretation]
-%\label{theorem:sabs-termination}
-%  \[
-%    \exists n. \; \exists \sabselem. \; \forall m \geq n. \;
-%    \combtransfer^m((\ielem, \emptyset)) = (\sabselem, \_)
-%  \]
-%\end{lemma}
-%\begin{proof}
+\begin{lemma}[Termination of sensitive abstract interpretation]
+\label{theorem:sabs-termination}
+  \[
+    \exists n. \; \forall m \geq n. \;
+    \sabselem^m = \sabselem^n
+  \]
+\end{lemma}
 
+\begin{proof}
 Let $\sabselem, \sabselem' \in \sabsdom$ that satisfies
 $\combtransfer((\sabselem, \_)) = (\sabselem', \_)$.
 
 Then,
 \[
   \begin{array}{rcl}
-  \combtransfer((\sabselem, \_)
+  \combtransfer((\sabselem, \_))
   &=& (\sabselem, \_) \join \combstep((\sabselem, \_))\\
   &=& (\sabselem, \_) \join (\_, \_) = (\sabselem \join \_, \_)\\
   &=& (\sabselem', \_)
@@ -299,21 +315,112 @@ Then,
 
 Therefore, $\sabselem \order \sabselem'$.
 
-Now, let's define $\sabselem_i$ as  $(\sabselem_i, \_) = \combtransfer^i((\ielem, \emptyset))$.
-Then, for all i, $\sabselem_i \order \sabselem_{i+1}$ holds.
-Since $\sabselem_1 \order \sabselem_2 \order \sabselem_3 ...$ is an ascending chain,
-by ascending chain condition, there exists n such that
-for all $m \geq n, \combtransfer^m((\ielem, \emptyset)) = (\sabselem_n, \_)$.
+Now, since $\combtransfer((\sabselem^i, \_)) = (\sabselem^{i+1}, \_),
+\sabselem^i \order \sabselem^{i+1}$ holds for all $i$.
+Then, $\sabselem^0 \order \sabselem^1 \order \sabselem^2 ...$ is an ascending chain.
+By ascending chain condition, there exists n such that
+for all $m \geq n, \sabselem^m = \sabselem^n$.
+\end{proof}
 
 Now, let's show that sealed static symbolic execution terminates after
 sensitive abstract interpretation terminates.
 
-First, define \text{difference set} $\diffset_i \in \symbdom$ as follows:
+We begin by defining the difference set $\diffset_i \in \symbdom$ as follows:
 \[
-  \begin{array}{c}
-    \diffset_i = {\symbelem}_{i+1} - {\symbelem}_i\\
-    where \symb_elem_j = \combtransfer^j((\ielem, \emptyset)).
-  \end{array}
+  \diffset_i = \symbelem^{i+1} \setminus \symbelem^i
 \]
+
+and prove its properties:
+\begin{lemma}[Property of difference set]
+  \[
+    \begin{array}{c}
+      \forall i > 0. \; \forall (\absimap, \symbst) \in \diffset_i. \;
+      (\exists (\absimap, \symbst') \in \diffset_{i-1} \wedge \symbst' \symbtrans \symbst)\\
+      \lor (\exists (\view, \abselem). \; \sabselem^i(\view) = \abselem
+        \wedge \asconverter((\view, \abselem)) = (\absimap, \symbst') \wedge \symbst' \symbtrans \symbst))
+    \end{array}
+  \]
+\end{lemma}
+\begin{proof}
+  Let $i$ and $(\absimap, \symbst) \in \diffset_i = \symbelem^{i+1} \setminus \symbelem^i$ given.
+  Note that by definition,
+  \[
+    \symbelem^{i+1} = \symbelem^i \cup \symbstep(\symbelem')
+  \]
+  where
+  \[
+    (\_, \symbelem') = \triage(\sabselem^i, \symbelem^i)
+  \]
+  which means
+  \[
+    \symbelem' =
+    \dot{\atriage}(\{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i)
+    \cap (\absimapset \times \symbstset)
+  \]
+  Now, note that $(\absimap, \symbst) \in \symbstep(\symbelem')$, which means
+  \[
+    \exists (\absimap, \symbst') \in \symbelem'. \; \symbst' \symbtrans \symbst
+  \]
+  This means there exists $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i$
+  such that satisfies $\atriage(\aelem) = (\absimap, \symbst')$. We have two possible cases.
+  \begin{itemize}
+  
+  \item $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \}$
+
+  In this case, $\atriage(\aelem) = \asconverter(\aelem) = (\absimap, \symbst')$
+  and the right condition for conclusion is satisfied.
+  
+  \item $\aelem \in \symbelem^i$
+
+  In this case, $\atriage(\aelem) = \aelem = (\absimap, \symbst')$.
+  Now, let's assume that $\aelem \in \symbelem^{i-1}$.
+  In that case, \todo, $(\absimap, \symbst) \in \symbelem^i$
+  whcih contradicts to the fact that $(\absimap, \symbst) \in \diffset_i$.
+  Therefore, $\aelem \notin \symbelem^{i-1}$, that is,
+  $\aelem \in \symbelem^i \setminus \symbelem^{i-1} = \diffset_i$,
+  and the left condition for conclusion is satisfied.
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}
+  \[
+    \begin{array}{c}
+      \forall i > 0. \; \sabselem^{i-1} = \sabselem^{i} \Rightarrow
+      \forall (\absimap, \symbst) \in \diffset_i. \;
+      (\exists (\absimap, \symbst) \in \diffset_{i-1} \wedge \symbst' \symbtrans \symbst)\\
+    \end{array}
+  \]
+\end{corollary}
+\begin{proof}
+  \todo
+\end{proof}
+
+
+Now, we can define the TTL(time to live) function
+$\ttl_i: \diffset_i \rightarrow \numset$ for $i > 0$ as follows:
+\begin{definition}[TTL Function]
+  \[
+    \begin{array}{l}
+      \ttl_i((\absimap, \symbst)) = \\
+      \min(\{N\} \cup
+      \{\ttl_{i-1}((\absimap, \symbst')) \mid (\absimap, \symbst') \in \diffset_{i-1}
+      \wedge \symbst' \symbtrans \symbst\}) - 1
+    \end{array}
+  \]
+\end{definition}
+
+We prove following properties of TTL function.
+\begin{lemma}
+  \[
+    \forall i > 0. \; \forall x \in \diffset_i. \;
+    0 <= \ttl_i(x) < N
+  \]
+\end{lemma}
+\begin{proof}
+  \todo
+\end{proof}
+
+Now, we can prove the Theorem~\ref{theorem:termination}.
+\todo
 
 \end{proof}

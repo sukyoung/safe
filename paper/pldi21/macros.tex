@@ -136,6 +136,7 @@
 \newcommand{\viewmap}{\delta}
 \newcommand{\sabsdom}{\absdom_\viewmap}
 \newcommand{\sabselem}{{\abselem_\viewmap}}
+\newcommand{\isabselem}{{\abs{\elem}_\viewmap}_\iota}
 \newcommand{\viewset}{\Pi}
 \newcommand{\view}{\pi}
 \newcommand{\sabsstep}{\absstep_\viewmap}
@@ -206,6 +207,7 @@
 \newcommand{\comb}[1]{\widetilde{#1}}
 \newcommand{\combdom}{\comb{\dom}}
 \newcommand{\combelem}{\comb{\elem}}
+\newcommand{\icombelem}{\comb{\elem}_\iota}
 \newcommand{\combgamma}{\comb{\gamma}}
 \newcommand{\combstep}{\comb{\step}}
 \newcommand{\combtransfer}{\comb{\transfer}}
@@ -216,14 +218,9 @@
 \newcommand{\combviewtrans}[2]{\sem{\comb{#1 \rightarrow #2}}}
 
 \newcommand{\symbdom}{\symbolic{\dom}}
-\newcommand{\symbelem}{\symbolic{\elem}}
+\newcommand{\symbelem}{{\symbolic{\elem}}}
 \newcommand{\symbgamma}{\symbolic{\gamma}}
 \newcommand{\symbstep}{\symbolic{\step}}
-
-% Legacy
-\newcommand{\scombstep}{\comb{\step}_\viewmap}
-\newcommand{\scombgamma}{\combgamma_\viewmap}
-\newcommand{\scombelem}{\comb{\elem}_\viewmap}
 
 % Triage
 \newcommand{\triagename}{reform\xspace}
@@ -318,3 +315,4 @@
 
 % Difference Set
 \newcommand{\diffset}{\Delta}
+\newcommand{\ttl}{\name{TTL}}
