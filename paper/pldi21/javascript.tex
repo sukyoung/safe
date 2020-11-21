@@ -157,7 +157,7 @@ $\abscountset$ as follows:
 \]
 Because JavaScript provides open objects, the properties of objects can be dynamically added or deleted.
 Moreover, since object properties are string values that can be constructed at run time,
-it is difficult for static analysis to know whether strong updates are possible or not.
+it is difficult to perform sound strong updates in static analysis.
 To check the possibility of strong updates during sealed symbolic execution,
 we augment its states with the abstract counters $\abscountset$.
 
