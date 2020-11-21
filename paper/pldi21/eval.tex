@@ -136,58 +136,6 @@ analyzer at most 50.60$\x$ and 6.30$\x$ on average.
   \vspace*{-1em}
 \end{table*}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Unlike for the original tests, analysis of 143
 abstracted tests that are analyzable by both analyzers invoked
 16.05 dynamic shortcuts.  Because taking a dynamic shortcut
@@ -199,24 +147,24 @@ One may conjecture that the communication cost between the static
 analyzer and the dynamic analyzer may be proportional to the number of
 dynamic shortcuts.
 
-\todo
 To experimentally evaluate the conjecture, we investigated the relationship between
 the communication cost between analyzers and the number of dynamic shortcuts.
 For 198 original tests, the communication cost was only
 \inred{x.xx}\% of the total analysis time.  However, for 143
-abstracted tests, the communication cost was \inred{xx.xx}\% of the
+abstracted tests, the communication cost was 82.49\% of the
 total analysis time.  Figure~\ref{fig:abs-analysis-ratio} presents the
 analysis time ratio for 143 abstracted tests.
-The $x$-axis represents the time ratio normalized by the total analysis time with dynamic shortcuts
-and the $y$-axis denotes the number of dynamic shortcuts and the number of corresponding tests.
-For all 143 tests, the communication cost (DS-Comm.) is larger than
-both the static analysis time (DS-Static) and the dynamic analysis
-time (DS-Dynamic).  When dynamic shortcuts are performed less than 10 times,
+The $x$-axis represents the time ratio normalized by the total analysis time of
+the baseline analysis (no-DS) and the $y$-axis denotes the number of dynamic
+shortcuts and the number of corresponding tests.
+For all 143 tests, the communication cost (Comm. Cost) is larger than
+both the static analysis time (Static) and the dynamic analysis
+time (Dynamic).  When dynamic shortcuts are performed less than 10 times,
 the communication cost is modest compared with the baseline static
-analysis time (no-DS).  However, the more dynamic shortcuts are performed,
+analysis time.  However, the more dynamic shortcuts are performed,
 the less the performance benefits by using sealed symbolic execution.
 Specifically, when dynamic shortcuts are performed more than
-\inred{30} times, DS-Comm. is even larger than no-DS.
+20 times, DS-Comm. is even larger than no-DS.
 Based on this evaluation result, we believe that we can leverage
 dynamic shortcuts by optimizing the communication between static and dynamic analyzers.
 
