@@ -23,7 +23,7 @@ the precision of complex abstract domains~\cite{revisit-recency,
   regex, weaklySPE} frequently used in JavaScript static analysis.
 On the contrary, sealed symbolic execution automatically detects when
 to switch to static analysis to use abstract semantics for abstract values.
-Finally, \concerto preserves the soundness when a program satisfies
+Finally, \concerto\ preserves the soundness when a program satisfies
 the \textit{state separation hypothesis}.  It assumes that the states
 of application parts and framework parts are not interrogated
 or manipulated by each other.  While the assumption may be reasonable
@@ -78,7 +78,7 @@ For event handlers, they intentionally analyzed partial execution flows using co
 They collected concrete states for each entry of an event handler
 during dynamic analysis, merged them to a single abstract state, and analyzed
 the event handler with the abstract state.
-Unfortunately, all the above mentioned approaches do not preserve
+Unfortunately, all the above mentioned approaches except~\cite{determinacy} do not preserve
 soundness of static analysis unlike our approach using dynamic shortcuts.
 
 
