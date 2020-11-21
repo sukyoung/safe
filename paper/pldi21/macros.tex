@@ -257,19 +257,39 @@
   \multicolumn{1}{c|}{\textbf{#2}} &
   \multicolumn{2}{c}{\textbf{#3}}\\\hline
 }
-\newcommand{\mydata}[5]{
+\newcommand{\mysuff}[5]{
   \multirow{#1}{*}{\jscode{#2}} &
   \jscode{#3} &
   \text{#4} &
   \text{#5}
 }
 \newcommand{\mysucccolor}{yellow}
-\newcommand{\mysucc}[5]{
+
+\newcommand{\mysutf}[5]{
   \multirow{#1}{*}{\jscode{#2}} &
-  \multicolumn{1}{>{\columncolor{\mysucccolor}}l|}    {\jscode{#3}} &
-  {\text{#4}} &
+  {\jscode{#3}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c|}    {\text{#4}} &
   {\text{#5}}
 }
+\newcommand{\mysuft}[5]{
+  \multirow{#1}{*}{\jscode{#2}} &
+  {\jscode{#3}} &
+  {\text{#4}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c?}    {\text{#5}}
+}
+\newcommand{\mysutt}[5]{
+  \multirow{#1}{*}{\jscode{#2}} &
+  {\jscode{#3}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c|}    {\text{#4}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c?}    {\text{#5}}
+}
+\newcommand{\mysbtt}[5]{
+  \multirow{#1}{*}{\jscode{#2}} &
+  {\jscode{#3}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c|}    {\text{#4}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}c}    {\text{#5}}
+}
+
 \newcommand{\mylinef}  {\\\hhline{~|---}}
 \newcommand{\mylineff} {\\\hhline{~|---~|---}}
 \newcommand{\mylinetf} {\\\hhline{----~|---}}

@@ -111,26 +111,26 @@ analyzer at most 50.60$\x$ and 6.30$\x$ on average.
 
       \myhead{Object}       {Function}        {\# Replaced}
 
-      \mydata{1}{}          {Array    }  {214 / 214}{214 / 214} & \mydata{1}{}             {String     }  {214 / 214}{214 / 214} & \mydata{1}{}       {Object        }  {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {new Array}  {214 / 214}{214 / 214} & \mydata{1}{}             {toString   }  {214 / 214}{214 / 214} & \mydata{1}{}       {new Object    }  {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {isArray  }  {214 / 214}{214 / 214} & \mydata{1}{}             {valueOf    }  {214 / 214}{214 / 214} & \mydata{1}{}       {getPrototypeOf}  {214 / 214}{214 / 214} \mylinetff
-      \mydata{1}{}          {concat   }  { 92 /  92}{139 /  92} & \mysucc{1}{}             {charAt     }  {214 /  92}{214 /  92} & \mydata{1}{}       {create        }  {214 /  92}{214 /  92} \mylinetff
-      \mydata{1}{}          {join     }  {193 / 193}{214 / 193} & \mydata{1}{}             {charCodeAt }  {214 / 193}{214 / 193} & \mydata{1}{Object} {defineProperty}  {214 / 193}{214 / 193} \mylinefff
-      \mydata{1}{}          {pop      }  {214 / 214}{214 / 214} & \mydata{1}{}             {indexOf    }  {214 / 214}{214 / 214} & \mydata{1}{}       {freeze        }  {214 / 214}{214 / 214} \mylinefft
-      \mydata{2}{Array}     {push     }  {214 / 214}{214 / 214} & \mydata{1}{String}       {match      }  {214 / 214}{214 / 214} & \mydata{1}{}       {keys          }  {214 / 214}{214 / 214} \mylineftf
-      \mysucc{1}{}          {reverse  }  {214 / 214}{214 / 214} & \mydata{1}{}             {replace    }  {214 / 214}{214 / 214} & \mydata{1}{}       {toString      }  {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {shift    }  {214 / 214}{214 / 214} & \mydata{1}{}             {slice      }  {214 / 214}{214 / 214} & \mydata{1}{}       {hasOwnProperty}  {214 / 214}{214 / 214} \mylineftf
-      \mydata{1}{}          {slice    }  {214 / 214}{214 / 214} & \mydata{1}{}             {split      }  {214 / 214}{214 / 214} & \mysucc{1}{}       {parseInt}        {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {sort     }  {214 / 214}{214 / 214} & \mydata{1}{}             {substring  }  {214 / 214}{214 / 214} & \mydata{1}{Global} {isNaN   }        {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {splice   }  {214 / 214}{214 / 214} & \mydata{1}{}             {toLowerCase}  {214 / 214}{214 / 214} & \mydata{1}{}       {isFinite}        {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {unshift  }  {214 / 214}{214 / 214} & \mydata{1}{}             {toUpperCase}  {214 / 214}{214 / 214} & \mydata{1}{}       {RegExp    }      {214 / 214}{214 / 214} \mylinetff
-      \mysucc{1}{}          {indexOf  }  {214 / 214}{214 / 214} & \mydata{2}{Boolean}      {Boolean}      {214 / 214}{214 / 214} & \mysucc{2}{RegExp} {new RegExp}      {214 / 214}{214 / 214} \mylinetff
-      \mydata{1}{}          {every    }  {214 / 214}{214 / 214} & \mydata{1}{}             {valueOf}      {214 / 214}{214 / 214} & \mydata{1}{}       {exec      }      {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {ceil }      {214 / 214}{214 / 214} & \mydata{2}{Number}       {Number }      {214 / 214}{214 / 214} & \mydata{1}{}       {test      }      {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {floor}      {214 / 214}{214 / 214} & \mydata{1}{}             {valueOf}      {214 / 214}{214 / 214} & \mydata{1}{}       {Error         }  {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{Math}      {max  }      {214 / 214}{214 / 214} & \mydata{1}{}             {toString}     {214 / 214}{214 / 214} & \mydata{2}{Error}  {new Error     }  {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {min  }      {214 / 214}{214 / 214} & \mydata{1}{Function}     {apply   }     {214 / 214}{214 / 214} & \mydata{1}{}       {new RangeError}  {214 / 214}{214 / 214} \mylinefff
-      \mydata{1}{}          {pow  }      {214 / 214}{214 / 214} & \mydata{1}{}             {call    }     {214 / 214}{214 / 214} & \mydata{1}{}       {new TypeError }  {214 / 214}{214 / 214}
+      \mysutf{1}{}          {Array    }  {203 / 203}{ 90 / 116} & \mysutf{1}{}             {String     }  { 20 /  20}{  9 /  10} & \mysutf{1}{}       {Object        }  {263 / 263}{151 / 167} \mylinefff
+      \mysutf{1}{}          {new Array}  {  0 /   0}{  0 /  10} & \mysutf{1}{}             {toString   }  {  0 /   0}{  0 /  33} & \mysutf{1}{}       {new Object    }  {  0 /   0}{  0 /   3} \mylinefff
+      \mysutf{1}{}          {isArray  }  {263 / 263}{144 / 167} & \mysutf{1}{}             {valueOf    }  {  0 /   0}{  0 /  12} & \mysutf{1}{}       {getPrototypeOf}  { 56 /  56}{ 24 /  29} \mylinefff
+      \mysutf{1}{}          {concat   }  {263 / 263}{163 / 167} & \mysutt{1}{}             {charAt     }  {  7 /   7}{  5 /   5} & \mysutf{1}{}       {create        }  {263 / 263}{164 / 167} \mylinefff
+      \mysutf{1}{}          {join     }  {263 / 263}{166 / 167} & \mysutf{1}{}             {charCodeAt }  { 15 /  15}{  3 /   4} & \mysutf{1}{Object} {defineProperty}  {263 / 263}{160 / 167} \mylinefff
+      \mysutf{1}{}          {pop      }  { 25 /  25}{  9 /  13} & \mysutt{1}{}             {indexOf    }  {  2 /   2}{  1 /   1} & \mysbtt{1}{}       {freeze        }  {  1 /   1}{  1 /   1} \mylinefff
+      \mysutf{2}{Array}     {push     }  {263 / 263}{150 / 167} & \mysutf{1}{String}       {match      }  { 25 /  25}{ 11 /  13} & \mysutf{1}{}       {keys          }  {263 / 263}{161 / 167} \mylinefff
+      \mysutt{1}{}          {reverse  }  { 10 /  10}{  3 /   3} & \mysutf{1}{}             {replace    }  { 55 /  55}{ 19 /  26} & \mysutf{1}{}       {toString      }  {263 / 263}{129 / 167} \mylinefff
+      \mysutf{1}{}          {shift    }  {  2 /   2}{  0 /   1} & \mysutf{1}{}             {slice      }  {263 / 263}{165 / 167} & \mysutf{1}{}       {hasOwnProperty}  {263 / 263}{161 / 167} \mylinefft
+      \mysutf{1}{}          {slice    }  {263 / 263}{164 / 167} & \mysutf{1}{}             {split      }  {  5 /   5}{  0 /   1} & \mysutf{1}{}       {parseInt}        {  1 /   1}{  0 /   1} \mylinefff
+      \mysutf{1}{}          {sort     }  { 69 /  69}{ 26 /  28} & \mysutf{1}{}             {substring  }  {214 / 214}{ 91 / 121} & \mysutf{1}{Global} {isNaN   }        { 15 /  15}{  9 /  25} \mylinefff
+      \mysutf{1}{}          {splice   }  { 25 /  25}{  6 /  11} & \mysutf{1}{}             {toLowerCase}  {214 / 214}{ 90 / 121} & \mysbtt{1}{}       {isFinite}        {  3 /   3}{  1 /   1} \mylinefft
+      \mysutt{1}{}          {unshift  }  {  2 /   2}{  1 /   1} & \mysutf{1}{}             {toUpperCase}  { 10 /  10}{  4 /   6} & \mysbtt{1}{}       {RegExp    }      {263 / 263}{167 / 167} \mylineftf
+      \mysutf{1}{}          {indexOf  }  { 94 /  94}{ 22 /  47} & \mysutt{2}{Boolean}      {Boolean}      {  3 /   3}{  2 /   2} & \mysutf{2}{RegExp} {new RegExp}      {  0 /   0}{  0 /   1} \mylinefff
+      \mysutf{1}{}          {every    }  { 92 /  92}{ 23 /  32} & \mysutf{1}{}             {valueOf}      {  0 /   0}{  0 /   6} & \mysbtt{1}{}       {exec      }      {263 / 263}{167 / 167} \mylinettf
+      \mysutt{1}{}          {ceil }      { 36 /  36}{  8 /   8} & \mysutf{2}{Number}       {Number }      {  2 /   2}{  1 /   2} & \mysutf{1}{}       {test      }      {263 / 263}{158 / 167} \mylinefft
+      \mysuff{1}{}          {floor}      { 16 /  17}{  4 /   5} & \mysutf{1}{}             {valueOf}      {  0 /   0}{  0 /  16} & \mysutf{1}{}       {Error         }  {  1 /   1}{  0 /   1} \mylineftf
+      \mysutf{1}{Math}      {max  }      {263 / 263}{134 / 167} & \mysutt{1}{}             {toString}     {263 / 263}{167 / 167} & \mysutf{2}{Error}  {new Error     }  {  0 /   0}{  0 /   8} \mylinefff
+      \mysutf{1}{}          {min  }      { 64 /  64}{ 15 /  48} & \mysutf{1}{Function}     {apply   }     {263 / 263}{124 / 167} & \mysutf{1}{}       {new RangeError}  {  0 /   0}{  0 /   3} \mylinefff
+      \mysutt{1}{}          {pow  }      { 11 /  11}{  5 /   5} & \mysuff{1}{}             {call    }     {262 / 263}{ 50 / 167} & \mysutf{1}{}       {new TypeError }  {  0 /   0}{  0 /   9}
     \end{array}
   \]
   \vspace*{-1em}
