@@ -1,11 +1,10 @@
 \subsection{Combined Domain}
-
-In this part, we define a \textit{combined domain} of a given sensitive abstract
+We now define a \textit{combined domain} of a given sensitive abstract
 domain with the sealed symbolic domain and its one-step execution.
 \begin{definition}[Combined Domain]
   A \textit{combined domain} is $\combdom = \sabsdom \times \symbdom$ and its
   concretization function $\combgamma: \combdom \rightarrow \dom$ and join
-  operator defined as
+  operator are defined as follows:
   \begin{align}
     \combgamma((\sabselem, \symbelem)) &= \sgamma(\sabselem) \cup
       \symbgamma(\symbelem)\\
@@ -16,14 +15,14 @@ domain with the sealed symbolic domain and its one-step execution.
 
 Before defining the one-step execution for the combined domain, we introduce
 \textit{analysis elements} to easily configure different types of abstract
-states in sensitive abstract domain and sealed symbolic domain.
+states in the sensitive abstract domain and the sealed symbolic domain.
 \begin{definition}[Analysis Elements]\label{def:aelem}
   An \textit{analysis element} $\aelem \in \aelemset = (\viewset \times \absdom)
   \uplus (\absimapset \times \symbstset)$ is either 1) a pair of a view and an
-  abstract state in sensitive abstract domain $\sabsdom$, or 2) a pair of an
-  abstract instantiation map and a sealed symbolic state in sealed symbolic
+  abstract state in a sensitive abstract domain $\sabsdom$, or 2) a pair of an
+  abstract instantiation map and a sealed symbolic state in a sealed symbolic
   domain $\symbdom$.  Its concretization function $\aelemgamma:
-  \aelemset \rightarrow \dom$ is defined as
+  \aelemset \rightarrow \dom$ is defined as follows:
   \[
     \aelemgamma(\aelem) = \left\{
       \begin{array}{ll}
@@ -62,7 +61,7 @@ states in sensitive abstract domain and sealed symbolic domain.
   \label{fig:ds-examples}
 \end{figure*}
 
-Moreover, to freely convert types of analysis elements, we define two converters:
+Moreover, to freely convert between different kinds of analysis elements, we define two converters:
 \begin{align}
   \asconverter & : (\viewset \times \absdom) \hookrightarrow
     (\absimapset \times \symbstset)\\
@@ -71,10 +70,10 @@ Moreover, to freely convert types of analysis elements, we define two converters
 \end{align}
 While the converter $\saconverter$ is total, the other one $\asconverter$ is
 \textit{partial}. Thus, it is possible to convert an analysis element
-$(\view, \abselem)$ in sensitive abstract domain to another analysis element in
-sealed symbolic domain only if the convert $\asconverter$ is defined: $(\view,
+$(\view, \abselem)$ in a sensitive abstract domain to another analysis element in
+a sealed symbolic domain only if the convert $\asconverter$ is defined: $(\view,
 \abselem) \in \Dom(\asconverter)$.  In addition, they should convert given
-elements without loss of information for all $\aelem \in \aelemset$:
+analysis elements without loss of information for all $\aelem \in \aelemset$:
 \[
   \asconverter(\aelem) = \aelem' \Rightarrow \left\{
   \begin{array}{l}
@@ -85,42 +84,41 @@ elements without loss of information for all $\aelem \in \aelemset$:
 \]
 
 Now, we define the \textit{combined one-step execution} $\combstep: \combdom
-\rightarrow \combdom$ with two converters $\asconverter$ and $\saconverter$ and
-it consists of two steps; 1) the \textit{triage} step prepares the execution of
-analysis elements by converting their types via two converters according to
-their status, and 2) the \textit{execution} step performs execution of each
-analysis element using abstract one-step execution $\absstep$ in sensitive
-abstract domain and sealed symbolic one-step execution $\symbstep$ in sealed
+\rightarrow \combdom$ with two converters $\asconverter$ and $\saconverter$.
+It consists of two steps: 1) the \textit{\triagename} step converts
+analysis elements if a new sealed symbolic execution starts or an
+existing one stops, and 2) the \textit{execution} step performs execution of each
+analysis element using the abstract one-step execution $\absstep$ in the sensitive
+abstract domain and the sealed symbolic one-step execution $\symbstep$ in the sealed
 symbolic execution.
 \begin{definition}[Combined One-Step Execution]
-  A \textit{combined one-step execution} $\combstep: \combdom \rightarrow
-  \combdom$ is define as
+A \textit{combined one-step execution} $\combstep: \combdom \rightarrow
+\combdom$ is define as follows:
   \[
     \combstep(\combelem) = (\sabsstep(\sabselem), \symbstep(\symbelem))
   \]
-  where $(\sabselem, \symbelem) = \triage(\combelem)$.
+where $(\sabselem, \symbelem) = \triage(\combelem)$.
 \end{definition}
 
-The $\triage$ function decides whether a new sealed symbolic execution is
-\textit{introduced} or an existing one is \textit{terminated}.  When an analysis
-element $(\view, \abselem)$ in the sensitive abstract domain is defined in the
-converter $\asconverter$, a new sealed symbolic execution is introduced by
-converting the analysis element to the corresponding one $(\absimap, \symbst) =
-\asconverter((\view, \abselem))$ in the sealed symbolic domain.  In the other
-hand, assume that if there is no more other sealed symbolic states having
-symbolic transitions with $\symbst$ for an analysis element $(\absimap,
-\symbst)$ in the sealed symbolic domain; $\symbst \symbtrans \excst$.  Then, the
-sealed symbolic execution for $(\absimap, \symbst)$ is terminated by 1)
-converting it to another analysis element $(\view, \abselem) =
-\saconverter((\absimap, \symbst))$ in the sensitive abstract domain and 2)
-merging with the current abstract state stored in the view $\view$ with
-$\abselem$.
+From a given $\combelem$, the $\triage$ function makes analysis elements
+and converts them if a new sealed symbolic execution
+begins or an existing sealed symbolic execution terminates.
+Specifically, for an analysis element $(\view, \abselem)$ in the sensitive abstract domain,
+if the converter $\asconverter$ is defined for it, $\triage$ introduces a new sealed symbolic execution
+by converting the analysis element to its corresponding one $(\absimap, \symbst) =
+\asconverter((\view, \abselem))$ in the sealed symbolic domain.
+On the other hand, for an analysis element $(\absimap, \symbst)$ in the sealed symbolic domain,
+if it does not have any sealed symbolic states to transit to, $\symbst \symbtrans \excst$,
+the sealed symbolic execution for $(\absimap, \symbst)$ terminates;
+It converts the analysis element to its corresponding one $(\view, \abselem) =
+\saconverter((\absimap, \symbst))$ in the sensitive abstract domain and
+merges the current abstract state stored in the view $\view$ with $\abselem$.
 
 To formally define the $\triage$ function, we first define a $\atriage$ function
-for analysis elements using two converters and then define the $\triage$ function.
+for analysis elements using two converters.
 \begin{definition}[$\atriage$]\label{def:atriage}
   The function $\atriage: \aelemset \rightarrow \aelemset$ for analysis elements
-  is defined as
+  is defined as follows:
   \[
     \atriage(\aelem) = \left\{
       \begin{array}{ll}
@@ -137,8 +135,8 @@ for analysis elements using two converters and then define the $\triage$ functio
   \]
 \end{definition}
 \begin{definition}[$\triage$]\label{def:triage}
-  The triage function $\triage: \combdom \rightarrow \combdom$ for combined
-  states is defined as
+  The \triagename function $\triage: \combdom \rightarrow \combdom$ for combined
+  states is defined as follows:
   \[
     \triage((\sabselem, \symbelem)) = \left(
       \lambda \view. \bigjoin \{ \abselem \!\mid\! (\view, \abselem) \in E \},
@@ -149,8 +147,8 @@ for analysis elements using two converters and then define the $\triage$ functio
   \[
     E = \dot{\atriage}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
   \]
-  (The dot notation $\dot{f}$ denotes the element-wise extended function of a
-  function $f$.)
+and the dot notation $\dot{f}$ denotes the element-wise extended function of a
+function $f$.
 \end{definition}
 
 
@@ -180,7 +178,7 @@ circled labels denote two converters $\saconverter$, $\asconverter$ and the join
 operator $\join$.
 
 Figure~\ref{fig:ds-examples}(b) shows the analysis with the combined domain when
-the initial value of $\varx$ is $0$.  First, in the triage step,
+the initial value of $\varx$ is $0$.  First, in the \triagename step,
 the converter $\asconverter$ converts the analysis element $(\lab_0, 0)$ to
 another analysis element $\langle \varnothing, 0 \rangle$ with the label
 $\lab_0$.  Moreover, it does not introduce any sealed symbolic values because
