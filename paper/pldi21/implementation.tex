@@ -11,7 +11,7 @@ shortcuts on existing JavaScript analyzers.
 \paragraph{Sealed Symbolic Values.}
 The main challenge of implementing dynamic shortcuts is to support sealed
 symbolic execution on an existing JavaScript engine.  To represent an abstract
-value, we leverage the \jscode{Proxy} object introduced in ECMAScript 6
+value, we use the \jscode{Proxy} object introduced in ECMAScript 6
 (2015, ES6)~\cite{es6}, which allows developers to handle internal behaviors
 of specific objects such as property reads and writes and implicit conversions.
 We are inspired by \textsc{Mimic}~\cite{mimic}, which used \jscode{Proxy} to
@@ -82,10 +82,10 @@ corresponding abstract values.
 \paragraph{Termination.}
 To guarantee the termination of static analysis using dynamic shortcuts, the
 converter $\asconverter$ should pass an analysis element $(\view, \abselem)$
-only when it terminates in a bound time $N$.  Since statically checking the
+only when it terminates in a time bound $N$.  Since statically checking the
 termination property is a difficult task, we simply perform sealed symbolic
-execution with a pre-determined time limit.  When it runs over the time limit,
-we treat it as a failure to convert the analysis element via $\asconverter$;
+execution with a pre-determined time limit.  When it times out,
+we treat it as a failure in conversion;
 otherwise, we use the result of sealed symbolic execution.  Our experiments used
 5 seconds as the time limit for each sealed symbolic execution.
 
