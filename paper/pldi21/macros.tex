@@ -248,58 +248,39 @@
 % Table 1
 \newcommand{\myhead}[3]{
   \multicolumn{1}{c|}{\textbf{#1}} &
-  \multicolumn{1}{c|@{~}}{\textbf{#2}} &
-  \multicolumn{4}{@{~}c@{~}?}{\textbf{#3}} &
+  \multicolumn{1}{c|}{\textbf{#2}} &
+  \multicolumn{2}{c?}{\textbf{#3}} &
   \multicolumn{1}{c|}{\textbf{#1}} &
-  \multicolumn{1}{c|@{~}}{\textbf{#2}} &
-  \multicolumn{4}{@{~}c@{~}?}{\textbf{#3}} &
+  \multicolumn{1}{c|}{\textbf{#2}} &
+  \multicolumn{2}{c?}{\textbf{#3}} &
   \multicolumn{1}{c|}{\textbf{#1}} &
-  \multicolumn{1}{c|@{~}}{\textbf{#2}} &
-  \multicolumn{4}{@{~}c@{~}}{\textbf{#3}}\\\hline
+  \multicolumn{1}{c|}{\textbf{#2}} &
+  \multicolumn{2}{c}{\textbf{#3}}\\\hline
 }
-\newcommand{\mydata}[6]{
+\newcommand{\mydata}[5]{
   \multirow{#1}{*}{\jscode{#2}} &
   \jscode{#3} &
   \text{#4} &
-  \text{/} &
-  \text{#5} &
-  \text{(#6\%)}
+  \text{#5}
 }
 \newcommand{\mysucccolor}{yellow}
-\newcommand{\mysucc}[6]{
+\newcommand{\mysucc}[5]{
   \multirow{#1}{*}{\jscode{#2}} &
-  \multicolumn{1}{>{\columncolor{\mysucccolor}}l|@{~}}    {\jscode{#3}} &
+  \multicolumn{1}{>{\columncolor{\mysucccolor}}l|}    {\jscode{#3}} &
   {\text{#4}} &
-  {\text{/}} &
-  {\text{#5}} &
-  {\text{(#6\%)}}
+  {\text{#5}}
 }
-\newcommand{\mymult}[6]{
-  \jscode{#2} &
-  \multirow{#1}{*}{\jscode{#3}} &
-  \multirow{#1}{*}{\text{#4}} &
-  \multirow{#1}{*}{\text{/}} &
-  \multirow{#1}{*}{\text{#5}} &
-  \multirow{#1}{*}{\text{(#6\%)}}
-}
-\newcommand{\myname}[2]{\multirow{#1}{*}{\jscode{#2}}&&&&&}
-\newcommand{\mynewline}[6]{
-  \\
-  \cline{#1-#2}
-  \cline{#3-#4}
-  \cline{#5-#6}
-}
-\newcommand{\mylinef}  {\\\hhline{~|-----}}
-\newcommand{\mylineff} {\\\hhline{~|-----~|-----}}
-\newcommand{\mylinetf} {\\\hhline{------~|-----}}
-\newcommand{\mylinefff}{\\\hhline{~|-----~|-----~|-----}}
-\newcommand{\mylinefft}{\\\hhline{~|-----~|-----------}}
-\newcommand{\mylineftf}{\\\hhline{~|-----------~|-----}}
-\newcommand{\mylineftt}{\\\hhline{~|-----------------}}
-\newcommand{\mylinetff}{\\\hhline{------~|-----~|-----}}
-\newcommand{\mylinetft}{\\\hhline{------~|-----------}}
-\newcommand{\mylinettf}{\\\hhline{------------~|-----}}
-\newcommand{\mylinettt}{\\\hhline{------------------}}
+\newcommand{\mylinef}  {\\\hhline{~|---}}
+\newcommand{\mylineff} {\\\hhline{~|---~|---}}
+\newcommand{\mylinetf} {\\\hhline{----~|---}}
+\newcommand{\mylinefff}{\\\hhline{~|---~|---~|---}}
+\newcommand{\mylinefft}{\\\hhline{~|---~|-------}}
+\newcommand{\mylineftf}{\\\hhline{~|-------~|---}}
+\newcommand{\mylineftt}{\\\hhline{~|-----------}}
+\newcommand{\mylinetff}{\\\hhline{----~|---~|---}}
+\newcommand{\mylinetft}{\\\hhline{----~|-------}}
+\newcommand{\mylinettf}{\\\hhline{--------~|---}}
+\newcommand{\mylinettt}{\\\hhline{------------}}
 
 % Instantiation Map
 \newcommand{\imap}{m}

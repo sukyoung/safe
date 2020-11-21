@@ -94,14 +94,103 @@ analyzer at most 50.60$\x$ and 20.16$\x$ on average.
   \centering
   \includegraphics[width=\linewidth]{img/abs-analysis-ratio}
   \vspace*{-1.5em}
-  \caption{Analysis time ratio for \inred{219} \textit{abstracted} tests}
+  \caption{Analysis time ratio for 143 \textit{abstracted} tests}
   \label{fig:abs-analysis-ratio}
   \vspace*{-1.5em}
 \end{figure}
 
-Unlike for the original tests, analysis of \inred{82}
+\begin{table*}[t]
+  \centering
+  \caption{The number of \textit{abstracted} tests using dynamic shortcut
+  instead of manual modeling for each JavaScript built-in library}
+  \label{table:func-replace}
+  \vspace*{-1em}
+  \scriptsize
+  \[
+    \begin{array}{c|l|c|c?c|l|c|c?c|l|c|c}
+
+      \myhead{Object}       {Function}        {\# Replaced}
+
+      \mydata{1}{}          {Array    }  {214 / 214}{214 / 214} & \mydata{1}{}             {String     }  {214 / 214}{214 / 214} & \mydata{1}{}       {Object        }  {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {new Array}  {214 / 214}{214 / 214} & \mydata{1}{}             {toString   }  {214 / 214}{214 / 214} & \mydata{1}{}       {new Object    }  {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {isArray  }  {214 / 214}{214 / 214} & \mydata{1}{}             {valueOf    }  {214 / 214}{214 / 214} & \mydata{1}{}       {getPrototypeOf}  {214 / 214}{214 / 214} \mylinetff
+      \mydata{1}{}          {concat   }  { 92 /  92}{139 /  92} & \mysucc{1}{}             {charAt     }  {214 /  92}{214 /  92} & \mydata{1}{}       {create        }  {214 /  92}{214 /  92} \mylinetff
+      \mydata{1}{}          {join     }  {193 / 193}{214 / 193} & \mydata{1}{}             {charCodeAt }  {214 / 193}{214 / 193} & \mydata{1}{Object} {defineProperty}  {214 / 193}{214 / 193} \mylinefff
+      \mydata{1}{}          {pop      }  {214 / 214}{214 / 214} & \mydata{1}{}             {indexOf    }  {214 / 214}{214 / 214} & \mydata{1}{}       {freeze        }  {214 / 214}{214 / 214} \mylinefft
+      \mydata{2}{Array}     {push     }  {214 / 214}{214 / 214} & \mydata{1}{String}       {match      }  {214 / 214}{214 / 214} & \mydata{1}{}       {keys          }  {214 / 214}{214 / 214} \mylineftf
+      \mysucc{1}{}          {reverse  }  {214 / 214}{214 / 214} & \mydata{1}{}             {replace    }  {214 / 214}{214 / 214} & \mydata{1}{}       {toString      }  {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {shift    }  {214 / 214}{214 / 214} & \mydata{1}{}             {slice      }  {214 / 214}{214 / 214} & \mydata{1}{}       {hasOwnProperty}  {214 / 214}{214 / 214} \mylineftf
+      \mydata{1}{}          {slice    }  {214 / 214}{214 / 214} & \mydata{1}{}             {split      }  {214 / 214}{214 / 214} & \mysucc{1}{}       {parseInt}        {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {sort     }  {214 / 214}{214 / 214} & \mydata{1}{}             {substring  }  {214 / 214}{214 / 214} & \mydata{1}{Global} {isNaN   }        {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {splice   }  {214 / 214}{214 / 214} & \mydata{1}{}             {toLowerCase}  {214 / 214}{214 / 214} & \mydata{1}{}       {isFinite}        {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {unshift  }  {214 / 214}{214 / 214} & \mydata{1}{}             {toUpperCase}  {214 / 214}{214 / 214} & \mydata{1}{}       {RegExp    }      {214 / 214}{214 / 214} \mylinetff
+      \mysucc{1}{}          {indexOf  }  {214 / 214}{214 / 214} & \mydata{2}{Boolean}      {Boolean}      {214 / 214}{214 / 214} & \mysucc{2}{RegExp} {new RegExp}      {214 / 214}{214 / 214} \mylinetff
+      \mydata{1}{}          {every    }  {214 / 214}{214 / 214} & \mydata{1}{}             {valueOf}      {214 / 214}{214 / 214} & \mydata{1}{}       {exec      }      {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {ceil }      {214 / 214}{214 / 214} & \mydata{2}{Number}       {Number }      {214 / 214}{214 / 214} & \mydata{1}{}       {test      }      {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {floor}      {214 / 214}{214 / 214} & \mydata{1}{}             {valueOf}      {214 / 214}{214 / 214} & \mydata{1}{}       {Error         }  {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{Math}      {max  }      {214 / 214}{214 / 214} & \mydata{1}{}             {toString}     {214 / 214}{214 / 214} & \mydata{2}{Error}  {new Error     }  {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {min  }      {214 / 214}{214 / 214} & \mydata{1}{Function}     {apply   }     {214 / 214}{214 / 214} & \mydata{1}{}       {new RangeError}  {214 / 214}{214 / 214} \mylinefff
+      \mydata{1}{}          {pow  }      {214 / 214}{214 / 214} & \mydata{1}{}             {call    }     {214 / 214}{214 / 214} & \mydata{1}{}       {new TypeError }  {214 / 214}{214 / 214}
+    \end{array}
+  \]
+  \vspace*{-1em}
+\end{table*}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Unlike for the original tests, analysis of 143
 abstracted tests that are analyzable by both analyzers invoked
-\inred{xx} dynamic shortcuts.  Because taking a dynamic shortcut
+16.05 dynamic shortcuts.  Because taking a dynamic shortcut
 requires converting between abstract states and sealed symbolic values
 and exchanging them between the static analyzer and the dynamic analyzer,
 using dynamic shortcuts multiple times may incur more performance
@@ -110,16 +199,17 @@ One may conjecture that the communication cost between the static
 analyzer and the dynamic analyzer may be proportional to the number of
 dynamic shortcuts.
 
+\todo
 To experimentally evaluate the conjecture, we investigated the relationship between
 the communication cost between analyzers and the number of dynamic shortcuts.
-For \inred{xx} original tests, the communication cost was only
-\inred{x.xx}\% of the total analysis time.  However, for \inred{xx}
+For 198 original tests, the communication cost was only
+\inred{x.xx}\% of the total analysis time.  However, for 143
 abstracted tests, the communication cost was \inred{xx.xx}\% of the
 total analysis time.  Figure~\ref{fig:abs-analysis-ratio} presents the
-analysis time ratio for \inred{82} abstracted tests.
+analysis time ratio for 143 abstracted tests.
 The $x$-axis represents the time ratio normalized by the total analysis time with dynamic shortcuts
 and the $y$-axis denotes the number of dynamic shortcuts and the number of corresponding tests.
-For all \inred{82} tests, the communication cost (DS-Comm.) is larger than
+For all 143 tests, the communication cost (DS-Comm.) is larger than
 both the static analysis time (DS-Static) and the dynamic analysis
 time (DS-Dynamic).  When dynamic shortcuts are performed less than 10 times,
 the communication cost is modest compared with the baseline static
@@ -135,13 +225,13 @@ dynamic shortcuts by optimizing the communication between static and dynamic ana
   \begin{subfigure}[t]{0.48\textwidth}
     \includegraphics[width=\linewidth]{img/conc-precision}
     \vspace*{-1.5em}
-    \caption{Reachable branches for \inred{xx} \textit{original} tests}
+    \caption{Reachable branches for 198 \textit{original} tests}
     \label{fig:precision-fail}
   \end{subfigure}
   \begin{subfigure}[t]{0.48\textwidth}
     \includegraphics[width=\linewidth]{img/abs-precision}
     \vspace*{-1.5em}
-    \caption{Reachable branches for \inred{82} \textit{abstracted} tests}
+    \caption{Reachable branches for 143 \textit{abstracted} tests}
     \label{fig:precision-branch}
   \end{subfigure}
   \vspace*{-1em}
@@ -151,39 +241,6 @@ dynamic shortcuts by optimizing the communication between static and dynamic ana
 \end{figure}
 
 
-\begin{table*}[t]
-  \centering
-  \caption{The number of \textit{abstracted} tests using dynamic shortcut
-  instead of manual modeling for each JavaScript built-in library}
-  \label{table:func-replace}
-  \vspace*{-1em}
-  \scriptsize
-  \[
-    \begin{array}{c|l|@{~}r@{~}c@{~}r@{~}r@{~}?c|l|@{~}r@{~}c@{~}r@{~}r@{~}?c|l|@{~}r@{~}c@{~}r@{~}r@{~}}
-
-      \myhead{Object}       {Function}        {\# Replaced}
-
-      \mysucc{2}{Boolean}   {Boolean}         {214}{214}{100} & \mydata{1}{}            {new Object}        {214}{214}{100} & \mymult{2}{Number}      {valueOf}       {214}{214}{100} \mylineff
-      \mydata{1}{}          {new Boolean}     {214}{214}{100} & \mydata{1}{}            {getPrototypeOf}    {214}{214}{100} & \myname{1}{.prototype}                                  \mylinetft
-      \mydata{1}{Array}     {isArray}         {214}{214}{100} & \mydata{1}{}            {create}            {214}{214}{100} & \mymult{2}{RegExp}      {toString}      {214}{214}{100} \mylinetf
-      \mydata{1}{}          {toString}        { 92}{139}{ 66} & \mydata{1}{Object}      {preventExtensions} {214}{214}{100} & \myname{1}{.prototype}                                  \mylinefft
-      \mydata{1}{}          {toLocaleString}  {193}{214}{ 90} & \mydata{1}{}            {isFrozen}          {214}{214}{100} & \mydata{2}{String}      {String}        {214}{214}{100} \mylinefff
-      \mydata{1}{}          {concat}          {214}{214}{100} & \mydata{1}{}            {isExtensible}      {214}{214}{100} & \mydata{1}{}            {fromCharCode}  {214}{214}{100} \mylinefft
-      \mydata{1}{}          {join}            {214}{214}{100} & \mydata{1}{}            {keys}              {214}{214}{100} & \mydata{1}{}            {charAt}        {214}{214}{100} \mylineftf
-      \mysucc{1}{Array}     {pop}             {214}{214}{100} & \mydata{1}{Object}      {valueOf}           {214}{214}{100} & \mydata{1}{}            {charCodeAt}    {214}{214}{100} \mylinefff
-      \mydata{1}{.prototype}{push}            {214}{214}{100} & \mydata{1}{.prototype}  {isPrototypeOf}     {214}{214}{100} & \mydata{1}{}            {indexOf}       {214}{214}{100} \mylineftf
-      \mydata{1}{}          {slice}           {214}{214}{100} & \mydata{1}{}            {acos}              {214}{214}{100} & \mysucc{1}{}            {match}         {214}{214}{100} \mylinefff
-      \mydata{1}{}          {splice}          {214}{214}{100} & \mysucc{1}{}            {atan2}             {214}{214}{100} & \mydata{1}{String}      {replace}       {214}{214}{100} \mylinefff
-      \mydata{1}{}          {map}             {214}{214}{100} & \mydata{1}{}            {cos}               {214}{214}{100} & \mydata{1}{.prototype}  {splice}        {214}{214}{100} \mylinefff
-      \mydata{1}{}          {reduce}          {214}{214}{100} & \mydata{1}{Math}        {exp}               {214}{214}{100} & \mydata{1}{}            {split}         {214}{214}{100} \mylinetff
-      \mysucc{1}{global}    {eval}            {214}{214}{100} & \mydata{1}{}            {floor}             {214}{214}{100} & \mysucc{1}{}            {substring}     {214}{214}{100} \mylinetff
-      \mydata{1}{}          {new Date}        {214}{214}{100} & \mydata{1}{}            {max}               {214}{214}{100} & \mydata{1}{}            {toLowerCase}   {214}{214}{100} \mylinefff
-      \mydata{1}{Date}      {parse}           {214}{214}{100} & \mydata{1}{}            {min}               {214}{214}{100} & \mydata{1}{}            {toUpperCase}   {214}{214}{100} \mylinef
-      \mydata{1}{}          {now}             {214}{214}{100}
-    \end{array}
-  \]
-  \vspace*{-1em}
-\end{table*}
 
 \subsection{Precision Improvement}
 
@@ -198,14 +255,16 @@ the number of branches covered by no-DS and DS, respectively;
 each $\times$ mark denotes each test.  The top and bottom dotted lines
 denote the worst and the best precision improvement, respectively, and
 the middle solid line denotes the average improvement.
-For \inred{xx} original tests that are analyzable by both analyzers,
+For 198 original tests that are analyzable by both analyzers,
 Figure~\ref{fig:precision}(a) shows that dynamic shortcuts
-successfully reduced the number of covered branches at least
-\inred{1.00}\textsc{x}, at most \inred{0.54}\textsc{x}, and \inred{0.92}x on average.
-For \inred{xx} abstracted tests that are analyzable by both analyzers,
-Figure~\ref{fig:precision}(b) shows that dynamic shortcuts
-also successfully cut down the number of covered branches at least
-\inred{0.81}\textsc{x}, at most \inred{0.51}\textsc{x}, and \inred{0.68}\textsc{x} on average.
+reduced the number of covered branches at most 13.13\%. However, it reduced
+the number of branches 0.46\% on average because the most of original tests
+use concrete values without any non-determinism. Unlike original tets, for 143
+abstracted tests that are analyzable by both analyzers,
+Figure~\ref{fig:precision}(b) shows that dynamic shortcuts successfully cut down
+the number of covered branches at most 13.65\% and 1.89\% on average.  In other
+words, the dynamic shortcuts prevent to analyze 1.44 and 5.97 spurious branches
+for original and abstracted tests on average.
 
 
 \subsection{Opaque Function Coverage}
