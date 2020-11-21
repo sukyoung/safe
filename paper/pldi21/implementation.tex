@@ -81,12 +81,13 @@ corresponding abstract values.
 
 \paragraph{Termination.}
 To guarantee the termination of static analysis using dynamic shortcuts, the
-filter $\checker$ should pass a state $\symbst$ only when it terminates in a
-bound time $N$.  Since statically checking the termination property is a difficult task,
-we simply perform sealed symbolic execution with a pre-determined time limit.  When it runs
-over the time limit, we treat it as a failure to pass $\checker$; otherwise, we use
-the result of sealed symbolic execution.  Our experiments used 5 seconds 
-as the time limit for each sealed symbolic execution.
+converter $\asconverter$ should pass an analysis element $(\view, \abselem)$
+only when it terminates in a bound time $N$.  Since statically checking the
+termination property is a difficult task, we simply perform sealed symbolic
+execution with a pre-determined time limit.  When it runs over the time limit,
+we treat it as a failure to convert the analysis element via $\asconverter$;
+otherwise, we use the result of sealed symbolic execution.  Our experiments used
+5 seconds as the time limit for each sealed symbolic execution.
 
 
 % \paragraph{Function-Level Dynamic Shortcut.}
