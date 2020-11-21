@@ -274,15 +274,20 @@
 
 % Table 1
 \newcommand{\myhead}[3]{
-  \multicolumn{1}{c|}{\textbf{#1}} &
-  \multicolumn{1}{c|}{\textbf{#2}} &
+  \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{#1}}} &
+  \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{#2}}} &
   \multicolumn{2}{c?}{\textbf{#3}} &
-  \multicolumn{1}{c|}{\textbf{#1}} &
-  \multicolumn{1}{c|}{\textbf{#2}} &
+  \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{#1}}} &
+  \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{#2}}} &
   \multicolumn{2}{c?}{\textbf{#3}} &
-  \multicolumn{1}{c|}{\textbf{#1}} &
-  \multicolumn{1}{c|}{\textbf{#2}} &
-  \multicolumn{2}{c}{\textbf{#3}}\\\hline
+  \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{#1}}} &
+  \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{#2}}} &
+  \multicolumn{2}{c}{\textbf{#3}}
+  \\\cline{3-4}\cline{7-8}\cline{11-12}
+
+  && \textbf{orig.} & \textbf{abs.} &
+  && \textbf{orig.} & \textbf{abs.} &
+  && \textbf{orig.} & \textbf{abs.}\\\hline
 }
 \newcommand{\mysuff}[5]{
   \multirow{#1}{*}{\jscode{#2}} &
