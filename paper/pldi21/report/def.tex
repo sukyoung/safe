@@ -229,13 +229,13 @@ information:
   \right.
 \]
 
-We define a $\atriage$ function using two converters between analysis elements
+We define a $\areform$ function using two converters between analysis elements
 as follows:
-\begin{definition}[$\atriage$]\label{def:atriage}
-  The triage function $\atriage: \aelemset \rightarrow \aelemset$ for analysis
+\begin{definition}[$\areform$]\label{def:areform}
+  The reform function $\areform: \aelemset \rightarrow \aelemset$ for analysis
   elements is defined as
   \[
-    \atriage(\aelem) = \left\{
+    \areform(\aelem) = \left\{
       \begin{array}{ll}
         \asconverter(\aelem)
         & \text{if} \; \aelem = (\view, \abselem) \wedge \aelem \in
@@ -249,20 +249,20 @@ as follows:
     \right.
   \]
 \end{definition}
-Using the $\atriage$ function for analysis elements, we defined the $\triage$
+Using the $\areform$ function for analysis elements, we defined the $\reform$
 function for combined states:
-\begin{definition}[$\triage$]\label{def:triage}
-  The triage function $\triage: \combdom \rightarrow \combdom$ for combined
+\begin{definition}[$\reform$]\label{def:reform}
+  The reform function $\reform: \combdom \rightarrow \combdom$ for combined
   states is defined as
   \[
-    \triage((\sabselem, \symbelem)) = \left(
+    \reform((\sabselem, \symbelem)) = \left(
       \lambda \view. \bigjoin \{ \abselem \!\mid\! (\view, \abselem) \in E \},
       E \cap (\absimapset \times \symbstset)
     \right)
   \]
   where
   \[
-    E = \dot{\atriage}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
+    E = \dot{\areform}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
   \]
 \end{definition}
 The dot notation $\dot{f}$ denotes the element-wise extended function of a
@@ -277,7 +277,7 @@ function $f$.
       \symbstep(\symbelem)
     )
   \]
-  where $(\sabselem, \symbelem) = \triage(\combelem)$.
+  where $(\sabselem, \symbelem) = \reform(\combelem)$.
 \end{definition}
 
 We could configure when the sealed symbolic execution or the abstract

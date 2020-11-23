@@ -85,7 +85,7 @@ analysis elements without loss of information for all $\aelem \in \aelemset$:
 
 Now, we define the \textit{combined one-step execution} $\combstep: \combdom
 \rightarrow \combdom$ with two converters $\asconverter$ and $\saconverter$.
-It consists of two steps: 1) the \textit{\triagename} step converts
+It consists of two steps: 1) the \textit{\reformname} step converts
 analysis elements if a new sealed symbolic execution starts or an
 existing one stops, and 2) the \textit{execution} step performs execution of each
 analysis element using the abstract one-step execution $\sabsstep$ in the sensitive
@@ -97,14 +97,14 @@ A \textit{combined one-step execution} $\combstep: \combdom \rightarrow
   \[
     \combstep(\combelem) = (\sabsstep(\sabselem), \symbstep(\symbelem))
   \]
-where $(\sabselem, \symbelem) = \triage(\combelem)$.
+where $(\sabselem, \symbelem) = \reform(\combelem)$.
 \end{definition}
 
-From a given combined state $\combelem$, the $\triage$ function makes analysis elements
+From a given combined state $\combelem$, the $\reform$ function makes analysis elements
 and converts them if a new sealed symbolic execution
 begins or an existing sealed symbolic execution terminates.
 Specifically, for an analysis element $(\view, \abselem)$ in the sensitive abstract domain,
-if the converter $\asconverter$ is defined for it, $\triage$ introduces a new sealed symbolic execution
+if the converter $\asconverter$ is defined for it, $\reform$ introduces a new sealed symbolic execution
 by converting the analysis element to its corresponding one $(\absimap, \symbst) =
 \asconverter((\view, \abselem))$ in the sealed symbolic domain.
 On the other hand, for an analysis element $(\absimap, \symbst)$ in the sealed symbolic domain,
@@ -114,13 +114,13 @@ It converts the analysis element to its corresponding one $(\view, \abselem) =
 \saconverter((\absimap, \symbst))$ in the sensitive abstract domain and
 merges the current abstract state stored in the view $\view$ with $\abselem$.
 
-To formally define the $\triage$ function, we first define a $\atriage$ function
+To formally define the $\reform$ function, we first define a $\areform$ function
 for analysis elements using two converters.
-\begin{definition}[$\atriage$]\label{def:atriage}
-  The function $\atriage: \aelemset \rightarrow \aelemset$ for analysis elements
+\begin{definition}[$\areform$]\label{def:areform}
+  The function $\areform: \aelemset \rightarrow \aelemset$ for analysis elements
   is defined as follows:
   \[
-    \atriage(\aelem) = \left\{
+    \areform(\aelem) = \left\{
       \begin{array}{ll}
         \asconverter(\aelem)
         & \text{if} \; \aelem = (\view, \abselem) \wedge \aelem \in
@@ -134,18 +134,18 @@ for analysis elements using two converters.
     \right.
   \]
 \end{definition}
-\begin{definition}[$\triage$]\label{def:triage}
-  The \triagename function $\triage: \combdom \rightarrow \combdom$ for combined
+\begin{definition}[$\reform$]\label{def:reform}
+  The \reformname function $\reform: \combdom \rightarrow \combdom$ for combined
   states is defined as follows:
   \[
-    \triage((\sabselem, \symbelem)) = \left(
+    \reform((\sabselem, \symbelem)) = \left(
       \lambda \view. \bigjoin \{ \abselem \!\mid\! (\view, \abselem) \in E \},
       E \cap (\absimapset \times \symbstset)
     \right)
   \]
   where
   \[
-    E = \dot{\atriage}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
+    E = \dot{\areform}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
   \]
 and the dot notation $\dot{f}$ denotes the element-wise extended function of a
 function $f$.
@@ -177,7 +177,7 @@ circled labels denote two converters $\saconverter$, $\asconverter$ and the join
 operator $\join$.
 
 Figure~\ref{fig:ds-examples}(b) shows the analysis with the combined domain when
-the initial value of $\varx$ is $0$.  First, in the \triagename step,
+the initial value of $\varx$ is $0$.  First, in the \reformname step,
 the converter $\asconverter$ converts the analysis element $(\lab_0, 0)$ to
 another analysis element $\langle \varnothing, 0 \rangle$ with the label
 $\lab_0$.  It does not introduce any sealed symbolic values because
@@ -249,8 +249,8 @@ two conditions presented in Section~\ref{sec:ai}:
 (\ref{equ:sound-join}) for the join operator $\join$ and
 (\ref{equ:sound-step}) for the combined one-step execution.
 The core idea of the proof is to use Lemma~\ref{lemma:step-symb} and
-Lemma~\ref{lemma:triage} for the sealed symbolic one-step execution
-$\symbstep$ and the $\triage$ function, respectively. Due to the page limitation, we omit
+Lemma~\ref{lemma:reform} for the sealed symbolic one-step execution
+$\symbstep$ and the $\reform$ function, respectively. Due to the page limitation, we omit
 the proof in this paper and present it in a companion report~\cite{report}.
 \begin{lemma}\label{lemma:step-symb}
   Assume that the following condition holds:
@@ -264,13 +264,13 @@ the proof in this paper and present it in a companion report~\cite{report}.
     \symbgamma \circ \symbstep(\symbelem)\\
   \]
 \end{lemma}
-\begin{lemma}\label{lemma:triage}
-  For a given combined state $\combelem \in \combdom$, the $\triage$ function
+\begin{lemma}\label{lemma:reform}
+  For a given combined state $\combelem \in \combdom$, the $\reform$ function
   satisfies the following two properties:
   \begin{itemize}
-    \item $\combgamma(\combelem) \subseteq \combgamma \circ \triage(\combelem)$
+    \item $\combgamma(\combelem) \subseteq \combgamma \circ \reform(\combelem)$
     \item $\forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
       \symbstset.  \; \symbst \symbtrans \symbst'$
   \end{itemize}
-  where $(\sabselem, \symbelem) = \triage(\combelem)$
+  where $(\sabselem, \symbelem) = \reform(\combelem)$
 \end{lemma}

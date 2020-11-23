@@ -73,7 +73,7 @@ First, we prove the Property~\ref{equ:comb-sound1} as follows:
 
 To prove Property~\ref{equ:comb-sound2}, we first prove the same property for
 the sealed symbolic domain $\symbdom$ in Lemma~\ref{lemma:step-symb}.  Then, we
-prove the properties of the $\triage$ function in Lemma~\ref{lemma:triage}.
+prove the properties of the $\reform$ function in Lemma~\ref{lemma:reform}.
 Finally, we prove the Property~\ref{equ:comb-sound2} in
 Lemma~\ref{lemma:comb-sound2}.
 
@@ -119,19 +119,19 @@ Lemma~\ref{lemma:comb-sound2}.
   \]
 \end{proof}
 
-\begin{lemma}\label{lemma:triage}
-  For a given combined state $\combelem \in \combdom$, the $\triage$ function
+\begin{lemma}\label{lemma:reform}
+  For a given combined state $\combelem \in \combdom$, the $\reform$ function
   satisfies the following two properties:
   \begin{itemize}
-    \item $\combgamma(\combelem) \subseteq \combgamma \circ \triage(\combelem)$
+    \item $\combgamma(\combelem) \subseteq \combgamma \circ \reform(\combelem)$
     \item $\forall (\absimap, \symbst) \in \symbelem. \; \exists \symbst' \in
       \symbstset.  \; \text{s.t.} \; \symbst \symbtrans \symbst'$
   \end{itemize}
-  where $(\sabselem, \symbelem) = \triage(\combelem)$
+  where $(\sabselem, \symbelem) = \reform(\combelem)$
 \end{lemma}
 \begin{proof}
   \[
-    \fbox{$\combgamma(\combelem) \subseteq \combgamma \circ \triage(\combelem)$}
+    \fbox{$\combgamma(\combelem) \subseteq \combgamma \circ \reform(\combelem)$}
   \]
   \[
     \begin{array}{cl}
@@ -149,15 +149,15 @@ Lemma~\ref{lemma:comb-sound2}.
       =& \dot\aelemgamma(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \}
       \cup \symbelem)\\
 
-      =& \dot\aelemgamma(\dot{\atriage}(\{ (\view, \sabselem(\view)) \mid \view
+      =& \dot\aelemgamma(\dot{\areform}(\{ (\view, \sabselem(\view)) \mid \view
       \in \viewset \} \cup \symbelem))\\
 
        & \multicolumn{1}{r}{(\text{Trivially,} \; \forall \aelem \in \aelemset.
-       \; \aelemgamma(\aelem) = \aelemgamma \circ \atriage(\aelem))}\\
+       \; \aelemgamma(\aelem) = \aelemgamma \circ \areform(\aelem))}\\
 
       =& \dot\aelemgamma(E)\\
        & \multicolumn{1}{r}{(\text{See the definition of $E$ in
-       Definition~\ref{def:triage}})}\\
+       Definition~\ref{def:reform}})}\\
 
       =& \left( \underset{(\view, \abselem) \in E}{\bigcup} \aelemgamma((\view,
       \abselem)) \right) \cup \left( \underset{(\absimap, \symbst) \in
@@ -190,7 +190,7 @@ Lemma~\ref{lemma:comb-sound2}.
       =& \combgamma\left( \lambda \view. \underset{(\view, \abselem) \in
       E}{\bigjoin}\abselem, E \cap (\absimapset \times \symbstset) \right)\\
 
-      =& \combgamma \circ \triage((\sabselem, \symbelem))\\
+      =& \combgamma \circ \reform((\sabselem, \symbelem))\\
     \end{array}
   \]
   \[\]
@@ -200,9 +200,9 @@ Lemma~\ref{lemma:comb-sound2}.
   \]
 
   For a given $(\absimap, \symbst) \in \symbelem$, there exists an analysis
-  element $\aelem \in \aelemset$ such that $\atriage(\aelem) = (\absimap,
-  \symbst)$.  According to the definition of $\atriage$ in
-  Definition~\ref{def:atriage}, there are two possible cases: $\aelem =
+  element $\aelem \in \aelemset$ such that $\areform(\aelem) = (\absimap,
+  \symbst)$.  According to the definition of $\areform$ in
+  Definition~\ref{def:areform}, there are two possible cases: $\aelem =
   (\absimap, \symbst) \wedge \exists \symbst' \in \symbstset. \; \text{s.t} \;
   \symbst \symbtrans \symbst'$ or $\aelem = (\view, \abselem) \wedge \aelem \in
   \Dom(\asconverter)$. We separately consider those two cases:
@@ -233,9 +233,9 @@ Lemma~\ref{lemma:comb-sound2}.
       }\\
       \subseteq& \step \circ \combgamma((\sabselem, \symbelem))\\
        & \multicolumn{1}{r}{(\because \; \text{First property in
-       Lemma~\ref{lemma:triage}}}\\
+       Lemma~\ref{lemma:reform}}}\\
        & \multicolumn{1}{r}{\text{where} \; (\sabselem, \symbelem)
-       = \triage(\combelem).)}\\
+       = \reform(\combelem).)}\\
 
       =& \step(\sgamma(\sabselem) \cup \symbgamma(\symbelem))\\
       =& \step(\sgamma(\sabselem)) \cup \step(\symbgamma(\symbelem))\\
@@ -244,7 +244,7 @@ Lemma~\ref{lemma:comb-sound2}.
       \subseteq& \sgamma \circ \sabsstep(\sabselem) \cup \symbgamma \circ
       \symbstep((\symbelem))\\
                & \multicolumn{1}{r}{(\because \; \text{Sceond property in
-               Lemma~\ref{lemma:triage}} }\\
+               Lemma~\ref{lemma:reform}} }\\
                & \multicolumn{1}{r}{\text{and Lemma~\ref{lemma:step-symb}})}\\
       =& \combgamma((\sabsstep(\sabselem), \symbstep(\symbelem)))\\
       =& \combgamma \circ \combstep(\combelem)\\
@@ -279,6 +279,14 @@ Let's define $\combelem^i$, $\sabselem^i$, and $\symbelem^i$ for $i \geq 0$ as f
 \]
 which means resulting state after applying transfer function $\combtransfer \; i$ times.
 \item
+Let's define the lifted symbolic transition relation
+$\liftsymbtrans \subseteq
+(\absimapset \times \symbstset) \times (\absimapset \times \symbstset)$
+as follows:
+\[
+  (\absimap, \symbst) \liftsymbtrans (\absimap, \symbst') \Leftrightarrow
+  \symbst \symbtrans \symbst'
+\]
 \end{itemize}
 
 \begin{theorem}[Termination]\label{theorem:termination}
@@ -325,86 +333,109 @@ for all $m \geq n, \sabselem^m = \sabselem^n$.
 Now, let's show that sealed static symbolic execution terminates after
 sensitive abstract interpretation terminates.
 
-We begin by defining the difference set $\diffset_i \in \symbdom$ as follows:
+We begin by defining the difference set $\diffset_i \in \symbdom$ for $i \geq 0$ as follows:
 \[
   \diffset_i = \symbelem^{i+1} \setminus \symbelem^i
 \]
 
-and prove its properties:
-\begin{lemma}[Property of difference set]
+For simplicity, we say that $\diffset_i = \emptyset$ if $i < 0$.
+Then we prove its properties:
+\begin{lemma}[Property of difference set]\label{lemma:diffset_prop}
   \[
     \begin{array}{c}
-      \forall i > 0. \; \forall (\absimap, \symbst) \in \diffset_i. \;
-      (\exists (\absimap, \symbst') \in \diffset_{i-1} \wedge \symbst' \symbtrans \symbst)\\
-      \lor (\exists (\view, \abselem). \; \sabselem^i(\view) = \abselem
-        \wedge \asconverter((\view, \abselem)) = (\absimap, \symbst') \wedge \symbst' \symbtrans \symbst))
+      \forall i \geq 0. \; \forall \symbaelem \in \diffset_i. \\
+      \exists \view. \; \asconverter((\view,\sabselem^i(\view))) \liftsymbtrans \symbaelem 
+      \lor \exists \symbaelem' \in \diffset_{i-1} . \; \symbaelem' \liftsymbtrans \symbaelem
     \end{array}
   \]
 \end{lemma}
 \begin{proof}
-  Let $i$ and $(\absimap, \symbst) \in \diffset_i = \symbelem^{i+1} \setminus \symbelem^i$ given.
+  Let $i$ and $\symbaelem \in \diffset_i = \symbelem^{i+1} \setminus \symbelem^i$ given.
   Note that by definition,
   \[
-    \symbelem^{i+1} = \symbelem^i \cup \symbstep(\symbelem')
+    \symbelem^{i+1} = \symbelem^i \cup \symbstep({\symbelem^i}')
   \]
   where
   \[
-    (\_, \symbelem') = \triage(\sabselem^i, \symbelem^i)
+    (\_, {\symbelem^i}') = \reform(\sabselem^i, \symbelem^i)
   \]
   which means
   \[
-    \symbelem' =
-    \dot{\atriage}(\{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i)
+    {\symbelem^i}' =
+    \dot{\areform}(\{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i)
     \cap (\absimapset \times \symbstset)
   \]
-  Now, note that $(\absimap, \symbst) \in \symbstep(\symbelem')$, which means
+  Now, note that $\symbaelem \in \symbstep({\symbelem^i}')$, which means
   \[
-    \exists (\absimap, \symbst') \in \symbelem'. \; \symbst' \symbtrans \symbst
-  \]
+    \exists \symbaelem' \in {\symbelem^i}'. \; \symbaelem' \liftsymbtrans \symbaelem
+  \] by definition of $\symbstep$.
   This means there exists $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i$
-  such that satisfies $\atriage(\aelem) = (\absimap, \symbst')$. We have two possible cases.
+  such that satisfies $\areform(\aelem) = \symbaelem'$. We have two possible cases.
   \begin{itemize}
-  
+ 
   \item $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \}$
 
-  In this case, $\atriage(\aelem) = \asconverter(\aelem) = (\absimap, \symbst')$
-  and the right condition for conclusion is satisfied.
+  In this case, $\areform(\aelem) = \asconverter(\aelem) = \symbaelem'
+  \liftsymbtrans \symbaelem$
+  and the left condition for conclusion is satisfied.
   
   \item $\aelem \in \symbelem^i$
 
-  In this case, $\atriage(\aelem) = \aelem = (\absimap, \symbst')$.
+  In this case, $\areform(\aelem) = \aelem = \symbaelem' \liftsymbtrans \symbaelem$.
   Now, let's assume that $\aelem \in \symbelem^{i-1}$.
-  In that case, \todo, $(\absimap, \symbst) \in \symbelem^i$
-  whcih contradicts to the fact that $(\absimap, \symbst) \in \diffset_i$.
+  In that case, $\aelem$ would be preserved after reform step, that is,
+  $\aelem \in {\symbelem^{i-1}}'$. Then, by definition of $\symbstep$,
+  $\symbaelem \in \symbstep({\symbelem^{i-1}}') \subseteq \symbelem^i$
+  whcih contradicts to the fact that $\symbaelem \in \diffset_i$.
   Therefore, $\aelem \notin \symbelem^{i-1}$, that is,
   $\aelem \in \symbelem^i \setminus \symbelem^{i-1} = \diffset_i$,
-  and the left condition for conclusion is satisfied.
+  and the right condition for conclusion is satisfied.
   \end{itemize}
 \end{proof}
 
 \begin{corollary}
   \[
     \begin{array}{c}
-      \forall i > 0. \; \sabselem^{i-1} = \sabselem^{i} \Rightarrow
-      \forall (\absimap, \symbst) \in \diffset_i. \;
-      (\exists (\absimap, \symbst) \in \diffset_{i-1} \wedge \symbst' \symbtrans \symbst)\\
+      \forall i > 0. \; \sabselem^{i-1} = \sabselem^i \Rightarrow
+      \forall \symbaelem \in \diffset_i. \\
+      \exists \symbaelem' \in \diffset_{i-1} . \; \symbaelem' \liftsymbtrans \symbaelem
     \end{array}
   \]
 \end{corollary}
 \begin{proof}
-  \todo
+  The proof goes same as the previous lemma, until the point where we divide
+  the case for $\aelem$. Let's assume that the first case holds, that is,
+  \[
+    \aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \}
+  \]
+  Since $\sabselem^{i-1} = \sabselem^i$,
+  \[
+    \aelem \in \{ (\view, \sabselem^{i-1}(\view)) \mid \view \in \viewset \}
+  \]
+  In that case, $\aelem$ would be transformed after reform step, that is,
+  $\asconverter(\aelem) = \symbaelem' \in {\symbelem^{i-1}}'$.
+  Then, by definition of $\symbstep$,
+  $\symbaelem \in \symbstep({\symbelem^{i-1}}') \subseteq \symbelem^i$
+  whcih contradicts to the fact that $\symbaelem \in \diffset_i$.
+  Therefore, only second case holds and the right conclusion in previus lemma is satisfied.
 \end{proof}
 
 
 Now, we can define the TTL(time to live) function
-$\ttl_i: \diffset_i \rightarrow \numset$ for $i > 0$ as follows:
+$\ttl_i: \diffset_i \rightarrow \numset$ for $i \geq 0$ as follows:
 \begin{definition}[TTL Function]
   \[
-    \begin{array}{l}
-      \ttl_i((\absimap, \symbst)) = \\
-      \min(\{N\} \cup
-      \{\ttl_{i-1}((\absimap, \symbst')) \mid (\absimap, \symbst') \in \diffset_{i-1}
-      \wedge \symbst' \symbtrans \symbst\}) - 1
+    \begin{array}{c} 
+      \ttl_i(\symbaelem) = \left \{
+      \begin{array}{l}
+        N \;\; ( \text{if} \; D = \emptyset)\\
+        \text{min}(\dot\ttl_{i-1}(D)) - 1
+        \;\; ( \text{otherwise})
+      \end{array}
+      \right. \\
+      \\
+      \text{where} \; D = 
+      \{\symbaelem' \in \diffset_{i-1} \mid \symbaelem' \liftsymbtrans \symbaelem\}
     \end{array}
   \]
 \end{definition}
@@ -412,12 +443,59 @@ $\ttl_i: \diffset_i \rightarrow \numset$ for $i > 0$ as follows:
 We prove following properties of TTL function.
 \begin{lemma}
   \[
-    \forall i > 0. \; \forall x \in \diffset_i. \;
-    0 <= \ttl_i(x) < N
+    \begin{array}{c}
+      \forall i \geq 0. \; \forall \symbaelem \in \diffset_i. \\
+      \ttl_i(\symbaelem) = k \Rightarrow k <= N \; \wedge \\
+      \exists (\view, \abselem). \; (\asconverter((\view,\abselem))
+      \liftsymbtrans^{(N - k + 1)} \symbaelem) \\
+    \end{array}
   \]
 \end{lemma}
 \begin{proof}
-  \todo
+  We prove by induction on $i$.
+  Let $\symbaelem \in \diffset_i$.
+  \begin{itemize}
+  \item If $i = 0$, $\ttl_0(\symbaelem) = N$
+  and since only left conclusion of lemma~\ref{lemma:diffset_prop} can hold,
+  there eixsts view $\view$ s.t.
+  $\asconverter(\view, \sabselem^0(\view)) \liftsymbtrans^1 \symbaelem$.
+  \item If $i > 0$, we have two cases for $D = 
+    \{\symbaelem' \in \diffset_{i-1} \mid \symbaelem' \liftsymbtrans \symbaelem\}$.
+  If $D = \emptyset$, the argument is similar as $i = 0$ case.
+  Otherwise, let $\symbaelem' = \underset{\x \in D}{argmin}{\ttl_{i-1}(x)}$.
+  
+  By induction hypothesis, we have
+  \[
+    k' = \ttl_{i-1}(\symbaelem') <= N
+  \]
+  and there eixsts $(\view, \abselem)$ such that
+  \[
+    \symbaelem'' = \asconverter((\view,\abselem)) \liftsymbtrans^{(N - k' + 1)} \symbaelem'.
+  \]
+  By definition of $\ttl_i$,
+  $\ttl_i(\symbaelem) = \ttl_i(\symbaelem') - 1$, and $k = k' - 1$.
+  Then,
+  \[
+    k <= N - 1 < N
+  \]
+  and
+  $\symbaelem'' \liftsymbtrans^{(N - k)} \symbaelem'$ with
+  $\symbaelem' \liftsymbtrans \symbaelem$ implies that
+  \[
+    \symbaelem'' \liftsymbtrans^{(N - k + 1)} \symbaelem.
+  \]
+  \end{itemize}
+\end{proof}
+\begin{corollary}
+  \[
+    \forall i \geq 0. \; \forall \symbaelem \in \diffset_i. \;
+    0 < \ttl_i(\symbaelem) <= N
+  \]
+\end{corollary}
+\begin{proof}
+We already proved $\ttl_i(\symbaelem) <= N$.
+Now, let's assume that $\ttl_i(\symbaelem) <= 0$.
+\todo
 \end{proof}
 
 Now, we can prove the Theorem~\ref{theorem:termination}.
