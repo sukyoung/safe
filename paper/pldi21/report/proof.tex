@@ -296,6 +296,7 @@ as follows:
   \]
 \end{theorem}
 
+We prove this theorem after proving a series of lemmas.
 We first begin by showing that sensitive abstract interpretation terminates in
 finite time.
 
@@ -308,10 +309,8 @@ finite time.
 \end{lemma}
 
 \begin{proof}
-Let $\sabselem, \sabselem' \in \sabsdom$ that satisfies
-$\combtransfer((\sabselem, \_)) = (\sabselem', \_)$.
-
-Then,
+Note that for all $\sabselem, \sabselem' \in \sabsdom$ that satisfies
+$\combtransfer((\sabselem, \_)) = (\sabselem', \_)$,
 \[
   \begin{array}{rcl}
   \combtransfer((\sabselem, \_))
@@ -321,7 +320,7 @@ Then,
   \end{array}
 \]
 
-Therefore, $\sabselem \order \sabselem'$.
+which implies $\sabselem \order \sabselem'$.
 
 Now, since $\combtransfer((\sabselem^i, \_)) = (\sabselem^{i+1}, \_),
 \sabselem^i \order \sabselem^{i+1}$ holds for all $i$.
@@ -330,15 +329,15 @@ By ascending chain condition, there exists n such that
 for all $m \geq n, \sabselem^m = \sabselem^n$.
 \end{proof}
 
-Now, let's show that sealed static symbolic execution terminates after
-sensitive abstract interpretation terminates.
+Now, let's show that sealed static symbolic execution does terminate
+given that sensitive abstract interpretation terminates.
 
 We begin by defining the difference set $\diffset_i \in \symbdom$ for $i \geq 0$ as follows:
 \[
   \diffset_i = \symbelem^{i+1} \setminus \symbelem^i
 \]
 
-For simplicity, we say that $\diffset_i = \emptyset$ if $i < 0$.
+For simplicity, we define $\diffset_i$ as $\emptyset$ for $i < 0$.
 Then we prove its properties:
 \begin{lemma}[Property of difference set]\label{lemma:diffset_prop}
   \[
@@ -350,8 +349,8 @@ Then we prove its properties:
   \]
 \end{lemma}
 \begin{proof}
-  Let $i$ and $\symbaelem \in \diffset_i = \symbelem^{i+1} \setminus \symbelem^i$ given.
-  Note that by definition,
+  Let $i \in \numset$ and $\symbaelem \in \diffset_i = \symbelem^{i+1} \setminus \symbelem^i$ given.
+  By definition,
   \[
     \symbelem^{i+1} = \symbelem^i \cup \symbstep({\symbelem^i}')
   \]
@@ -359,29 +358,28 @@ Then we prove its properties:
   \[
     (\_, {\symbelem^i}') = \reform(\sabselem^i, \symbelem^i)
   \]
-  which means
+  Note that $\symbaelem \in \symbstep({\symbelem^i}')$,
+  and by definition of $\symbstep$, there exists some
+  $\symbaelem' \in {\symbelem^i}'$ that satisfies $\symbaelem' \liftsymbtrans \symbaelem$.
+  Now, by definition of $\reform$,
   \[
     {\symbelem^i}' =
     \dot{\areform}(\{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i)
     \cap (\absimapset \times \symbstset)
   \]
-  Now, note that $\symbaelem \in \symbstep({\symbelem^i}')$, which means
-  \[
-    \exists \symbaelem' \in {\symbelem^i}'. \; \symbaelem' \liftsymbtrans \symbaelem
-  \] by definition of $\symbstep$.
-  This means there exists $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i$
-  such that satisfies $\areform(\aelem) = \symbaelem'$. We have two possible cases.
+  This means there exists
+  $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \} \cup \symbelem^i$
+  that satisfies $\areform(\aelem) = \symbaelem'$. We have two possible cases for $\aelem$.
   \begin{itemize}
  
   \item $\aelem \in \{ (\view, \sabselem^i(\view)) \mid \view \in \viewset \}$
 
-  In this case, $\areform(\aelem) = \asconverter(\aelem) = \symbaelem'
-  \liftsymbtrans \symbaelem$
+  In this case, $\areform(\aelem) = \asconverter(\aelem) = \symbaelem'$
   and the left condition for conclusion is satisfied.
   
   \item $\aelem \in \symbelem^i$
 
-  In this case, $\areform(\aelem) = \aelem = \symbaelem' \liftsymbtrans \symbaelem$.
+  In this case, $\areform(\aelem) = \aelem = \symbaelem'$.
   Now, let's assume that $\aelem \in \symbelem^{i-1}$.
   In that case, $\aelem$ would be preserved after reform step, that is,
   $\aelem \in {\symbelem^{i-1}}'$. Then, by definition of $\symbstep$,
@@ -443,8 +441,9 @@ We prove following properties of TTL function.
 \begin{lemma}
   \[
     \begin{array}{c}
-      \forall i \geq 0. \; \forall \symbaelem \in \diffset_i. \\
-      \ttl_i(\symbaelem) = k \Rightarrow k < N \; \wedge \\
+      \forall i \geq 0. \; \forall \symbaelem \in \diffset_i.
+      \ttl_i(\symbaelem) = k \Rightarrow \\
+      k < N \wedge
       \exists (\view, \abselem). \; (\asconverter((\view,\abselem))
       \liftsymbtrans^{(N - k)} \symbaelem) \\
     \end{array}
@@ -504,7 +503,7 @@ Since $N - k \geq N$, this implies that there exists $\symbaelem'$ such that
 \]
 However, this contradicts to the condition of $\asconverter$ that says
 if $(\view,\abselem)$ is in domain of $\asconverter$,
-the number of possible $\symbtrans$ from state of $\asconverter((\view,\abselem)$
+the number of possible $\symbtrans$ starting from state of $\asconverter((\view,\abselem))$
 is at most N - 1.
 Therefore, k > 0.
 \end{proof}
@@ -536,8 +535,11 @@ Therefore, k > 0.
 Now, we can complete the proof of the Theorem~\ref{theorem:termination}.
 
 \begin{proof}
-First, by Lemma~\ref{lemma:sabs-term}, let $n$ be an integer such that
-for all $m \geq n$, $\sabselem^m = \sabselem^n$.
+By Lemma~\ref{lemma:sabs-term}, there exists $n \in \numset$ such that
+for all $m \geq n$,
+\[
+  \sabselem^m = \sabselem^n
+\]
 By Corollary~\ref{corollary:ttl-range},
 \[
   sup(\dot \ttl_n(\diffset_n)) < N.
@@ -550,16 +552,20 @@ which implies that
 \[
   sup(\dot \ttl_{n+i}(\diffset_{n+i})) \leq sup(\dot \ttl_n(\diffset_n)) - i < N - i
 \]
-Therefore, for $i \geq N$,
+Therefore, for $j \geq N$,
 \[
-  sup(\dot \ttl_{n+i}(\diffset_{n+i})) < N - i \leq 0
+  sup(\dot \ttl_{n+j}(\diffset_{n+j})) < N - j \leq 0
 \]
 Notice that again by Corollary~\ref{corollary:ttl-range},
 \[
-  inf(\dot \ttl_{n+i}(\diffset_{n+i})) > 0 > sup(\dot \ttl_{n+i}(\diffset_{n+i}))
+  inf(\dot \ttl_{n+j}(\diffset_{n+j})) > 0
 \]
-which implies $\diffset_{n+i} = \symbelem^{n+i+1} \setminus \symbelem^{n+i} = \emptyset$ and
-$\symbelem^{n+i+1} = \symbelem^{n+i} = \symbelem^n$.
+meaning that
+\[
+  inf(\dot \ttl_{n+j}(\diffset_{n+j})) > sup(\dot \ttl_{n+j}(\diffset_{n+j}))
+\]
+which implies $\diffset_{n+j} = \emptyset$ and
+$\symbelem^{n+j+1} = \symbelem^{n+j}$.
 
 Therefore, for all $m \geq n + N$,
 \[
