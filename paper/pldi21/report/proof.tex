@@ -6,14 +6,14 @@ assume that the baseline sensitive abstract domain ensures the soundness and
 satisfies ascending chain condition, the sealed symbolic execution is valid,
 and the converter $\asconverter: (\viewset \times \absdom) \hookrightarrow
 (\absimapset \times \symbstset)$ satisfies the
-condition~\ref{equ:cond} in the Theorem~\ref{theorem:shortcut}.
+condition~(\ref{equ:asc-cond}) in the Theorem~\ref{theorem:shortcut}.
 
 
 \subsection{Soundness}
 
 \begin{theorem}[Soundness]\label{theorem:soundness}
-  According to the equation~\ref{equ:sound}, the abstract interpretation using
-  the combined domain $\combdom$ is \textit{sound} if and only if
+  The abstract interpretation using the combined domain $\combdom$ is
+  \textit{sound} if and only if
   \begin{equation}\label{equ:comb-sound1}
     \forall \combelem_0, \combelem_1 \in \combdom. \; \combgamma(\combelem_0) \cup
     \combgamma(\combelem_1) \subseteq \combgamma(\combelem_0 \join \combelem_1)
@@ -26,24 +26,27 @@ condition~\ref{equ:cond} in the Theorem~\ref{theorem:shortcut}.
 \begin{proof}
   First, we prove that the abstract transfer function $\combtransfer: \combdom
   \rightarrow \combdom$ defined as $\combtransfer(\combelem) = \combelem \join
-  \combstep$ is sound
+  \combstep(\combelem)$ is sound
   \[
     \begin{array}{rcll}
       \transfer \circ \combgamma(\combelem)
       &=& \combgamma(\combelem) \cup \step \circ \combgamma(\combelem)\\
       &\subseteq& \combgamma(\combelem) \cup \combgamma \circ \combstep(\combelem)
-      & (\because \; \text{Property~\ref{equ:comb-sound2}})\\
+      & (\because \; \text{condition~(\ref{equ:comb-sound2})})\\
       &\subseteq& \combgamma(\combelem \join \combstep(\combelem))
-      & (\because \; \text{Property~\ref{equ:comb-sound1}})\\
+      & (\because \; \text{condition~(\ref{equ:comb-sound1})})\\
       &=& \combgamma \circ \combtransfer(\combelem)\\
     \end{array}
   \]
-  Then, the abstract semantics $\abssem{\prog}$ is sound because it is defined
+  Then, the abstract semantics $\combsem{\prog} = \underset{n \rightarrow
+  \infty}{\lim}{(\combtransfer)^n(\icombelem)} $ is sound because it is defined
   with a sound abstract transfer function $\combtransfer$ using the combined
   one-step execution $\combstep$.
 \end{proof}
 
-First, we prove the Property~\ref{equ:comb-sound1} as follows:
+Now, we have to show that two conditions (\ref{equ:comb-sound1})
+and (\ref{equ:comb-sound2}) hold.
+First, we prove the condition~(\ref{equ:comb-sound1}) as follows:
 \begin{lemma}
   \[
     \forall \combelem_0, \combelem_1 \in \combdom. \; \combgamma(\combelem_0) \cup
@@ -71,10 +74,10 @@ First, we prove the Property~\ref{equ:comb-sound1} as follows:
   \]
 \end{proof}
 
-To prove Property~\ref{equ:comb-sound2}, we first prove the same property for
+To prove condition~(\ref{equ:comb-sound2}), we first prove the same property for
 the sealed symbolic domain $\symbdom$ in Lemma~\ref{lemma:step-symb}.  Then, we
 prove the properties of the $\reform$ function in Lemma~\ref{lemma:reform}.
-Finally, we prove the Property~\ref{equ:comb-sound2} in
+Finally, we prove the condition~(\ref{equ:comb-sound2}) in
 Lemma~\ref{lemma:comb-sound2}.
 
 \begin{lemma}\label{lemma:step-symb}
@@ -161,7 +164,7 @@ Lemma~\ref{lemma:comb-sound2}.
 
       =& \left( \underset{(\view, \abselem) \in E}{\bigcup} \aelemgamma((\view,
       \abselem)) \right) \cup \left( \underset{(\absimap, \symbst) \in
-    E}{\bigcup} \aelemgamma((\absimap, \symbst)) \right)\\
+      E}{\bigcup} \aelemgamma((\absimap, \symbst)) \right)\\
 
       =& \left( \underset{(\view, \abselem) \in E}{\bigcup} \viewmap(\view) \cap
       \gamma(\abselem) \right) \cup \left( \underset{(\absimap, \symbst) \in
@@ -188,9 +191,9 @@ Lemma~\ref{lemma:comb-sound2}.
       \symbstset))\\
 
       =& \combgamma\left( \lambda \view. \underset{(\view, \abselem) \in
-      E}{\bigjoin}\abselem, E \cap (\absimapset \times \symbstset) \right)\\
+      E}{\bigjoin}\abselem, E \cap (\absimapset \times \symbstset) \right)
 
-      =& \combgamma \circ \reform((\sabselem, \symbelem))\\
+      = \combgamma \circ \reform((\sabselem, \symbelem))
     \end{array}
   \]
   \[\]
@@ -212,7 +215,7 @@ Lemma~\ref{lemma:comb-sound2}.
         By definition, $\exists \symbst' \in \symbstset.  \; \text{s.t} \;
         \symbst \symbtrans \symbst'$
     \item $\aelem = (\view, \abselem) \wedge \aelem \in \Dom(\asconverter)$\\
-      By the condition~\ref{equ:cond} in the Theorem~\ref{theorem:shortcut},\\
+      By the condition~\ref{equ:asc-cond} in the Theorem~\ref{theorem:shortcut},\\
       $\exists k > 1. \symbst \symbtrans^k \excst$.  Thus, $\exists \symbst' \in
       \symbstset.  \; \text{s.t} \; \symbst \symbtrans \symbst'$
   \end{itemize}
@@ -248,16 +251,6 @@ Lemma~\ref{lemma:comb-sound2}.
                & \multicolumn{1}{r}{\text{and Lemma~\ref{lemma:step-symb}})}\\
       =& \combgamma((\sabsstep(\sabselem), \symbstep(\symbelem)))\\
       =& \combgamma \circ \combstep(\combelem)\\
-
-      % =& (\sgamma(\sabselem)\cup \sgamma(\sabselem'))
-      % \cup (\symbgamma(\symbelem) \cup \symbgamma(\symbelem'))\\
-      % \subseteq& \sgamma(\sabselem \join \sabselem')
-      % \cup (\symbgamma(\symbelem) \cup \symbgamma(\symbelem'))\\
-      % & \multicolumn{1}{r}{(\because \; \sabsdom \; \text{is sound.})}\\
-      % =& \sgamma(\sabselem \join \sabselem')
-      % \cup \symbgamma(\symbelem \cup \symbelem')\\
-      % =& \combgamma((\sabselem \join \sabselem', \symbelem \cup \symbelem'))\\
-      % =& \combgamma((\sabselem, \symbelem) \join (\sabselem', \symbelem'))\\
     \end{array}
   \]
 \end{proof}
@@ -501,11 +494,11 @@ Since $N - k \geq N$, this implies that there exists $\symbaelem'$ such that
 \[
   (\asconverter((\view,\abselem)) \liftsymbtrans^N \symbaelem')
 \]
-However, this contradicts to the condition of $\asconverter$ that says
+However, this contradicts to the condition~(\ref{equ:asc-cond}) of $\asconverter$ that says
 if $(\view,\abselem)$ is in domain of $\asconverter$,
-the number of possible $\symbtrans$ starting from state of $\asconverter((\view,\abselem))$
-is at most N - 1.
-Therefore, k > 0.
+the number of possible $\symbtrans$ from state of $\asconverter((\view,\abselem))$
+is at most $N - 1$.
+Therefore, $k > 0$.
 \end{proof}
 
 \begin{lemma}\label{lemma:ttl-decr}
@@ -535,7 +528,7 @@ Therefore, k > 0.
 Now, we can complete the proof of the Theorem~\ref{theorem:termination}.
 
 \begin{proof}
-By Lemma~\ref{lemma:sabs-term}, there exists $n \in \numset$ such that
+By Lemma~\ref{lemma:sabs-term}, there exists $n \in \numset$ s.t.
 for all $m \geq n$,
 \[
   \sabselem^m = \sabselem^n
