@@ -77,10 +77,16 @@ object CKeyObject extends ObjDomain {
 
     def toJSON(implicit uomap: UIdObjMap): JsValue = resolve(
       if (this(IClass).isBottom) fail
-      else JsObject(
-        "nmap" -> nmap.toJSON,
-        "imap" -> imap.toJSON
-      )
+      else {
+        this(IPrimitiveValue).getSingle match {
+          case ConOne(_) | ConZero =>
+            JsObject(
+              "nmap" -> nmap.toJSON,
+              "imap" -> imap.toJSON
+            )
+          case _ => fail
+        }
+      }
     )
 
     ////////////////////////////////////////////////////////////////
