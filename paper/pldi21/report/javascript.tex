@@ -1,3 +1,9 @@
+\section{Dynamic Shortcuts for JavaScript}\label{sec:javascript}
+In this section, we introduce the core language of JavaScript that supports
+first-class functions, open objects, and first-class property names, and define
+sealed symbolic execution of the core language for dynamic shortcuts.
+
+\subsection{Core Language of JavaScript}
 \begin{figure*}[t]
   \centering
 
@@ -272,3 +278,190 @@
   \caption{The semantics of view transition for the core language of JavaScript}
   \label{fig:core-view-trans}
 \end{figure*}
+
+\[
+  \begin{array}{ll@{~}c@{~}l}
+    \text{Programs} & \prog &::=& (\lab: \inst)^*\\
+
+    \text{Labels} & \lab &\in& \labset\\
+
+    \text{Instructions} & \inst &::=&
+    \refer = \expr \mid
+    \refer = \kwobj \mid
+    \refer = \expr ( \expr ) \mid
+    \kwret \; \expr \mid
+    \kwif \; \expr \; \lab\\
+
+    \text{References} & \refer &::=&
+    x \mid
+    \expr [ \expr ]\\
+
+    \text{Expressions} & \expr &::=&
+    \pval \mid
+    \lambda x. \; \lab \mid
+    \refer \mid
+    \op(\expr^*)\\
+  \end{array}
+\]
+
+A program $\prog$ is a sequence of labeled instructions. An instruction $\inst$
+is an expression assignment, an object creation, a function call, a return
+instruction, or a branch.  A reference $\refer$ is a variable or a property
+access of an object.  An expression $\expr$ is a primitive, a lambda function, a
+reference, or an operation between other expressions.
+
+\[
+  \begin{array}{lr@{~}c@{~}l@{~}c@{~}l}
+    \text{States} & \st &\in& \stset &=& \labset \times \memset \times
+    \ctxtset \times \eaddrset\\
+    \text{Memories} & \mem &\in& \memset &=& \locset \finmap \valset\\
+    \text{Contexts} & \ctxt &\in& \ctxtset &=& \eaddrset \finmap (\eaddrset
+    \times \labset \times \locset)\\
+    \text{Locations} & \loc &\in& \locset &=& (\eaddrset \times \varset) \uplus
+    (\oaddrset \times \strset)\\
+    \text{Values} & \val &\in& \valset &=& \pvalset \uplus \oaddrset \uplus
+    \fvalset\\
+    \text{Primitives} & \pval &\in& \pvalset &=& \strset \uplus \cdots\\
+    \text{Addresses} & \addr &\in& \addrset &=& \eaddrset \uplus \oaddrset\\
+    \text{Functions} & \fval{x}{\lab} &\in& \fvalset &=& \varset \times
+    \labset\\
+  \end{array}
+\]
+
+States $\stset$ consist of labels $\labset$, memories $\memset$, contexts
+$\ctxtset$, and environment addresses $\eaddrset$.  A memory $\mem \in \memset$
+is a finite mapping from locations to values.  A context $\ctxt \in \ctxtset$ is
+a finite mapping from environment addresses to tuple of environment addresses,
+return labels, and left-hand side locations.  A location $\loc \in \locset$ is a
+variable or an object property; a variable location consists of an environment
+address and its name, and an object property location consists of an object
+address and a string value.  A value $\val \in \valset$ is a primitive, an
+address, or a function value.  An address $\addr \in \addrset$ is an environment
+address or an object address.  A function value $\fval{x}{\lab} \in \fvalset$
+consists of a parameter name and a body label.  In the core language, the closed
+scoping is used for functions for brevity, thus only parameters and local
+variables are accessible in a function body.
+
+We formulate the concrete semantics of the core language as described in
+Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
+states is defined with the semantics of references and expressions using two
+different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
+\fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
+$\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
+the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
+environment address.  The function $\labnext$ returns the next label of a
+given label in the current program $\prog$.
+
+\subsection{Abstract Semantics}
+In the abstract semantics of the core language, we use the flow sensitivity with a
+flow sensitive view abstraction $\fsviewmap: \labset \rightarrow \dom$ that
+discriminates states using their labels: $\forall \lab \in \labset. \;
+\fsviewmap(\lab) = \{ \st \in \stset \mid \st = (\lab, \_, \_, \_) \}$. Thus, the
+sensitive abstract domain is defined as $\sabsdom = \labset \rightarrow
+\absdom$.  We define an abstract state $\abselem \in \absdom$ as a tuple of an
+abstract memory, an abstract context, an abstract address, and an
+abstract counter as follows:
+
+\[
+  \begin{array}{l@{~}r@{~}c@{~}l@{~}c@{~}l}
+\text{Abstract states} & \abselem &\in& \absdom &=& \absmemset \times \absctxtset
+\times \absaddrset \times \abscountset\\
+\text{Abstract memories} & \absmem &\in& \absmemset &=& \abslocset \finmap
+\absvalset\\
+\text{Abstract locations} & \absloc &\in& \abslocset &=& (\absaddrset \times
+\varset) \uplus (\absaddrset \times \strset)\\
+\text{Abstract addresses} & \absaddr &\in& \absaddrset &=& \labset\\
+\text{Abstract contexts} & \absctxt &\in& \absctxtset &=& \absaddrset \finmap
+\powerset{\absaddrset \times \viewset \times \powerset{\abslocset}}\\
+\text{Abstract counters} & \abscount &\in& \abscountset &=& \absaddrset
+\rightarrow \{ \abszero, \absone, \absmany \}\\
+\text{Abstract values} & \absval &\in& \absvalset &=& \powerset{\pvalset
+\uplus \absaddrset \uplus \fvalset}\\
+  \end{array}
+\]
+
+An abstract memory $\absmem \in \absmemset$ is a finite mapping from abstract
+locations $\abslocset$ to abstract values $\absvalset$.  Abstract locations
+$\abslocset$ are pairs of abstract addresses with variable names or string
+values. Abstract addresses $\absaddrset$ are defined with the
+\textit{allocation-site abstraction} that partitions concrete addresses
+$\addrset$ based on their allocation sites $\labset$.  Abstract contexts
+$\absctxtset$ are finite maps from abstract addresses to powersets of triples of
+abstract addresses, views, and powerset of abstract locations.  For abstract
+counting~\cite{abstract-gc-counting, revisit-recency} in static analysis, we
+define abstract counters $\abscountset$ that are mappings from abstract addresses to
+their abstract counts representing how many times each abstract address has been
+allocated; $\abszero$ denotes that it has never been allocated, $\absone$ once,
+and $\absmany$ more than or equal to twice.
+
+We define the semantics of the view transition for the core language in
+Figure~\ref{fig:core-view-trans}.  For abstract memories, we use the notation
+$\absmem[L \mapstos \absval]$ to represent the update of multiple abstract
+locations in $L$ with the abstract value $\absval$.  It performs the strong
+update if the abstract address for an abstract location $(\absaddr, \_) \in L$
+is singleton: $\abscount(\absaddr) = \absone$.  Otherwise, it performs the weak
+update for the analysis soundness.  We use the increment function $\inc:
+\abscountset \times \absaddrset \rightarrow \abscountset$ of the abstract
+counter defined as follows:
+\[
+  \inc(\abscount)(\absaddr_0) = \lambda \absaddr \in \absaddrset. \; \left\{
+    \begin{array}{ll}
+      \absone & \text{if} \; \absaddr = \absaddr_0 \wedge
+      \abscount(\absaddr_0) = \abszero\\
+      \absmany & \text{if} \; \absaddr = \absaddr_0 \wedge
+      \abscount(\absaddr_0) = \absone\\
+      \abscount(\absaddr) & \text{otherwise}
+    \end{array}
+  \right.
+\]
+
+
+\subsection{Sealed Symbolic Execution}
+
+We define the sealed symbolic states by not only extending the concrete values
+$\valset$ with symbolic values $\symbset$ but also adding the abstract counters
+$\abscountset$ as follows:
+\[
+  \begin{array}{r@{~}c@{~}l}
+    \symbstset &=& \labset \times \memset \times \ctxtset \times \eaddrset
+    \times \abscountset\\
+    \ctxtset &=& \eaddrset \finmap ((\eaddrset \times \labset \times \locset)
+    \uplus \symbset)\\
+    \valset &=& \pvalset \uplus \oaddrset \uplus \fvalset \uplus \symbset\\
+    \abscountset &=& \oaddrset \rightarrow \{ \abszero, \absone, \absmany \}\\
+  \end{array}
+\]
+Because JavaScript provides open objects, the properties of objects can be dynamically added or deleted.
+Moreover, since object properties are string values that can be constructed at run time,
+it is difficult to perform sound strong updates in static analysis.
+To check the possibility of strong updates during sealed symbolic execution,
+we augment its states with the abstract counters $\abscountset$.
+
+For each abstract value in a given abstract state,
+if the abstract value denotes a single concrete value,
+the converter $\asconverter: (\viewset \times
+\absdom) \rightarrow (\absimapset \times \symbstset)$
+keeps it; otherwise, $\asconverter$ replaces the abstract
+value with its unique identifier and maintains the mapping from the
+unique identifier to the abstract value to construct an abstract instantiation map.
+The opposite converter $\saconverter: (\absimapset \times
+  \symbstset)  \rightarrow (\viewset \times \absdom)$
+recovers abstract values from their unique identifiers using the abstract instantiation map.
+We define the sealed symbolic transition relation $\symbtrans$
+only if the next step does not require actual values of any symbolic values.
+Otherwise, a given sealed symbolic state does not have any sealed symbolic
+transitions to apply.  For example, we add the following rule for the $\kwret$ statement:
+\begin{mathpar}
+  \inferrule
+  {
+    \prog(\lab) = \kwret \; \expr\\
+    \exprrule{\symbst}{\expr}{\val}\\
+    \ctxt(\addr) \in \symbset
+  }
+  {
+    \symbst = (\lab, \mem, \ctxt, \addr, \abscount)\
+    \symbtrans \excst
+  }
+\end{mathpar}
+We extend each rule of the concrete semantics to support such behaviors of symbolic
+values.

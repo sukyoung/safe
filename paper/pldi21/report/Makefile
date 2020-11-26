@@ -12,7 +12,11 @@ all: pdf docclean
 
 pdf:
 	pdflatex $(PACKAGE)
+	- bibtex $(PACKAGE)
 	pdflatex $(PACKAGE)
+	pdflatex $(PACKAGE)
+	while ( grep -q '^LaTeX Warning: Label(s) may have changed' $(PACKAGE).log) \
+	do pdflatex $(PACKAGE); done
 
 %.cls:   %.ins %.dtx
 	pdflatex $<
