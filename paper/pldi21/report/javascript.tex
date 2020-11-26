@@ -2,10 +2,282 @@
 In this section, we introduce the core language of JavaScript that supports
 first-class functions, open objects, and first-class property names, and define
 sealed symbolic execution of the core language for dynamic shortcuts.
-Due to the space limitation, we present the main design of the
-language in this paper and refer the interested readers to a companion report~\cite{report}.
 
 \subsection{Core Language of JavaScript}
+\begin{figure*}[t]
+  \centering
+
+  \fbox{$\st \trans \st$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \expr\\
+      \referrule{\st}{\refer}{\loc}\\
+      \exprrule{\st}{\expr}{\val}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\labnext(\lab), \mem[\loc \mapsto \val], \ctxt, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \kwobj\\
+      \referrule{\st}{\refer}{\loc}\\
+      \addr' = \text{(a fresh object address)}
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\labnext(\lab), \mem[\loc \mapsto \addr'], \ctxt, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \refer = \expr_f ( \expr_a )\\
+      \referrule{\st}{\refer}{\loc}\\
+      \exprrule{\st}{\expr_f}{\fval{x}{\lab_b}}\\
+      \exprrule{\st}{\expr_a}{\val_a}\\
+      \addr' = \text{(a fresh environment address)}
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\lab_b, \mem[(\addr', x) \mapsto \val_a], \ctxt[\addr' \mapsto (\addr,
+      \labnext(\lab), \loc)], \addr')
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwret \; \expr\\
+      \exprrule{\st}{\expr}{\val}\\
+      \ctxt(\addr) = (\addr', \lab', \loc)
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\lab', \mem[\loc \mapsto \val], \ctxt, \addr')
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \exprrule{\st}{\expr}{\kwtrue}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\lab', \mem, \ctxt, \addr)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \exprrule{\st}{\expr}{\kwfalse}\\
+    }
+    {
+      \st = (\lab, \mem, \ctxt, \addr)
+      \trans
+      (\labnext(\lab), \mem, \ctxt, \addr)
+    }
+  \end{mathpar}
+
+  \fbox{$\referrule{\st}{\refer}{\loc}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \referrule{\st = (\lab, \mem, \ctxt, \addr)}{x}{(\addr, x)}\\
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprrule{\st}{\expr_0}{\addr_0}\\
+      \exprrule{\st}{\expr_1}{\val_1}\\
+      \val_1 \in \strset\\
+    }
+    {
+      \referrule{\st = (\lab, \mem, \ctxt, \addr)}{\expr_0 [ \expr_1
+      ]}{(\addr_0, \val_1)}
+    }
+  \end{mathpar}
+
+  \fbox{$\exprrule{\st}{\expr}{\val}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}{\pval}{\pval}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt,
+      \addr)}{\fval{x}{\lab'}}{\fval{x}{\lab'}}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \referrule{\st}{\refer}{\loc}\\
+      \loc \in \Dom(\mem)
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}{\refer}{\mem(\loc)}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprrule{\st}{\expr_1}{\val_1}\\
+      \cdots\\
+      \exprrule{\st}{\expr_n}{\val_n}
+    }
+    {
+      \exprrule{\st = (\lab, \mem, \ctxt, \addr)}
+      {\op(\expr_1, \cdots, \expr_n)}{\op(\val_1, \cdots, \val_n)}
+    }
+  \end{mathpar}
+
+  \caption{The transition relation for the core language of JavaScript}
+  \label{fig:core-trans-rel}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+
+  \fbox{$\viewtrans{\view}{\view'}: \absdom \rightarrow \absdom$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)\\
+      \prog(\lab) = \refer = \expr\\
+      \referabssem{\refer}(\abselem) = L\\
+      \exprabssem{\expr}(\abselem) = \absval
+    }
+    {
+      \viewtrans{\lab}{\labnext(\lab)}(\abselem) =
+      (\absmem[L \mapstos \absval], \absctxt, \absaddr, \abscount)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)\\
+      \prog(\lab) = \refer = \kwobj\\
+      \referabssem{\refer}(\abselem) = L\\
+      \oabsaddr = \lab
+    }
+    {
+      \viewtrans{\lab}{\labnext(\lab)}(\abselem) = (\absmem[L \mapstos \{
+      \oabsaddr \}], \absctxt, \absaddr, \inc(\abscount, \oabsaddr))
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)\\
+      \prog(\lab) = \refer = \expr_f ( \expr_a )\\
+      \referabssem{\refer}(\abselem) = L\\
+      \fval{x}{\lab_b} \in \exprabssem{\expr_f}(\abselem)\\
+      \exprabssem{\expr_a}(\abselem) = \absval_a\\
+      \eabsaddr = \lab_b\\
+      \eabsctxt = \absctxt[\eabsaddr \mapsto \absctxt(\eabsaddr) \cup \{
+      (\absaddr, \labnext(\lab), L) \} ]
+    }
+    {
+      \viewtrans{\lab}{\lab_b}(\abselem) = (\absmem[(\eabsaddr, x) \mapsto
+      \absval_a], \eabsctxt, \eabsaddr, \inc(\abscount, \eabsaddr))
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)\\
+      \prog(\lab) = \kwret \; \expr\\
+      \exprabssem{\expr}(\abselem) = \absval\\
+      (\rabsaddr, \lab', L) \in \absctxt(\absaddr)
+    }
+    {
+      \viewtrans{\lab}{\lab'}(\abselem) = (\absmem[L \mapstos \absval],
+      \absctxt, \rabsaddr, \abscount)
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \kwtrue \in \exprabssem{\expr}(\abselem)
+    }
+    {
+      \viewtrans{\lab}{\lab'}(\abselem) = \abselem
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \prog(\lab) = \kwif \; \expr \; \lab'\\
+      \kwfalse \in \exprabssem{\expr}(\abselem)
+    }
+    {
+      \viewtrans{\lab}{\labnext(\lab)}(\abselem) = \abselem
+    }
+  \end{mathpar}
+
+  \fbox{$\referabssem{\refer}: \absdom \rightarrow \powerset{\abslocset}$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)
+    }
+    {
+      \referabssem{x}(\abselem) = \{ (\absaddr, x) \}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)\\
+      A = \exprabssem{\expr_0}(\abselem) \cap \absaddrset\\
+      S = \exprabssem{\expr_1}(\abselem) \cap \strset\\
+    }
+    {
+      \referabssem{\expr_0 [ \expr_1 ]}(\abselem) = A \times S
+    }
+  \end{mathpar}
+
+  \fbox{$\exprabssem{\expr}: \absdom \rightarrow \absvalset$}
+  \begin{mathpar}
+    \inferrule*[width=0.48\textwidth]
+    {}
+    {
+      \exprabssem{\pval}(\abselem) = \{ \pval \}
+    }
+
+    {}
+    {
+      \exprabssem{\fval{x}{\lab}}(\abselem) = \{ \fval{x}{\lab} \}
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \abselem = (\absmem, \absctxt, \absaddr, \abscount)\\
+      \absval = \bigjoin \{ \absmem(\absloc) \mid \absloc \in
+      \referabssem{\refer}(\abselem) \}
+    }
+    {
+      \exprabssem{\refer}(\abselem) = \absval
+    }
+
+    \inferrule*[width=0.48\textwidth]
+    {
+      \exprabssem{\expr_1}(\abselem) = \absval_1\\
+      \cdots\\
+      \exprabssem{\expr_n}(\abselem) = \absval_n
+    }
+    {
+      \exprabssem{\op(\expr_1, \cdots, \expr_n)}(\abselem) = \ops(\absval_1,
+      \cdots, \absval_n)
+    }
+  \end{mathpar}
+
+  \caption{The semantics of view transition for the core language of JavaScript}
+  \label{fig:core-view-trans}
+\end{figure*}
 
 \[
   \begin{array}{ll@{~}c@{~}l}
@@ -70,12 +342,15 @@ consists of a parameter name and a body label.  In the core language, the closed
 scoping is used for functions for brevity, thus only parameters and local
 variables are accessible in a function body.
 
-We formulate the concrete semantics of the core language.  The transition
-relation between concrete states is defined with the semantics of references and
-expressions using two different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
+We formulate the concrete semantics of the core language as described in
+Figure~\ref{fig:core-trans-rel}.  The transition relation between concrete
+states is defined with the semantics of references and expressions using two
+different forms \fbox{$\referrule{\st}{\refer}{\loc}$} and
 \fbox{$\exprrule{\st}{\expr}{\val}$}, respectively.  The initial states are
 $\istset = \{ (\ilab, \varnothing, \epsilon, \tladdr) \}$ where $\ilab$ denotes
-the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level environment address.
+the initial label, $\epsilon$ empty map, and $\tladdr$ the top-level
+environment address.  The function $\labnext$ returns the next label of a
+given label in the current program $\prog$.
 
 \subsection{Abstract Semantics}
 In the abstract semantics of the core language, we use the flow sensitivity with a
@@ -119,14 +394,15 @@ their abstract counts representing how many times each abstract address has been
 allocated; $\abszero$ denotes that it has never been allocated, $\absone$ once,
 and $\absmany$ more than or equal to twice.
 
-We define the semantics of the view transition for the core language.  For abstract
-memories, we use the notation $\absmem[L \mapstos \absval]$ to represent the
-update of multiple abstract locations in $L$ with the abstract value $\absval$.
-It performs the strong update if the abstract address for an abstract location
-$(\absaddr, \_) \in L$ is singleton: $\abscount(\absaddr) = \absone$.
-Otherwise, it performs the weak update for the analysis soundness.  We use
-the increment function $\inc: \abscountset \times \absaddrset \rightarrow
-\abscountset$ of the abstract counter defined as follows:
+We define the semantics of the view transition for the core language in
+Figure~\ref{fig:core-view-trans}.  For abstract memories, we use the notation
+$\absmem[L \mapstos \absval]$ to represent the update of multiple abstract
+locations in $L$ with the abstract value $\absval$.  It performs the strong
+update if the abstract address for an abstract location $(\absaddr, \_) \in L$
+is singleton: $\abscount(\absaddr) = \absone$.  Otherwise, it performs the weak
+update for the analysis soundness.  We use the increment function $\inc:
+\abscountset \times \absaddrset \rightarrow \abscountset$ of the abstract
+counter defined as follows:
 \[
   \inc(\abscount)(\absaddr_0) = \lambda \absaddr \in \absaddrset. \; \left\{
     \begin{array}{ll}

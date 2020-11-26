@@ -528,7 +528,7 @@ symbolic states $\ttl_i: \diffset_i \rightarrow \numset$ for each iteration $i
   \]
 \end{definition}
 
-Based on the notations, we formally prove the termination property as folows:
+Based on the notations, we formally prove the termination property as follows:
 \begin{theorem}[Termination]\label{theorem:termination}
   The abstract interpretation using the combined domain $\combdom$
   \textbf{terminates} in a finite time if
@@ -681,7 +681,7 @@ Corollary~\ref{corollary:bounded-ttl} and the decrease of their upper bounds
   In that case, $\aelem$ would be preserved after reform step, that is,
   $\aelem \in {\symbelem^{i-1}}'$. Then, by definition of $\symbstep$,
   $\symbaelem \in \symbstep({\symbelem^{i-1}}') \subseteq \symbelem^i$
-  whcih contradicts to the fact that $\symbaelem \in \diffset_i$.
+  which contradicts to the fact that $\symbaelem \in \diffset_i$.
   Therefore, $\aelem \notin \symbelem^{i-1}$, that is,
   $\aelem \in \symbelem^i \setminus \symbelem^{i-1} = \diffset_i$,
   and the right condition for conclusion is satisfied.
@@ -711,8 +711,8 @@ Corollary~\ref{corollary:bounded-ttl} and the decrease of their upper bounds
   $\asconverter(\aelem) = \symbaelem' \in {\symbelem^{i-1}}'$.
   Then, by definition of $\symbstep$,
   $\symbaelem \in \symbstep({\symbelem^{i-1}}') \subseteq \symbelem^i$
-  whcih contradicts to the fact that $\symbaelem \in \diffset_i$.
-  Therefore, only second case holds and the right conclusion in previus lemma is satisfied.
+  which contradicts to the fact that $\symbaelem \in \diffset_i$.
+  Therefore, only second case holds and the right conclusion in previous lemma is satisfied.
 \end{proof}
 
 \begin{lemma}[Property of TTL]\label{lemma:prop-ttl}
@@ -732,7 +732,7 @@ Corollary~\ref{corollary:bounded-ttl} and the decrease of their upper bounds
   \begin{itemize}
   \item If $i = 0$, $\ttl_0(\symbaelem) = N - 1 < N$
   and since only left conclusion of lemma~\ref{lemma:diffset_prop} can hold,
-  there eixsts view $\view$ s.t.
+  there exists view $\view$ s.t.
   $\asconverter(\view, \sabselem^0(\view)) \liftsymbtrans^1 \symbaelem$.
   \item If $i > 0$, we have two cases for $D = 
     \{\symbaelem' \in \diffset_{i-1} \mid \symbaelem' \liftsymbtrans \symbaelem\}$.
@@ -743,7 +743,7 @@ Corollary~\ref{corollary:bounded-ttl} and the decrease of their upper bounds
   \[
     k' = \ttl_{i-1}(\symbaelem') < N
   \]
-  and there eixsts $(\view, \abselem)$ such that
+  and there exists $(\view, \abselem)$ such that
   \[
     \symbaelem'' = \asconverter((\view,\abselem)) \liftsymbtrans^{(N - k')} \symbaelem'.
   \]
