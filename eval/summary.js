@@ -131,14 +131,14 @@ fs.readdirSync(dirname).forEach(name => {
   let safe_fails = readLines(SAFE)
     .filter(l => l.startsWith('FAIL: '))
     .reduce((acc, l) => {
-      return acc.add(+l.toString().split(": ").pop());
+      return acc.add(l.toString().split(": ").pop());
     }, new Set());
   // failed assertion
   if(ds_mode) {
     let ds_jalangi_fails = readLines(DS)
       .filter(l => l.startsWith('FAIL: '))
       .reduce((acc, l) => {
-        return acc.add(+l.toString().split(": ").pop());
+        return acc.add(l.toString().split(": ").pop());
       }, new Set());
     add(safe_fails.union(ds_jalangi_fails).size);
   } else {

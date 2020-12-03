@@ -647,7 +647,7 @@ Function: {
       k += 1;
     }
     // 10. Let items be an internal List whose elements are, in left to right order, the portion of    the actual argument list starting with item1. The list will be empty if no such items are present.
-    items = new Array();
+    var items = new Array();
     for (var i = 0;i < arguments.length - 2;i++) {
       items[i] = arguments[i+2];
     }

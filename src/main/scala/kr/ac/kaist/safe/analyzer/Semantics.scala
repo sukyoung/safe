@@ -1356,7 +1356,7 @@ case class Semantics(
             val obj = st.heap.get(loc)
             (obj("source").value.getSingle, obj("flags").value.getSingle) match {
               case (ConOne(Str(source)), ConOne(Str(flags))) =>
-                AbsBool(true == engine.eval(s"/$source/$flags.test('$arg');"))
+                AbsBool(true == engine.eval(s"/$source/$flags.test(${JsString(arg).toString});"))
               case _ => AbsBool.Top
             }
           case _ => AbsBool.Top
@@ -1389,7 +1389,7 @@ case class Semantics(
                   case Str(str) => str
                   case _ => ???
                 }
-                val script = s"var regex = ${regexStr}; regex.lastIndex = $lastIdx; var ret = regex.exec('$arg'); if(ret) { ret.push(ret.index); ret.push(ret.input); } JSON.stringify(ret);"
+                val script = s"var regex = ${regexStr}; regex.lastIndex = $lastIdx; var ret = regex.exec(${JsString(arg).toString}); if(ret) { ret.push(ret.index); ret.push(ret.input); } JSON.stringify(ret);"
                 val evalRes = engine.eval(script).toString
                 val jsonRes = evalRes.parseJson
                 val (absObj, pval): (AbsObj, AbsPValue) = jsonRes match {
