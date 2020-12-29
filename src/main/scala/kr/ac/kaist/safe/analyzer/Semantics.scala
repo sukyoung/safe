@@ -58,12 +58,12 @@ case class Semantics(
 
   // control point maps to state
   private val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MMap()
-  def getState(block: CFGBlock): Map[TracePartition, AbsState] =
+  def getState(block: CFGBlock): MMap[TracePartition, AbsState] =
     cpToState.getOrElse(block, {
       val newMap = MMap[TracePartition, AbsState]()
       cpToState(block) = newMap
       newMap
-    }).foldLeft(Map[TracePartition, AbsState]())(_ + _)
+    })
   def getState(cp: ControlPoint): AbsState = {
     val block = cp.block
     val tp = cp.tracePartition
