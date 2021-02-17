@@ -18,4 +18,4 @@ echo "Generating function.json ... @ $DS_HOME"
 node $DS_HOME/instrument.js $REV_JS
 
 echo "Generating direct_vanilla.js... @ $DS_HOME"
-node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js
+node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js --json $DS_HOME/function.json --json $DS_HOME/iidToLocation.json --json $DS_HOME/fidToName.json --json $DS_HOME/iidMap.json $DS_HOME/engine.js
