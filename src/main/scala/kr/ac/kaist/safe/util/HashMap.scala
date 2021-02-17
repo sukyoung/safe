@@ -41,10 +41,10 @@ import HashMap.{ HashTrieMap, HashMapCollision1, HashMap1 }
  */
 @SerialVersionUID(2L)
 sealed class HashMap[A, +B] extends AbstractMap[A, B]
-    with Map[A, B]
-    with MapLike[A, B, HashMap[A, B]]
-    with Serializable
-    with CustomParallelizable[(A, B), ParHashMap[A, B]] {
+  with Map[A, B]
+  with MapLike[A, B, HashMap[A, B]]
+  with Serializable
+  with CustomParallelizable[(A, B), ParHashMap[A, B]] {
   import HashMap.{ nullToEmpty, bufferSize }
 
   override def size: Int = 0
@@ -402,7 +402,7 @@ object HashMap extends ImmutableMapFactory[HashMap] {
   }
 
   class HashMapCollision1[A, +B](val hash: Int, val kvs: ListMap[A, B @uV])
-      extends HashMap[A, B @uV] {
+    extends HashMap[A, B @uV] {
     // assert(kvs.size > 1)
 
     override def size = kvs.size
@@ -520,9 +520,9 @@ object HashMap extends ImmutableMapFactory[HashMap] {
 
   @deprecatedInheritance("This class will be made final in a future release.", "2.12.2")
   class HashTrieMap[A, +B](
-      val bitmap: Int,
-      val elems: Array[HashMap[A, B @uV]],
-      val size0: Int
+    val bitmap: Int,
+    val elems: Array[HashMap[A, B @uV]],
+    val size0: Int
   ) extends HashMap[A, B @uV] {
     // assert(Integer.bitCount(bitmap) == elems.length)
     // assert(elems.length > 1 || (elems.length == 1 && elems(0).isInstanceOf[HashTrieMap[_,_]]))
@@ -1160,7 +1160,7 @@ abstract class TrieIterator[+T](elems: Array[Iterable[T]]) extends collection.It
     case x: HashMapCollision1[_, _] => x.kvs.map((x: (Any, Any)) => HashMap(x)).toArray
   }).asInstanceOf[Array[Iterable[T]]]
 
-  private[this]type SplitIterators = ((Iterator[T], Int), Iterator[T])
+  private[this] type SplitIterators = ((Iterator[T], Int), Iterator[T])
 
   private def isTrie(x: AnyRef) = x match {
     case _: HashTrieMap[_, _] => true

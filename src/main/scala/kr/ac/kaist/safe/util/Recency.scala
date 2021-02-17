@@ -17,8 +17,8 @@ import kr.ac.kaist.safe.analyzer.domain.Loc
 // recency abstraction
 ////////////////////////////////////////////////////////////////////////////////
 case class Recency(
-    loc: Loc,
-    recency: RecencyTag
+  loc: Loc,
+  recency: RecencyTag
 ) extends Loc {
   override def toString: String = s"${recency}${loc}"
 }

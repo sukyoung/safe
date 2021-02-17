@@ -402,7 +402,7 @@ class Hoister(program: Program) {
   }
   private class VarBlock(inOuter: LocalBlock) extends LocalBlock(inOuter)
   private class FunBlock(inName: String, inSpan: Span, inParams: List[Id], inOuter: LocalBlock)
-      extends LocalBlock(inOuter) {
+    extends LocalBlock(inOuter) {
     val name: String = inName
     val span: Span = inSpan
     val params: List[Id] = inParams

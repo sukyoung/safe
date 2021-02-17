@@ -14,9 +14,9 @@ package kr.ac.kaist.safe.util
 // Utilities for JavaScript operators.
 // Used by NodeUtil to handle operators in IR nodes.
 sealed abstract class EJSOp(
-    val name: String,
-    val arity: EJSArity,
-    val typ: EJSOpType
+  val name: String,
+  val arity: EJSArity,
+  val typ: EJSOpType
 ) {
   override def toString: String = name
   def trans: EJSOp = this match {

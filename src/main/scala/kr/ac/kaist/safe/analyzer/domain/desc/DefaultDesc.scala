@@ -50,10 +50,10 @@ object DefaultDesc extends DescDomain {
   ): Elem = Elem(value, writable, enumerable, configurable)
 
   case class Elem(
-      value: (AbsValue, AbsAbsent),
-      writable: (AbsBool, AbsAbsent),
-      enumerable: (AbsBool, AbsAbsent),
-      configurable: (AbsBool, AbsAbsent)
+    value: (AbsValue, AbsAbsent),
+    writable: (AbsBool, AbsAbsent),
+    enumerable: (AbsBool, AbsAbsent),
+    configurable: (AbsBool, AbsAbsent)
   ) extends ElemTrait {
     def gamma: ConSet[Desc] = ConInf // TODO more precise
 

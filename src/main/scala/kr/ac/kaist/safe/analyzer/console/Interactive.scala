@@ -112,7 +112,7 @@ trait Interactive {
 }
 
 sealed abstract class CmdResult(
-    val output: String = ""
+  val output: String = ""
 ) {
   override def toString: String = output
 }

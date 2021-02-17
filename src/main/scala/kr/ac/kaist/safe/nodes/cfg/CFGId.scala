@@ -19,17 +19,17 @@ sealed abstract class CFGId(
 )
 
 case class CFGUserId(
-    override val text: String,
-    override val kind: VarKind,
-    originalName: String,
-    fromWith: Boolean
+  override val text: String,
+  override val kind: VarKind,
+  originalName: String,
+  fromWith: Boolean
 ) extends CFGId(text, kind) {
   override def toString: String = NodeUtil.pp(text)
 }
 
 case class CFGTempId(
-    override val text: String,
-    override val kind: VarKind
+  override val text: String,
+  override val kind: VarKind
 ) extends CFGId(text, kind) {
   override def toString: String = NodeUtil.pp(text)
 }

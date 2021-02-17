@@ -29,9 +29,9 @@ object DefaultBinding extends BindingDomain {
   ): Elem = Elem(value, uninit, mutable)
 
   case class Elem(
-      value: AbsValue,
-      uninit: AbsAbsent,
-      mutable: AbsBool
+    value: AbsValue,
+    uninit: AbsAbsent,
+    mutable: AbsBool
   ) extends ElemTrait {
     def gamma: ConSet[Binding] = value.gamma match {
       case ConInf => ConInf

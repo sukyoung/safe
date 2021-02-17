@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 // option abstract domain
 case class OptionDomain[V, VD <: AbsDomain[V]](
-    AbsV: VD
+  AbsV: VD
 ) extends AbsDomain[Option[V]] {
   type AbsV = AbsV.Elem
   type AbsAbsent = AbsAbsent.Elem

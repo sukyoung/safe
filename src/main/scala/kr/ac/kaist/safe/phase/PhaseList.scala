@@ -35,8 +35,8 @@ case object PhaseNil extends PhaseList[Unit] {
 }
 
 case class PhaseCons[P, C <: Config, R](
-    prev: PhaseList[P],
-    phase: PhaseObj[P, C, R]
+  prev: PhaseList[P],
+  phase: PhaseObj[P, C, R]
 ) extends PhaseList[R] {
   def getRunner(
     parser: ArgParser

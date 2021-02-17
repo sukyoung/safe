@@ -15,8 +15,8 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 
 case class ControlPoint(
-    block: CFGBlock,
-    tracePartition: TracePartition
+  block: CFGBlock,
+  tracePartition: TracePartition
 ) {
   def next(
     to: CFGBlock,

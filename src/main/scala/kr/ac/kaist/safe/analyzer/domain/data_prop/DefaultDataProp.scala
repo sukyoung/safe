@@ -52,10 +52,10 @@ object DefaultDataProp extends DataPropDomain {
   }
 
   case class Elem(
-      value: AbsValue,
-      writable: AbsBool,
-      enumerable: AbsBool,
-      configurable: AbsBool
+    value: AbsValue,
+    writable: AbsBool,
+    enumerable: AbsBool,
+    configurable: AbsBool
   ) extends ElemTrait {
     def gamma: ConSet[DataProp] = ConInf // TODO more precise
 

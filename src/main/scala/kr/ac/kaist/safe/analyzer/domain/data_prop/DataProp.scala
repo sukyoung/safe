@@ -13,10 +13,10 @@ package kr.ac.kaist.safe.analyzer.domain
 
 // concrete data property type
 case class DataProp(
-    value: Value,
-    writable: Bool,
-    enumerable: Bool,
-    configurable: Bool
+  value: Value,
+  writable: Bool,
+  enumerable: Bool,
+  configurable: Bool
 ) {
   def +(other: DataProp): DataProp = {
     // can be several option

@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.analyzer.console.Interactive
 import kr.ac.kaist.safe.nodes.cfg._
 
 class Fixpoint(
-    semantics: Semantics,
-    val consoleOpt: Option[Interactive]
+  semantics: Semantics,
+  val consoleOpt: Option[Interactive]
 ) {
   def worklist: Worklist = semantics.worklist
 

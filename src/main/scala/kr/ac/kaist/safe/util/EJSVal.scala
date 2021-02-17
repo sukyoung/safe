@@ -17,22 +17,22 @@ sealed abstract class EJSVal
 
 //  number literal
 case class EJSNumber(
-    text: String,
-    num: Double
+  text: String,
+  num: Double
 ) extends EJSVal {
   override def toString: String = text
 }
 
 // string literal
 case class EJSString(
-    str: String
+  str: String
 ) extends EJSVal {
   override def toString: String = "\"" + NodeUtil.pp(str) + "\""
 }
 
 // true | false
 case class EJSBool(
-    bool: Boolean
+  bool: Boolean
 ) extends EJSVal {
   override def toString: String = bool.toString
 }
