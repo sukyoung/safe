@@ -312,7 +312,7 @@ case class Semantics(
             val newTP = cp.tracePartition
             val exitCP = ControlPoint(func.exit, newTP)
 
-            val dumped = dump.prettyPrint
+            val dumped = dump.compactPrint
             val json = send(dumped)
 
             val fields = json.asJsObject().fields
