@@ -303,8 +303,12 @@ object DefaultContext extends ContextDomain {
     val fields = json.asJsObject.fields
     val mapFields = fields("map").asJsObject.fields
     var merged = prev.context.getMerged ⊔ (prev.context.getLocSet ⊓ locset)
+    val prevMap: Map[Loc, AbsLexEnv] = prev.context match {
+      case CtxMap(prevMap, _, _) => prevMap
+      case _ => Map()
+    }
     CtxMap(
-      mapFields.foldLeft[Map[Loc, AbsLexEnv]](Map())({
+      mapFields.foldLeft[Map[Loc, AbsLexEnv]](prevMap)({
         case (acc, (k, v)) => acc + {
           val loc = Loc.parseString(k, cfg)
           val elems = v.asInstanceOf[JsArray].elements

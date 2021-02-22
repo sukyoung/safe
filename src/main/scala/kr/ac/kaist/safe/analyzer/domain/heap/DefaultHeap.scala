@@ -376,8 +376,12 @@ object DefaultHeap extends HeapDomain {
     val fields = json.asJsObject.fields
     val mapFields = fields("map").asJsObject.fields
     var merged = prev.heap.getMerged ⊔ (prev.heap.getLocSet ⊓ locset)
+    val prevMap: Map[Loc, AbsObj] = prev.heap match {
+      case HeapMap(prevMap, _) => prevMap
+      case _ => Map()
+    }
     HeapMap(
-      mapFields.foldLeft[Map[Loc, AbsObj]](Map())({
+      mapFields.foldLeft[Map[Loc, AbsObj]](prevMap)({
         case (acc, (k, v)) => acc + {
           val loc = Loc.parseString(k, cfg)
           val elems = v.asInstanceOf[JsArray].elements
