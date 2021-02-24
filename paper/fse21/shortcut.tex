@@ -1,12 +1,12 @@
 \section{Dynamic Shortcuts}\label{sec:formal}
 In this section, we formally define static analysis using dynamic shortcuts by
-introducing sealed symbolic execution in the abstract interpretation framework.
+introducing {\sealed} execution in the abstract interpretation framework.
 We extend the formalization of abstract interpretation of \citet{abs-interp-1977,
 abs-interp-1992} and views-based analysis sensitivity of \citet{sens-toplas}.
-For dynamic shortcuts, we define sealed symbolic execution with a
-sealed symbolic domain and abstract instantiation maps.  To combine
-sensitive abstract interpretation and sealed symbolic execution, we define
-a combined domain of sensitive abstract domain and sealed symbolic domain and
+For dynamic shortcuts, we define {\sealed} execution with a
+{\sealed} domain and abstract instantiation maps.  To combine
+sensitive abstract interpretation and {\sealed} execution, we define
+a combined domain of sensitive abstract domain and {\sealed} domain and
 explain it with a simple example. Finally, we prove the soundness and
 termination property of abstract interpretation using the combined domain.
 
@@ -147,20 +147,20 @@ state $[ \lab_0 \mapsto \{ -, 0, + \} ]$, the analysis result is as follows:
 \]
 
 
-\subsection{Sealed Symbolic Execution}
+\subsection{{\SealeD} Execution}
 
-We define \textit{sealed symbolic execution} by extending the transition
-relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
-states.  First, we extend concrete states $\stset$ to symbolic states
-$\symbstset$ by extending values $\valset$ with \textit{sealed symbolic values}
-$\symbset$.  We also define the symbolic transition relation $\symbtrans
+We define \textit{{\sealed} execution} by extending the transition
+relation $\trans$ as a {\sealed} transition relation $\symbtrans$ on {\sealed}
+states.  First, we extend concrete states $\stset$ to {\sealed} states
+$\symbstset$ by extending values $\valset$ with \textit{{\sealed} values}
+$\symbset$.  We also define the {\sealed} transition relation $\symbtrans
 \subseteq \symbstset \times \symbstset$. We use the notation $\symbtrans^k$
 for $k$ repetition of $\symbtrans$, and write $\symbst \symbtrans \excst$ when
-$\symbst$ does not have any symbolic transitions to other sealed symbolic
-states.  We define the validity of sealed symbolic execution as follows:
+$\symbst$ does not have any {\sealed} transitions to other {\sealed}
+states.  We define the validity of {\sealed} execution as follows:
 \begin{definition}[Validity]\label{def:valid-symbtrans}
-  The symbolic transition relation is \textit{valid} when the following
-  condition is satisfied for any sealed symbolic states $\symbst$ and
+  The {\sealed} transition relation is \textit{valid} when the following
+  condition is satisfied for any {\sealed} states $\symbst$ and
   $\symbst'$:
   \[
     \symbst \symbtrans \symbst' \Leftrightarrow
@@ -169,15 +169,15 @@ states.  We define the validity of sealed symbolic execution as follows:
     = \{ \instant{\symbst'}{\imap} \}
   \]
   where $\imapset: \symbset \rightarrow \valset$ represent \textit{instantiation
-  maps} from symbolic values to concrete values, and $\instant{\symbst}{\imap}$
-  denotes a state produced by replacing each symbolic value $\symb$ in
+  maps} from {\sealed} values to concrete values, and $\instant{\symbst}{\imap}$
+  denotes a state produced by replacing each {\sealed} value $\symb$ in
   $\symbst$ with its
   corresponding value $\imap(\symb)$ using the instantiation map $\imap \in
   \imapset$.
 \end{definition}
 
-Sealed symbolic execution is different from traditional
-symbolic execution~\cite{symbolic} in that it supports only sealed symbolic
+{\Sealed} execution is different from traditional
+symbolic execution~\cite{symbolic} in that it supports only {\sealed}
 values instead of symbolic expressions and path constraints.  For example, the
 following trace represents traditional symbolic execution of the running
 example in Figure~\ref{fig:running-example}:
@@ -207,15 +207,15 @@ different path conditions $\symb \geq 0$ and $\symb < 0$ for true and false
 branches, respectively.  After executing statements $\varx = \varx$ and $\varx =
 -\varx$, the variable $\varx$ stores symbolic expressions $\symb$ and $-\symb$
 at $\lab_3$, respectively. Similarly, $\varx$  stores $-\symb$ and $\symb$ at $\lab_4$.
-However, sealed symbolic execution stops at $\lab_0$ as follows:
+However, {\sealed} execution stops at $\lab_0$ as follows:
 \[
   (\lab_0, \symb) \; \symbtrans \; \excst
 \]
-because the branch requires the actual value of the symbolic value $\symb$.
+because the branch requires the actual value of the {\sealed} value $\symb$.
 
-To define an abstract domain that contains sealed symbolic states, we define
+To define an abstract domain that contains {\sealed} states, we define
 \textit{abstract instantiation maps} $\absimapset: \symbset \rightarrow
-\absvalset$ from symbolic values to abstract values.  Its concretization
+\absvalset$ from {\sealed} values to abstract values.  Its concretization
 function $\imapgamma: \absimapset \rightarrow \powerset{\imapset}$ is defined
 with the concretization function $\valgamma: \absvalset \rightarrow
 \powerset{\valset}$ for values as follows:
@@ -225,18 +225,18 @@ with the concretization function $\valgamma: \absvalset \rightarrow
     \imap(\symb) \in \gamma \circ \absimap(\symb)
   \}
 \]
-The instantiation of a given sealed symbolic state $\symbst \in \symbstset$ with
+The instantiation of a given {\sealed} state $\symbst \in \symbstset$ with
 an abstract instantiation map $\absimap \in \absimapset$ is defined as follows:
 \[
   \instant{\symbst}{\absimap} = \{ \instant{\symbst}{\imap} \mid \imap \in
   \imapgamma(\absimap) \}
 \]
-Now, we define a \textit{sealed symbolic domain} as follows:
+Now, we define a \textit{{\sealed} domain} as follows:
 
-\begin{definition}[Sealed Symbolic Domain]\label{def:symbdom}
-  A \textit{sealed symbolic domain} $\symbdom: \powerset{\absimapset \times
+\begin{definition}[{\SealeD} Domain]\label{def:symbdom}
+  A \textit{{\sealed} domain} $\symbdom: \powerset{\absimapset \times
   \symbstset}$ is defined with the concretization function
-  $\symbgamma: \symbdom \rightarrow \dom$ and the sealed symbolic one-step execution
+  $\symbgamma: \symbdom \rightarrow \dom$ and the {\sealed} one-step execution
   $\symbstep: \symbdom \rightarrow \symbdom$ such that
   \begin{align}
     \symbgamma(\symbelem) &=

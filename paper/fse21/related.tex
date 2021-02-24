@@ -17,11 +17,11 @@ freely switch between static analysis and dynamic analysis.  It is
 even impossible to perform both static and dynamic analysis of 
 the same program part in different contexts.  In addition, while they
 introduced \textit{mostly-concrete interpretation} similar to our
-sealed symbolic execution, it supports only a special \textit{unknown}
+{\sealed} execution, it supports only a special \textit{unknown}
 value that represents any possible value.  Thus, it cannot preserve
 the precision of complex abstract domains~\cite{revisit-recency,
   regex, weaklySPE} frequently used in JavaScript static analysis.
-On the contrary, sealed symbolic execution automatically detects when
+On the contrary, {\sealed} execution automatically detects when
 to switch to static analysis to use abstract semantics for abstract values.
 Finally, \concerto\ preserves the soundness when a program satisfies
 the \textit{state separation hypothesis}.  It assumes that the states

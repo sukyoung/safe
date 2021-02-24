@@ -78,9 +78,9 @@ the high performance of dynamic analysis for JavaScript static
 analysis in a sound manner by using \textit{dynamic shortcuts}.
 During static analysis, one can take a dynamic shortcut, which
 consists of three parts: 1) converting the current abstract state to
-its corresponding \textit{sealed symbolic state}, 2) performing
-\textit{sealed symbolic execution} on the sealed symbolic state, and
-3) converting the result of the sealed symbolic execution to its
+its corresponding \textit{{\sealed} state}, 2) performing
+\textit{{\sealed} execution} on the {\sealed} state, and
+3) converting the result of the {\sealed} execution to its
 corresponding abstract state.  Our key observation is that we can use
 the fast concrete execution for specific program parts while
 preserving the soundness if they do not use abstract values.
@@ -96,10 +96,10 @@ the third line assigns the abstract value of \jscode{v} stored in
 Note that even though \jscode{obj} contains an abstract value \jscode{v},
 because the third line does not ``use'' the value of \jscode{v},
 we can concretely execute the code.  Based on this observation,
-we introduce sealed symbolic execution, which is concrete execution
-using \textit{sealed symbolic values}.  A sealed symbolic value is a
-representation of an abstract value in symbolic execution; it signals
-the end of the current dynamic shortcut when the sealed symbolic
+we introduce {\sealed} execution, which is concrete execution
+using \textit{{\sealed} values}.  \inred{A {\sealed} value is a symbol
+that represent an abstract value in {\sealed} execution}; it signals
+the end of the current dynamic shortcut when the {\sealed}
 execution tries to access its value.
 To evaluate our technique, we implemented $\tool$ using both SAFE
 and Jalangi and analyzed 269 official tests of Lodash 4 library.

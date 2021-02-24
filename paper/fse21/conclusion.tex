@@ -3,8 +3,8 @@ We presented a novel technique for JavaScript static analysis using \textit{dyna
 It can significantly accelerate static
 analysis by freely leveraging high performance of dynamic analysis for
 concretely executable program parts.  To maximize such benefits,
-we proposed \textit{sealed symbolic execution}, which performs
-concrete execution using sealed symbolic values for abstract values.
+we proposed \textit{{\sealed} execution}, which performs
+concrete execution using {\sealed} values for abstract values.
 We formally defined static analysis using dynamic shortcuts in the
 abstract interpretation framework and proved its soundness and termination.
 We developed $\tool$ as a prototype implementation of the proposed approach
@@ -12,5 +12,5 @@ by extending a combination of the state-of-the-art static and dynamic
 analyzers SAFE and Jalangi.  Our tool accelerates the speed
 of static analysis 19.96$\x$ for original tests and 6.30$\x$ for
 abstracted tests of Lodash 4 library.  Moreover, it detects 6 more
-dead branches by using sealed symbolic execution instead of
+dead branches by using {\sealed} execution instead of
 manual modeling for 12 opaque functions on average.

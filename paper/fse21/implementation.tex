@@ -8,9 +8,8 @@ URL of the tool is anonymized due to a double-blind review process.}.  In this
 section, we introduce challenges and solutions in implementing dynamic
 shortcuts on existing JavaScript analyzers.
 
-\paragraph{Sealed Values.}
-The main challenge of implementing dynamic shortcuts is to support sealed
-symbolic execution on an existing JavaScript engine.  To represent an abstract
+\paragraph{{\SealeD} Values.}
+The main challenge of implementing dynamic shortcuts is to support {\sealed} execution on an existing JavaScript engine.  To represent an abstract
 value, we use the \jscode{Proxy} object introduced in ECMAScript 6
 (2015, ES6)~\cite{es6}, which allows developers to handle internal behaviors
 of specific objects such as property reads and writes and implicit conversions.
@@ -41,10 +40,10 @@ the actual value of the symbol.  In addition, we instrument unary and binary
 operations in Jalangi so that we can detect all the accesses on the
 symbol beyond the 13 traps provided by \jscode{Proxy}.
 Using this idea, we successfully extended the
-JavaScript engine to support sealed symbolic execution.
+JavaScript engine to support {\sealed} execution.
 
 \paragraph{Synchronization of Control Points.}
-For seamless interaction between static analysis and sealed symbolic execution,
+For seamless interaction between static analysis and {\sealed} execution,
 synchronization of control points in both worlds is necessary.
 The SAFE static analyzer parses a JavaScript program to an Abstract
 Syntax Tree (AST), compiles it to its intermediate representation, and
@@ -52,7 +51,7 @@ builds a Control Flow Graph (CFG).  It produces annotations for
 control points on CFGs including functions, call sites, and object allocation sites.
 On the contrary, the Jalangi dynamic analyzer instruments a JavaScript program 
 to keep track of necessary information at run time.  Therefore, during
-sealed symbolic execution, Jalangi requires the annotations from SAFE to compute
+{\sealed} execution, Jalangi requires the annotations from SAFE to compute
 abstract locations of newly created concrete objects and lexical environments.
 The key to put annotations on the instrumented code is the source-code
 location of the original AST node.  While both CFG of SAFE and
@@ -61,36 +60,36 @@ because they use different parsers we found various location mismatches for corn
 Therefore, we synchronize control points of two analyzers by using the closest match
 of their source-code locations rather than using their exact match.
 
-\paragraph{Function-Level Dynamic Shortcut.}
-The dynamic shortcut is activated when the current abstract state passes the
+\paragraph{\inred{Function-Level Dynamic Shortcut.}}
+\inred{The dynamic shortcut is activated when the current abstract state passes the
 filter $\checker$.  If the filter tolerantly admits the dynamic shortcut, the
 analysis may suffer from the frequent communication between static and dynamic
 analyzers.  To adjust the burden of communication, we only activate new
 dynamic shortcut in function entries and deactivate it in the corresponding
 function exits thus $\tool$ supports only \textit{function-level} dynamic
-shortcut.
+shortcut.}
 
 \paragraph{Termination.}
 To guarantee the termination of static analysis using dynamic shortcuts, the
 converter $\asconverter$ should pass an analysis element $(\view, \abselem)$
 only when it terminates in a time bound $N$.  Since statically checking the
-termination property is a difficult task, we simply perform sealed symbolic
+termination property is a difficult task, we simply perform {\sealed}
 execution with a pre-determined time limit.  When it times out,
 we treat it as a failure in conversion;
-otherwise, we use the result of sealed symbolic execution.  Our experiments used
-5 seconds as the time limit for each sealed symbolic execution.
+otherwise, we use the result of {\sealed} execution.  Our experiments used
+5 seconds as the time limit for each {\sealed} execution.
 
 
 % \paragraph{Communication between Analyzers.}
 % To perform dynamic shortcut, the static analyzer should communicate with the the
 % dynamic analyzer by passing the current abstract state and receiving the final
-% result of the sealed symbolic execution.  However, The static analyzer SAFE and
+% result of the {\sealed} execution.  However, The static analyzer SAFE and
 % the dynamic analyzer Jalangi are implemented in different languages Scala and
 % JavaScript, respectively.  To overcome the difference, we represent abstract
 % states as JSON objects and communicate between analyzers by passing them.  For
 % each dynamic shortcut, Jalangi constructs the execution environments based on
 % the given JSON object and executes the dynamic analysis from the target program
-% points.  After finishing the sealed symbolic execution, it sends a newly
+% points.  After finishing the {\sealed} execution, it sends a newly
 % constructed JSON object to SAFE to update the abstract states in the function
 % exit point.
 
@@ -102,7 +101,7 @@ otherwise, we use the result of sealed symbolic execution.  Our experiments used
 %abstraction~\cite{allocation-site} with heap cloning~\cite{heap-cloning} for
 %each abstract context in the static analyzer.  Thus, we instrument the given
 %JavaScript program to annotate each object created during dynamic analysis with
-%its allocation site and context information.  After the sealed symbolic
+%its allocation site and context information.  After the {\sealed}
 %execution, the dynamic analyzer collects the objects based on their annotated
 %information for each abstract location.
 

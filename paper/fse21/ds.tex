@@ -1,6 +1,6 @@
 \subsection{Combined Domain}
 We now define a \textit{combined domain} of a given sensitive abstract
-domain with the sealed symbolic domain and its one-step execution.
+domain with the {\sealed} domain and its one-step execution.
 \begin{definition}[Combined Domain]
   A \textit{combined domain} is $\combdom = \sabsdom \times \symbdom$ and its
   concretization function $\combgamma: \combdom \rightarrow \dom$ and join
@@ -15,12 +15,12 @@ domain with the sealed symbolic domain and its one-step execution.
 
 Before defining the one-step execution for the combined domain, we introduce
 \textit{analysis elements} to easily configure different types of abstract
-states in the sensitive abstract domain and the sealed symbolic domain.
+states in the sensitive abstract domain and the {\sealed} domain.
 \begin{definition}[Analysis Elements]\label{def:aelem}
   An \textit{analysis element} $\aelem \in \aelemset = (\viewset \times \absdom)
   \uplus (\absimapset \times \symbstset)$ is either 1) a pair of a view and an
   abstract state in a sensitive abstract domain $\sabsdom$, or 2) a pair of an
-  abstract instantiation map and a sealed symbolic state in a sealed symbolic
+  abstract instantiation map and a {\sealed} state in a {\sealed}
   domain $\symbdom$.  Its concretization function $\aelemgamma:
   \aelemset \rightarrow \dom$ is defined as follows:
   \[
@@ -71,7 +71,7 @@ Moreover, to freely convert between different kinds of analysis elements, we def
 While the converter $\saconverter$ is total, the other one $\asconverter$ is
 \textit{partial}. Thus, it is possible to convert an analysis element
 $(\view, \abselem)$ in a sensitive abstract domain to another analysis element in
-a sealed symbolic domain only if the convert $\asconverter$ is defined: $(\view,
+a {\sealed} domain only if the convert $\asconverter$ is defined: $(\view,
 \abselem) \in \Dom(\asconverter)$.  In addition, they should convert given
 analysis elements without loss of information for all $\aelem \in \aelemset$:
 \[
@@ -86,11 +86,10 @@ analysis elements without loss of information for all $\aelem \in \aelemset$:
 Now, we define the \textit{combined one-step execution} $\combstep: \combdom
 \rightarrow \combdom$ with two converters $\asconverter$ and $\saconverter$.
 It consists of two steps: 1) the \textit{\reformname} step converts
-analysis elements if a new sealed symbolic execution starts or an
+analysis elements if a new {\sealed} execution starts or an
 existing one stops, and 2) the \textit{execution} step performs execution of each
 analysis element using the abstract one-step execution $\sabsstep$ in the sensitive
-abstract domain and the sealed symbolic one-step execution $\symbstep$ in the sealed
-symbolic domain.
+abstract domain and the {\sealed} one-step execution $\symbstep$ in the {\sealed} domain.
 \begin{definition}[Combined One-Step Execution]
 A \textit{combined one-step execution} $\combstep: \combdom \rightarrow
 \combdom$ is define as follows:
@@ -101,15 +100,15 @@ where $(\sabselem, \symbelem) = \reform(\combelem)$.
 \end{definition}
 
 From a given combined state $\combelem$, the $\reform$ function makes analysis elements
-and converts them if a new sealed symbolic execution
-begins or an existing sealed symbolic execution terminates.
+and converts them if a new {\sealed} execution
+begins or an existing {\sealed} execution terminates.
 Specifically, for an analysis element $(\view, \abselem)$ in the sensitive abstract domain,
-if the converter $\asconverter$ is defined for it, $\reform$ introduces a new sealed symbolic execution
+if the converter $\asconverter$ is defined for it, $\reform$ introduces a new {\sealed} execution
 by converting the analysis element to its corresponding one $(\absimap, \symbst) =
-\asconverter((\view, \abselem))$ in the sealed symbolic domain.
-On the other hand, for an analysis element $(\absimap, \symbst)$ in the sealed symbolic domain,
-if it does not have any sealed symbolic states to transit to, $\symbst \symbtrans \excst$,
-the sealed symbolic execution for $(\absimap, \symbst)$ terminates;
+\asconverter((\view, \abselem))$ in the {\sealed} domain.
+On the other hand, for an analysis element $(\absimap, \symbst)$ in the {\sealed} domain,
+if it does not have any {\sealed} states to transit to, $\symbst \symbtrans \excst$,
+the {\sealed} execution for $(\absimap, \symbst)$ terminates;
 It converts the analysis element to its corresponding one $(\view, \abselem) =
 \saconverter((\absimap, \symbst))$ in the sensitive abstract domain and
 merges the current abstract state stored in the view $\view$ with $\abselem$.
@@ -166,13 +165,13 @@ $-0$ denotes the set $\{ -, 0 \}$.
 Figure~\ref{fig:ds-examples}(a) presents notations used in each graph. A solid
 box denotes an analysis element that is a pair of a label $\lab$ and an abstract
 state $\abselem$.  A pair enclosed by angle brackets denotes an analysis
-element that is a pair of an abstract instantiation map $\absimap$ and a sealed
-symbolic state $\symbst$.  In fact, the sealed symbolic state part (right) of
+element that is a pair of an abstract instantiation map $\absimap$ and a {\sealed}
+state $\symbst$.  In fact, the {\sealed} state part (right) of
 each pair in graphs contains only the value of the variable of $\varx$ without
 its label.  For brevity, we represent its label by locating it next to
 a node with its label.  A solid line is a view transition
 $\viewtrans{\lab}{\lab'}$ from a label $\lab$ to another one $\lab'$.  A dotted
-line is a sealed symbolic transition $\symbtrans$.  Three solid lines with
+line is a {\sealed} transition $\symbtrans$.  Three solid lines with
 circled labels denote two converters $\saconverter$, $\asconverter$ and the join
 operator $\join$.
 
@@ -180,23 +179,23 @@ Figure~\ref{fig:ds-examples}(b) shows the analysis with the combined domain when
 the initial value of $\varx$ is $0$.  First, in the \reformname step,
 the converter $\asconverter$ converts the analysis element $(\lab_0, 0)$ to
 another analysis element $\langle \varnothing, 0 \rangle$ with the label
-$\lab_0$.  It does not introduce any sealed symbolic values because
+$\lab_0$.  It does not introduce any {\sealed} values because
 the value represents only a single value.  Until the end of the program, the
-sealed symbolic execution from $\langle \varnothing, 0 \rangle$ successfully
-continues.  Because there is no more possible symbolic transition for the
-symbolic state $\langle \varnothing, 0 \rangle$ with the label $\lab_4$,
+{\sealed} execution from $\langle \varnothing, 0 \rangle$ successfully
+continues.  Because there is no more possible {\sealed} transition for the
+{\sealed} state $\langle \varnothing, 0 \rangle$ with the label $\lab_4$,
 it is converted to $(\lab_4, 0)$ via the converter $\saconverter$.
 
 Instead of a single value, assume that the initial value of $\varx$ is one of
 any positive integers.  Figure~\ref{fig:ds-examples}(c) describes the analysis
 flow for the case.  The initial abstract value at the label $\lab_0$ is
-$+$ and it is impossible to convert it to any sealed symbolic values because the
+$+$ and it is impossible to convert it to any {\sealed} values because the
 next program statement requires the actual value stored in the variable $\varx$
 for the branch condition $\varx \geq 0$.  Thus, it performs view transition
 $\viewtrans{\lab_0}{\lab_1}$ from the label $\lab_0$ to another one $\lab_1$ for
 the abstract value $+$ and the result is also $+$.  Now, the analysis element
 $(\lab_1, +)$ can be converted to $\langle \symb \mapsto +, \symb \rangle$
-with the label $\lab_1$.  This sealed symbolic execution step terminates in the
+with the label $\lab_1$.  This {\sealed} execution step terminates in the
 label $\lab_3$ because the next statement is $\varx = -\varx$ and the negation
 operator requires the actual value of $\varx$.  It is converted to $(\lab_3, +)$ via $\saconverter$,
 performs the view transition, and results in $(\lab_4, -)$.
@@ -209,19 +208,19 @@ branch is $\varx = -\varx$, which requires the actual value of $\varx$.
 At the label $\lab_3$, there are two analysis
 elements: 1) $(\lab_3, +)$ introduced by the view transition from the label $\lab_2$
 with $-$, and 2) $\langle \symb \mapsto 0+, \symb \rangle$ with $\lab_3$
-introduced by sealed symbolic execution started at $\lab_1$.  Since it
-is not possible to perform sealed symbolic execution for both elements, the
+introduced by {\sealed} execution started at $\lab_1$.  Since it
+is not possible to perform {\sealed} execution for both elements, the
 second one is converted to $(\lab_3, 0+)$ and merged with $+$ at $\lab_3$ via the
 join operator $\join$.  Finally, the view transition
 $\viewtrans{\lab_3}{\lab_4}$ from $\lab_3$ to $\lab_4$ is performed to the
 merged abstract state $0+$ and the result is $-0$.
 
 \subsection{Soundness and Termination}
-The converter $\asconverter$ and the sealed symbolic transition $\symbtrans$ are
-keys to configure the introduction and termination of sealed symbolic
+The converter $\asconverter$ and the {\sealed} transition $\symbtrans$ are
+keys to configure the introduction and termination of {\sealed}
 execution.  To ensure the \textit{soundness} and \textit{termination} of an
 abstract interpretation defined with a combined domain of a sensitive abstract
-domain and a sealed symbolic domain, the following conditions should hold.
+domain and a {\sealed} domain, the following conditions should hold.
 
 \begin{theorem}[Soundness and Termination]\label{theorem:shortcut}
 An abstract interpretation with dynamic shortcuts is \textbf{sound} and
@@ -229,7 +228,7 @@ An abstract interpretation with dynamic shortcuts is \textbf{sound} and
   \begin{itemize}
     \item the abstract transfer function $\abstransfer$ is sound,
     \item the sensitive abstract domain $\sabsdom$ has a finite height,
-    \item the sealed symbolic transition $\symbtrans$ is valid, and
+    \item the {\sealed} transition $\symbtrans$ is valid, and
     \item there exists $N < \infty$ such that
       \[
         \forall \aelem \in \aelemset. \; \asconverter(\aelem) = (\absimap,
@@ -241,7 +240,7 @@ An abstract interpretation with dynamic shortcuts is \textbf{sound} and
 
 The second and the fourth conditions provide upper bounds of
 the number of sensitive abstract states and
-the number of sealed symbolic states, respectively.
+the number of {\sealed} states, respectively.
 Thus, it guarantees the termination of the analysis.
 
 For soundness proof, we should prove 
@@ -249,7 +248,7 @@ two conditions presented in Section~\ref{sec:ai}:
 (\ref{equ:sound-join}) for the join operator $\join$ and
 (\ref{equ:sound-step}) for the combined one-step execution.
 The core idea of the proof is to use Lemma~\ref{lemma:step-symb} and
-Lemma~\ref{lemma:reform} for the sealed symbolic one-step execution
+Lemma~\ref{lemma:reform} for the {\sealed} one-step execution
 $\symbstep$ and the $\reform$ function, respectively. Due to the page limitation, we omit
 the proof in this paper and present it in a companion report~\cite{report}.
 \begin{lemma}\label{lemma:step-symb}

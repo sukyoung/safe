@@ -1,7 +1,7 @@
 \section{Dynamic Shortcuts for JavaScript}\label{sec:javascript}
 In this section, we introduce the core language of JavaScript that supports
 first-class functions, open objects, and first-class property names, and define
-sealed symbolic execution of the core language for dynamic shortcuts.
+{\sealed} execution of the core language for dynamic shortcuts.
 Due to the space limitation, we present the main design of the
 language in this paper and refer the interested readers to a companion report~\cite{report}.
 
@@ -140,10 +140,10 @@ the increment function $\inc: \abscountset \times \absaddrset \rightarrow
 \]
 
 
-\subsection{Sealed Symbolic Execution}
+\subsection{{\SealeD} Execution}
 
-We define the sealed symbolic states by not only extending the concrete values
-$\valset$ with symbolic values $\symbset$ but also adding the abstract counters
+We define the {\sealed} states by not only extending the concrete values
+$\valset$ with {\sealed} values $\symbset$ but also adding the abstract counters
 $\abscountset$ as follows:
 \[
   \begin{array}{r@{~}c@{~}l}
@@ -158,7 +158,7 @@ $\abscountset$ as follows:
 Because JavaScript provides open objects, the properties of objects can be dynamically added or deleted.
 Moreover, since object properties are string values that can be constructed at run time,
 it is difficult to perform sound strong updates in static analysis.
-To check the possibility of strong updates during sealed symbolic execution,
+To check the possibility of strong updates during {\sealed} execution,
 we augment its states with the abstract counters $\abscountset$.
 
 For each abstract value in a given abstract state,
@@ -171,9 +171,9 @@ unique identifier to the abstract value to construct an abstract instantiation m
 The opposite converter $\saconverter: (\absimapset \times
   \symbstset)  \rightarrow (\viewset \times \absdom)$
 recovers abstract values from their unique identifiers using the abstract instantiation map.
-We define the sealed symbolic transition relation $\symbtrans$
-only if the next step does not require actual values of any symbolic values.
-Otherwise, a given sealed symbolic state does not have any sealed symbolic
+We define the {\sealed} transition relation $\symbtrans$
+only if the next step does not require actual values of any {\sealed} values.
+Otherwise, a given {\sealed} state does not have any {\sealed}
 transitions to apply.  For example, we add the following rule for the $\kwret$ statement:
 \begin{mathpar}
   \inferrule
@@ -187,5 +187,5 @@ transitions to apply.  For example, we add the following rule for the $\kwret$ s
     \symbtrans \excst
   }
 \end{mathpar}
-We extend each rule of the concrete semantics to support such behaviors of symbolic
+We extend each rule of the concrete semantics to support such behaviors of {\sealed} 
 values.

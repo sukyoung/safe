@@ -136,10 +136,10 @@ only for each JavaScript built-in library}
 
 Unlike for the original tests, analysis of \inred{143} abstracted tests invoked
 \inred{16.05} dynamic shortcuts.  Because taking a dynamic shortcut
-requires conversion between abstract states and sealed symbolic values
+requires conversion between abstract states and {\sealed} values
 and their exchanges between the static analyzer and the dynamic analyzer,
 using dynamic shortcuts multiple times may incur more performance
-overhead than performance benefits by using sealed symbolic execution.
+overhead than performance benefits by using {\sealed} execution.
 One conjecture is that the communication cost between the static
 analyzer and the dynamic analyzer may be proportional to the number of
 dynamic shortcuts.

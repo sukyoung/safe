@@ -135,14 +135,14 @@ utilizing the result of dynamic analysis, it improved the analysis performance.
     \label{fig:events}
   \end{subfigure}
   \vspace*{-1em}
-  \caption{Concrete objects with sealed symbolic values}
+  \caption{Concrete objects with {\sealed} values}
   \label{fig:sealed}
   \vspace*{-1em}
 \end{figure}
 
 \paragraph{Dynamic shortcuts with abstract values.}
 Even when a function is called with abstract values, we can still
-perform dynamic analysis using sealed symbolic execution.
+perform dynamic analysis using {\sealed} execution.
 For example, \jscode{getData} in Figure~\ref{fig:example}(c) is invoked
 when a user clicks the ``Load More'' button to load more Zoom events in
 the ``Webinars \& Events'' page.  It sends a POST
@@ -155,7 +155,7 @@ load and 2) the events stored in \jscode{e.events} are dependent on the
 data given from the server.
 
 To perform dynamic analysis with abstract values, we seal abstract values
-with symbolic values as in Figure~\ref{fig:sealed}.  Two symbolic
+with {\sealed} values as in Figure~\ref{fig:sealed}.  Two {\sealed}
 values $\symbevt$ and $\symbint$ represent an event
 object and an integer, respectively.  Then, we can perform dynamic analysis
 successfully until line 9.  On line 2, \jscode{length} is \jscode{2};
@@ -163,10 +163,10 @@ on line 4, \jscode{array} points to \jscode{this.pastEvents};
 on lines 5--8, \jscode{args} stores an array with a single object stored in \jscode{e.events};
 and on line 9, \jscode{isArray(array)} is \jscode{true}.
 However, dynamic analysis fails for \jscode{copyArray(array)} on line 10
-because the value of the \jscode{length} property of \jscode{array} is the symbolic value $\symbint$.
-Then, we stop the sealed symbolic execution, convert the current
-sealed symbolic state to its corresponding abstract state, and resume
-the static analysis from line 10.  Because sealed symbolic execution
+because the value of the \jscode{length} property of \jscode{array} is the {\sealed} value $\symbint$.
+Then, we stop the {\sealed} execution, convert the current
+{\sealed} state to its corresponding abstract state, and resume
+the static analysis from line 10.  Because {\sealed} execution
 leverages fast dynamic analysis as long as possible, the overall
 analysis becomes more scalable.
 
@@ -183,5 +183,5 @@ static analysis of the ternary conditional expression on lines 9--10 analyzes
 both branches \jscode{copyArray(array)} and \jscode{[array]}, even though
 \jscode{[array]} is never reachable in the example code.  On the contrary,
 using dynamic shortcuts, static analysis does not need to model \jscode{isArray}.
-It can perform sealed symbolic execution for \jscode{isArray}, which
+It can perform {\sealed} execution for \jscode{isArray}, which
 returns a more precise result \jscode{true} than $\top_b$.
