@@ -8,7 +8,7 @@ URL of the tool is anonymized due to a double-blind review process.}.  In this
 section, we introduce challenges and solutions in implementing dynamic
 shortcuts on existing JavaScript analyzers.
 
-\paragraph{Sealed Symbolic Values.}
+\paragraph{Sealed Values.}
 The main challenge of implementing dynamic shortcuts is to support sealed
 symbolic execution on an existing JavaScript engine.  To represent an abstract
 value, we use the \jscode{Proxy} object introduced in ECMAScript 6
@@ -61,23 +61,14 @@ because they use different parsers we found various location mismatches for corn
 Therefore, we synchronize control points of two analyzers by using the closest match
 of their source-code locations rather than using their exact match.
 
-\paragraph{Optimizations.}
-To use dynamic shortcuts, the static analyzer should communicate with the
-dynamic analyzer by passing abstract states and receiving results of sealed
-symbolic execution.  When abstract states are massive, sending
-abstract states and receiving sealed symbolic values as they are could
-incur large performance overhead.  Thus, we
-implemented mark-and-sweep garbage collection to remove unreachable
-information in abstract states.  In addition, because abstract values
-themselves are not used in sealed symbolic execution, we make a map
-from unique identifiers to abstract values and replace
-abstract values with their unique identifiers when we convert abstract
-values to sealed symbolic values.  Therefore, the dynamic analyzer
-receives only identifiers of abstract values and wraps them as
-\jscode{Proxy} objects.  After finishing sealed symbolic execution,
-the static analyzer recovers the abstract values in the results of
-sealed symbolic execution by replacing unique identifiers with their
-corresponding abstract values.
+\paragraph{Function-Level Dynamic Shortcut.}
+The dynamic shortcut is activated when the current abstract state passes the
+filter $\checker$.  If the filter tolerantly admits the dynamic shortcut, the
+analysis may suffer from the frequent communication between static and dynamic
+analyzers.  To adjust the burden of communication, we only activate new
+dynamic shortcut in function entries and deactivate it in the corresponding
+function exits thus $\tool$ supports only \textit{function-level} dynamic
+shortcut.
 
 \paragraph{Termination.}
 To guarantee the termination of static analysis using dynamic shortcuts, the
@@ -88,22 +79,6 @@ execution with a pre-determined time limit.  When it times out,
 we treat it as a failure in conversion;
 otherwise, we use the result of sealed symbolic execution.  Our experiments used
 5 seconds as the time limit for each sealed symbolic execution.
-
-
-% \paragraph{Function-Level Dynamic Shortcut.}
-% The dynamic shortcut is activated when the current abstract state passes the
-% filter $\checker$.  If the filter tolerantly admits the dynamic shortcut, the
-% analysis suffers from the frequent communication between static and dynamic
-% analyzers.  To diminish the burden of communication, we only activate new
-% dynamic shortcut in function entries thus $\tool$ supports only
-% \textit{function-level} dynamic shortcut.  Moreover, the filter $\checker$
-% should pass only when the given abstract state terminates in a bound time.
-% Since it is difficult to staticaly check its termination, we just performs the
-% sealed symbolic exeuction with a time limit and we use 5 minutes time
-% limit for experiments.  Thus, a sealed symbolic execution introduced by a
-% function \jscode{f} terminates when it 1) meets the exit of the function
-% \jscode{f}, 2) accesses the inside of sealed symbolic values, or 3) runs over
-% the time limit.
 
 
 % \paragraph{Communication between Analyzers.}
