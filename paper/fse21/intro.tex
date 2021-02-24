@@ -43,12 +43,14 @@ information, they generate imprecise modeling compared with the manual approach.
 \end{figure}
 
 To alleviate these problems, researchers have leveraged
-dynamic analysis during static analysis.  Because dynamic
+dynamic analysis during static analysis.  \inred{Because dynamic
 analyzers such as Jalangi~\cite{jalangi} and DLint~\cite{dlint} run on
-highly-optimized commercial JavaScript engines, they are much faster than
-static analyzers.  Figure~\ref{fig:performance} shows that the dynamic analyzer
+highly-optimized commercial JavaScript engines while static analyzers run on
+their own interpreters, that leads to a great gap in performance.}
+Figure~\ref{fig:performance} shows that the dynamic analyzer
 Jalangi is 34.8x faster than the static analyzer SAFE for a subset of the
-SunSpider benchmark.  Using high performance dynamic analysis, researchers have
+SunSpider benchmark \inred{that is input-independent and deterministic}.
+Using high performance dynamic analysis, researchers have
 reduced the scope of static analysis~\cite{determinacy, blendedJS} and constructed
 initial abstract states~\cite{battles, eha} and automatic modeling of opaque
 code~\cite{sra}.
