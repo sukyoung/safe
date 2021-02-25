@@ -33,7 +33,7 @@ equipped with 4.2GHz Quad-Core Intel Core i7 and 32GB of RAM.
   \caption{Analysis time for Lodash 4 \textit{original} tests without (no-DS)
   and with (DS) dynamic shortcuts within 5 minutes}
   \label{fig:conc-analysis-time}
-  \vspace*{-1.5em}
+\vspace*{-.5em}
 \end{figure}
 
 \begin{figure}[t]
@@ -43,11 +43,12 @@ equipped with 4.2GHz Quad-Core Intel Core i7 and 32GB of RAM.
   \caption{Analysis time for Lodash 4 \textit{abstracted} tests without (no-DS)
   and with (DS) dynamic shortcuts within 5 minutes}
   \label{fig:abs-analysis-time}
-  \vspace*{-1.5em}
+  \vspace*{-.5em}
 \end{figure}
 
-To evaluate the effectiveness of using dynamic shortcuts, we performed static
+We evaluated the effectiveness of dynamic shortcuts by static
 analysis of 269 Lodash 4 tests with and without dynamic shortcuts.
+%
 Figure~\ref{fig:conc-analysis-time} depicts cumulative distribution charts for
 their analysis time and a box plot in a logarithmic scale for speed up after
 applying dynamic shortcuts.  In the upper chart, the $x$-axis is time and the
@@ -85,7 +86,7 @@ but DS finished analysis of 193 tests.  For finished tests, the average analysis
 time is 44.88 seconds for no-DS and 19.05 seconds for DS. Among 158 tests analyzed by no-DS, DS
 timed-out for 2 tests.  For 156 tests analyzable by both analyzers,
 DS outperformed no-DS up to 78.07$\x$ and 7.81$\x$ on average.
-\inred{Except for 9 test cases, using dynamic shortcut did show speed up.}
+Except for 9 test cases, using dynamic shortcuts did show speed-ups.
 
 \begin{figure}[t]
   \centering
@@ -96,11 +97,64 @@ DS outperformed no-DS up to 78.07$\x$ and 7.81$\x$ on average.
   \vspace*{-1.5em}
 \end{figure}
 
+Unlike for the original tests, analysis of 156 abstracted tests invoked
+20.35 dynamic shortcuts.  Because taking a dynamic shortcut
+requires conversion between abstract states and {\sealed} values
+and their exchanges between the static analyzer and the dynamic analyzer,
+using dynamic shortcuts multiple times may incur more performance
+overhead than performance benefits by using {\sealed} execution.
+One conjecture is that the communication cost between the static
+analyzer and the dynamic analyzer may be proportional to the number of
+dynamic shortcuts.
+
+To experimentally evaluate the conjecture, we investigated the relationship between
+the communication cost (Comm. Cost) between analyzers and the number of dynamic shortcuts.
+For 199 original tests, Comm. Cost was only
+1.58\% compared to the analysis time of no-DS.  However, for 156
+abstracted tests, Comm. Cost was 31.06\% compared to the analysis
+time of no-DS.  Figure~\ref{fig:abs-analysis-ratio} presents the
+analysis time ratio for 156 abstracted tests.
+The $x$-axis represents the time ratio normalized by the total analysis time of
+no-DS and the $y$-axis denotes the number of dynamic
+shortcuts and the number of corresponding tests.
+For all 156 tests, Comm. Cost is larger than
+both the static analysis time (Static) and the dynamic analysis
+time (Dynamic).  When dynamic shortcuts are performed less than 10 times,
+Comm. Cost is modest compared with the baseline static
+analysis time.  However, the more dynamic shortcuts are performed,
+the less the performance benefits by using dynamic shortcuts.
+Specifically, when dynamic shortcuts are performed more than 20 times,
+Comm. Cost is even larger than half of cost of no-DS.
+Based on this evaluation result, we believe that we can leverage
+dynamic shortcuts by optimizing Comm. Cost between
+the static analyzer and the dynamic analyzer.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.23\textwidth}
+    \includegraphics[height=3.2cm]{img/conc-precision}
+    \vspace*{-0.7em}
+    \caption{199 \textit{original} tests}
+    \label{fig:conc-precision}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.23\textwidth}
+    \includegraphics[height=3.2cm]{img/abs-precision}
+    \vspace*{-0.7em}
+    \caption{156 \textit{abstracted} tests}
+    \label{fig:abs-precision}
+  \end{subfigure}
+  \vspace*{-1em}
+  \caption{Failed assertions of analysis without (no-DS) and with (DS) dynamic shortcuts}
+  \label{fig:precision}
+  \vspace*{-1.5em}
+\end{figure}
+
+
 \begin{table*}[t]
   \caption{Number of original (orig.) and abstracted (abs.) tests using dynamic shortcuts
 only for each JavaScript built-in library}
   \label{table:func-replace}
-  \vspace*{-1em}
+  \vspace*{-1.5em}
   \centering
   \scriptsize
   \[
@@ -135,58 +189,6 @@ only for each JavaScript built-in library}
   \vspace*{-1em}
 \end{table*}
 
-Unlike for the original tests, analysis of 156 abstracted tests invoked
-20.35 dynamic shortcuts.  Because taking a dynamic shortcut
-requires conversion between abstract states and {\sealed} values
-and their exchanges between the static analyzer and the dynamic analyzer,
-using dynamic shortcuts multiple times may incur more performance
-overhead than performance benefits by using {\sealed} execution.
-One conjecture is that the communication cost between the static
-analyzer and the dynamic analyzer may be proportional to the number of
-dynamic shortcuts.
-
-To experimentally evaluate the conjecture, we investigated the relationship between
-the communication cost between analyzers and the number of dynamic shortcuts.
-For 199 original tests, the communication cost was only
-1.58\% compared to the analysis time of no-DS.  However, for 156
-abstracted tests, the communication cost was 31.06\% compared to the analysis
-time of no-DS.  Figure~\ref{fig:abs-analysis-ratio} presents the
-analysis time ratio for 156 abstracted tests.
-The $x$-axis represents the time ratio normalized by the total analysis time of
-no-DS and the $y$-axis denotes the number of dynamic
-shortcuts and the number of corresponding tests.
-For all 156 tests, the communication cost (Comm. Cost) is larger than
-both the static analysis time (Static) and the dynamic analysis
-time (Dynamic).  When dynamic shortcuts are performed less than 10 times,
-the communication cost is modest compared with the baseline static
-analysis time.  However, the more dynamic shortcuts are performed,
-the less the performance benefits by using dynamic shortcuts.
-Specifically, when dynamic shortcuts are performed more than 20 times,
-Comm. Cost is even larger than half of cost of no-DS.
-Based on this evaluation result, we believe that we can leverage
-dynamic shortcuts by optimizing the communication cost between
-the static analyzer and the dynamic analyzer.
-
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}[t]{0.23\textwidth}
-    \includegraphics[height=3.2cm]{img/conc-precision}
-    \vspace*{-0.7em}
-    \caption{199 \textit{original} tests}
-    \label{fig:conc-precision}
-  \end{subfigure}
-  \begin{subfigure}[t]{0.23\textwidth}
-    \includegraphics[height=3.2cm]{img/abs-precision}
-    \vspace*{-0.7em}
-    \caption{156 \textit{abstracted} tests}
-    \label{fig:abs-precision}
-  \end{subfigure}
-  \vspace*{-1em}
-  \caption{Failed assertions of analysis without (no-DS) and with (DS) dynamic shortcuts}
-  \label{fig:precision}
-  \vspace*{-1.5em}
-\end{figure}
-
 
 
 \subsection{Precision Improvement}
@@ -199,13 +201,14 @@ high (low) number of failed assertions denotes low (high) analysis precision.
 Figure~\ref{fig:precision} depicts the comparison of the analysis
 precision between no-DS and DS.  The $x$-axis and the $y$-axis denote
 the number of failed assertions produced by no-DS and DS, respectively;
-\inred{each circle denotes each test in heatmap form. The darker the circle is, the more tests it indicates.} The top line
+each circle denotes each test in the heatmap form. The darker the circle is, the more tests it indicates.
+The top line
 denotes the y=x line, and the bottom solid line denotes the average improvement.
 For 199 original tests that are analyzable by both analyzers,
-Figure~\ref{fig:conc-precision} shows that dynamic shortcuts
-\inred{completely removed the failed assertions for 24 tests, reducing the nuber of failed assertions by 92.79\% on average}.
+Figure~\ref{fig:precision}(a) shows that dynamic shortcuts
+completely removed the failed assertions for 24 tests, reducing the nuber of failed assertions by 92.79\% on average.
 For 156 abstracted tests that are analyzable by both analyzers,
-Figure~\ref{fig:abs-precision} shows that dynamic shortcuts successfully cut down
+Figure~\ref{fig:precision}(b) shows that dynamic shortcuts successfully cut down
 the number of failed asserions by 12.31\% on average.
 Thus, on average, dynamic shortcuts removed analysis of 92.79\% and 12.31\% failed assertions
 for original and abstracted tests, respectively.

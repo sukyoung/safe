@@ -45,31 +45,30 @@ JavaScript engine to support {\sealed} execution.
 \paragraph{Synchronization of Control Points.}
 For seamless interaction between static analysis and {\sealed} execution,
 synchronization of control points in both sides is necessary.
-\inred{The SAFE and Jalangi have their own notations for control points that are not directly
+The SAFE static analyzer and the Jalangi dynamic analyzer
+have their own notations for control points that are not directly
 compatible.
 We use the source-code location of a target program as a key to synchronize.
 Even though they use different parsers and we faced numerous location mismatches for corner cases,
 we could synchronize control points of two analyzers by using the closest match
-of their source-code locations rather than using exact match of them.}
+of their source-code locations rather than using their exact match.
 
-\paragraph{\inred{Function-Level Dynamic Shortcut.}}
-\inred{The dynamic shortcut is activated when the current abstract state passes the
-filter $\checker$.  If the filter tolerantly admits the dynamic shortcut, the
-analysis may suffer from the frequent communication between static and dynamic
-analyzers.  To adjust the burden of communication, we only activate new
-dynamic shortcut in function entries and deactivate it in the corresponding
-function exits thus $\tool$ supports only \textit{function-level} dynamic
-shortcut.}
+\paragraph{Function-Level Dynamic Shortcut.}
+A dynamic shortcut is activated when the current abstract state passes the
+filter $\checker$.  If the filter admits dynamic shortcuts generously, the
+analysis may suffer from frequent communications between static and dynamic
+analyzers.  To adjust such a burden, $\tool$ supports only \textit{function-level} dynamic
+shortcuts by activating dynamic shortcuts in function entries and deactivating them
+in their corresponding function exits.
 
 \paragraph{Termination.}
 To guarantee the termination of static analysis using dynamic shortcuts, the
 converter $\asconverter$ should pass an analysis element $(\view, \abselem)$
 only when it terminates in a time bound $N$.  Since statically checking the
-termination property is a difficult task, we simply perform {\sealed}
-execution with a pre-determined time limit.  When it times out,
-we treat it as a failure in conversion;
-otherwise, we use the result of {\sealed} execution.  Our experiments used
-5 seconds as the time limit for each {\sealed} execution.
+termination property is difficult, we simply perform {\sealed}
+execution with a pre-determined time limit of 5 secounds.
+When it times out, we treat it as a failure in conversion;
+otherwise, we use the result of {\sealed} execution.
 
 
 % \paragraph{Communication between Analyzers.}
