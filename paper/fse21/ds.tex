@@ -108,10 +108,10 @@ by converting the analysis element to its corresponding one $(\absimap, \symbst)
 \asconverter((\view, \abselem))$ in the {\sealed} domain.
 On the other hand, for an analysis element $(\absimap, \symbst)$ in the {\sealed} domain,
 if it does not have any {\sealed} states to transit to, $\symbst \symbtrans \excst$,
-the {\sealed} execution for $(\absimap, \symbst)$ terminates;
+the {\sealed} execution for $(\absimap, \symbst)$ terminates.
 It converts the analysis element to its corresponding one $(\view, \abselem) =
 \saconverter((\absimap, \symbst))$ in the sensitive abstract domain and
-merges the current abstract state stored in the view $\view$ with $\abselem$.
+merges the current abstract state stored in $\view$ with $\abselem$.
 
 To formally define the $\reform$ function, we first define a $\areform$ function
 for analysis elements using two converters.
@@ -183,7 +183,7 @@ $\lab_0$.  It does not introduce any {\sealed} values because
 the value represents only a single value.  Until the end of the program, the
 {\sealed} execution from $\langle \varnothing, 0 \rangle$ successfully
 continues.  Because there is no more possible {\sealed} transition for the
-{\sealed} state $\langle \varnothing, 0 \rangle$ with the label $\lab_4$,
+{\sealed} state $\langle \varnothing, 0 \rangle$ with $\lab_4$,
 it is converted to $(\lab_4, 0)$ via the converter $\saconverter$.
 
 Instead of a single value, assume that the initial value of $\varx$ is one of

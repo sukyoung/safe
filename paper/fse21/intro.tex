@@ -22,13 +22,13 @@ lsaSPE}, analysis based on property relations~\cite{correlation, weaklyAPLAS,
 weaklySPE, value-partitioning}, and on-demand backward
 analysis~\cite{value-refinement}.
 
-At the same time, various JavaScript host environments require excessive
+At the same time, JavaScript host environments require excessive
 manual modeling of their behaviors for static analysis.  Because built-in functions and
-host-dependent functions are implemented in native language like C and
+host-dependent functions are implemented in native languages like C and
 C++ instead of JavaScript, their code is \textit{opaque} during static
 analysis.  Thus, static analyzers often model their behaviors
 manually, which is error-prone, tedious, and labor-intensive.
-While several researchers have proposed automatic modeling
+While researchers have proposed automatic modeling
 techniques~\cite{safewapi, model-ts}, since they utilize only type
 information, they generate imprecise modeling compared with the manual approach.
 
@@ -43,13 +43,13 @@ information, they generate imprecise modeling compared with the manual approach.
 \end{figure}
 
 To alleviate these problems, researchers have leveraged
-dynamic analysis during static analysis.  \inred{Because dynamic
-analyzers such as Jalangi~\cite{jalangi} and DLint~\cite{dlint} run on
-highly-optimized commercial JavaScript engines while static analyzers run on
-their own interpreters, that leads to a great gap in performance.}
+dynamic analysis during static analysis.  Unlike static analyzers that
+run on their own interpreters, dynamic analyzers such as Jalangi~\cite{jalangi} and DLint~\cite{dlint}
+run on highly-optimized commercial JavaScript engines, which makes them
+much faster than static analyzers.
 Figure~\ref{fig:performance} shows that the dynamic analyzer
 Jalangi is 34.8x faster than the static analyzer SAFE for a subset of the
-SunSpider benchmark \inred{that is input-independent and deterministic}.
+SunSpider benchmark that is input-independent and deterministic.
 Using high performance dynamic analysis, researchers have
 reduced the scope of static analysis~\cite{determinacy, blendedJS} and constructed
 initial abstract states~\cite{battles, eha} and automatic modeling of opaque
@@ -97,11 +97,11 @@ Note that even though \jscode{obj} contains an abstract value \jscode{v},
 because the third line does not ``use'' the value of \jscode{v},
 we can concretely execute the code.  Based on this observation,
 we introduce {\sealed} execution, which is concrete execution
-using \textit{{\sealed} values}.  \inred{A {\sealed} value is a symbol
-that represent an abstract value in {\sealed} execution}; it signals
+using \textit{{\sealed} values}.  A {\sealed} value is a symbol
+that represent an abstract value in {\sealed} execution; it signals
 the end of the current dynamic shortcut when the {\sealed}
 execution tries to access its value.
-To evaluate our technique, we implemented $\tool$ using both SAFE
+To evaluate our technique, we implemented $\tool$ using SAFE
 and Jalangi and analyzed 269 official tests of Lodash 4 library.
 
 The contributions of this paper include the following:

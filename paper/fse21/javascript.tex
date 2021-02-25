@@ -86,7 +86,6 @@ sensitive abstract domain is defined as $\sabsdom = \labset \rightarrow
 \absdom$.  We define an abstract state $\abselem \in \absdom$ as a tuple of an
 abstract memory, an abstract context, an abstract address, and an
 abstract counter as follows:
-
 \[
   \begin{array}{l@{~}r@{~}c@{~}l@{~}c@{~}l}
 \text{Abstract states} & \abselem &\in& \absdom &=& \absmemset \times \absctxtset
@@ -127,6 +126,7 @@ $(\absaddr, \_) \in L$ is singleton: $\abscount(\absaddr) = \absone$.
 Otherwise, it performs the weak update for the analysis soundness.  We use
 the increment function $\inc: \abscountset \times \absaddrset \rightarrow
 \abscountset$ of the abstract counter defined as follows:
+
 \[
   \inc(\abscount)(\absaddr_0) = \lambda \absaddr \in \absaddrset. \; \left\{
     \begin{array}{ll}
@@ -142,9 +142,10 @@ the increment function $\inc: \abscountset \times \absaddrset \rightarrow
 
 \subsection{{\SealeD} Execution}
 
-We define the {\sealed} states by not only extending the concrete values
-$\valset$ with {\sealed} values $\symbset$ but also adding the abstract counters
-$\abscountset$ as follows:
+We define {\sealed} states by not only extending the concrete values
+$\valset$ with {\sealed} values $\symbset$ but also adding the abstract counters~
+$\abscountset$:
+% as follows:
 \[
   \begin{array}{r@{~}c@{~}l}
     \symbstset &=& \labset \times \memset \times \ctxtset \times \eaddrset
@@ -174,7 +175,7 @@ recovers abstract values from their unique identifiers using the abstract instan
 We define the {\sealed} transition relation $\symbtrans$
 only if the next step does not require actual values of any {\sealed} values.
 Otherwise, a given {\sealed} state does not have any {\sealed}
-transitions to apply.  For example, we add the following rule for the $\kwret$ statement:
+transitions to apply.  For example, we add the following rule:
 \begin{mathpar}
   \inferrule
   {
@@ -187,5 +188,5 @@ transitions to apply.  For example, we add the following rule for the $\kwret$ s
     \symbtrans \excst
   }
 \end{mathpar}
-We extend each rule of the concrete semantics to support such behaviors of {\sealed} 
-values.
+for the $\kwret$ statement. We extend each rule of the concrete semantics
+to support such behaviors of {\sealed} values.

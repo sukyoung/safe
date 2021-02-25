@@ -1,3 +1,16 @@
+\begin{figure}[t]
+  \[
+    \begin{array}{r@{~}l@{~}c@{~}l}
+      \labdot{0} & \kwif \; (\; \varx \geq 0 \;) & \labdot{1} & \varx = \varx ;\\
+                 & \kwelse & \labdot{2} & \varx = -\varx ;\\
+      \labdot{3} & \varx = -\varx ; & \labdot{4} \\
+    \end{array}
+  \]
+  \vspace*{-1em}
+  \caption{Negation of the absolute value of $\varx$}
+  \label{fig:running-example}
+\end{figure}
+
 \section{Dynamic Shortcuts}\label{sec:formal}
 In this section, we formally define static analysis using dynamic shortcuts by
 introducing {\sealed} execution in the abstract interpretation framework.
@@ -32,19 +45,6 @@ partial order($\order$) operators.  The set of states $\ielem$ denotes the
 initial states $\istset$.  The \textit{one-step execution} $\step: \dom
 \rightarrow \dom$ transforms states using the transition relation $\trans$:
 $\step(\elem) = \{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
-
-\begin{figure}[t]
-  \[
-    \begin{array}{r@{~}l@{~}c@{~}l}
-      \labdot{0} & \kwif \; (\; \varx \geq 0 \;) & \labdot{1} & \varx = \varx ;\\
-                 & \kwelse & \labdot{2} & \varx = -\varx ;\\
-      \labdot{3} & \varx = -\varx ; & \labdot{4} \\
-    \end{array}
-  \]
-  \vspace*{-1em}
-  \caption{Negation of the absolute value of $\varx$}
-  \label{fig:running-example}
-\end{figure}
 
 For example, the code in Figure~\ref{fig:running-example} is a simple program
 that calculates the negation of the absolute value of the variable $\varx$.

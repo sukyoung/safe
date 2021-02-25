@@ -32,7 +32,7 @@ function changeCountry(G) { ...
   }
 }
     \end{lstlisting}
-    \vspace*{-1em}
+    \vspace*{-1.5em}
     \caption{Call of \jscode{concat} with concrete values}
     \label{fig:changeCountry}
   \end{subfigure}
@@ -50,20 +50,20 @@ function getData(e) {
   })
 }
     \end{lstlisting}
-    \vspace*{-1em}
+    \vspace*{-1.5em}
     \caption{Call of \jscode{concat} with abstract values}
     \label{fig:getData}
   \end{subfigure}
   \vspace*{-1em}
   \caption{Lodash library function and its uses in \code{zoom.us}}
   \label{fig:example}
-  \vspace*{-1em}
+  \vspace*{-1.5em}
 \end{figure}
 
-In this section, we explain the motivation of dynamic shortcuts
-using real-world examples shown in Figure~\ref{fig:example}.
-We first describe their behaviors and then explain how we can utilize
-dynamic shortcuts during their static analysis.
+This section explains the motivation of dynamic shortcuts
+using real-world examples in Figure~\ref{fig:example}.
+We describe their behaviors and explain how we can utilize
+dynamic shortcuts during static analysis.
 
 Figure~\ref{fig:example}(a) shows the \jscode{concat} function defined
 in Lodash library~\cite{lodash} (v4.17.20); it is
@@ -82,7 +82,7 @@ new array on line 11.
 
 Figure~\ref{fig:example}(b) and Figure~\ref{fig:example}(c) show use
 cases of the \jscode{concat} function in the \code{zoom.us}~\cite{zoom} site.
-It is the homepage of Zoom, which is a videotelephony software program developed by Zoom
+It is the homepage of Zoom, a videotelephony software by Zoom
 Video Communications and it is ranked as the 15th popular web site according
 to Alexa\footnote{https://www.alexa.com/siteinfo/zoom.us} in February 2021.
 
@@ -96,14 +96,15 @@ states or provinces on lines 16--17.  However, when the user selects ``United St
 which is \jscode{"US"}, two arguments are pre-defined with
 deterministic values; the first one is an array literal
 \jscode{[["Other", "Other"]]} and the second one is an array of pairs
-of abbreviations and names of the states defined as follows:
+of abbreviations and names of the states defined as follows: \\[-.5em]
 \begin{lstlisting}[style=myJSstyle,numbers=none]
 WebinarBase.questions.state.items =
   [["AL","Alabama"], ..., ["WY", "Wyoming"]]
 \end{lstlisting}
-Moreover, \jscode{this} also has a concrete value, the Lodash top-level object \jscode{\_}.
-Thus, we can perform dynamic analysis by invoking \jscode{concat} with
-\jscode{\_} as its \jscode{this} value and the above concrete values as arguments. 
+\noindent\smallskip
+Moreover, \jscode{this} also has a concrete value, the Lodash top-level object~\jscode{\_}.
+Thus, we can perform dynamic analysis by invoking \jscode{concat} with~\jscode{\_}
+as its \jscode{this} value and the above concrete values as arguments. 
 By skipping the analysis of the function call on lines 17--18 and
 utilizing the result of dynamic analysis, it improved the analysis performance.
 
