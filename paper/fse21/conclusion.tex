@@ -10,7 +10,7 @@ abstract interpretation framework and proved its soundness and termination.
 We developed $\tool$ as a prototype implementation of the proposed approach
 by extending a combination of the state-of-the-art static and dynamic
 analyzers SAFE and Jalangi.  Our tool accelerates the speed
-of static analysis 19.96$\x$ for original tests and 6.30$\x$ for
-abstracted tests of Lodash 4 library.  Moreover, it detects 6 more
-dead branches by using {\sealed} execution instead of
-manual modeling for 12 opaque functions on average.
+of static analysis 22.30$\x$ for original tests and 7.81$\x$ for
+abstracted tests of Lodash 4 library.  Moreover, it reduces the number
+of failed assertions by 12.31\% by using {\sealed} execution instead of
+manual modeling for 22 opaque functions on average.
