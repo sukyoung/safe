@@ -45,12 +45,12 @@ JavaScript engine to support {\sealed} execution.
 \paragraph{Synchronization of Control Points.}
 For seamless interaction between static analysis and {\sealed} execution,
 synchronization of control points in both sides is necessary.
-The SAFE and Jalangi have their own notations for control points that are not directly
+\inred{The SAFE and Jalangi have their own notations for control points that are not directly
 compatible.
 We use the source-code location of a target program as a key to synchronize.
 Even though they use different parsers and we faced numerous location mismatches for corner cases,
 we could synchronize control points of two analyzers by using the closest match
-of their source-code locations rather than using exact match of them.
+of their source-code locations rather than using exact match of them.}
 
 \paragraph{\inred{Function-Level Dynamic Shortcut.}}
 \inred{The dynamic shortcut is activated when the current abstract state passes the
