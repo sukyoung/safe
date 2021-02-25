@@ -44,21 +44,13 @@ JavaScript engine to support {\sealed} execution.
 
 \paragraph{Synchronization of Control Points.}
 For seamless interaction between static analysis and {\sealed} execution,
-synchronization of control points in both worlds is necessary.
-The SAFE static analyzer parses a JavaScript program to an Abstract
-Syntax Tree (AST), compiles it to its intermediate representation, and
-builds a Control Flow Graph (CFG).  It produces annotations for
-control points on CFGs including functions, call sites, and object allocation sites.
-On the contrary, the Jalangi dynamic analyzer instruments a JavaScript program 
-to keep track of necessary information at run time.  Therefore, during
-{\sealed} execution, Jalangi requires the annotations from SAFE to compute
-abstract locations of newly created concrete objects and lexical environments.
-The key to put annotations on the instrumented code is the source-code
-location of the original AST node.  While both CFG of SAFE and
-instrumented code of Jalangi maintain the source-code location information,
-because they use different parsers we found various location mismatches for corner cases.
-Therefore, we synchronize control points of two analyzers by using the closest match
-of their source-code locations rather than using their exact match.
+synchronization of control points in both sides is necessary.
+The SAFE and Jalangi have their own notations for control points that are not directly
+compatible.
+We use the source-code location of a target program as a key to synchronize.
+Even though they use different parsers and we faced numerous location mismatches for corner cases,
+we could synchronize control points of two analyzers by using the closest match
+of their source-code locations rather than using exact match of them.
 
 \paragraph{\inred{Function-Level Dynamic Shortcut.}}
 \inred{The dynamic shortcut is activated when the current abstract state passes the
