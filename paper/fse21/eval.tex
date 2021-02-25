@@ -168,14 +168,20 @@ dynamic shortcuts by optimizing the communication cost between
 the static analyzer and the dynamic analyzer.
 
 \begin{figure}[t]
-  \centering
-  \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/precision}
+  \begin{subfigure}[t]{0.23\textwidth}
+    \includegraphics[width=\linewidth]{img/conc-precision}
     \vspace*{-1.5em}
-    \label{fig:precision-fail}
+    \caption{199 \textit{original} tests}
+    \label{fig:conc-precision}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.23\textwidth}
+    \includegraphics[width=\linewidth]{img/abs-precision}
+    \vspace*{-1.5em}
+    \caption{156 \textit{abstracted} tests}
+    \label{fig:abs-precision}
   \end{subfigure}
   \vspace*{-1em}
-  \caption{Failed assertions of analysis without (no-DS) and with (DS) dynamic shortcuts for 199 \textit{original} tests (left) and 156 \textit{abstracted} tests (right)}
+  \caption{Failed assertions of analysis without (no-DS) and with (DS) dynamic shortcuts}
   \label{fig:precision}
   \vspace*{-1.5em}
 \end{figure}
@@ -195,10 +201,10 @@ the number of failed assertions produced by no-DS and DS, respectively;
 \inred{each circle denotes each test in heatmap form. The darker the circle is, the more tests it indicates.} The top line
 denotes the y=x line, and the bottom solid line denotes the average improvement.
 For 199 original tests that are analyzable by both analyzers,
-Figure~\ref{fig:precision}(left) shows that dynamic shortcuts
+Figure~\ref{fig:conc-precision} shows that dynamic shortcuts
 \inred{completely removed the failed assertions for 24 tests, reducing the nuber of failed assertions by 92.79\% on average}.
 For 156 abstracted tests that are analyzable by both analyzers,
-Figure~\ref{fig:precision}(right) shows that dynamic shortcuts successfully cut down
+Figure~\ref{fig:abs-precision} shows that dynamic shortcuts successfully cut down
 the number of failed asserions by 12.31\% on average.
 Thus, on average, dynamic shortcuts removed analysis of 92.79\% and 12.31\% failed assertions
 for original and abstracted tests, respectively.
