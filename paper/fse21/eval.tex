@@ -109,26 +109,27 @@ only for each JavaScript built-in library}
 
       \myhead{Object}       {Function}        {\# Replaced}
 
-      \mysutf{1}{}          {Array    }  {203 / 203}{ 90 / 116} & \mysutf{1}{}             {String     }  { 20 /  20}{  9 /  10} & \mysutf{1}{}       {Object        }  {263 / 263}{151 / 167} \mylinefff
-      \mysutf{1}{}          {new Array}  {  0 /   0}{  0 /  10} & \mysutf{1}{}             {toString   }  {  0 /   0}{  0 /  33} & \mysutf{1}{}       {new Object    }  {  0 /   0}{  0 /   3} \mylinefff
-      \mysutf{1}{}          {isArray  }  {263 / 263}{144 / 167} & \mysutf{1}{}             {valueOf    }  {  0 /   0}{  0 /  12} & \mysutf{1}{}       {getPrototypeOf}  { 56 /  56}{ 24 /  29} \mylinefff
-      \mysutf{1}{}          {concat   }  {263 / 263}{163 / 167} & \mysutt{1}{}             {charAt     }  {  7 /   7}{  5 /   5} & \mysutf{1}{}       {create        }  {263 / 263}{164 / 167} \mylinefff
-      \mysutf{1}{}          {join     }  {263 / 263}{166 / 167} & \mysutf{1}{}             {charCodeAt }  { 15 /  15}{  3 /   4} & \mysutf{1}{Object} {defineProperty}  {263 / 263}{160 / 167} \mylinefff
-      \mysutf{1}{}          {pop      }  { 25 /  25}{  9 /  13} & \mysutt{1}{}             {indexOf    }  {  2 /   2}{  1 /   1} & \mysbtt{1}{}       {freeze        }  {  1 /   1}{  1 /   1} \mylinefff
-      \mysutf{2}{Array}     {push     }  {263 / 263}{150 / 167} & \mysutf{1}{String}       {match      }  { 25 /  25}{ 11 /  13} & \mysutf{1}{}       {keys          }  {263 / 263}{161 / 167} \mylinefff
-      \mysutt{1}{}          {reverse  }  { 10 /  10}{  3 /   3} & \mysutf{1}{}             {replace    }  { 55 /  55}{ 19 /  26} & \mysutf{1}{}       {toString      }  {263 / 263}{129 / 167} \mylinefff
-      \mysutf{1}{}          {shift    }  {  2 /   2}{  0 /   1} & \mysutf{1}{}             {slice      }  {263 / 263}{165 / 167} & \mysutf{1}{}       {hasOwnProperty}  {263 / 263}{161 / 167} \mylinefft
-      \mysutf{1}{}          {slice    }  {263 / 263}{164 / 167} & \mysutf{1}{}             {split      }  {  5 /   5}{  0 /   1} & \mysutf{1}{}       {parseInt}        {  1 /   1}{  0 /   1} \mylinefff
-      \mysutf{1}{}          {sort     }  { 69 /  69}{ 26 /  28} & \mysutf{1}{}             {substring  }  {214 / 214}{ 91 / 121} & \mysutf{1}{Global} {isNaN   }        { 15 /  15}{  9 /  25} \mylinefff
-      \mysutf{1}{}          {splice   }  { 25 /  25}{  6 /  11} & \mysutf{1}{}             {toLowerCase}  {214 / 214}{ 90 / 121} & \mysbtt{1}{}       {isFinite}        {  3 /   3}{  1 /   1} \mylinefft
-      \mysutt{1}{}          {unshift  }  {  2 /   2}{  1 /   1} & \mysutf{1}{}             {toUpperCase}  { 10 /  10}{  4 /   6} & \mysbtt{1}{}       {RegExp    }      {263 / 263}{167 / 167} \mylineftf
-      \mysutf{1}{}          {indexOf  }  { 94 /  94}{ 22 /  47} & \mysutt{2}{Boolean}      {Boolean}      {  3 /   3}{  2 /   2} & \mysutf{2}{RegExp} {new RegExp}      {  0 /   0}{  0 /   1} \mylinefff
-      \mysutf{1}{}          {every    }  { 92 /  92}{ 23 /  32} & \mysutf{1}{}             {valueOf}      {  0 /   0}{  0 /   6} & \mysbtt{1}{}       {exec      }      {263 / 263}{167 / 167} \mylinettf
-      \mysutt{1}{}          {ceil }      { 36 /  36}{  8 /   8} & \mysutf{2}{Number}       {Number }      {  2 /   2}{  1 /   2} & \mysutf{1}{}       {test      }      {263 / 263}{158 / 167} \mylinefft
-      \mysuff{1}{}          {floor}      { 16 /  17}{  4 /   5} & \mysutf{1}{}             {valueOf}      {  0 /   0}{  0 /  16} & \mysutf{1}{}       {Error         }  {  1 /   1}{  0 /   1} \mylineftf
-      \mysutf{1}{Math}      {max  }      {263 / 263}{134 / 167} & \mysutt{1}{}             {toString}     {263 / 263}{167 / 167} & \mysutf{2}{Error}  {new Error     }  {  0 /   0}{  0 /   8} \mylinefff
-      \mysutf{1}{}          {min  }      { 64 /  64}{ 15 /  48} & \mnsutf{1}{Function}     {apply   }     {263 / 263}{124 / 167} & \mysutf{1}{}       {new RangeError}  {  0 /   0}{  0 /   3} \mylinefff
-      \mysutt{1}{}          {pow  }      { 11 /  11}{  5 /   5} & \mysuff{1}{}             {call    }     {262 / 263}{ 50 / 167} & \mysutf{1}{}       {new TypeError }  {  0 /   0}{  0 /   9}
+      \mysuff{1}{}          {Array    }  {204 / 205}{119 / 141} 	& \mysutf{1}{}             {String     }  { 20 /  20}{ 13 /  14} 	& \mysutf{1}{}       {Object        }  {265 / 265}{181 / 193} \mylinefff
+      \mysutf{1}{}          {new Array}  {  0 /   0}{  0 /   7} 	& \mysutf{1}{}             {toString   }  {  0 /   0}{  0 /  14} 	& \mysutf{1}{}       {getPrototypeOf}  { 56 /  56}{ 34 /  35} \mylinefff
+      \mysuff{1}{}          {isArray  }  {264 / 265}{181 / 193} 	& \mysutf{1}{}             {valueOf    }  {  0 /   0}{  0 /  20} 	& \mysutt{1}{}       {create        }  {265 / 265}{193 / 193} \mylinefff
+      \mysutf{1}{}          {concat   }  {265 / 265}{189 / 193} 	& \mysutt{1}{}             {charAt     }  {  8 /   8}{  6 /   6} 	& \mysutf{2}{Object} {defineProperty}  {265 / 265}{190 / 193} \mylinefff
+      \mysutt{1}{}          {join     }  {265 / 265}{193 / 193} 	& \mysutt{1}{}             {charCodeAt }  { 15 /  15}{  8 /   8} 	& \mysbtt{1}{}       {freeze        }  {  1 /   1}{  1 /   1} \mylinefff
+      \mysutt{1}{}          {pop      }  { 25 /  25}{ 14 /  14} 	& \mysutt{1}{}             {indexOf    }  {  2 /   2}{  1 /   1} 	& \mysutf{1}{}       {keys          }  {265 / 265}{191 / 193} \mylinefff
+      \mysutf{2}{Array}     {push     }  {265 / 265}{186 / 193} 	& \mysutf{2}{String}       {match      }  { 26 /  26}{ 16 /  18} 	& \mysuff{1}{}       {toString      }  {264 / 265}{138 / 193} \mylinefff
+      \mysutt{1}{}          {reverse  }  { 10 /  10}{  6 /   6} 	& \mysutf{1}{}             {replace    }  { 56 /  56}{ 31 /  37} 	& \mysutf{1}{}       {hasOwnProperty}  {265 / 265}{190 / 193} \mylinefft
+      \mysutt{1}{}          {shift    }  {  3 /   3}{  2 /   2} 	& \mysutf{1}{}             {slice      }  {265 / 265}{191 / 193} 	& \mysutt{1}{JSON}   {stringify}       {  1 /   1}{  1 /   1} \mylinefft
+      \mysutt{1}{}          {slice    }  {265 / 265}{193 / 193} 	& \mysutt{1}{}             {split      }  {  5 /   5}{  2 /   2} 	& \mysutf{1}{}       {parseInt}        {  2 /   2}{  1 /   2} \mylinefff
+      \mysutf{1}{}          {sort     }  { 69 /  69}{ 38 /  39} 	& \mysutf{1}{}             {substring  }  {214 / 214}{136 / 145} 	& \mysutf{1}{Global} {isNaN   }        { 15 /  15}{ 11 /  40} \mylinefff
+      \mysutf{1}{}          {splice   }  { 25 /  25}{  9 /  12} 	& \mysutf{1}{}             {toLowerCase}  {215 / 215}{135 / 146} 	& \mysbtt{1}{}       {isFinite}        {  3 /   3}{  1 /   1} \mylinefft
+      \mysutt{1}{}          {unshift  }  {  2 /   2}{  2 /   2} 	& \mysutf{1}{}             {toUpperCase}  { 11 /  11}{  6 /   7} 	& \mysbtt{1}{}       {RegExp    }      {265 / 265}{193 / 193} \mylinefff
+      \mysutf{1}{}          {indexOf  }  { 94 /  94}{ 61 /  66} 	& \mysutt{1}{}             {fromCharCode} {  1 /   1}{  1 /   1}  &	\mysutf{2}{RegExp} {new RegExp}      {  0 /   0}{  0 /   1} \mylineftf
+      \mysutf{1}{}          {every    }  { 92 /  92}{ 43 /  47} 	& \mysuff{1}{Date}         {new Date}     {  0 /   1}{  0 /   1} 	& \mysbtt{1}{}       {exec      }      {265 / 265}{193 / 193} \mylinettf
+      \mysuff{1}{}          {ceil }      { 37 /  38}{ 20 /  21} 	& \mysutt{1}{}             {Number}       {  2 /   2}{  2 /   2} 	& \mysuff{1}{}       {test      }      {264 / 265}{185 / 193} \mylinefft
+      \mysuff{1}{}          {floor}      { 16 /  18}{  8 /  10} 	& \mysutt{1}{Number}       {toFixed}      {  1 /   1}{  0 /   0} 	& \mysutf{1}{}       {Error     }      {  1 /   1}{  0 /   1} \mylinefff
+      \mysuff{2}{Math}      {max  }      {264 / 265}{179 / 193} 	& \mysutf{1}{}             {valueOf}      {  0 /   0}{  0 /  28} 	& \mysutf{1}{Error}  {new RangeError}  {  0 /   0}{  0 /   2} \mylineftf
+      \mysutf{1}{}          {min  }      { 64 /  64}{ 31 /  44} 	& \mysutt{1}{}             {toString}     {265 / 265}{193 / 193} 	& \mysutf{1}{}       {new TypeError }  {  0 /   0}{  0 /   7} \mylinefft
+      \mysutt{1}{}          {pow  }      { 11 /  11}{  6 /   6} 	& \mysuff{1}{Function}     {apply   }     {263 / 265}{133 / 193} 	& \mysutt{2}{Boolean}{Boolean}         {  3 /   3}{  2 /   2} \mylinefff
+      \mysutt{1}{}          {round}      {  2 /   2}{  1 /   1} 	& \mysuff{1}{}             {call    }     {259 / 265}{ 50 / 193} 	& \mysutf{1}{}       {valueof}         {  0 /   0}{  0 /   7}
     \end{array}
   \]
   \vspace*{-1em}
@@ -169,16 +170,10 @@ the static analyzer and the dynamic analyzer.
 \begin{figure}[t]
   \centering
   \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/conc-precision}
+    \includegraphics[width=\linewidth]{img/precision}
     \vspace*{-1.5em}
-    \caption{Reachable branches for \inred{198} \textit{original} tests}
+    \caption{Reachable branches for \inred{198} \textit{original} tests and \inred{143} \textit{abstracted} tests}
     \label{fig:precision-fail}
-  \end{subfigure}
-  \begin{subfigure}[t]{0.48\textwidth}
-    \includegraphics[width=\linewidth]{img/abs-precision}
-    \vspace*{-1.5em}
-    \caption{Reachable branches for \inred{143} \textit{abstracted} tests}
-    \label{fig:precision-branch}
   \end{subfigure}
   \vspace*{-1em}
   \caption{Branch coverage of analysis without (no-DS) and with (DS) dynamic shortcuts}
