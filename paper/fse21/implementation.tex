@@ -66,7 +66,7 @@ To guarantee the termination of static analysis using dynamic shortcuts, the
 converter $\asconverter$ should pass an analysis element $(\view, \abselem)$
 only when it terminates in a time bound $N$.  Since statically checking the
 termination property is difficult, we simply perform {\sealed}
-execution with a pre-determined time limit of 5 secounds.
+execution with a pre-determined time limit of 5 seconds.
 When it times out, we treat it as a failure in conversion;
 otherwise, we use the result of {\sealed} execution.
 
