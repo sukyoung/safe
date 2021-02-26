@@ -17,28 +17,28 @@ We are inspired by \textsc{Mimic}~\cite{mimic}, which used \jscode{Proxy} to
 capture accesses from internals of opaque functions.  When the dynamic analyzer
 constructs an execution environment at the start of a dynamic shortcut, it
 creates \jscode{Proxy} objects to represent abstract values via the
-following \jscode{generateSymbol} function:
+following \jscode{getSealedValue} function:
 \begin{lstlisting}[style=myJSstyle]
-function generateSymbol() {
+function getSealedValue() {
   function detect() { /* access detection */ }
   return new Proxy(function() {}, {
     getPrototypeOf: detect,  ...
     construct     : detect
   }); }
-var x = generateSymbol();
+var x = getSealedValue();
 var y = x;
 var z = x + 1;
 \end{lstlisting}
-The function creates a sealed symbol as a proxy object with a dummy
+The function creates a sealed value as a proxy object with a dummy
 function object and a handler for all 13 traps using an access detection
-function \jscode{detect}.  A sealed symbol invokes the function \jscode{detect}
+function \jscode{detect}.  A sealed value invokes the function \jscode{detect}
 when any of 13 pre-defined traps are operated on the object, which enables us to
 determine whether an object is sealed or not.  For example, the variable
-\jscode{y} successfully points to the same symbol stored in \jscode{x}, but the
+\jscode{y} successfully points to the same sealed stored in \jscode{x}, but the
 program invokes the function \jscode{detect} on line 9 because \jscode{x + 1} requires
-the actual value of the symbol.  In addition, we instrument unary and binary
+the actual value of the sealed value.  In addition, we instrument unary and binary
 operations in Jalangi so that we can detect all the accesses on the
-symbol beyond the 13 traps provided by \jscode{Proxy}.
+sealed value beyond the 13 traps provided by \jscode{Proxy}.
 Using this idea, we successfully extended the
 JavaScript engine to support {\sealed} execution.
 
