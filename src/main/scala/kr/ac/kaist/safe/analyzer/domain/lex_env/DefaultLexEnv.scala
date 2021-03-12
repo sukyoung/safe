@@ -32,9 +32,9 @@ object DefaultLexEnv extends LexEnvDomain {
   ): Elem = Elem(record, outer, nullOuter)
 
   case class Elem(
-    record: AbsEnvRec,
-    outer: LocSet,
-    nullOuter: AbsAbsent
+      record: AbsEnvRec,
+      outer: LocSet,
+      nullOuter: AbsAbsent
   ) extends ElemTrait {
     def gamma: ConSet[LexEnv] = ConInf // TODO more precise
 

@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.LINE_SEP
 
 // comment
 case class Comment(
-  override val info: ASTNodeInfo,
-  txt: String
+    override val info: ASTNodeInfo,
+    txt: String
 ) extends ASTNode {
   def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

@@ -23,8 +23,8 @@ import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.mutable.{ Map => MMap }
 
 case class Semantics(
-  cfg: CFG,
-  worklist: Worklist
+    cfg: CFG,
+    worklist: Worklist
 ) {
   lazy val engine = new ScriptEngineManager().getEngineByMimeType("text/javascript")
   def init: Unit = {

@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.nodes.ast
 
 // label
 case class Label(
-  info: ASTNodeInfo,
-  id: Id
+    info: ASTNodeInfo,
+    id: Id
 ) extends ASTNode {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

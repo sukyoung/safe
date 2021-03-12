@@ -35,11 +35,11 @@ object DefaultPValue extends PValueDomain {
   ): Elem = Elem(undefval, nullval, boolval, numval, strval)
 
   case class Elem(
-    undefval: AbsUndef,
-    nullval: AbsNull,
-    boolval: AbsBool,
-    numval: AbsNum,
-    strval: AbsStr
+      undefval: AbsUndef,
+      nullval: AbsNull,
+      boolval: AbsBool,
+      numval: AbsNum,
+      strval: AbsStr
   ) extends ElemTrait {
     def gamma: ConSet[PValue] = ConInf // TODO more precisely
 

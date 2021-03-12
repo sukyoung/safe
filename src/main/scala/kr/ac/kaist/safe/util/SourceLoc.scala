@@ -15,9 +15,9 @@ import java.io.File
 import java.io.Serializable
 
 case class SourceLoc(
-  line: Int = 0,
-  column: Int = 0,
-  offset: Int = 0
+    line: Int = 0,
+    column: Int = 0,
+    offset: Int = 0
 ) {
   override def toString: String = line + ":" + column
 

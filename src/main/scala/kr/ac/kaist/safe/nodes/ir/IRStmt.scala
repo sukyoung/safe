@@ -30,10 +30,10 @@ abstract class IRAssign(
 // Expression
 // Stmt ::= x = e
 case class IRExprStmt(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  right: IRExpr,
-  ref: Boolean = false
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    right: IRExpr,
+    ref: Boolean = false
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -45,9 +45,9 @@ case class IRExprStmt(
 // Delete expression
 // Stmt ::= x = delete y
 case class IRDelete(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  id: IRId
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    id: IRId
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -59,10 +59,10 @@ case class IRDelete(
 // Delete property expression
 // Stmt ::= x = delete y[e]
 case class IRDeleteProp(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  obj: IRId,
-  index: IRExpr
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    obj: IRId,
+    index: IRExpr
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -75,10 +75,10 @@ case class IRDeleteProp(
 // Object literal
 // Stmt ::= x = { member, ... }
 case class IRObject(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  members: List[IRMember],
-  proto: Option[IRId]
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    members: List[IRMember],
+    proto: Option[IRId]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -93,9 +93,9 @@ case class IRObject(
 // Array literal
 // Stmt ::= x = [ e, ... ]
 case class IRArray(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  elements: List[Option[IRExpr]]
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    elements: List[Option[IRExpr]]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -110,9 +110,9 @@ case class IRArray(
 // Array literal with numbers
 // Stmt ::= x = [ n, ... ]
 case class IRArrayNumber(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  elements: List[Double]
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    elements: List[Double]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -127,9 +127,9 @@ case class IRArrayNumber(
 // Arguments
 // Stmt ::= x = [ e, ... ]
 case class IRArgs(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  elements: List[Option[IRExpr]]
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    elements: List[Option[IRExpr]]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -144,11 +144,11 @@ case class IRArgs(
 // Call
 // Stmt ::= x = f(this, arguments)
 case class IRCall(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  fun: IRId,
-  thisB: IRId,
-  args: IRId
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    fun: IRId,
+    thisB: IRId,
+    args: IRId
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -167,10 +167,10 @@ case class IRCall(
  * iteratorInit, iteratorHasNext, iteratorKey
  */
 case class IRInternalCall(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  name: String,
-  args: List[IRExpr]
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    name: String,
+    args: List[IRExpr]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -185,10 +185,10 @@ case class IRInternalCall(
 // New
 // Stmt ::= x = new f(x, ...)
 case class IRNew(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  fun: IRId,
-  args: List[IRId]
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    fun: IRId,
+    args: List[IRId]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -203,9 +203,9 @@ case class IRNew(
 // Function expression
 // Stmt ::= x = function f (this, arguments) { s }
 case class IRFunExpr(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  fun: IRFunctional
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    fun: IRFunctional
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -218,9 +218,9 @@ case class IRFunExpr(
 // Eval
 // Stmt ::= x = eval(e)
 case class IREval(
-  override val ast: ASTNode,
-  override val lhs: IRId,
-  arg: IRExpr
+    override val ast: ASTNode,
+    override val lhs: IRId,
+    arg: IRExpr
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -232,8 +232,8 @@ case class IREval(
 // AST statement unit
 // Stmt ::= s
 case class IRStmtUnit(
-  override val ast: ASTNode,
-  stmts: List[IRStmt]
+    override val ast: ASTNode,
+    stmts: List[IRStmt]
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = stmts match {
     case List(stmt) => stmt.toString(indent)
@@ -252,10 +252,10 @@ object IRStmtUnit {
 // Store
 // Stmt ::= x[e] = e
 case class IRStore(
-  override val ast: ASTNode,
-  obj: IRId,
-  index: IRExpr,
-  rhs: IRExpr
+    override val ast: ASTNode,
+    obj: IRId,
+    index: IRExpr,
+    rhs: IRExpr
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -268,8 +268,8 @@ case class IRStore(
 // Function declaration
 // Stmt ::= function f (this, arguments) { s }
 case class IRFunDecl(
-  override val ast: ASTNode,
-  ftn: IRFunctional
+    override val ast: ASTNode,
+    ftn: IRFunctional
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -282,8 +282,8 @@ case class IRFunDecl(
 // Break
 // Stmt ::= break label
 case class IRBreak(
-  override val ast: ASTNode,
-  label: IRId
+    override val ast: ASTNode,
+    label: IRId
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -295,8 +295,8 @@ case class IRBreak(
 // Return
 // Stmt ::= return e?
 case class IRReturn(
-  override val ast: ASTNode,
-  expr: Option[IRExpr]
+    override val ast: ASTNode,
+    expr: Option[IRExpr]
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -309,9 +309,9 @@ case class IRReturn(
 // With
 // Stmt ::= with ( x ) s
 case class IRWith(
-  override val ast: ASTNode,
-  id: IRId,
-  stmt: IRStmt
+    override val ast: ASTNode,
+    id: IRId,
+    stmt: IRStmt
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -325,9 +325,9 @@ case class IRWith(
 // Label
 // Stmt ::= l : { s }
 case class IRLabelStmt(
-  override val ast: ASTNode,
-  label: IRId,
-  stmt: IRStmt
+    override val ast: ASTNode,
+    label: IRId,
+    stmt: IRStmt
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -339,9 +339,9 @@ case class IRLabelStmt(
 // Var
 // Stmt ::= var x
 case class IRVarStmt(
-  override val ast: ASTNode,
-  lhs: IRId,
-  fromParam: Boolean
+    override val ast: ASTNode,
+    lhs: IRId,
+    fromParam: Boolean
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -353,8 +353,8 @@ case class IRVarStmt(
 // Throw
 // Stmt ::= throw e
 case class IRThrow(
-  override val ast: ASTNode,
-  expr: IRExpr
+    override val ast: ASTNode,
+    expr: IRExpr
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -366,8 +366,8 @@ case class IRThrow(
 // Sequence
 // Stmt ::= s; ...
 case class IRSeq(
-  override val ast: ASTNode,
-  stmts: List[IRStmt]
+    override val ast: ASTNode,
+    stmts: List[IRStmt]
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -384,10 +384,10 @@ object IRSeq {
 // If
 // Stmt ::= if (e) then s (else s)?
 case class IRIf(
-  override val ast: ASTNode,
-  expr: IRExpr,
-  trueB: IRStmt,
-  falseB: Option[IRStmt]
+    override val ast: ASTNode,
+    expr: IRExpr,
+    trueB: IRStmt,
+    falseB: Option[IRStmt]
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -406,11 +406,11 @@ case class IRIf(
 // While
 // Stmt ::= while (e) s
 case class IRWhile(
-  override val ast: ASTNode,
-  cond: IRExpr,
-  body: IRStmt,
-  breakLabel: IRId,
-  contLabel: IRId
+    override val ast: ASTNode,
+    cond: IRExpr,
+    body: IRStmt,
+    breakLabel: IRId,
+    contLabel: IRId
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -424,11 +424,11 @@ case class IRWhile(
 // Try
 // Stmt ::= try { s } (catch (x) { s })? (finally { s })?
 case class IRTry(
-  override val ast: ASTNode,
-  body: IRStmt,
-  name: Option[IRId],
-  catchB: Option[IRStmt],
-  finallyB: Option[IRStmt]
+    override val ast: ASTNode,
+    body: IRStmt,
+    name: Option[IRId],
+    catchB: Option[IRStmt],
+    finallyB: Option[IRStmt]
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -453,8 +453,8 @@ case class IRTry(
 
 // No operation
 case class IRNoOp(
-  override val ast: ASTNode,
-  desc: String
+    override val ast: ASTNode,
+    desc: String
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = ""
 }

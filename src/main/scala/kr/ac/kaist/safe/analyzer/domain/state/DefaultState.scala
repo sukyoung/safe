@@ -29,9 +29,9 @@ object DefaultState extends StateDomain {
     Elem(heap, context, allocs)
 
   case class Elem(
-    heap: AbsHeap,
-    context: AbsContext,
-    allocs: AllocLocSet
+      heap: AbsHeap,
+      context: AbsContext,
+      allocs: AllocLocSet
   ) extends ElemTrait {
     def gamma: ConSet[State] = ConInf // TODO more precise
 

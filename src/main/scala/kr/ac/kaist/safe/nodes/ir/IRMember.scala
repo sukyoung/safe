@@ -20,9 +20,9 @@ abstract class IRMember(
 
 // Member ::= x : e
 case class IRField(
-  override val ast: ASTNode,
-  prop: IRId,
-  expr: IRExpr
+    override val ast: ASTNode,
+    prop: IRId,
+    expr: IRExpr
 ) extends IRMember(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -37,8 +37,8 @@ case class IRField(
 
 // Member ::= get x () { s }
 case class IRGetProp(
-  override val ast: ASTNode,
-  ftn: IRFunctional
+    override val ast: ASTNode,
+    ftn: IRFunctional
 ) extends IRMember(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -49,8 +49,8 @@ case class IRGetProp(
 
 // Member ::= set x ( y ) { s }
 case class IRSetProp(
-  override val ast: ASTNode,
-  ftn: IRFunctional
+    override val ast: ASTNode,
+    ftn: IRFunctional
 ) extends IRMember(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

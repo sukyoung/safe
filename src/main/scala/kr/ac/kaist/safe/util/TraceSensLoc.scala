@@ -18,8 +18,8 @@ import kr.ac.kaist.safe.analyzer.domain.Loc
 // trace sensitive location
 ////////////////////////////////////////////////////////////////////////////////
 case class TraceSensLoc(
-  loc: Loc,
-  tp: TracePartition
+    loc: Loc,
+    tp: TracePartition
 ) extends Loc {
   override def toString: String = s"${loc}:Sens[${tp}]"
 }

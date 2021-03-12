@@ -30,8 +30,8 @@ object DefaultEnvRec extends EnvRecDomain {
     Elem(envRec, global)
 
   case class Elem(
-    decEnvRec: AbsDecEnvRec,
-    globalEnvRec: AbsGlobalEnvRec
+      decEnvRec: AbsDecEnvRec,
+      globalEnvRec: AbsGlobalEnvRec
   ) extends ElemTrait {
     def gamma: ConSet[EnvRec] = ConInf // TODO more precise
 

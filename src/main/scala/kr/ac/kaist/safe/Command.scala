@@ -27,9 +27,9 @@ sealed trait Command {
 }
 
 class CommandObj[Result](
-  override val name: String,
-  pList: PhaseList[Result],
-  modeMap: Map[String, PhaseList[Result]] = Map[String, PhaseList[Result]]()
+    override val name: String,
+    pList: PhaseList[Result],
+    modeMap: Map[String, PhaseList[Result]] = Map[String, PhaseList[Result]]()
 ) extends Command {
   def apply(
     args: List[String],

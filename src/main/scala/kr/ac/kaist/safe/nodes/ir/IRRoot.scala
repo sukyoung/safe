@@ -17,10 +17,10 @@ import kr.ac.kaist.safe.util.NodeUtil
 
 // IRRoot ::= Statement*
 case class IRRoot(
-  override val ast: ASTNode,
-  fds: List[IRFunDecl],
-  vds: List[IRVarStmt],
-  irs: List[IRStmt]
+    override val ast: ASTNode,
+    fds: List[IRFunDecl],
+    vds: List[IRVarStmt],
+    irs: List[IRStmt]
 ) extends IRNode(ast) {
   override def toString(indent: Int): String = {
     NodeUtil.initNodesPrint

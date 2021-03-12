@@ -18,8 +18,8 @@ import kr.ac.kaist.safe.nodes.cfg.CFGFunction
 import kr.ac.kaist.safe.LINE_SEP
 
 abstract class Command(
-  val name: String,
-  val info: String = ""
+    val name: String,
+    val info: String = ""
 ) {
   private val sb: StringBuilder = new StringBuilder()
 

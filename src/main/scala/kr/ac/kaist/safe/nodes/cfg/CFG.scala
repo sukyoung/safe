@@ -20,8 +20,8 @@ import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
 case class CFG(
-  ir: IRNode,
-  globalVars: List[CFGId]
+    ir: IRNode,
+    globalVars: List[CFGId]
 ) extends CFGNode {
   // cfg id
   val id: Int = CFG.getId

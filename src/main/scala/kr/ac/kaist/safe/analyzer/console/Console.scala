@@ -25,10 +25,10 @@ import org.jline.terminal._
 import scala.collection.JavaConverters._
 
 class Console(
-  override val cfg: CFG,
-  override val sem: Semantics,
-  override val config: HeapBuildConfig,
-  var iter0: Int
+    override val cfg: CFG,
+    override val sem: Semantics,
+    override val config: HeapBuildConfig,
+    var iter0: Int
 ) extends Interactive {
   ////////////////////////////////////////////////////////////////
   // private variables

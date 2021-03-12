@@ -21,9 +21,9 @@ trait Member extends ASTNode {
 
 // Member ::= Property : Expr
 case class Field(
-  info: ASTNodeInfo,
-  prop: Property,
-  expr: Expr
+    info: ASTNodeInfo,
+    prop: Property,
+    expr: Expr
 ) extends Member {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -37,9 +37,9 @@ case class Field(
 
 // Member ::= get Property () { FunctionBody }
 case class GetProp(
-  info: ASTNodeInfo,
-  prop: Property,
-  ftn: Functional
+    info: ASTNodeInfo,
+    prop: Property,
+    ftn: Functional
 ) extends Member {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -62,9 +62,9 @@ case class GetProp(
 
 // Member ::= set Property ( Id ) { Stmt* }
 case class SetProp(
-  info: ASTNodeInfo,
-  prop: Property,
-  ftn: Functional
+    info: ASTNodeInfo,
+    prop: Property,
+    ftn: Functional
 ) extends Member {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

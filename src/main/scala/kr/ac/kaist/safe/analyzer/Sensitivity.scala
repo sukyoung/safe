@@ -97,8 +97,8 @@ case object Insensitive extends Sensitivity {
 // product of analysis sensitivities
 ////////////////////////////////////////////////////////////////////////////////
 case class ProductTP(
-  ltp: TracePartition,
-  rtp: TracePartition
+    ltp: TracePartition,
+    rtp: TracePartition
 ) extends TracePartition {
   def next(
     from: CFGBlock,
@@ -118,8 +118,8 @@ case class ProductTP(
 }
 
 case class ProductSensitivity(
-  lsens: Sensitivity,
-  rsens: Sensitivity
+    lsens: Sensitivity,
+    rsens: Sensitivity
 ) extends Sensitivity {
   val initTP = ProductTP(lsens.initTP, rsens.initTP)
   def isInsensitive: Boolean = lsens.isInsensitive && rsens.isInsensitive
@@ -169,9 +169,9 @@ case class LoopIter(
 )
 
 case class LoopContext(
-  iterList: List[LoopIter],
-  maxIter: Int,
-  maxDepth: Int
+    iterList: List[LoopIter],
+    maxIter: Int,
+    maxDepth: Int
 ) extends TracePartition {
   def next(
     from: CFGBlock,

@@ -17,12 +17,12 @@ import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
 case class CFGFunction(
-  ir: IRNode,
-  argumentsName: String,
-  argVars: List[CFGId],
-  localVars: List[CFGId],
-  name: String,
-  isUser: Boolean
+    ir: IRNode,
+    argumentsName: String,
+    argVars: List[CFGId],
+    localVars: List[CFGId],
+    name: String,
+    isUser: Boolean
 ) extends CFGNode {
   var id: FunctionId = 0 // XXX should be a value but for JS model for a while.
 

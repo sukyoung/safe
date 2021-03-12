@@ -24,10 +24,10 @@ trait IdOrOp extends IdOrOpOrAnonymousName {
 
 // Named identifier
 case class Id(
-  info: ASTNodeInfo,
-  text: String,
-  uniqueName: Option[String] = None,
-  isWith: Boolean
+    info: ASTNodeInfo,
+    text: String,
+    uniqueName: Option[String] = None,
+    isWith: Boolean
 ) extends IdOrOp {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -44,8 +44,8 @@ case class Id(
 
 // Infix/prefix/postfix operator
 case class Op(
-  info: ASTNodeInfo,
-  text: String
+    info: ASTNodeInfo,
+    text: String
 ) extends IdOrOp {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -57,8 +57,8 @@ case class Op(
 
 // Unnamed identifier
 case class AnonymousFnName(
-  info: ASTNodeInfo,
-  text: String
+    info: ASTNodeInfo,
+    text: String
 ) extends IdOrOpOrAnonymousName {
   override def toString(indent: Int): String = ""
 }

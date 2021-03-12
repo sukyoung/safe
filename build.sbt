@@ -1,5 +1,4 @@
-import scalariform.formatter.preferences._
-import scala.sys.process._
+import java.io.File
 
 lazy val checkCopyrights = taskKey[Unit]("Checks copyrights of source files")
 lazy val buildParsers = taskKey[Unit]("Builds parsers")
@@ -18,25 +17,29 @@ lazy val root = (project in file(".")).
     version := "2.0",
     organization := "kr.ac.kaist.safe",
     scalaVersion := "2.12.6",
-    Compile / checkCopyrights := {
+    checkCopyrights in Compile := {
       val violated: String = (baseDirectory.value + "/bin/checkCopyrights.sh" !!)
       if (violated != "") {
         throw new Error("\nFix the copyright(s) of the following:\n" + violated)
       }
     },
-    Compile / buildParsers := {
-      // webix
-      url("http://cdn.webix.com/edge/webix.js") #> file("./src/main/resources/assets/js/webix.js")
-      url("http://cdn.webix.com/edge/webix.css") #> file("./src/main/resources/assets/js/webix.css")
-
+    buildParsers in Compile := {
       // xtc
-      val xtcFile = file("./lib/xtc.jar")
+      val xtcFile = new File("./lib/xtc.jar")
       if (!xtcFile.exists) {
         // TODO exception handling: not downloaded
-        url("http://central.maven.org/maven2/xtc/rats/2.4.0/rats-2.4.0.jar") #> xtcFile
+        IO.download(new URL("https://repo1.maven.org/maven2/xtc/rats/2.4.0/rats-2.4.0.jar"), xtcFile)
       }
 
-      val options = ForkOptions().withBootJars(Vector(xtcFile))
+      // webix
+      val webixJsFile = new File("./src/main/resources/assets/js/webix.js")
+      val webixCssFile = new File("./src/main/resources/assets/css/webix.css")
+      if (!webixJsFile.exists)
+        IO.download(new URL("http://cdn.webix.com/edge/webix.js"), webixJsFile)
+      if (!webixCssFile.exists)
+        IO.download(new URL("http://cdn.webix.com/edge/webix.css"), webixCssFile)
+
+      val options = ForkOptions(bootJars = Seq(xtcFile))
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
       val outDir = srcDir + "/java/kr/ac/kaist/safe/parser/"
@@ -55,26 +58,24 @@ lazy val root = (project in file(".")).
       }
       cache(file(inDir).asFile.listFiles.toSet)
     },
-    Test / testOptions += Tests.Argument("-fDG", baseDirectory.value + "/tests/detail"),
-    Compile / compile := {
-      (Compile / compile) dependsOn (Compile / buildParsers, Compile / checkCopyrights)
-    }.value,
-    test := (Test / testOnly).toTask(
+    testOptions in Test += Tests.Argument("-fDG", baseDirectory.value + "/tests/detail"),
+    compile <<= (compile in Compile) dependsOn (buildParsers in Compile, checkCopyrights in Compile),
+    test <<= (testOnly in Test).toTask(
       " kr.ac.kaist.safe.CFGBuildTest" +
       " kr.ac.kaist.safe.BasicAnalyzeTest" +
-      " kr.ac.kaist.safe.HTMLAnalyzeTest").value,
-    basicAnalyzeTest := (Test / testOnly).toTask(" kr.ac.kaist.safe.BasicAnalyzeTest").value,
-    benchTest := (Test / testOnly).toTask(" kr.ac.kaist.safe.BenchAnalyzeTest").value,
-    cfgBuildTest := (Test / testOnly).toTask(" kr.ac.kaist.safe.CFGBuildTest").value,
-    htmlTest := (Test / testOnly).toTask(" kr.ac.kaist.safe.HTMLAnalyzeTest").value,
-    test262Test := (Test / testOnly).toTask(" kr.ac.kaist.safe.Test262AnalyzeTest").value
+      " kr.ac.kaist.safe.HTMLAnalyzeTest") dependsOn compile,
+    basicAnalyzeTest <<= (testOnly in Test).toTask(s" kr.ac.kaist.safe.BasicAnalyzeTest") dependsOn compile,
+    benchTest <<= (testOnly in Test).toTask(s" kr.ac.kaist.safe.BenchAnalyzeTest") dependsOn compile,
+    cfgBuildTest <<= (testOnly in Test).toTask(s" kr.ac.kaist.safe.CFGBuildTest") dependsOn compile,
+    htmlTest <<= (testOnly in Test).toTask(s" kr.ac.kaist.safe.HTMLAnalyzeTest") dependsOn compile,
+    test262Test <<= (testOnly in Test).toTask(s" kr.ac.kaist.safe.Test262AnalyzeTest") dependsOn compile
   )
 
-ThisBuild / scalacOptions ++= Seq("-deprecation", "-feature",
+scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
                                    "-language:postfixOps",
                                    "-language:implicitConversions")
 
-Compile / unmanagedJars ++= Seq(file("lib/xtc.jar"), file("lib/jericho-html-3.3.jar"))
+unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jericho-html-3.3.jar"))
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
@@ -91,7 +92,3 @@ libraryDependencies ++= Seq(
 javacOptions ++= Seq("-encoding", "UTF-8")
 
 retrieveManaged := true
-
-scalariformPreferences := scalariformPreferences.value
-  .setPreference(DanglingCloseParenthesis, Force)
-  .setPreference(DoubleIndentConstructorArguments, false)

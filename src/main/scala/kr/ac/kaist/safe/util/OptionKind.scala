@@ -21,7 +21,7 @@ sealed abstract class OptionKind[PhaseConfig <: Config] {
 }
 
 case class BoolOption[PhaseConfig <: Config](
-  assign: PhaseConfig => Unit
+    assign: PhaseConfig => Unit
 ) extends OptionKind[PhaseConfig] {
   def argRegexList(name: String): List[ArgRegex[PhaseConfig]] = List(
     (("-" + name).r, "".r, (c, _) => Success(assign(c))),
@@ -31,7 +31,7 @@ case class BoolOption[PhaseConfig <: Config](
 }
 
 case class NumOption[PhaseConfig <: Config](
-  assign: (PhaseConfig, Int) => Unit
+    assign: (PhaseConfig, Int) => Unit
 ) extends OptionKind[PhaseConfig] {
   def argRegexList(name: String): List[ArgRegex[PhaseConfig]] = List(
     (("-" + name + "=").r, "[0-9]+".r, (c, s) => Success(assign(c, s.toInt))),
@@ -42,7 +42,7 @@ case class NumOption[PhaseConfig <: Config](
 }
 
 case class StrOption[PhaseConfig <: Config](
-  assign: (PhaseConfig, String) => Unit
+    assign: (PhaseConfig, String) => Unit
 ) extends OptionKind[PhaseConfig] {
   def argRegexList(name: String): List[ArgRegex[PhaseConfig]] = List(
     (("-" + name + "=").r, ".+".r, (c, s) => Success(assign(c, s))),
@@ -53,7 +53,7 @@ case class StrOption[PhaseConfig <: Config](
 }
 
 case class ListOption[PhaseConfig <: Config](
-  assign: (PhaseConfig, List[String]) => Unit
+    assign: (PhaseConfig, List[String]) => Unit
 ) extends OptionKind[PhaseConfig] {
   def argRegexList(name: String): List[ArgRegex[PhaseConfig]] = List(
     (("-" + name + "=").r, "[[^,]+,]+".r, (c, s) => Success(assign(c, s.split(",").toList))),

@@ -16,9 +16,9 @@ import kr.ac.kaist.safe.LINE_SEP
 
 // Program ::= Stmt*
 case class Stmts(
-  info: ASTNodeInfo,
-  body: List[Stmt],
-  strict: Boolean
+    info: ASTNodeInfo,
+    body: List[Stmt],
+    strict: Boolean
 ) extends ASTNode {
   override def toString(indent: Int): String = ""
 }
@@ -34,8 +34,8 @@ trait Stmt extends ASTNode {
  * Do not appear in the JavaScript source text
  */
 case class NoOp(
-  info: ASTNodeInfo,
-  desc: String
+    info: ASTNodeInfo,
+    desc: String
 ) extends Stmt {
   override def toString(indent: Int): String = ""
 }
@@ -45,8 +45,8 @@ case class NoOp(
  * Do not appear in the JavaScript source text
  */
 case class StmtUnit(
-  info: ASTNodeInfo,
-  stmts: List[Stmt]
+    info: ASTNodeInfo,
+    stmts: List[Stmt]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -68,9 +68,9 @@ case class StmtUnit(
 
 // Stmt ::= function Id ( (Id,)* ) { Stmt* }
 case class FunDecl(
-  info: ASTNodeInfo,
-  ftn: Functional,
-  strict: Boolean
+    info: ASTNodeInfo,
+    ftn: Functional,
+    strict: Boolean
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -83,9 +83,9 @@ case class FunDecl(
 
 // Stmt ::= { Stmt* }
 case class ABlock(
-  info: ASTNodeInfo,
-  stmts: List[Stmt],
-  internal: Boolean
+    info: ASTNodeInfo,
+    stmts: List[Stmt],
+    internal: Boolean
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -109,8 +109,8 @@ case class ABlock(
 
 // Stmt ::= var VarDecl(, VarDecl)* ;
 case class VarStmt(
-  info: ASTNodeInfo,
-  vds: List[VarDecl]
+    info: ASTNodeInfo,
+    vds: List[VarDecl]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -128,10 +128,10 @@ case class VarStmt(
 
 // Stmt ::= Id (= Expr)?
 case class VarDecl(
-  info: ASTNodeInfo,
-  name: Id,
-  expr: Option[Expr],
-  strict: Boolean
+    info: ASTNodeInfo,
+    name: Id,
+    expr: Option[Expr],
+    strict: Boolean
 ) extends ASTNode {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -144,7 +144,7 @@ case class VarDecl(
 
 // Stmt ::= ;
 case class EmptyStmt(
-  info: ASTNodeInfo
+    info: ASTNodeInfo
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -156,9 +156,9 @@ case class EmptyStmt(
 
 // Stmt ::= Expr ;
 case class ExprStmt(
-  info: ASTNodeInfo,
-  expr: Expr,
-  internal: Boolean
+    info: ASTNodeInfo,
+    expr: Expr,
+    internal: Boolean
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -170,10 +170,10 @@ case class ExprStmt(
 
 // Stmt ::= if ( Expr ) Stmt (else Stmt)?
 case class If(
-  info: ASTNodeInfo,
-  cond: Expr,
-  trueBranch: Stmt,
-  falseBranch: Option[Stmt]
+    info: ASTNodeInfo,
+    cond: Expr,
+    trueBranch: Stmt,
+    falseBranch: Option[Stmt]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -202,9 +202,9 @@ case class If(
 
 // Stmt ::= do Stmt while ( Expr ) ;
 case class DoWhile(
-  info: ASTNodeInfo,
-  body: Stmt,
-  cond: Expr
+    info: ASTNodeInfo,
+    body: Stmt,
+    cond: Expr
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -223,9 +223,9 @@ case class DoWhile(
 
 // Stmt ::= while ( Expr ) Stmt
 case class While(
-  info: ASTNodeInfo,
-  cond: Expr,
-  body: Stmt
+    info: ASTNodeInfo,
+    cond: Expr,
+    body: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -243,11 +243,11 @@ case class While(
 
 // Stmt ::= for ( Expr? ; Expr? ; Expr? ) Stmt
 case class For(
-  info: ASTNodeInfo,
-  init: Option[Expr],
-  cond: Option[Expr],
-  action: Option[Expr],
-  body: Stmt
+    info: ASTNodeInfo,
+    init: Option[Expr],
+    cond: Option[Expr],
+    action: Option[Expr],
+    body: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -269,10 +269,10 @@ case class For(
 
 // Stmt ::= for ( lhs in Expr ) Stmt
 case class ForIn(
-  info: ASTNodeInfo,
-  lhs: LHS,
-  expr: Expr,
-  body: Stmt
+    info: ASTNodeInfo,
+    lhs: LHS,
+    expr: Expr,
+    body: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -292,11 +292,11 @@ case class ForIn(
 
 // Stmt ::= for ( var VarDecl(, VarDecl)* ; Expr? ; Expr? ) Stmt
 case class ForVar(
-  info: ASTNodeInfo,
-  vars: List[VarDecl],
-  cond: Option[Expr],
-  action: Option[Expr],
-  body: Stmt
+    info: ASTNodeInfo,
+    vars: List[VarDecl],
+    cond: Option[Expr],
+    action: Option[Expr],
+    body: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -323,10 +323,10 @@ case class ForVar(
 
 // Stmt ::= for ( var VarDecl in Expr ) Stmt
 case class ForVarIn(
-  info: ASTNodeInfo,
-  vd: VarDecl,
-  expr: Expr,
-  body: Stmt
+    info: ASTNodeInfo,
+    vd: VarDecl,
+    expr: Expr,
+    body: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -346,8 +346,8 @@ case class ForVarIn(
 
 // Stmt ::= continue Label? ;
 case class Continue(
-  info: ASTNodeInfo,
-  target: Option[Label]
+    info: ASTNodeInfo,
+    target: Option[Label]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -361,8 +361,8 @@ case class Continue(
 
 // Stmt ::= break Label? ;
 case class Break(
-  info: ASTNodeInfo,
-  target: Option[Label]
+    info: ASTNodeInfo,
+    target: Option[Label]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -376,8 +376,8 @@ case class Break(
 
 // Stmt ::= return Expr? ;
 case class Return(
-  info: ASTNodeInfo,
-  expr: Option[Expr]
+    info: ASTNodeInfo,
+    expr: Option[Expr]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -391,9 +391,9 @@ case class Return(
 
 // Stmt ::= with ( Expr ) Stmt
 case class With(
-  info: ASTNodeInfo,
-  expr: Expr,
-  stmt: Stmt
+    info: ASTNodeInfo,
+    expr: Expr,
+    stmt: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -411,11 +411,11 @@ case class With(
 
 // Stmt ::= switch ( Expr ) { CaseClause* (default : Stmt*)? CaseClause* }
 case class Switch(
-  info: ASTNodeInfo,
-  cond: Expr,
-  frontCases: List[Case],
-  defopt: Option[List[Stmt]],
-  backCases: List[Case]
+    info: ASTNodeInfo,
+    cond: Expr,
+    frontCases: List[Case],
+    defopt: Option[List[Stmt]],
+    backCases: List[Case]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -461,9 +461,9 @@ case class Switch(
 
 // CaseClause ::= case Expr : Stmt*
 case class Case(
-  info: ASTNodeInfo,
-  cond: Expr,
-  body: List[Stmt]
+    info: ASTNodeInfo,
+    cond: Expr,
+    body: List[Stmt]
 ) extends ASTNode {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -486,9 +486,9 @@ case class Case(
 
 // Stmt ::= Label : Stmt
 case class LabelStmt(
-  info: ASTNodeInfo,
-  label: Label,
-  stmt: Stmt
+    info: ASTNodeInfo,
+    label: Label,
+    stmt: Stmt
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -502,8 +502,8 @@ case class LabelStmt(
 
 // Stmt ::= throw Expr ;
 case class Throw(
-  info: ASTNodeInfo,
-  expr: Expr
+    info: ASTNodeInfo,
+    expr: Expr
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -517,10 +517,10 @@ case class Throw(
 
 // Stmt ::= try { Stmt* } (catch ( Id ) { Stmt* })? (finally { Stmt* })?
 case class Try(
-  info: ASTNodeInfo,
-  body: List[Stmt],
-  catchBlock: Option[Catch],
-  fin: Option[List[Stmt]]
+    info: ASTNodeInfo,
+    body: List[Stmt],
+    catchBlock: Option[Catch],
+    fin: Option[List[Stmt]]
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -563,9 +563,9 @@ case class Try(
 
 // Catch ::= catch ( Id ) { Stmt* }
 case class Catch(
-  info: ASTNodeInfo,
-  id: Id,
-  body: List[Stmt]
+    info: ASTNodeInfo,
+    id: Id,
+    body: List[Stmt]
 ) extends ASTNode {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
@@ -590,7 +590,7 @@ case class Catch(
 
 // Stmt ::= debugger ;
 case class Debugger(
-  info: ASTNodeInfo
+    info: ASTNodeInfo
 ) extends Stmt {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

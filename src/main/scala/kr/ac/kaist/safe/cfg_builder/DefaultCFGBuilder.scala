@@ -23,9 +23,9 @@ import kr.ac.kaist.safe.util.NodeUtil._
 
 // default CFG builder
 class DefaultCFGBuilder(
-  ir: IRRoot,
-  safeConfig: SafeConfig,
-  config: CFGBuildConfig
+    ir: IRRoot,
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig
 ) extends CFGBuilder(ir, safeConfig, config) {
   ////////////////////////////////////////////////////////////////
   // results

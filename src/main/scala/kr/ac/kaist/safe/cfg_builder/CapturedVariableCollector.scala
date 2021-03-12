@@ -21,9 +21,9 @@ import kr.ac.kaist.safe.phase.CFGBuildConfig
 // Collects captured variables in a given IRNode
 // Used by cfg_builder/DefaultCFGBuilder.scala
 class CapturedVariableCollector(
-  irRoot: IRRoot,
-  safeConfig: SafeConfig,
-  config: CFGBuildConfig
+    irRoot: IRRoot,
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig
 ) {
   ////////////////////////////////////////////////////////////////
   // results

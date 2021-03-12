@@ -19,9 +19,9 @@ import xtc.tree.Location
 import kr.ac.kaist.safe.nodes.Node
 
 case class Span(
-  fileName: String = "defaultSpan",
-  begin: SourceLoc = SourceLoc(),
-  end: SourceLoc = SourceLoc()
+    fileName: String = "defaultSpan",
+    begin: SourceLoc = SourceLoc(),
+    end: SourceLoc = SourceLoc()
 ) {
   def addLines(line: Int, offset: Int): Span =
     Span(fileName, begin.addLines(line, offset), end.addLines(line, offset))

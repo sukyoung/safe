@@ -944,8 +944,7 @@ class Translator(program: Program) {
             val y = freshId(right, right.span, "y")
             val (ss, r) = walkExpr(right, env, y)
             (ss :+ IRExprStmt(e, varIgn(e), r, false),
-              makeTId(e, NU.VAR_TRUE, true)
-            )
+              makeTId(e, NU.VAR_TRUE, true))
         }
       } else {
         val y = freshId(right, right.span, "y")
@@ -1016,8 +1015,7 @@ class Translator(program: Program) {
           e,
           ss2 :+ mkExprS(right, res, r2)
         ))),
-        res
-      )
+        res)
 
     case InfixOpApp(_, left, op, right) =>
       val leftspan = left.span
@@ -1059,8 +1057,7 @@ class Translator(program: Program) {
       val newMembers = members.map(walkMember(_, env, freshId))
       val stmts = newMembers.foldLeft(List[IRStmt]()) { case (l, (ss, _)) => l ++ ss }
       (stmts :+ IRObject(e, res, newMembers.map { case (_, m) => m }, None),
-        res
-      )
+        res)
 
     case fe: FunExpr => walkFunExpr(e, env, res, None)
 
@@ -1074,8 +1071,7 @@ class Translator(program: Program) {
       val str = member.text
       (ss1 :+ toObject(first, obj, r1),
         IRLoad(e, obj,
-          IRVal(str))
-      )
+          IRVal(str)))
 
     case Bracket(_, first, StringLiteral(_, _, str, _)) =>
       val objspan = first.span
@@ -1084,8 +1080,7 @@ class Translator(program: Program) {
       val (ss1, r1) = walkExpr(first, env, obj1)
       (ss1 :+ toObject(first, obj, r1),
         IRLoad(e, obj,
-          IRVal(str))
-      )
+          IRVal(str)))
 
     case Bracket(_, first, index) =>
       val objspan = first.span
@@ -1095,8 +1090,7 @@ class Translator(program: Program) {
       val (ss1, r1) = walkExpr(first, env, obj1)
       val (ss2, r2) = walkExpr(index, env, field1)
       ((ss1 :+ toObject(first, obj, r1)) ++ ss2,
-        IRLoad(e, obj, r2)
-      )
+        IRLoad(e, obj, r2))
 
     case n @ New(info, Parenthesized(_, e)) if e.isInstanceOf[LHS] =>
       walkExpr(New(info, e.asInstanceOf[LHS]), env, res)
@@ -1405,8 +1399,7 @@ class Translator(program: Program) {
       val back = stmts :+ IRStore(ast, obj, r2, e)
       if (keepOld)
         ((front :+ makeLoadStmt(true, lhs, span, getE(env, OLD_NAME), obj, r2)) ++ back,
-          IRLoad(lhs, obj, r2)
-        )
+          IRLoad(lhs, obj, r2))
       else (front ++ back, IRLoad(lhs, obj, r2))
     case _ =>
       /* Instead of signaling an error at compile time,
@@ -1424,8 +1417,7 @@ class Translator(program: Program) {
         IRExprStmt(lhs, varIgn(lhs), e, false),
         IRExprStmt(lhs, varIgn(lhs), REF_ERROR, false)
       ),
-        defaultIRExpr
-      )
+        defaultIRExpr)
   }
 
   ////////////////////////////////////////////////////////////////

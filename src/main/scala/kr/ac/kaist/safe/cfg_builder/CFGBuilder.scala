@@ -19,9 +19,9 @@ import kr.ac.kaist.safe.SafeConfig
 
 // cfg builder
 abstract class CFGBuilder(
-  ir: IRRoot,
-  safeConfig: SafeConfig,
-  config: CFGBuildConfig
+    ir: IRRoot,
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig
 ) {
   val cfg: CFG
   val excLog: ExcLog

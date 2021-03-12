@@ -44,8 +44,8 @@ object CKeyObject extends ObjDomain {
 
   // abstract object element
   case class Elem(
-    nmap: NMap,
-    imap: IMap
+      nmap: NMap,
+      imap: IMap
   ) extends ElemTrait {
     // concretization function
     def gamma: ConSet[Obj] = ConInf // TODO more precise

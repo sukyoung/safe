@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 // pair abstract domain
 case class PairDomain[L, R, LD <: AbsDomain[L], RD <: AbsDomain[R]](
-  AbsL: LD,
-  AbsR: RD
+    AbsL: LD,
+    AbsR: RD
 ) extends AbsDomain[(L, R)] {
   // abstraction function
   def alpha(pair: (L, R)): Elem = {

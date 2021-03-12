@@ -17,14 +17,14 @@ import kr.ac.kaist.safe.util.NodeUtil
 
 // Common shape for functions
 case class IRFunctional(
-  override val ast: Functional,
-  fromSource: Boolean,
-  name: IRId,
-  params: List[IRId],
-  args: List[IRStmt],
-  fds: List[IRFunDecl],
-  vds: List[IRVarStmt],
-  body: List[IRStmt]
+    override val ast: Functional,
+    fromSource: Boolean,
+    name: IRId,
+    params: List[IRId],
+    args: List[IRStmt],
+    fds: List[IRFunDecl],
+    vds: List[IRVarStmt],
+    body: List[IRStmt]
 ) extends IRNode(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
