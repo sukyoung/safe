@@ -39,7 +39,7 @@ citations for symbolic and concolic execution and compare them with dynamic
 shortcuts.
 
 
-### Necessity of Formalization (Review B)
+### Importance of Formalization (Review B)
 
 The concept of dynamic shortcut is quite simple because it just utilizes
 concrete execution with abstract values until their actual values are required.
@@ -82,3 +82,320 @@ enhance the analysis precision.  However, the precision improvement might not be
 remarkable or the analysis might suffer from massive communication costs.  We
 believe that to apply dynamic shortcuts for other languages is a convincing
 future research direction for dynamic shortcuts.
+
+--------------------------------------------------------------------------------
+# Individual Response (Optional)
+--------------------------------------------------------------------------------
+
+
+Review A
+------------
+
+### Abstract
+
+__A1) The abstract is too long and meandering__
+
+__=>__ Thank you for the detailed comments. We will revise our paper with
+considering your comments in the final version. We will remove unnecessary
+details in the abstract.
+
+__A2) "Sealed state" is a term for your new contribution (I believe), but it
+is not understood by the non-expert reader. I would avoid using jargon in the
+abstract.__
+
+__=>__ We will rephrase the abstract to remove some jargon.
+
+__A3) This approach could be explained more intuitively in the abstract.
+E.g., "We eliminate the need to analyze some methods by using the concrete
+parameters used to call them, and simply executing the code instead of
+analyzing it." This is probably not a totally correct characterization of your
+work, but it is much more intuitive and easy to understand.__
+
+__=>__ As explained in __Novelty__ part, we believe that the most important
+contribution of this paper is to present the __first formalization of
+_flexible_ switching between abstract and concrete execution for JavaScript in
+a sound way__.  We will add this sentence to the abstract.
+
+__A4) Microcontrollers for IoT is not a major use of JavaScript… seems off
+topic.__
+
+__=>__ We believe that micro-controllers are emerging fields of JavaScript.
+A paper [[HOPL'19](https://dl.acm.org/doi/abs/10.1145/3386327)] about the
+history of JavaScript also says that:
+
+> In addition to server applications built using Node.js and other hosts,
+> JavaScript is being used to build desktop applications, mobile device
+> applications, fitness trackers, robots, and numerous embedded systems.
+
+__A5) What do you mean by host environments?__
+
+__=>__ 
+
+In ECMAScript 2020 (ES11) explains host environments as follows:
+
+> A host environment typically includes objects or functions which allow
+> obtaining input and providing output as host-defined properties of the global
+> object.
+
+For instance, a browser supplies objects that represent windows, pop-ups, text
+areas, cookies, and input/output as its host environment.
+
+__A6) What do you mean by "high performance"? Do you mean fast? Do you mean
+accurate?__
+
+__=>__ We refer to "short elapsed time" as "high performance" at all time.
+
+__A7)  It is difficult to make the jump from the high-level discussion (top)
+to the detailed discussion (bottom).__
+
+__=>__ We will reorganize the abstract in a top-down structure.
+
+
+### Section 1 Introduction
+
+__A8) I don’t understand the focus on JavaScript in IoT environments… how is
+that relevant?__
+
+__=>__ The same answer as A4).
+
+__A9) "High performance" is an odd phrase to use here. I would consider
+speaking of the attribute you appreciate directly. I think you are referring to
+speed.__
+
+__=>__ The same answer as A6).
+
+__A10) The characterization of related work makes it difficult to determine
+how your work differs from theirs.__
+
+__=>__ Please see __Novelty__.
+
+__A11) I do not follow the example very well. I am not an expert on this type
+of program analysis, but I do understand program analysis generally, and I feel
+like this example is not clear. I would remove it.__
+
+__=>__ We believe that this example explains the core idea of our approach.  We
+will rephrase explanations more clearly.
+
+### Section 2 Motivation
+
+__A12) These examples are helpful for understanding your approach. I would
+remove the other example from the introduction, which was not helpful because
+it was too brief.__
+
+__=>__ The same answer as A11).
+
+### Section 6 Evaluation
+
+__A13) The communication costs section could be removed.__
+
+__=>__ We believe that to reduce the communication cost is also important
+problem because the analysis might suffer from large communication cost.
+
+__A14) Section 6.2 Precision Improvement) Can you discuss the practical
+implications of removing these failed assertions more clearly?__
+
+__=>__ In static analysis, to count the number of failed assertions is a
+possible approach to measure analysis precision.  The more removing failed
+assertions, the more precise analysis.  Thus, we experimentally showed that
+dynamic shortcuts can improve precision of JavaScript static analysis.
+
+### Questions for authors
+
+__A15) Can you describe the key insight(s) of your approach, as if you were
+speaking to a non-expert, in 1-2 sentences?__
+
+__=>__ Briefly speaking, dynamic analyses on commercial engines are much faster
+than static analyzers, so we can accelerate the static analysis as much as we
+substitute some parts of the static analysis to the dynamic analysis.  We
+propose a novel technique to utilize the dynamic analysis during the static
+analysis with the most flexible form and in a sound manner.
+
+
+--------------------------------------------------------------------------------
+
+
+Review B
+------------
+
+### Comments for authors
+
+__B1) The idea of combining concrete and symbolic execution is a good one. I
+have not seen this done in Abstract Interpretation setting before. However, it
+is well established in Symbolic Execution domain. Concolic execution,
+especially as pioneered by EXE, and is currently best exemplified by KLEE,
+seems the closest to the proposed technique.__
+
+__=>__ Thank you for the constructive comments about concolic execution.
+Please see __Comparison with Concolic Execution__.
+
+__B2) Symbolic Execution can be seen as abstract interpretation over an
+abstract domain of expressions. From the high-level, it is identical to what is
+proposed in the paper: state is divided into concrete and abstract values,
+concrete values are executed concretely, symbolic are executed symbolically.
+Concrete values can be converted to symbolic, but not the other way around.
+There is a large body of related work on all kind of iterations of this basic
+idea.__
+
+__=>__ Please see __Comparison with Concolic Execution__.
+
+__B3) The paper spends a significant amount of space formalizing the
+semantics and the abstract domain. The formalism is appreciated, but it belongs
+to the appendix rather than the main body of the paper. Nothing new is
+communicated by it in addition to what is described in the motivation.__
+
+__=>__ Please see __Importance of Formalization__.
+
+__B4) However, what is missing is a clear identification of the limitations
+of the approach. How does the proposed scheme integrates with typical abstract
+interpretation analyses? For example, I imagine that aggressive use of joins
+and convex abstract domains will create so much abstract values that concrete
+execution will not be possible. Similar questions apply to widening,
+summary/contract computation for handling recursion, etc.__
+
+__=>__ Please see __Limitation of Dynamic Shortcuts__.
+
+__B5) In the current presentation, it seems that the authors consider only
+simple non-relational domains that are lifted to a powerset (i.e., join is
+union).  If that is the case, the result is essentially identical to symbolic
+execution and the degree of novelty compared to concolic execution is low.__
+
+__=>__ Please see __Limitation of Dynamic Shortcuts__.
+
+### Questions for authors
+
+__B6) What is the key distinguishing characteristic of the proposed approach
+with Concolic Symbolic Execution__
+
+__=>__ Please see __Comparison with Concolic Execution__.
+
+__B7) What are the limitations the approach places on abstract domains /
+algorithms used with it__
+
+__=>__ Please see __Limitation of Dynamic Shortcuts__.
+
+__B8) How the proposed technique integrates with typical static analysis:
+join, widen, efficient fixedpoint computation, etc.__
+
+__=>__ Please see __Limitation of Dynamic Shortcuts__.
+
+
+--------------------------------------------------------------------------------
+
+
+Review C
+------------
+
+### Weak Point 1 (W1)
+
+__C1) Sect. 4.3 is one of the most interesting sections - the paper is about
+JavaScript after all.  However, 4.3 is very short and Sects. 4.1 and 4.2
+introduce a lot of definitions which are not really needed to understand Sect.
+4.3.  So maybe 4.1 and 4.2 could be less detailed in favor of 4.3.__
+
+__=>__ Section 4.3 explains how to extend concrete execution to sealed
+execution thus it is not related to abstract semantics explains in Section 4.1
+and 4.2.
+
+__C2) The paper could discuss why/how (not) dynamic shortcuts can be used for
+other languages.__
+
+__=>__ Thank you for a good question about the extensibility of dynamic
+shortcuts for other languages.  Please see __Extensibility for Other
+Languages__.
+
+
+### Weak Point 2 (W2)
+
+__C3) Please make explicit what the baseline analyzer is (I suppose standard
+SAFE?).__
+
+__=>__ We used the baseline analyzer based on the standard SAFE with the
+following minor changes.
+1) We increased the call-site sensitivity from 20 to 30 and the iteration of
+loop sensitivity from 100 to 400.
+2) We modified some incomplete models for opaque functions to analyze Lodash
+tests soundly.
+
+__C4) I think that the chosen benchmark set (Lodash tests) is not a good
+choice, because even in the abstracted version, test cases are a special kind
+of software (threat to external validity).__
+
+__=>__ Most static analysis techniques for JavaScript programs have been
+evaluated with famous JavaScript libraries. Until the mid-2010s, most of the
+researchers [[ECOOP'15](https://drops.dagstuhl.de/opus/volltexte/2015/5245/),
+[DLS'16](https://dl.acm.org/doi/10.1145/2989225.2989228),
+[APLAS'17](https://link.springer.com/chapter/10.1007/978-3-319-71237-6_8)]
+focused on jQuery and its benchmarks.  However, recent techniques
+[[OOPSLA'19](https://dl.acm.org/doi/abs/10.1145/3360566),
+[ECOOP'20](https://drops.dagstuhl.de/opus/volltexte/2020/13173/)] are evaluated
+with Lodash and its official tests because of its popularity and complex field
+copy patterns (e.g. `mixin` function).   We agree that real-world benchmarks
+are more interesting and appropriate to evaluate dynamic shortcuts than
+randomly _abstracted_ Lodash 4 tests.  However, static analysis of real-world
+JavaScript applications require diverse host-dependent abstract models such as
+DOM trees/APIs and event handlers for web applications or file systems,
+networks, and module imports for Node.js applications.  Thus, we decided to
+focus on pure JavaScript applications and to randomly abstract Lodash 4 tests.
+
+__C5) Moreover, the authors mention that the benchmark set was already used
+twice.  But those uses are by similar authors.  So this statement is not
+convincing for the acceptance of the benchmark set in the community.__
+
+__=>__ The same answer as C4) 
+
+### Section 6.1 Analysis Speed-up
+
+__C6) Communication cost is one of your future work suggestions, so more
+details could be interesting: The authors could mention what is included in
+communication cost.  The state conversions? Or only data transfer between
+processes?  In this context it might also be interesting to know how you
+implemented the communication.  And then it can get relevant to know how
+exactly you measured it.__
+
+__=>__ The current implementation we used the SAFE analyzer written in Scala
+and the dynamic analysis naturally runs on JavaScript engine.  They run as two
+different processes and communicate through a localhost server.  So the
+communication cost consist of both the state conversions and data transfer.  We
+measured state conversions and data transfer separately but we simply present
+the sum of them because they are almost proportional.
+
+### Section 6.2 Precision Improvement
+
+Thank you for pointing out some misleading explanation about the precision
+improvement.  We will answer all the questions and revise this section based on
+these answers.
+
+__C7) How is "average improvement" (solid line) calculated?__
+
+__=>__  For each test case except on (0, 0), we calculate the slope by ((the
+number of failed assertions from DS) / (the number of failed assertions from
+no-DS)) and calculate average of them.
+
+__C8) I do not understand where I can see the 24 failed assertions in Figure__
+9a.
+
+__=>__ We tried to say the DS did not produce any failed assertions for 24 test
+cases that the no-DS produced at least 2 failed assertions for.  The darker
+circle is, the more tests it indicates.  Thus, the sum of test cases from the
+circles on the x-axis except (0, 0) is 24.
+
+__C9) Also the percentages: You write "Figure 9(b) shows ... by 12.32%" I do
+not understand how to get the numbers from the figure.  Maybe a table is more
+appropriate here?__
+
+__=>__ The improvement of "12.31%" can be calculated by (1 - (the slope of the
+solid line)).
+
+__C10) In general, I find the heat-map notation a bit confusing. Maybe one
+could explain an example, like "The gray circle at (0,12) means that x
+assertions failed with DS, ..."__
+
+__=>__ We will add an example, as you commented.
+
+__C11) I also don't understand what the authors are averaging over in
+statements like "92.79% on average".  I understand that for each of the 156
+tests a failed assertion can be produced or not.  So it's possible to say,
+e.g., if half of the failed assertions are removed, the number is reduced by
+50%. But why average?__
+
+__=>__ We will revise the whole paragraph to explain Figure 9 more clearly.
