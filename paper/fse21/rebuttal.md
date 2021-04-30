@@ -20,39 +20,42 @@ to our dynamic shortcuts, Concerto combines static analysis with extended
 concrete execution (mostly-concrete execution or symbolic execution) to improve
 analysis precision and performance.  However, Concerto has a critical limitation
 that they _syntactically_ divide programs into two different parts for static
-analysis and concrete execution.
+analysis and concrete execution.  Unlike their approaches, we wanted to utilize
+JavaScript engines more aggressively and flexibly by automatically detecting
+whether concrete execution is possible without any syntactic restrictions.
 
 
 ### Comparison with Concolic Execution (Review B)
 
-We agree with Review B that _concolic execution_ also has similar concept with
+We agree with Review B that _concolic execution_ also has similar concept to
 dynamic shortcuts because it also leverages concrete execution not for abstract
 interpretation but for _symbolic execution_.  As Review B already mentioned,
 symbolic execution can be treated as an abstract interpretation with symbolic
 expressions and path constraints.  However, we formalized a dynamic shortcut as
 a technique to combine concrete execution with general abstract interpretation
 not symbolic execution.  Thus, dynamic shortcuts are theoretically applicable
-for any type of abstract interpretation including symbolic execution it is more
-general definition of concolic execution.  Nevertheless, we agree with concolic
-execution is also closely related with out technique.  We will supplement
-citations for symbolic and concolic execution and compare them with dynamic
-shortcuts.
+for any type of abstract interpretation including symbolic execution and it is
+more general definition of concolic execution.  Nevertheless, we agree that
+concolic execution is also closely related to our technique.  We will
+supplement citations for symbolic and concolic execution and compare them to
+dynamic shortcuts.
 
 
 ### Importance of Formalization (Review B)
 
 The concept of dynamic shortcut is quite simple because it just utilizes
 concrete execution with abstract values until their actual values are required.
-However, we believe that the formalization of dynamic shortcut is necessary and
-the brief formalization idea should be explained in the paper.  Although many
-real-world static analyzers aim _soundy_ analysis by sacrificing soundness, it
-is still important to prove the _soundness_ and _termination_ of static
-analysis.  Thus, we formally defined dynamic shortcuts, found the conditions
-when the dynamic shortcut would be sound and terminate, and formally proved
-them.  We believe that this formalization could answer an important question:
-"Are the soundness and termination of the static analysis with dynamic
-shortcuts still guaranteed even though parts of abstract interpretation are
-replaced with _concrete execution_?''
+However, we believe that the formalization of dynamic shortcut is necessary to
+prove _soundness_ and _termination_, thus we explained the brief formalization
+idea should be explained in the paper.  Although many real-world static
+analyzers aim _soundy_ analysis by sacrificing soundness for practical reasons,
+it is still important to prove the _soundness_ and _termination_ for a new
+analysis technique in theory.  Thus, we formally defined dynamic shortcuts,
+found the conditions when the dynamic shortcut would be sound and terminate,
+and formally proved them.  We believe that this formalization could answer an
+important question: "Are the soundness and termination of the static analysis
+with dynamic shortcuts still guaranteed even though parts of abstract
+interpretation are replaced with _concrete execution_?''
 
 
 ### Limitation of Dynamic Shortcuts (Review B)
@@ -67,7 +70,7 @@ might suffer from massive communication costs.  Although we did not answer about
 a more detailed relationship between dynamic shortcuts and the shape of abstract
 domain in this paper, we experimentally showed that dynamic shortcuts can
 enhance the performance and precision of JavaScript static analysis.  We believe
-that to find more detailed relationship between them is one of good future
+that finding more detailed relationship between them is one of good future
 research direction.
 
 
@@ -80,7 +83,7 @@ dynamic shortcut is not dependent on JavaScript language characteristics.  Thus,
 it is possible to define dynamic shortcuts on any other languages and they can
 enhance the analysis precision.  However, the precision improvement might not be
 remarkable or the analysis might suffer from massive communication costs.  We
-believe that to apply dynamic shortcuts for other languages is a convincing
+believe that applying dynamic shortcuts for other languages is a convincing
 future research direction for dynamic shortcuts.
 
 --------------------------------------------------------------------------------
@@ -95,7 +98,7 @@ Review A
 
 __A1) The abstract is too long and meandering__
 
-__=>__ Thank you for the detailed comments. We will revise our paper with
+__=>__ Thank you for the detailed comments. We will revise our paper by
 considering your comments in the final version. We will remove unnecessary
 details in the abstract.
 
@@ -129,9 +132,7 @@ history of JavaScript also says that:
 
 __A5) What do you mean by host environments?__
 
-__=>__ 
-
-In ECMAScript 2020 (ES11) explains host environments as follows:
+__=>__ In ECMAScript 2020 (ES11) explains host environments as follows:
 
 > A host environment typically includes objects or functions which allow
 > obtaining input and providing output as host-defined properties of the global
@@ -188,16 +189,16 @@ __=>__ The same answer as A11).
 
 __A13) The communication costs section could be removed.__
 
-__=>__ We believe that to reduce the communication cost is also important
+__=>__ We believe that reducing the communication cost is also important
 problem because the analysis might suffer from large communication cost.
 
 __A14) Section 6.2 Precision Improvement) Can you discuss the practical
 implications of removing these failed assertions more clearly?__
 
 __=>__ In static analysis, to count the number of failed assertions is a
-possible approach to measure analysis precision.  The more removing failed
-assertions, the more precise analysis.  Thus, we experimentally showed that
-dynamic shortcuts can improve precision of JavaScript static analysis.
+typical approach to measure analysis precision.  More failed assertions denote
+more precise analysis.  Thus, we experimentally showed that dynamic shortcuts
+can improve precision of JavaScript static analysis.
 
 ### Questions for authors
 
@@ -205,10 +206,10 @@ __A15) Can you describe the key insight(s) of your approach, as if you were
 speaking to a non-expert, in 1-2 sentences?__
 
 __=>__ Briefly speaking, dynamic analyses on commercial engines are much faster
-than static analyzers, so we can accelerate the static analysis as much as we
-substitute some parts of the static analysis to the dynamic analysis.  We
-propose a novel technique to utilize the dynamic analysis during the static
-analysis with the most flexible form and in a sound manner.
+than static analyzers, so we can accelerate the static analysis by substituting
+some parts of the static analysis to the dynamic analysis.  We propose a novel
+technique to utilize the dynamic analysis during the static analysis with the
+most flexible form and in a sound manner.
 
 
 --------------------------------------------------------------------------------
@@ -292,9 +293,12 @@ JavaScript after all.  However, 4.3 is very short and Sects. 4.1 and 4.2
 introduce a lot of definitions which are not really needed to understand Sect.
 4.3.  So maybe 4.1 and 4.2 could be less detailed in favor of 4.3.__
 
-__=>__ Section 4.3 explains how to extend concrete execution to sealed
-execution thus it is not related to abstract semantics explains in Section 4.1
-and 4.2.
+__=>__ While Section 4.2 extends concrete execution of JavaScript explained in
+Section 4.1 to abstract execution, Section 4.3 extends it to sealed execution.
+Thus, we believe that Section 4.1 is necessary to understand the baseline of
+sealed execution. Moreover, Section 4.2 is not directly related to Section 4.3.
+but Section 4.2 itself is important to define how to abstract the concrete
+semantics of JavaScript.
 
 __C2) The paper could discuss why/how (not) dynamic shortcuts can be used for
 other languages.__
@@ -310,10 +314,12 @@ __C3) Please make explicit what the baseline analyzer is (I suppose standard
 SAFE?).__
 
 __=>__ We used the baseline analyzer based on the standard SAFE with the
-following minor changes.
-1) We increased the call-site sensitivity from 20 to 30 and the iteration of
+following minor changes.  We will explain these configuration in the Evaluation
+section.
+
+1. We increased the call-site sensitivity from 20 to 30 and the iteration of
 loop sensitivity from 100 to 400.
-2) We modified some incomplete models for opaque functions to analyze Lodash
+2. We modified some incomplete models for opaque functions to analyze Lodash
 tests soundly.
 
 __C4) I think that the chosen benchmark set (Lodash tests) is not a good
@@ -341,7 +347,7 @@ __C5) Moreover, the authors mention that the benchmark set was already used
 twice.  But those uses are by similar authors.  So this statement is not
 convincing for the acceptance of the benchmark set in the community.__
 
-__=>__ The same answer as C4) 
+__=>__ The same answer as C4)
 
 ### Section 6.1 Analysis Speed-up
 
@@ -367,17 +373,20 @@ these answers.
 
 __C7) How is "average improvement" (solid line) calculated?__
 
-__=>__  For each test case except on (0, 0), we calculate the slope by ((the
-number of failed assertions from DS) / (the number of failed assertions from
-no-DS)) and calculate average of them.
+__=>__  Each Lodash 4 test contains multiple assertions and it is represented
+as a circle in heat-map charts.  Since circles are positioned in the same point
+when their corresponding tests have same number of failed assertions, we use
+darker gray to denote larger number of tests.  For each test case except on (0,
+0), we calculate the slope by ((the number of failed assertions from DS) / (the
+number of failed assertions from no-DS)) and calculate average of them.
 
 __C8) I do not understand where I can see the 24 failed assertions in Figure__
 9a.
 
-__=>__ We tried to say the DS did not produce any failed assertions for 24 test
-cases that the no-DS produced at least 2 failed assertions for.  The darker
-circle is, the more tests it indicates.  Thus, the sum of test cases from the
-circles on the x-axis except (0, 0) is 24.
+__=>__ We tried to say that the DS did not produce any failed assertions for 24
+test cases that the no-DS produced at least 2 failed assertions for.  The
+darker circle is, the more tests it indicates.  Thus, the sum of test cases
+from the circles on the x-axis except (0, 0) is 24.
 
 __C9) Also the percentages: You write "Figure 9(b) shows ... by 12.32%" I do
 not understand how to get the numbers from the figure.  Maybe a table is more
