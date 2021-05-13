@@ -61,6 +61,7 @@ object NodeUtil {
   val INTERNAL_PRINT = internalAPIName("Print")
   val INTERNAL_NOT_YET_IMPLEMENTED = internalAPIName("NotYetImplemented")
   val INTERNAL_CHAR_CODE = internalAPIName("CharCode")
+  val INTERNAL_IS_NATIVE = internalAPIName("IsNative")
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
@@ -160,6 +161,7 @@ object NodeUtil {
   val INTERNAL_TAN = internalAPIName("tan")
   // 15.10.6.3 RegExp.prototype.test(string)
   val INTERNAL_REGEX_TEST = internalAPIName("regexTest")
+  val INTERNAL_REGEX_EXEC = internalAPIName("regexExec")
   // Other helpers
   val INTERNAL_IS_OBJ = internalAPIName("isObject")
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
@@ -171,6 +173,7 @@ object NodeUtil {
   val internalCallSet: Set[String] = Set(
     INTERNAL_PRINT,
     INTERNAL_NOT_YET_IMPLEMENTED,
+    INTERNAL_IS_NATIVE,
     INTERNAL_CHAR_CODE,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
@@ -222,6 +225,7 @@ object NodeUtil {
     INTERNAL_SQRT,
     INTERNAL_TAN,
     INTERNAL_REGEX_TEST,
+    INTERNAL_REGEX_EXEC,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
     INTERNAL_ITER_HAS_NEXT,

@@ -12,6 +12,8 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.util.UIdObjMap
+import spray.json._
 
 // default descriptor abstract domain
 object DefaultDesc extends DescDomain {
@@ -142,6 +144,8 @@ object DefaultDesc extends DescDomain {
 
     def IsGenericDescriptor: AbsBool =
       IsDataDescriptor.negate
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = fail
   }
 
   def ToPropertyDescriptor(obj: AbsObj, h: AbsHeap): Elem = {

@@ -1,0 +1,128 @@
+\documentclass[sigplan,10pt,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
+\usepackage{float}
+%\usepackage{amssymb}
+\usepackage{amsmath,amsfonts}
+\usepackage[ruled, vlined]{algorithm2e}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{galois}
+\usepackage{mathpartir}
+\usepackage{bussproofs}
+\usepackage{mathtools}
+\usepackage{colortbl}
+\usepackage{hhline}
+\usepackage{stmaryrd}
+
+\EnableBpAbbreviations
+
+\setcopyright{acmcopyright}
+\copyrightyear{2018}
+\acmYear{2018}
+\acmDOI{10.1145/1122445.1122456}
+\acmConference[Woodstock '18]{Woodstock '18: ACM Symposium on Neural
+  Gaze Detection}{June 03--05, 2018}{Woodstock, NY}
+\acmPrice{15.00}
+\acmISBN{978-1-4503-XXXX-X/18/06}
+
+\input{macros}
+
+\begin{document}
+
+\title
+[Accelerating JavaScript Static Analysis via Dynamic Shortcuts]
+{Accelerating JavaScript Static Analysis\\ via Dynamic Shortcuts}
+
+\author{Joonyoung Park}
+\affiliation{%
+  \institution{Korea Advanced Institute of Science and Technology}
+  \state{Daejeon}
+  \country{South Korea}
+}
+\email{gmb55@kaist.ac.kr}
+
+\author{Jihyeok Park}
+\affiliation{%
+  \institution{Korea Advanced Institute of Science and Technology}
+  \state{Daejeon}
+  \country{South Korea}
+}
+\email{jhpark0223@kaist.ac.kr}
+
+\author{Dongjun Youn}
+\affiliation{%
+  \institution{Korea Advanced Institute of Science and Technology}
+  \state{Daejeon}
+  \country{South Korea}
+}
+\email{f52985@kaist.ac.kr}
+
+\author{Sukyoung Ryu}
+\affiliation{%
+  \institution{Korea Advanced Institute of Science and Technology}
+  \state{Daejeon}
+  \country{South Korea}
+}
+\email{sryu.cs@kaist.ac.kr}
+
+\renewcommand{\shortauthors}{Park and Park, et al.}
+
+\input{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10010520.10010553.10010562</concept_id>
+  <concept_desc>Computer systems organization~Embedded systems</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010520.10010575.10010755</concept_id>
+  <concept_desc>Computer systems organization~Redundancy</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010520.10010553.10010554</concept_id>
+  <concept_desc>Computer systems organization~Robotics</concept_desc>
+  <concept_significance>100</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10003033.10003083.10003095</concept_id>
+  <concept_desc>Networks~Network reliability</concept_desc>
+  <concept_significance>100</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Computer systems organization~Embedded systems}
+\ccsdesc[300]{Computer systems organization~Redundancy}
+\ccsdesc{Computer systems organization~Robotics}
+\ccsdesc[100]{Networks~Network reliability}
+
+\keywords{JavaScript, static analysis, dynamic analysis, dynamic shortcut, sealed symbolic execution}
+
+\maketitle
+
+\input{intro}
+\input{motivation}
+\input{shortcut}
+\input{ds}
+\input{javascript}
+\input{implementation}
+\input{eval}
+\input{eval-opaque}
+\input{related}
+\input{conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{ref}
+
+\end{document}
+\endinput

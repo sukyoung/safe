@@ -1,18 +1,23 @@
 {
   "silent": true,
-  "analyzer": {
-    "console": false,
-    "exitDump": false,
-    "out": false,
-    "html": ""
-  },
+  "time": true,
   "heapBuilder": {
     "maxStrSetSize": 10,
     "recency": false,
     "heap-clone": true,
-    "callsiteSensitivity": 20,
-    "loopIter": 100,
+    "callsiteSensitivity": 30,
+    "loopIter": 400,
     "loopDepth": 10,
-    "snapshot": ""
+    "snapshot": "",
+    "timeLimit": 300
+  },
+  "analyzer": {
+    "console": false,
+    "exitDump": false,
+    "out": false,
+    "html": "",
+    "exitReachable": false,
+    "stopAlreadyVisited": false,
+    "stopExitExc": false
   }
 }

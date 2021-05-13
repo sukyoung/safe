@@ -14,6 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
+
 // default environment record abstract domain
 object DefaultEnvRec extends EnvRecDomain {
   lazy val Bot: Elem = Elem(AbsDecEnvRec.Bot, AbsGlobalEnvRec.Bot)
@@ -65,6 +68,14 @@ object DefaultEnvRec extends EnvRecDomain {
       if (!decEnvRec.isBottom) lst ::= decEnvRec.toString
       if (decEnvRec.isBottom && globalEnvRec.isBottom) lst ::= "⊥(environment)"
       lst.mkString(LINE_SEP)
+    }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = {
+      (decEnvRec.toJSON, globalEnvRec.toJSON) match {
+        case (dec: JsObject, JsNull) => dec
+        case (JsNull, global: JsObject) => JsNull
+        case _ => fail
+      }
     }
 
     // 10.2.1.2.1 HasBinding(N)
@@ -124,4 +135,9 @@ object DefaultEnvRec extends EnvRecDomain {
     def remove(locs: Set[Loc]): Elem =
       Elem(decEnvRec.remove(locs), globalEnvRec)
   }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
+    val fields = json.asJsObject().fields
+    Elem(AbsDecEnvRec.fromJSON(fields("decEnvRec"), cfg), AbsGlobalEnvRec.fromJSON(fields("globalEnvRec")))
+  })
 }

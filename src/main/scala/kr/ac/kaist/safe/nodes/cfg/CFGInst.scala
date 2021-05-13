@@ -139,9 +139,9 @@ case class CFGFunExpr(
     lhs: CFGId,
     nameOpt: Option[CFGId],
     func: CFGFunction,
-    var asite1: AllocSite,
-    var asite2: AllocSite,
-    var asite3Opt: Option[AllocSite]
+    asite1: AllocSite,
+    asite2: AllocSite,
+    asite3Opt: Option[AllocSite]
 ) extends CFGNormalInst {
   override def toString: String = {
     val name = nameOpt.getOrElse("")

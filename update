@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if [ $# -eq 1 ]; then
+  SAFE_VERSION=$1
+  DS_VERSION=$1
+  JALANGI_VERSION=$1
+else
+  SAFE_VERSION=dynamicshortcut
+  DS_VERSION=master
+  JALANGI_VERSION=dynamicshortcut
+fi
+
+rm -f $SAFE_HOME/version
+
+cd $SAFE_HOME
+git fetch
+git checkout $SAFE_VERSION
+git pull
+echo "SAFE - `git log | head -n 1`" >> $SAFE_HOME/version
+sbt compile
+
+cd $DS_HOME
+git fetch
+git checkout $DS_VERSION
+git pull
+echo "DS - `git log | head -n 1`" >> $SAFE_HOME/version
+
+cd $JALANGI_HOME
+git fetch
+git checkout $JALANGI_VERSION
+git pull
+echo "JALANGI - `git log | head -n 1`" >> $SAFE_HOME/version

@@ -1,4 +1,4 @@
-/**
+/*
  * *****************************************************************************
  * Copyright (c) 2016-2018, KAIST.
  * All rights reserved.
@@ -18,14 +18,71 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.model._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ NodeUtil, EJSNumber, EJSString, EJSBool, EJSNull, EJSUndef, AllocSite, Recency, Recent, Old }
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.mutable.{ Map => MMap }
 
+import spray.json._
+import DefaultJsonProtocol._
+import java.net._
+import collection.mutable.ListBuffer
+import java.io._
+import scala.io._
+
 case class Semantics(
     cfg: CFG,
-    worklist: Worklist
+    worklist: Worklist,
+    timeLimit: Int = 0
 ) {
+  var dsTriedCPs: Set[ControlPoint] = Set()
+  def addTriedCPs(json: JsValue): Unit = json match {
+    case JsArray(vector) => vector.foreach(_ match {
+      case JsObject(fields) => fields("fid") match {
+        case JsNumber(d) =>
+          val fid = d.toInt
+          fields("tracePartition") match {
+            case JsString(str) =>
+              val tp = TracePartition(str)(cfg)
+              val cp = ControlPoint(cfg.getFunc(fid).get.entry, tp)
+              dsTriedCPs += cp
+            case _ =>
+          }
+        case _ =>
+      }
+      case _ =>
+    })
+    case _ =>
+  }
+
+  var startTime: Long = 0
+  var instCount: Int = 0
+  def setting: Unit = {
+    if (instCount == 0) startTime = System.currentTimeMillis
+    instCount = instCount + 1
+    if (instCount % 1000 != 0) return
+    if (timeLimit <= 0) return
+    if ((System.currentTimeMillis - startTime) > (timeLimit * 1000))
+      throw Timeout(timeLimit)
+  }
+
+  def send(message: String): JsValue = {
+    val sock = new Socket(InetAddress.getByName("localhost"), 8000)
+    lazy val in = new BufferedSource(sock.getInputStream).getLines
+    val out = new PrintStream(sock.getOutputStream)
+
+    out.println(message)
+    out.flush
+    out.print("###EOF###");
+    out.flush
+
+    val received = in.mkString
+    sock.close
+    received.parseJson
+  }
+
+  private var calledByCall: Set[Entry] = Set()
+  private var calledByConstruct: Set[Entry] = Set()
+
   lazy val engine = new ScriptEngineManager().getEngineByMimeType("text/javascript")
   def init: Unit = {
     val entry = cfg.globalFunc.entry
@@ -58,12 +115,12 @@ case class Semantics(
 
   // control point maps to state
   private val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MMap()
-  def getState(block: CFGBlock): MMap[TracePartition, AbsState] =
+  def getState(block: CFGBlock): Map[TracePartition, AbsState] =
     cpToState.getOrElse(block, {
       val newMap = MMap[TracePartition, AbsState]()
       cpToState(block) = newMap
       newMap
-    })
+    }).foldLeft(Map[TracePartition, AbsState]())(_ + _)
   def getState(cp: ControlPoint): AbsState = {
     val block = cp.block
     val tp = cp.tracePartition
@@ -112,9 +169,13 @@ case class Semantics(
 
   def E(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData, st: AbsState): AbsState = {
     (cp1.block, cp2.block) match {
-      case (_, Entry(f)) => st.context match {
+      case (call: Call, entry @ Entry(f)) => st.context match {
         case _ if st.context.isBottom => AbsState.Bot
         case ctx1: AbsContext => {
+          call.callInst match {
+            case (_: CFGCall) => calledByCall += entry
+            case (_: CFGConstruct) => calledByConstruct += entry
+          }
           val objEnv = data.env.record.decEnvRec.GetBindingValue("@scope") match {
             case (value, _) => AbsLexEnv.NewDeclarativeEnvironment(value.locset)
           }
@@ -132,10 +193,7 @@ case class Semantics(
         val call = acall.call
         val params = f1.argVars
         val info = getCallInfo(call, cp2.tracePartition)
-        val state =
-          if (RecencyMode) {
-            st.afterCall(info)
-          } else st
+        val state = st
         val (ctx1, allocs1) = (state.context, state.allocs)
         val EdgeData(allocs2, env1, thisBinding) = data.fix(allocs1)
 
@@ -154,10 +212,7 @@ case class Semantics(
         val call = acatch.call
         val params = f1.argVars
         val info = getCallInfo(call, cp2.tracePartition)
-        val state =
-          if (RecencyMode) {
-            st.afterCall(info)
-          } else st
+        val state = st
         val (ctx1, c1) = (state.context, state.allocs)
         val EdgeData(c2, envL, thisBinding) = data.fix(c1)
         val env1 = envL.record.decEnvRec
@@ -183,7 +238,7 @@ case class Semantics(
       val ctx = st.context
       val allocs = st.allocs
       cp.block match {
-        case Entry(_) => {
+        case entry @ Entry(func) => {
           val fun = cp.block.func
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
@@ -203,7 +258,100 @@ case class Semantics(
             val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
-          (newSt, AbsState.Bot)
+
+          var touchedFunc = func.id < 0
+
+          var notModelCallSite = cp.tracePartition match {
+            case ProductTP(CallSiteContext(callsiteList, _), _) =>
+              callsiteList match {
+                case h :: t => h.func.id >= 0
+                case Nil => true
+              }
+            case _ => true
+          }
+
+          val result = if (dynamicShortcut && !dsTriedCPs.contains(cp) && cp.block.func.id != 0 && notModelCallSite) try {
+            val fid = cp.block.func.id;
+            dsTriedCPs += cp
+            val startTime = System.currentTimeMillis
+
+            // unique id mutable map
+            implicit val uomap = new UIdObjMap
+
+            globalLocJSON = newSt.heap.get(GLOBAL_LOC).toJSON
+            if (globalLocJSON.asJsObject.fields contains uomap.UNIQUE)
+              throw new ToJSONFail("GLOBAL_LOC")
+            var dump = {
+              val fields = Map(
+                "fid" -> JsNumber(fid),
+                "state" -> newSt.toJSON,
+                "tracePartition" -> cp.tracePartition.toJSON
+              )
+              JsObject(
+                if (cp.block.func.id < 0) fields + ("code" -> JsObject(
+                  "isCall" -> JsBoolean(fidToName(fid).isCall),
+                  "name" -> JsString(fidToName(fid).name)
+                ))
+                else fields
+              )
+            }
+
+            // remove this object for construct
+            val thisBindingForConstruct =
+              calledByConstruct.contains(entry) && !calledByCall(entry) && dump
+                .fields("state").asJsObject
+                .fields("context").asJsObject
+                .fields("thisBinding").asJsObject
+                .fields.contains("location")
+            dump = JsObject(dump.fields + ("isConstructor" -> JsBoolean(thisBindingForConstruct)))
+
+            dsCount += 1
+
+            System.err.println(s"[DS] [${func.id}] ${func.simpleName} @ ${func.span}")
+
+            val newTP = cp.tracePartition
+            val exitCP = ControlPoint(func.exit, newTP)
+
+            val dumped = dump.compactPrint
+            val json = send(dumped)
+
+            val fields = json.asJsObject().fields
+            addTriedCPs(fields("visitedEntryControlPoints"))
+
+            val loaded = AbsState.fromJSON(fields("state"), cfg, newSt)
+            val result = if (loaded.isBottom) {
+              (newSt, AbsState.Bot)
+            } else {
+              dsSuccessCount += 1
+              touchedFunc = false
+
+              setState(exitCP, loaded)
+              worklist.add(exitCP)
+              (AbsState.Bot, AbsState.Bot)
+            }
+
+            val duration = System.currentTimeMillis - startTime
+            dsDuration += duration
+
+            result
+          } catch {
+            case e: ToJSONFail =>
+              if (analysisDebug) {
+                println(s"[WARNING] toJSON Failed @ ${e.getStackTrace.toList.mkString("\n")}")
+                println
+                println(s"[Target] ${e.target}")
+                println
+              } else if (!toJSONFailed) {
+                println(s"[WARNING] toJSON Failed")
+                toJSONFailed = true
+              }
+              (newSt, AbsState.Bot)
+          }
+          else (newSt, AbsState.Bot)
+
+          if (touchedFunc) touchedFuncs += func.id
+
+          result
         }
         case (call: Call) =>
           val (thisVal, argVal, resSt, resExcSt) = internalCI(cp, call.callInst, st, AbsState.Bot)
@@ -220,6 +368,7 @@ case class Semantics(
   }
 
   def I(cp: ControlPoint, i: CFGNormalInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
+    setting
     val tp = cp.tracePartition
     i match {
       case _ if st.isBottom => (AbsState.Bot, excSt)
@@ -503,7 +652,7 @@ case class Semantics(
         println(s"        exceptions: $excSet")
         println(s"        pvalue    : ${v.pvalue}")
         println(s"        objects:")
-        v.locset.foreach(loc => println(st.heap.toStringLoc(loc).get))
+        v.locset.foreach(loc => println(st.heap.toStringLoc(loc).getOrElse(s"[LocNotFound] $loc")))
         (st, excSt)
       }
       case (NodeUtil.INTERNAL_NOT_YET_IMPLEMENTED, List(expr), None) => {
@@ -770,6 +919,22 @@ case class Semantics(
         val newExcSt = st.raiseException(excSet1 ++ excSet2)
         (st1, excSt ⊔ newExcSt)
       }
+      case (NodeUtil.INTERNAL_IS_NATIVE, List(expr), None) => {
+        val (v, excSet) = V(expr, st)
+        val obj = st.heap.get(v.locset)
+        val fidset = obj(ICall).fidset
+
+        val abool = AbsBool(fidset.foldLeft(Set[Boolean]()) {
+          case (set, fid) => set + (fid < 0)
+        })
+
+        val st1 =
+          if (!v.isBottom) st.varStore(lhs, AbsValue(abool))
+          else AbsState.Bot
+
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt ⊔ newExcSt)
+      }
       case (NodeUtil.INTERNAL_GET_OWN_PROP_NAMES, List(expr), Some(aNew)) => {
         val h = st.heap
         val arrASite = aNew
@@ -881,6 +1046,43 @@ case class Semantics(
         val st1 = st.varStore(lhs, AbsValue(kval))
         val newExcSt = st.raiseException(excSet1 ++ excSet2 ++ excSet3)
         (st1, excSt ⊔ newExcSt)
+      }
+      case (NodeUtil.INTERNAL_SPLIT, List(str, sep), Some(aNew)) => {
+        val h = st.heap
+        val arrASite = aNew
+        val (strval, excSet1) = V(str, st)
+        val (sepval, excSet2) = V(sep, st)
+        val arr = (
+          strval.pvalue.strval.gamma,
+          sepval.pvalue.strval.gamma
+        ) match {
+            case (ConFin(strset), ConFin(sepset)) => {
+              val arrs = {
+                for (s <- strset; p <- sepset) yield {
+                  var arr = (s.str).split(p.str)
+                  if (p.str != "" && s.str.endsWith(p.str)) arr :+= ""
+                  arr
+                }
+              }
+              (AbsObj.Bot /: arrs) {
+                case (obj, arr) => obj ⊔ ((AbsObj.newArrayObject(AbsNum(arr.length)) /: arr.zipWithIndex) {
+                  case (arr, (str, idx)) => arr.update(
+                    AbsStr(idx.toString),
+                    AbsDataProp(DataProp(str, T, T, T))
+                  )
+                })
+              }
+            }
+            case _ => AbsObj.newArrayObject(AbsNum.Top).update(AbsStr.Number, AbsDataProp.Top)
+          }
+        val arrLoc = Loc(arrASite, tp)
+        val state = st.alloc(arrLoc)
+        val retHeap = state.heap.update(arrLoc, arr.alloc(arrLoc))
+        val excSt = state.raiseException(excSet1 ++ excSet2)
+        val st2 = state.copy(heap = retHeap)
+        val retSt = st2.varStore(lhs, AbsValue(arrLoc))
+
+        (retSt, excSt)
       }
       case (NodeUtil.INTERNAL_SPLIT, List(str, sep, lim), Some(aNew)) => {
         val h = st.heap
@@ -1154,7 +1356,7 @@ case class Semantics(
             val obj = st.heap.get(loc)
             (obj("source").value.getSingle, obj("flags").value.getSingle) match {
               case (ConOne(Str(source)), ConOne(Str(flags))) =>
-                AbsBool(true == engine.eval(s"/$source/$flags.test('$arg');"))
+                AbsBool(true == engine.eval(s"/$source/$flags.test(${JsString(arg).toString});"))
               case _ => AbsBool.Top
             }
           case _ => AbsBool.Top
@@ -1162,6 +1364,71 @@ case class Semantics(
         val st1 = st.varStore(lhs, resV)
         val newExcSt = st.raiseException(excSet1 ++ excSet2)
         (st1, excSt ⊔ newExcSt)
+      }
+      case (NodeUtil.INTERNAL_REGEX_EXEC, List(thisE, strE), Some(aNew)) => {
+        val (thisV, excSet1) = V(thisE, st)
+        val (strV, excSet2) = V(strE, st)
+
+        val aLoc = Loc(aNew, tp)
+        val (st1, resV) = try {
+          val obj = st.heap.get(thisV.locset)
+          val set = strV.gamma match {
+            case ConFin(set) => set
+            case _ => ???
+          }
+          (obj(IPrimitiveValue).value.getSingle, obj("lastIndex").value.getSingle) match {
+            case (ConOne(Str(prim)), ConOne(Num(num))) =>
+              val regexStr = ('"' + prim + '"').parseJson match {
+                case JsString(str) => str
+                case _ => ???
+              }
+              val lastIdx = num.toInt
+              val (absObj, pval) = set.foldLeft[(AbsObj, AbsPValue)]((AbsObj.Bot, AbsPValue.Bot))((acc, str) => {
+                val (accObj, accPVal) = acc
+                val arg = str match {
+                  case Str(str) => str
+                  case _ => ???
+                }
+                val script = s"var regex = ${regexStr}; regex.lastIndex = $lastIdx; var ret = regex.exec(${JsString(arg).toString}); if(ret) { ret.push(ret.index); ret.push(ret.input); } JSON.stringify(ret);"
+                val evalRes = engine.eval(script).toString
+                val jsonRes = evalRes.parseJson
+                val (absObj, pval): (AbsObj, AbsPValue) = jsonRes match {
+                  case JsArray(lst) =>
+                    val len = lst.length - 2
+                    val absObj = (0 until len).zip(lst).foldLeft(AbsObj.newArrayObject(AbsNum(len))) {
+                      case (acc, (i, e)) =>
+                        acc.update(i.toString, AbsDataProp(alphaJSONPrimitive(e), AT, AT, AT))
+                    }
+                    val added = absObj.update("index", AbsDataProp(alphaJSONPrimitive(lst(len)), AT, AT, AT)).update("input", AbsDataProp(alphaJSONPrimitive(lst(len + 1)), AT, AT, AT))
+                    (added, AbsPValue.Bot)
+                  case JsNull => (AbsObj.Bot, AbsNull.Top)
+                  case _ => ???
+                }
+                (accObj ⊔ absObj, accPVal ⊔ pval)
+              })
+              if (absObj.isBottom) {
+                (st, AbsValue(pval))
+              } else {
+                val st1 = st.alloc(aLoc)
+                val h2 = st1.heap.update(aLoc, absObj)
+                (st1.copy(heap = h2), AbsValue(pval, aLoc))
+              }
+            case _ =>
+              val st1 = st.alloc(aLoc)
+              val h2 = st1.heap.update(aLoc, AbsObj.Top)
+              (st1.copy(heap = h2), AbsValue(AbsPValue.Bot, aLoc))
+          }
+        } catch {
+          case e: Throwable =>
+            val state = st.alloc(aLoc)
+            val heap = st.heap.update(aLoc, AbsObj.Top)
+            val resV = AbsValue(AbsNull.Top, aLoc)
+            (st.copy(heap = heap), resV)
+        }
+
+        val st2 = st1.varStore(lhs, resV)
+        val newExcSt = st.raiseException(excSet1) ⊔ st.raiseException(excSet2)
+        (st2, excSt ⊔ newExcSt)
       }
       case (NodeUtil.INTERNAL_IS_OBJ, List(expr), None) => {
         val (v, excSet) = V(expr, st)
@@ -1423,6 +1690,14 @@ case class Semantics(
         excLog.signal(IRSemanticsNotYetImplementedError(ir))
         (AbsState.Bot, AbsState.Bot)
     }
+  }
+
+  def alphaJSONPrimitive(jv: JsValue): AbsValue = jv match {
+    case JsBoolean(b) => AbsValue(b)
+    case JsString(str) => AbsValue(str)
+    case JsNumber(num) => AbsValue(num.toDouble)
+    case JsNull => AbsNull.Top
+    case _ => ??? //throw new RegexPrimitiveValueError(jv.toString)
   }
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {

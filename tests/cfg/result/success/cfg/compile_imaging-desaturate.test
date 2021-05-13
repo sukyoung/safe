@@ -97,10 +97,11 @@ function[1] <>funexpr@24:15-42:6<> {
     [2] <>obj<>24 := @ToObject(<>obj<>23["options"]) @ #14
     [3] <>y<>25 := <>obj<>24["average"] != "false"
 
-  Block[2] -> [5], [4], ExitExc
+  Block[2] -> [3], ExitExc
     [0] assert(! <>obj<>22["average"])
+    [1] <>y<>25 := <>obj<>22["average"]
 
-  Block[3] -> [8], [7], ExitExc
+  Block[3] -> [5], [4], ExitExc
     [0] <>useAverage<>11 := ! ! <>y<>25
     [1] <>obj<>26 := @ToObject(<>params<>10) @ #15
     [2] <>data<>12 := <>obj<>26["data"]
@@ -115,30 +116,20 @@ function[1] <>funexpr@24:15-42:6<> {
     [11] <>pix<>17 := <>p<>16 * 4
 
   Block[4] -> [6], ExitExc
-    [0] assert(typeof <>obj<>22["average"] == "boolean")
-    [1] <>y<>25 := false
-
-  Block[5] -> [6], ExitExc
-    [0] assert(typeof <>obj<>22["average"] != "boolean")
-    [1] <>y<>25 := <>obj<>22["average"]
-
-  Block[6] -> [3]
-
-  Block[7] -> [9], ExitExc
     [0] assert(<>useAverage<>11)
     [1] <>old<>31 := <>p<>16
     [2] <>new<>32 := @ToNumber(<>old<>31)
     [3] <>p<>16 := <>new<>32 - 1
 
-  Block[8] -> [15], ExitExc
+  Block[5] -> [12], ExitExc
     [0] assert(! <>useAverage<>11)
     [1] <>old<>42 := <>p<>16
     [2] <>new<>43 := @ToNumber(<>old<>42)
     [3] <>p<>16 := <>new<>43 - 1
 
-  LoopHead[9] -> [11], [10]
+  LoopHead[6] -> [8], [7]
 
-  Block[10] -> [12], ExitExc
+  Block[7] -> [9], ExitExc
     [0] assert(<>new<>32)
     [1] <>obj<>33 := @ToObject(<>data<>12) @ #20
     [2] <>old<>34 := <>pix<>17
@@ -156,22 +147,22 @@ function[1] <>funexpr@24:15-42:6<> {
     [14] <>obj<>35[<>pix<>17 + 1] := <>obj<>36[<>pix<>17 + 2]
     [15] <>obj<>33[<>old<>34 - 4] := <>obj<>35[<>pix<>17 + 1]
 
-  Block[11] -> [13], ExitExc
+  Block[8] -> [10], ExitExc
     [0] assert(! <>new<>32)
 
-  LCont[12] -> [9], ExitExc
+  LCont[9] -> [6], ExitExc
     [0] <>old<>31 := <>p<>16
     [1] <>new<>32 := @ToNumber(<>old<>31)
     [2] <>p<>16 := <>new<>32 - 1
 
-  LBreak[13] -> [14]
+  LBreak[10] -> [11]
 
-  Block[14] -> Exit, ExitExc
+  Block[11] -> Exit, ExitExc
     [0] return(true)
 
-  LoopHead[15] -> [17], [16]
+  LoopHead[12] -> [14], [13]
 
-  Block[16] -> [18], ExitExc
+  Block[13] -> [15], ExitExc
     [0] assert(<>new<>43)
     [1] <>obj<>44 := @ToObject(<>data<>12) @ #26
     [2] <>old<>45 := <>pix<>17
@@ -189,15 +180,15 @@ function[1] <>funexpr@24:15-42:6<> {
     [14] <>obj<>46[<>pix<>17 + 1] := <>obj<>47[<>pix<>17 + 2]
     [15] <>obj<>44[<>old<>45 - 4] := <>obj<>46[<>pix<>17 + 1]
 
-  Block[17] -> [19], ExitExc
+  Block[14] -> [16], ExitExc
     [0] assert(! <>new<>43)
 
-  LCont[18] -> [15], ExitExc
+  LCont[15] -> [12], ExitExc
     [0] <>old<>42 := <>p<>16
     [1] <>new<>43 := @ToNumber(<>old<>42)
     [2] <>p<>16 := <>new<>43 - 1
 
-  LBreak[19] -> [14]
+  LBreak[16] -> [11]
 
   Exit[-2]
 

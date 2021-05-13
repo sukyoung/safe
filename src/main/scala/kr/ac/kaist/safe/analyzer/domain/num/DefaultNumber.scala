@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
+
 // default number abstract domain
 object DefaultNumber extends NumDomain {
   case object Top extends Elem
@@ -204,6 +207,13 @@ object DefaultNumber extends NumDomain {
         //     whether n-1 is positive or negative, followed by the decimal representation of the integer abs(n-1) (with no leading zeroes).
         val str = getStr(sLong)
         str.substring(0, 1) + '.' + str.substring(1) + 'e' + getSign(n) + math.abs(n - 1).toString
+      }
+    }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
       }
     }
 
@@ -806,4 +816,21 @@ object DefaultNumber extends NumDomain {
   }
 
   private def isNegZero(v: Double): Boolean = 1 / v == Double.NegativeInfinity
+
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
+    case JsNumber(n) =>
+      val num = n.toDouble
+      val uint = num.toLong
+      if ((num == uint) && (uint > 0 || (num compare 0.0) == 0)) UIntConst(uint)
+      else NUIntConst(num)
+    case JsString(str) if (str == "NaN") => NaN
+    case JsString(str) if (str == "+∞") => PosInf
+    case JsString(str) if (str == "-∞") => NegInf
+    case JsString(str) if (str == "∞") => Inf
+    case JsString(str) if (str == "-0") => NUIntConst(0)
+    case JsString(str) if (str == "UInt") => UInt
+    case JsString(str) if (str == "NUInt") => NUInt
+    case JsString(str) if (str == "__TOP__") => Top
+    case _ => Bot
+  }
 }

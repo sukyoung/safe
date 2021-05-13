@@ -11,6 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
+import kr.ac.kaist.safe.nodes.cfg.CFG
+
 // default data property abstract domain
 object DefaultDataProp extends DataPropDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
@@ -99,11 +103,30 @@ object DefaultDataProp extends DataPropDomain {
       }
     }
 
+    def toJSON(implicit uomap: UIdObjMap): JsValue = (
+      writable.getSingle,
+      enumerable.getSingle,
+      configurable.getSingle
+    ) match {
+        case (ConOne(w), ConOne(e), ConOne(c)) => JsObject(
+          "value" -> value.toJSON,
+          "writable" -> JsBoolean(w),
+          "enumerable" -> JsBoolean(e),
+          "configurable" -> JsBoolean(c)
+        )
+        case _ => fail
+      }
+
     def copy(
       value: AbsValue,
       writable: AbsBool,
       enumerable: AbsBool,
       configurable: AbsBool
     ): Elem = Elem(value, writable, enumerable, configurable)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(AbsValue.fromJSON(fields("value"), cfg), AbsBool.fromJSON(fields("writable")), AbsBool.fromJSON(fields("enumerable")), AbsBool.fromJSON(fields("configurable")))
   }
 }

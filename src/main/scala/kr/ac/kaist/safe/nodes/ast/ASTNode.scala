@@ -35,5 +35,5 @@ trait ASTNode extends Node {
 
 // AST Node Information
 case class ASTNodeInfo(
-  span: Span, comment: Option[Comment] = None
+  span: Span, comment: Option[Comment] = None, blockId: Option[Int] = None
 )

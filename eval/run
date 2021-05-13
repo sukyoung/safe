@@ -1,0 +1,37 @@
+#!/bin/bash
+
+DS=
+BASE=
+NAME=
+
+for i in "$@"
+do
+case $i in
+  -ds|--dynamic-shortcut)
+    DS=$i
+  ;;
+  [^-]*)
+    BASE=`basename $i`
+    NAME="--name=${BASE%.*}"
+  ;;
+esac
+done
+
+echo "Clean..."
+./clean
+
+echo "Merging files..."
+./merge $@
+
+if [ $DS ]; then
+  echo "Instrumenting..."
+  ./instrument
+fi
+
+echo "Analyzing files..."
+./analyze $@ $NAME
+
+if [ -f jalangi.result ]; then
+  echo "Calculating diff..."
+  node branch_compare.js $@
+fi

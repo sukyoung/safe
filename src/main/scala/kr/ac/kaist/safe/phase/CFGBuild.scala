@@ -17,6 +17,8 @@ import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+import spray.json._
+import DefaultJsonProtocol._
 
 // CFGBuild phase
 case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
@@ -47,7 +49,6 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
       fw.close
       println("Dumped CFG to " + out)
     })
-
     Success(cfg)
   }
 

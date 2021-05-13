@@ -14,6 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
+
 // default value abstract domain
 object DefaultValue extends ValueDomain {
   lazy val Bot: Elem = Elem(AbsPValue.Bot, LocSet.Bot)
@@ -32,7 +35,19 @@ object DefaultValue extends ValueDomain {
   def apply(pvalue: AbsPValue, locset: LocSet): Elem = Elem(pvalue, locset)
 
   case class Elem(pvalue: AbsPValue, locset: LocSet) extends ElemTrait {
-    def gamma: ConSet[Value] = ConInf // TODO more precisely
+    def gamma: ConSet[Value] = (pvalue.gamma, locset.gamma) match {
+      case (ConFin(pset), ConFin(lset)) =>
+        val psetv: Set[Value] = pset.map((v) => {
+          val conv: Value = v
+          v
+        })
+        val lsetv: Set[Value] = lset.map((v) => {
+          val conv: Value = v
+          v
+        })
+        ConFin(psetv | lsetv)
+      case _ => ConInf
+    }
 
     def getSingle: ConSingle[Value] = (pvalue.getSingle, locset.getSingle) match {
       case (ConZero, ConZero) => ConZero
@@ -80,6 +95,13 @@ object DefaultValue extends ValueDomain {
       }
     }
 
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
+
     def subsLoc(from: Loc, to: Loc): Elem =
       Elem(this.pvalue, this.locset.subsLoc(from, to))
 
@@ -115,4 +137,9 @@ object DefaultValue extends ValueDomain {
       locSet1 ⊔ locSet2 ⊔ locSet3
     }
   }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
+    val fields = json.asJsObject().fields
+    Elem(AbsPValue.fromJSON(fields("pvalue")), LocSet.fromJSON(fields("locset"), cfg))
+  })
 }

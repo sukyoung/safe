@@ -26,8 +26,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
        $name heap(-all) ({keyword})
        $name context ({keyword})
        $name block ({fid}:{bid})
-       $name loc {LocName}
-       $name fid {keyword}
+       $name loc {LocName} ({keyword})
        $name function ({fid})
        $name worklist
        $name ipsucc
@@ -46,7 +45,6 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         case "context" => printContext(c, args)
         case "block" => printBlock(c, args)
         case "loc" => printLoc(c, args)
-        case "fid" => printFid(c, args)
         case "function" => printFunc(c, args)
         case "worklist" => printWorklist(c, args)
         case "ipsucc" => printIPSucc(c, args)
@@ -111,12 +109,12 @@ case object CmdPrint extends Command("print", "Print out various information.") 
   }
 
   def printLoc(c: Interactive, args: List[String]): Unit = args match {
-    case locStr :: Nil =>
+    case locStr :: args if args.length <= 1 =>
       Loc.parse(locStr, c.cfg) match {
         case Success(loc) =>
           val state = c.sem.getState(c.getCurCP)
           val heap = state.heap
-          heap.toStringLoc(loc) match {
+          state.heap.toStringLoc(loc) match {
             case Some(res) => printResult(res)
             case None => state.context.toStringLoc(loc) match {
               case Some(res) => printResult(res)
@@ -125,12 +123,6 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           }
         case Failure(_) => printResult(s"* cannot find: $locStr")
       }
-    case _ => printResult(help)
-  }
-
-  def printFid(c: Interactive, args: List[String]): Unit = args match {
-    case funcName :: Nil =>
-      c.cfg.getAllFuncs.filter(_.simpleName.contains(funcName)).foreach(printFunc)
     case _ => printResult(help)
   }
 

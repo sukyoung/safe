@@ -1,4 +1,4 @@
 var x = Date.now();
 
 var __result1 = x;
-var __expect1 = 1351559847614;
+var __expect1 = 0;

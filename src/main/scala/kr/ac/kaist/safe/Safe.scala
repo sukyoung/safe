@@ -24,15 +24,11 @@ object Safe {
   def main(tokens: Array[String]): Unit = {
     (tokens.toList match {
       case str :: args => cmdMap.get(str) match {
-        case Some(CmdAnalyze) => CmdAnalyze(s"-config=$CONFIG_FILE" :: args, false)
-        case Some(cmd) => cmd(args, false)
+        case Some(cmd) => cmd(s"-config=$CONFIG_FILE" :: args, false)
         case None => Failure(NoCmdError(str))
       }
       case Nil => Failure(NoInputError)
     }) recover {
-      // SafeException: print the usage message.
-      case ex: SafeException =>
-        Console.err.println(ex.getMessage)
       // Unexpected: print the stack trace.
       case ex =>
         Console.err.println("* Unexpected error occurred.")
@@ -52,13 +48,13 @@ object Safe {
     // execute the command.
     val result: Try[Result] = runner(config)
 
-    if (!config.silent) {
-      result.map(res => {
-        // display the result.
-        command.display(res)
-      })
+    // display the result.
+    if (!config.silent) result.map(res => {
+      command.display(res)
+    })
 
-      // display the time.
+    // display the time.
+    if (!config.silent || config.time) {
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
       println(s"The command '$name' took $duration ms.")
@@ -72,8 +68,12 @@ object Safe {
   val commands: List[Command] = List(
     CmdParse,
     CmdASTRewrite,
+    CmdBlockIdInstrument,
     CmdTranslate,
     CmdCFGBuild,
+    CmdCCFGBuild,
+    CmdCFGSpanInfo,
+    CmdLabelBuild,
     CmdHeapBuild,
     CmdAnalyze,
     CmdBugDetect,
@@ -88,8 +88,11 @@ object Safe {
   var phases: List[Phase] = List(
     Parse,
     ASTRewrite,
+    BlockIdInstrument,
     Translate,
     CFGBuild,
+    CCFGBuild,
+    LabelBuild,
     HeapBuild,
     Analyze,
     BugDetect,
@@ -103,6 +106,8 @@ object Safe {
       "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
+    ("time", BoolOption(c => c.time = true),
+      "show the duration of time."),
     ("testMode", BoolOption(c => c.testMode = true),
       "switch on the test mode.")
   )
@@ -184,5 +189,6 @@ case class SafeConfig(
   var fileNames: List[String] = Nil,
   var silent: Boolean = false,
   var testMode: Boolean = false,
+  var time: Boolean = false,
   var html: Boolean = false // only turn on when HTML files are given.
 ) extends Config

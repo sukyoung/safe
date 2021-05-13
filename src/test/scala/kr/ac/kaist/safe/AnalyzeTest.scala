@@ -53,7 +53,7 @@ abstract class AnalyzeTest extends SafeTest {
 
   // initialization for tests
   HeapBuild.jscache = {
-    val parser = new ArgParser(CmdBase, safeConfig)
+    val parser = new ArgParser(CmdAnalyze, safeConfig)
     parser.addRule(heapBuildConfig, HeapBuild.name, HeapBuild.options)
     parser.addRule(analyzeConfig, Analyze.name, Analyze.options)
     parser(List(s"-config=$configFile"))

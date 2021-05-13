@@ -86,7 +86,7 @@ trait IRWalker {
     case IRThis(ast) =>
       IRThis(ast)
     case IRInternalValue(ast, name) => IRInternalValue(ast, name)
-    case IRVal(value) => IRVal(value)
+    case IRVal(ast, value) => IRVal(value)
   }
 
   def walk(node: IRMember): IRMember = node match {

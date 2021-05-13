@@ -73,14 +73,6 @@ Heap: {
     [[Scope]]: null,
     "length": <1, F, F, F>
   },
-  #String.prototype.constructor: {
-    [[Call]]: fun(1),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
   #String.prototype.indexOf: {
     [[Call]]: fun(7),
     [[Class]]: "Function",
@@ -361,18 +353,30 @@ Function: {
   }
   \\],
   10: [\\
-  function match (regexp) {
-    @NotYetImplemented("String.prototype.match");
+  function match(regex) {
+    if (@BoolTop) return null;
+    else {
+      var args = [];
+      args[@UInt] = @StrTop;
+      return args;
+    }
   }
   \\],
   11: [\\
-  function replace (searchValue, replaceValue) {
-    @NotYetImplemented("String.prototype.replace");
+  function replace(strOrRegex, newStrOrFunc) {
+    if (@SameValue(undefined,this) || @SameValue(null,this)){
+      throw new TypeError();
+    }
+    if (@IsCallable(newStrOrFunc)) {
+      var args = [];
+      args[@UInt] = @BoolTop ? (@BoolTop ? @StrTop : @NumTop) : undefined;
+      newStrOrFunc.apply(global, args);
+    }
+    return @StrTop;
   }
   \\],
   12: [\\
-  function search (regexp) {
-    @NotYetImplemented("String.prototype.search");
+  function () {
   }
   \\],
   13: [\\
@@ -419,6 +423,7 @@ Function: {
   function split (separator, limit) {
     var str = @getLoc('ToString')(this);
     var sep = @ToString(separator);
+    if (limit === undefined) return @split(str, sep);
     var lim = @ToUint32(limit);
     return @split(str, sep, lim);
   }

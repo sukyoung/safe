@@ -11,8 +11,12 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.globalCFG
 import kr.ac.kaist.safe.errors.error.FIdTopGammaError
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.util.UIdObjMap
+
+import spray.json._
 
 // default function id abstract domain
 case object DefaultFId extends FIdDomain {
@@ -22,6 +26,7 @@ case object DefaultFId extends FIdDomain {
     def apply(seq: FunctionId*): FIdSet = FIdSet(seq.toSet)
   }
   lazy val Bot: Elem = FIdSet()
+  lazy val all: Set[FunctionId] = globalCFG.getAllFuncs.map(_.id).toSet
 
   def alpha(fid: FId): Elem = FIdSet(fid.id)
   override def alpha(fidset: Set[FId]): Elem = FIdSet(fidset.map(_.id))
@@ -31,7 +36,7 @@ case object DefaultFId extends FIdDomain {
 
   sealed abstract class Elem extends ElemTrait {
     def gamma: ConSet[FId] = this match {
-      case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
+      case Top => ConFin(all.map(FId(_)))
       case FIdSet(set) => ConFin(set.map(FId(_)))
     }
 
@@ -45,6 +50,13 @@ case object DefaultFId extends FIdDomain {
       case Top => "Top(fid)"
       case FIdSet(set) if set.size == 0 => "⊥(fid)"
       case FIdSet(set) => set.mkString("fid(", ", ", ")")
+    }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
     }
 
     def ⊑(that: Elem): Boolean = (this, that) match {
@@ -75,22 +87,22 @@ case object DefaultFId extends FIdDomain {
     }
 
     def filter(f: FunctionId => Boolean): Elem = this match {
-      case Top => throw FIdTopGammaError // TODO FIdSet(fidset.filter(f))
+      case Top => FIdSet(all.filter(f))
       case FIdSet(set) => FIdSet(set.filter(f))
     }
 
     def foreach(f: FunctionId => Unit): Unit = this match {
-      case Top => throw FIdTopGammaError // TODO fidset.foreach(f)
+      case Top => all.foreach(f)
       case FIdSet(set) => set.foreach(f)
     }
 
     def foldLeft[T](initial: T)(f: (T, FunctionId) => T): T = this match {
-      case Top => throw FIdTopGammaError // TODO fidset.foldLeft(initial)(f)
+      case Top => all.foldLeft(initial)(f)
       case FIdSet(set) => set.foldLeft(initial)(f)
     }
 
     def map[T](f: FunctionId => T): Set[T] = this match {
-      case Top => throw FIdTopGammaError // TODO fidset.map(f)
+      case Top => all.map(f)
       case FIdSet(set) => set.map(f)
     }
 
@@ -103,5 +115,13 @@ case object DefaultFId extends FIdDomain {
       case Top => Top
       case FIdSet(set) => FIdSet(set - fid)
     }
+  }
+
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
+    case JsArray(vector) => FIdSet(vector.collect({
+      case JsNumber(fid) => fid.toInt
+    }).toSet)
+    case JsString(str) if (str == "⊤") => Top
+    case _ => Bot
   }
 }

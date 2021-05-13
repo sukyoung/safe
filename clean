@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd eval && ./clean && cd $SAFE_HOME
+cd dynamic-shortcut && ./clean && cd $SAFE_HOME

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm -f *target*
+rm -f *.result
+rm -f log
+rm -f cfgSpanInfo.json
+rm -f all.log

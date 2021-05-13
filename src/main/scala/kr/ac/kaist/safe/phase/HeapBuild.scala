@@ -57,7 +57,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
     val worklist = Worklist(cfg)
     worklist.add(entryCP)
 
-    val sem = Semantics(cfg, worklist)
+    val sem = Semantics(cfg, worklist, config.timeLimit)
     sem.setState(entryCP, initSt)
 
     Success((cfg, sem, initTP, config, -1))
@@ -80,7 +80,9 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Semantics, Tr
     ("loopDepth", NumOption((c, n) => if (n >= 0) c.loopSensitivity = c.loopSensitivity.copy(maxDepth = n)),
       "{number}-depth loop-sensitive analysis will be executed."),
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
-      "analysis with an initial heap generated from a dynamic snapshot(*.json).")
+      "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
+    ("timeLimit", NumOption((c, n) => c.timeLimit = n),
+      "Set the time limit of abstract interpretation.")
   )
 
   // cache for JS model
@@ -99,5 +101,6 @@ case class HeapBuildConfig(
   var loopSensitivity: LoopSensitivity = LoopSensitivity(0, 0),
   var snapshot: Option[String] = None,
   var recencyMode: Boolean = false,
-  var heapClone: Boolean = false
+  var heapClone: Boolean = false,
+  var timeLimit: Int = 0
 ) extends Config

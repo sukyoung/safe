@@ -13,6 +13,9 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
+import kr.ac.kaist.safe.util.UIdObjMap
+
+import spray.json._
 
 // default global environment abstract domain
 object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
@@ -50,6 +53,11 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     override def toString: String = this match {
       case Bot => "⊥(global environment record)"
       case Top => "Top(global environment record)"
+    }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = this match {
+      case Bot => JsNull
+      case Top => JsObject()
     }
 
     // 10.2.1.2.1 HasBinding(N)
@@ -183,5 +191,10 @@ object DefaultGlobalEnvRec extends GlobalEnvRecDomain {
     private def getGlobalObj(heap: AbsHeap): AbsObj =
       // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
+  }
+
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = json match {
+    case JsString(str) if (str == "__TOP__") => Top
+    case _ => Bot
   }
 }

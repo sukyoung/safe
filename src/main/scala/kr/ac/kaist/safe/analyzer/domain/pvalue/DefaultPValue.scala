@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
+
 // default primitive value abstract domain
 object DefaultPValue extends PValueDomain {
   lazy val Bot: Elem =
@@ -41,7 +44,31 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum,
       strval: AbsStr
   ) extends ElemTrait {
-    def gamma: ConSet[PValue] = ConInf // TODO more precisely
+    def gamma: ConSet[PValue] = (undefval.gamma, nullval.gamma, boolval.gamma, numval.gamma, strval.gamma) match {
+      case (ConFin(uset), ConFin(nullset), ConFin(bset), ConFin(nset), ConFin(sset)) =>
+        val usetv: Set[PValue] = uset.map((v) => {
+          val uonv: PValue = v
+          v
+        })
+        val nullsetv: Set[PValue] = nullset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        val bsetv: Set[PValue] = bset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        val nsetv: Set[PValue] = nset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        val ssetv: Set[PValue] = sset.map((v) => {
+          val conv: PValue = v
+          v
+        })
+        ConFin(usetv | nullsetv | bsetv | nsetv | ssetv)
+      case _ => ConInf
+    }
 
     def getSingle: ConSingle[PValue] = (
       undefval.getSingle,
@@ -114,6 +141,13 @@ object DefaultPValue extends PValueDomain {
       }
     }
 
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
+      }
+    }
+
     def StrictEquals(that: Elem): AbsBool = {
       val right = that
       val falseV =
@@ -161,5 +195,16 @@ object DefaultPValue extends PValueDomain {
       numval: AbsNum = this.numval,
       strval: AbsStr = this.strval
     ): Elem = Elem(undefval, nullval, boolval, numval, strval)
+  }
+
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(
+      AbsUndef.fromJSON(fields("undefval")),
+      AbsNull.fromJSON(fields("nullval")),
+      AbsBool.fromJSON(fields("boolval")),
+      AbsNum.fromJSON(fields("numval")),
+      AbsStr.fromJSON(fields("strval"))
+    )
   }
 }

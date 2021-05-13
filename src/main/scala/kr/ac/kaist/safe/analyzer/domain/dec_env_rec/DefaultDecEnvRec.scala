@@ -14,7 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar }
+import kr.ac.kaist.safe.nodes.cfg.{ CFGId, CapturedVar, CFG }
+
+import spray.json._
 
 // default declarative environment record abstract domain
 object DefaultDecEnvRec extends DecEnvRecDomain {
@@ -138,6 +140,16 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
           s.toString
         }
       }
+    }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = this match {
+      case Bot => JsNull
+      case LBindMap(map) => JsObject(map.map {
+        case (k, (binding, absent)) =>
+          if (absent.isTop) fail
+          else k -> binding.toJSON
+      })
+      case _ => fail
     }
 
     // 10.2.1.1.1 HasBinding(N)
@@ -389,5 +401,23 @@ object DefaultDecEnvRec extends DecEnvRecDomain {
     // delete
     def -(name: String): Elem =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = json match {
+    case JsString(str) => Bot
+    case _ =>
+      val fields = json.asJsObject().fields
+      val mapFields = fields("map").asJsObject.fields
+      val map = mapFields.foldLeft[Map[String, (AbsBinding, AbsAbsent)]](Map())({
+        case (acc, (k, v)) =>
+          val fields = v.asJsObject().fields
+          acc + (k -> (AbsBinding.fromJSON(fields("binding"), cfg), AbsAbsent.fromJSON(fields("absent"))))
+      })
+      fields("type") match {
+        case JsString(str) if (str == "LBindMap") =>
+          LBindMap(map)
+        case _ =>
+          UBindMap(map)
+      }
   }
 }

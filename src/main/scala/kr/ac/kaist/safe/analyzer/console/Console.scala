@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.HeapBuildConfig
-import org.jline.reader.LineReaderBuilder
+import org.jline.reader._
 import org.jline.reader.impl.completer.StringsCompleter
 import org.jline.terminal._
 
@@ -56,41 +56,20 @@ class Console(
     val prepare = prepareToRunFixpoint
     lazy val (st, excSt) = getResult
     val alreadyVisited = (debugMode || stopAlreadyVisited) && (visited contains cur)
-    val exitExc = (debugMode || stopExitExc) && (!excSt.isBottom)
     val oneSideBot = debugMode && (
       (st.heap.isBottom && !st.context.isBottom) ||
       (st.context.isBottom && !st.heap.isBottom) ||
       (excSt.heap.isBottom && !excSt.context.isBottom) ||
       (excSt.context.isBottom && !excSt.heap.isBottom)
     )
-    if (prepare || alreadyVisited || exitExc || oneSideBot) {
+    if (prepare || alreadyVisited || oneSideBot) {
       if (alreadyVisited) println("[STOP] already visited CFGBlock.")
-      if (exitExc) println("[STOP] it creates exceptions.")
       if (oneSideBot) println("[STOP] it create one side bottom.")
       if (showIter && startTime != beforeTime) {
         val duration = System.currentTimeMillis - startTime
         println(s"total: $duration ms")
       }
-      setPrompt()
-      while ({
-        println
-        val line = reader.readLine(prompt)
-        startTime = System.currentTimeMillis
-        beforeTime = System.currentTimeMillis
-        val loop = runCmd(line) match {
-          case CmdResultContinue(o) =>
-            println(o)
-            true
-          case CmdResultBreak(o) =>
-            println(o)
-            false
-          case CmdResultRestart =>
-            prepareToRunFixpoint
-            setPrompt()
-            true
-        }
-        loop
-      }) {}
+      userInput
     } else if (showIter) {
       val curTime = System.currentTimeMillis
       val duration = curTime - beforeTime
@@ -124,14 +103,13 @@ class Console(
         setPrompt()
       }
       case _ =>
-        setPrompt(
-          tpList.zipWithIndex.map {
-            case (tp, idx) => s"[$idx] $tp" + LINE_SEP
-          }.mkString + s"select call context index > "
-        )
+        tpList.zipWithIndex.foreach {
+          case (tp, idx) => println(s"[$idx] $tp")
+        }
+        setPrompt("select call context index > ")
         while ({
           println
-          reader.readLine match {
+          reader.readLine(prompt) match {
             case null =>
               println
               println("* current control point not changed.")
@@ -148,6 +126,36 @@ class Console(
         }) {}
         setPrompt()
     }
+  }
+
+  def userInput: Unit = {
+    setPrompt()
+    while ({
+      println
+      val line = try reader.readLine(prompt) catch {
+        case _: EndOfFileException => "run"
+      }
+      startTime = System.currentTimeMillis
+      beforeTime = System.currentTimeMillis
+      val loop = runCmd(line) match {
+        case CmdResultContinue(o) =>
+          println(o)
+          true
+        case CmdResultBreak(o) =>
+          println(o)
+          false
+        case CmdResultRestart =>
+          prepareToRunFixpoint
+          setPrompt()
+          true
+      }
+      loop
+    }) {}
+  }
+
+  override def runFinished(): Unit = {
+    userInput
+    println("* analysis finished")
   }
 
   override def getPrompt: String = {

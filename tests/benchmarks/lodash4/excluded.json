@@ -1,0 +1,47 @@
+{
+  "eval": [
+    "test15",
+    "test244"
+  ],
+  "proto": [
+    "test78",
+    "test154",
+    "test202",
+    "test288"
+  ],
+  "implicit_call": [
+    "test7",
+    "test9",
+    "test15",
+    "test18",
+    "test34",
+    "test35",
+    "test70",
+    "test76",
+    "test84",
+    "test150",
+    "test156",
+    "test158",
+    "test159",
+    "test178",
+    "test179",
+    "test180",
+    "test182",
+    "test183",
+    "test184",
+    "test185",
+    "test190",
+    "test191",
+    "test199",
+    "test206",
+    "test217",
+    "test222",
+    "test223",
+    "test232",
+    "test244",
+    "test245",
+    "test255",
+    "test263",
+    "test306"
+  ]
+}

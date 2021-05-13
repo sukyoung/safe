@@ -1,3 +1,4 @@
+## basic ignore
 *.DS_Store
 *.bbl
 *.blg
@@ -29,3 +30,46 @@ doc/icse-demo/main.pdf
 .idea/
 safe.iml
 debugger/
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.bak
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+*.fdb_latexmk
+*.gz
+__latexindent_temp.tex
+
+## Generated pdf file
+paper/*/main.pdf
+paper/**/report.pdf
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+# Visual Studio workspace
+*.code-workspace
+
+# temporal files
+__merged__.js
+**/diff-test/merged*
+**/diff-test/*.result
+eval/*target*
+eval/*.result
+eval/result
+eval/log
+eval/cfgSpanInfo.json

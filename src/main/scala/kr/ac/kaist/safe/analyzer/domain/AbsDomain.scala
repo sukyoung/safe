@@ -11,6 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.util.UIdObjMap
+import spray.json._
+
 // abstract domain for value V
 trait AbsDomain[V] extends Domain {
   // concrete value type
@@ -48,5 +52,11 @@ trait AbsDomain[V] extends Domain {
   trait ElemTrait extends super.ElemTrait { this: Elem =>
     def gamma: ConSet[V]
     def getSingle: ConSingle[V]
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue
+    def resolve(f: => JsValue)(implicit uomap: UIdObjMap): JsValue = try f catch {
+      case e: ToJSONFail => uomap.toJSON(this)
+    }
+    def fail: Nothing = throw new ToJSONFail(toString)
   }
 }

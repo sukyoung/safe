@@ -15,6 +15,9 @@ import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 
+import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
+
 // default lexical environment abstract domain
 object DefaultLexEnv extends LexEnvDomain {
   lazy val Bot = Elem(AbsEnvRec.Bot, LocSet.Bot, AbsAbsent.Bot)
@@ -74,6 +77,15 @@ object DefaultLexEnv extends LexEnvDomain {
       s.append("* Outer: ").append(lst.mkString(", "))
       s.toString
     }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = JsObject(
+      "record" -> record.toJSON,
+      "outer" -> ((outer.getSingle, nullOuter.isBottom) match {
+        case (ConOne(loc), true) => loc.toJSON
+        case (ConZero, false) => JsNull
+        case _ => fail
+      })
+    )
 
     def copy(
       record: AbsEnvRec = this.record,
@@ -222,14 +234,24 @@ object DefaultLexEnv extends LexEnvDomain {
   }
 
   def NewDeclarativeEnvironment(outer: LocSet): Elem =
-    Elem(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
+    if (outer.isBottom) Elem(AbsDecEnvRec.Empty, LocSet.Bot, AbsAbsent.Top)
+    else Elem(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
 
   def newPureLocal(outer: LocSet): Elem = {
     val envRec = AbsDecEnvRec(Map(
-      "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
-      "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
+      "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot),
+      "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot),
       "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)
     ))
     Elem(envRec, outer, AbsAbsent.Bot)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(
+      AbsEnvRec.fromJSON(fields("record"), cfg),
+      LocSet.fromJSON(fields("outer"), cfg),
+      AbsAbsent.fromJSON(fields("nullOuter"))
+    )
   }
 }

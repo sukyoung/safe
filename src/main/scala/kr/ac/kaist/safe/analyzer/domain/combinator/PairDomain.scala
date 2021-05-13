@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
+
 // pair abstract domain
 case class PairDomain[L, R, LD <: AbsDomain[L], RD <: AbsDomain[R]](
     AbsL: LD,
@@ -82,5 +85,7 @@ case class PairDomain[L, R, LD <: AbsDomain[L], RD <: AbsDomain[R]](
       case Top => "⊤"
       case Pair(left, right) => s"($left, $right)"
     }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = fail
   }
 }

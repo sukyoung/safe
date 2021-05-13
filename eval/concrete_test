@@ -1,0 +1,18 @@
+#!/bin/bash
+
+LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+
+if [ "$#" -eq 1 ]; then
+  ./merge $1
+  node target.js
+	exit 1
+else
+  ./merge
+  for file in $LODASH/tests/*; do
+    if [ -f "$file" ]; then
+      echo "print('Testing $file...');" >> target.js
+      cat $file >> target.js
+    fi
+  done
+  node target.js
+fi

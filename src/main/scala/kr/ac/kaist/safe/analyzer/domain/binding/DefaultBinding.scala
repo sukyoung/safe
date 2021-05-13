@@ -11,6 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.util.UIdObjMap
+
 // default binding abstract domain
 object DefaultBinding extends BindingDomain {
   lazy val Bot: Elem = Elem(AbsValue.Bot, AbsAbsent.Bot, AbsBool.Bot)
@@ -97,10 +101,27 @@ object DefaultBinding extends BindingDomain {
       )
     }
 
+    def toJSON(implicit uomap: UIdObjMap): JsValue = mutable.getSingle match {
+      case ConOne(b) => JsObject(
+        "value" -> value.toJSON,
+        "mutable" -> b.toJSON
+      )
+      case _ => fail
+    }
+
     def copy(
       value: AbsValue = this.value,
       uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable
     ): Elem = Elem(value, uninit, mutable)
+  }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = {
+    val fields = json.asJsObject().fields
+    Elem(
+      AbsValue.fromJSON(fields("value"), cfg),
+      AbsAbsent.fromJSON(fields("uninit")),
+      AbsBool.fromJSON(fields("mutable"))
+    )
   }
 }

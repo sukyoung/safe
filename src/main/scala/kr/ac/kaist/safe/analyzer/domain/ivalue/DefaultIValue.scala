@@ -12,7 +12,10 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.nodes.cfg.{ FunctionId, CFG }
+import kr.ac.kaist.safe.util.UIdObjMap
+
+import spray.json._
 
 // default internal value abstract domain
 object DefaultIValue extends IValueDomain {
@@ -31,7 +34,12 @@ object DefaultIValue extends IValueDomain {
   case class Elem(value: AbsValue, fidset: AbsFId) extends ElemTrait {
     def gamma: ConSet[IValue] = ConInf // TODO more precisely
 
-    def getSingle: ConSingle[IValue] = ConMany
+    def getSingle: ConSingle[IValue] = (value.getSingle, fidset.getSingle) match {
+      case (ConZero, ConZero) => ConZero
+      case (ConOne(v), ConZero) => ConOne(v)
+      case (ConZero, ConOne(v)) => ConOne(v)
+      case _ => ConMany
+    }
 
     override def toString: String = {
       if (isBottom) "⊥Elem"
@@ -40,6 +48,13 @@ object DefaultIValue extends IValueDomain {
         value.foldUnit(list :+= _.toString)
         fidset.foldUnit(list :+= _.toString)
         list.mkString(", ")
+      }
+    }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve {
+      getSingle match {
+        case ConOne(v) => v.toJSON
+        case _ => fail
       }
     }
 
@@ -70,4 +85,9 @@ object DefaultIValue extends IValueDomain {
       fidset: AbsFId
     ): Elem = Elem(value, fidset)
   }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
+    val fields = json.asJsObject().fields
+    Elem(AbsValue.fromJSON(fields("value"), cfg), AbsFId.fromJSON(fields("fidset")))
+  })
 }

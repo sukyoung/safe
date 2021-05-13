@@ -1,0 +1,302 @@
+\section{Definition of Dynamic Shortcut}\label{sec:def}
+
+In this section, we introduce the formal definition of dynamic shortcut based on
+sealed symbolic execution in abstract interpretation.
+
+
+
+\subsection{Abstract Interpretation}
+
+We first define the traditional abstract interpretation.
+
+
+\subsubsection{Concrete Semantics}
+
+We define a program $\prog$ as a state transition system $(\stset, \trans,
+\istset)$.  A program starts with an initial state in $\istset$ and the
+transition relation $\trans \subseteq \stset \times \stset$ describes how states
+are transformed to other states.  A \textit{collecting semantics} $\sem{\prog} =
+\{ \st \in \stset \mid \ist \in \istset \wedge \ist \trans^* \st \}$ consists of
+reachable states from initial states of the program $\prog$.  We could calculate
+it using the \textit{transfer function} $\transfer: \dom \rightarrow \dom$ as
+follows:
+\[
+  \sem{\prog} = \underset{n \rightarrow \infty}{\lim}{\transfer^n(\ielem)}\\
+  \qquad
+  \transfer(\elem) = \elem \join \step(\elem)\\
+\]
+The \textit{concrete domain} $\dom = \powerset{\stset}$ is a complete lattice
+with $\cup$, $\cap$, and $\subseteq$ as its join($\join$), meet($\meet$), and
+partial order($\order$) operators.  The set of states $\ielem$ denotes the
+initial states $\istset$.  The \textit{one-step execution} $\step: \dom
+\rightarrow \dom$ transforms states using the transition relation $\trans$:
+$\step(\elem) = \{ \st' \mid \st \in \elem \wedge \st \trans \st' \}$.
+
+
+\subsubsection{Abstract Interpretation}
+
+The abstract interpretation over-approximates the transfer $\transfer$ to the
+\textit{abstract transfer function} $\abstransfer: \absdom \rightarrow \absdom$
+to get the \textit{abstract semantics} $\abssem{\prog}$ in finite iterations as
+follows:
+\[
+    \abssem{\prog} = \underset{n \rightarrow
+    \infty}{\lim}{(\abstransfer)^n(\iabselem)}\\
+\]
+We define a \textit{state abstraction} $\dom \galois{\alpha}{\gamma} \absdom$ as
+a Galois connection between the concrete domain $\dom$ and an abstract domain
+$\absdom$ with a \textit{concretization function} $\gamma$ and an
+\textit{abstraction function} $\alpha$.  The initial abstract state $\iabselem
+\in \absdom$ represents an abstraction of the initial state set; $\ielem
+\subseteq \gamma(\iabselem)$.  The abstract transfer function $\abstransfer:
+\absdom \rightarrow \absdom$ is defined as $\abstransfer(\abselem) = \abselem
+\join \absstep(\abselem)$ with an \textit{abstract one-step execution}
+$\absstep: \absdom \rightarrow \absdom$.  For the sound state abstraction, the
+join operator and the abstract one-step execution should satisfy the following
+conditions:
+\begin{equation}\label{equ:sound}
+  \begin{array}{l}
+  - \; \forall \abselem_0, \abselem_1 \in \absdom. \; \gamma(\abselem_0) \cup
+    \gamma(\abselem_1) \subseteq \gamma(\abselem_0 \join \abselem_1)\\
+  - \; \forall \abselem \in \absdom. \; \step \circ \gamma(\abselem) \subseteq
+    \gamma \circ \absstep(\abselem)\\
+  \end{array}
+\end{equation}
+
+
+\subsubsection{Analysis Sensitivity}
+
+Abstract interpretation is often defined with \textit{analysis sensitivity} to
+increase the precision of static analysis.  A sensitive abstract domain
+$\sabsdom: \viewset \rightarrow \absdom$ is defined with a \textit{view
+abstraction} $\viewmap: \viewset \rightarrow \dom$ that provides multiple points
+of views for reachable states during static analysis.  It maps a finite number
+of views $\viewset$ to sets of states $\dom$. Each view $\view \in \viewset$
+represents a set of states $\viewmap(\view)$ and also a state is always
+included in a unique view: $\forall \st \in \stset. \; \exists! \view \in
+\viewset.$ s.t. $\st \in \viewmap(\view)$.  A \textit{sensitive state
+abstraction} $\dom \galois{\alpha_\viewmap}{\sgamma} \sabsdom$ is a Galois
+connection between the concrete domain $\dom$ and the sensitive abstract domain
+$\sabsdom$ with the following concretization function:
+\[
+  \sgamma(\sabselem) = \underset{\view \in \viewset}{\bigcup}
+  {\viewmap(\view) \cap \gamma \circ \sabselem(\view)}
+\]
+
+With analysis sensitivities, the abstract one-step execution $\sabsstep:
+\sabsdom \rightarrow \sabsdom$ is defined as follows:
+\[
+  \sabsstep(\sabselem) = \lambda \view \in \viewset. \; \underset{\view' \in
+  \viewset}{\bigjoin}{\viewtrans{\view'}{\view} \circ \sabselem(\view')}
+\]
+where $\viewtrans{\view'}{\view}: \absdom \rightarrow \absdom$ is the abstract
+semantics of a \textit{view transition} from a view $\view'$ to another view
+$\view$.  It should satisfy the following condition for the soundness of the
+analysis:
+\[
+  \forall \abselem \in \absdom. \; \step(\gamma(\abselem) \cap \viewmap(\view'))
+  \cap \viewmap(\view) \subseteq \gamma \circ
+  \viewtrans{\view'}{\view}(\abselem)
+\]
+
+
+
+\subsection{Dynamic Shortcut}
+
+We define dynamic shortcut by combining the sensitive abstract interpretation
+with sealed symbolic execution.
+
+
+\subsubsection{Sealed Symbolic Execution}
+
+We define \textit{sealed symbolic execution} by extending the transition
+relation $\trans$ as a symbolic transition relation $\symbtrans$ on symbolic
+states.  First, we augment concrete states $\stset$ to symbolic states
+$\symbstset$ by extending values $\valset$ with \textit{sealed symbolic values}
+$\symbset$.  We also define the symbolic transition relation $\symbtrans
+\subseteq \symbstset \times \symbstset$. We use the notation $\symbtrans^k$
+for $k$ repetition of $\symbtrans$, and  $\symbst \symbtrans \excst$ when
+$\symbst$ does not have symbolic transitions with any other symbolic states.  We
+also define the soundness of sealed symbolic execution as follows:
+\begin{definition}{(Validity)}
+  The symbolic transition relation is \textit{valid} when the following
+  condition is satisfied:
+  \[
+      \forall \symbst, \symbst' \in \symbstset.\\
+  \]
+  \[
+    \symbst \symbtrans \symbst' \Leftrightarrow
+    \forall \imap \in \imapset. \;
+    \{ \st' \mid \instant{\symbst}{\imap} \trans \st' \}
+    = \{ \instant{\symbst'}{\imap} \}
+  \]
+  where $\imapset: \symbset \rightarrow \valset$ is instantiation maps from
+  symblic values to real values, and $\instant{\symbst}{\imap}$ denotes a state
+  produced by replacing each symbolic value $\symb$ to the corresponding value
+  $\imap(\symb)$ using the instantiation map $\imap \in \imapset$.
+\end{definition}
+
+Note that the main difference of sealed symbolic execution with the traditional
+symbolic execution is that it only supports sealed symbolic values instead of
+symbolic expressions and path constraints.
+
+We also define an \textit{abstract instantiation map} $\absimap \in \absimapset:
+\symbset \rightarrow \absvalset$ with abstract values $\absvalset$.  Its
+concretization function $\imapgamma: \absimapset \rightarrow
+\powerset{\imapset}$ is defined with the concretization function $\valgamma:
+\absvalset \rightarrow \powerset{\valset}$ for values as follows:
+\[
+  \imapgamma(\absimap) = \{
+    \imap \mid \forall \symb \in \symbset. \;
+    \imap(\symb) \in \gamma \circ \absimap(\symb)
+  \}
+\]
+We define the instantiation of a given sealed symbolic state $\symbst \in
+\symbstset$ with an abstract instantiation map $\absimap \in \absimapset$ as
+follows:
+\[
+  \instant{\symbst}{\absimap} = \{ \instant{\symbst}{\imap} \mid \imap \in
+  \imapgamma(\absimap) \}
+\]
+
+\begin{definition}[Sealed Symbolic Domain]
+  We define \textit{sealed symbolic domain} $\symbdom: \powerset{\absimapset
+  \times \symbstset}$ with the following concretization function $\symbgamma:
+  \symbdom \rightarrow \dom$ and sealed symbolic one-step execution $\symbstep:
+  \symbdom \rightarrow \symbdom$ as follows:
+  \begin{itemize}
+    \item \(
+      \symbgamma(\symbelem) = 
+      \bigcup \{ \instant{\symbst}{\absimap} \mid (\absimap, \symbst) \in
+      \symbelem\}
+    \)
+    \item \(
+      \symbstep(\symbelem) = \{ (\absimap, \symbst') \mid (\absimap, \symbst)
+      \in \symbelem \wedge \symbst \symbtrans \symbst' \}
+    \)
+  \end{itemize}
+\end{definition}
+
+
+\subsubsection{Combined Domain}
+
+\begin{definition}[Combined Domain]
+  We define a \textit{combined domain} as $\combdom = \sabsdom \times \symbdom$
+  with the following concretization function and join operator:
+  \begin{itemize}
+    \item \(
+      \combgamma((\sabselem, \symbelem)) = \sgamma(\sabselem) \cup
+      \symbgamma(\symbelem)
+    \)
+    \item \(
+      (\sabselem, \symbelem) \join ({\sabselem}', \symbelem') = (\sabselem \join
+      {\sabselem}', \symbelem \cup \symbelem')
+    \)
+  \end{itemize}
+\end{definition}
+
+An analysis element $\aelem \in \aelemset = (\viewset \times \absdom) \uplus
+(\absimapset \times \symbstset)$ is either a pair of a view and an abstract
+state or a sealed symbolic state.  To freely convert a pair of a view and an
+abstract state to its corresponding pair of an abstract instantiation map and a
+sealed symbolic state, we define two domain converters: \begin{itemize} \item
+$\asconverter: (\viewset \times \absdom) \hookrightarrow (\absimapset \times
+\symbstset)$ \item $\saconverter: (\viewset \times \absdom) \leftarrow
+(\absimapset \times \symbstset)$ \end{itemize} The converter $\asconverter$ is a
+\textit{partial function} and it is applicable when it is possible to represent
+a given abstract state in a specific view as a pair of abstract instantiation
+map and a sealed symbolic state.  We define the concretization function
+$\aelemgamma: \aelemset \rightarrow \dom$ for analysis elements as follows:
+\[
+  \aelemgamma(\aelem) = \left\{
+    \begin{array}{ll}
+      \viewmap(\view) \cap \gamma(\abselem) & \text{if} \; (\view, \abselem) = \aelem\\
+      \instant{\symbst}{\absimap} & \text{if} \; (\absimap, \symbst) = \aelem\\
+    \end{array}
+  \right.
+\]
+Moreover, two converters should convert given elements without loss of
+information:
+\[
+  \forall \view \in \viewset, \abselem \in \absdom.
+\]
+\[
+  \asconverter(\aelem) = \aelem' \Rightarrow \left\{
+  \begin{array}{l}
+    \aelem = \saconverter(\aelem')\\
+    \aelemgamma(\aelem) = \aelemgamma(\aelem')\\
+  \end{array}
+  \right.
+\]
+
+We define a $\areform$ function using two converters between analysis elements
+as follows:
+\begin{definition}[$\areform$]\label{def:areform}
+  The reform function $\areform: \aelemset \rightarrow \aelemset$ for analysis
+  elements is defined as
+  \[
+    \areform(\aelem) = \left\{
+      \begin{array}{ll}
+        \asconverter(\aelem)
+        & \text{if} \; \aelem = (\view, \abselem) \wedge \aelem \in
+        \Dom(\asconverter)\\
+        \saconverter(\aelem)
+        & \text{if} \; \aelem = (\absimap, \symbst) \wedge \symbst \symbtrans
+        \bot\\
+        \aelem
+        & \text{Otherwise}
+      \end{array}
+    \right.
+  \]
+\end{definition}
+Using the $\areform$ function for analysis elements, we defined the $\reform$
+function for combined states:
+\begin{definition}[$\reform$]\label{def:reform}
+  The reform function $\reform: \combdom \rightarrow \combdom$ for combined
+  states is defined as
+  \[
+    \reform((\sabselem, \symbelem)) = \left(
+      \lambda \view. \bigjoin \{ \abselem \!\mid\! (\view, \abselem) \in E \},
+      E \cap (\absimapset \times \symbstset)
+    \right)
+  \]
+  where
+  \[
+    E = \dot{\areform}(\{ (\view, \sabselem(\view)) \mid \view \in \viewset \} \cup \symbelem)
+  \]
+\end{definition}
+The dot notation $\dot{f}$ denotes the element-wise extended function of a
+function $f$.
+
+\begin{definition}[Combined One-Step Execution]
+  We define the combined one-step execution $\combstep: \combdom \rightarrow
+  \combdom$ is define as follows:
+  \[
+    \combstep(\combelem) = (
+      \sabsstep(\sabselem),
+      \symbstep(\symbelem)
+    )
+  \]
+  where $(\sabselem, \symbelem) = \reform(\combelem)$.
+\end{definition}
+
+We could configure when the sealed symbolic execution or the abstract
+interpretation is performed based on the definition of the converter
+$\asconverter$.  For example, we could define the $\asconverter$ for analysis
+elements related to only function entry, call, and exit points to perform
+conversions in a function level.  For the soundness and the termination of the
+the abstract interpretation with dynamic shortcuts, it should satisfy the
+following condition:
+\begin{theorem}[Soundness and Termination]\label{theorem:shortcut}
+  The abstract interpretation with dynamic shortcut is sound and terminates in a
+  finite time if its abstract semantics is sound and $\saconverter$ satisfies the
+  following condition:
+  \begin{equation}\label{equ:asc-cond}
+    \asconverter((\view, \abselem)) = (\absimap, \symbst) \Rightarrow
+    \symbst \symbtrans^k \excst \wedge 1 < k \leq N
+  \end{equation}
+  where $N$ is a pre-defined maximum length of the sealed symbolic execution.
+\end{theorem}
+
+In the remaining section, we will prove this theorem using the Kleene's
+fixed-point theorem with the finite height of abstract domains.

@@ -1,0 +1,51 @@
+#!/bin/bash
+
+TOTAL_START_TIME=$SECONDS
+
+mkdir -p result
+LOG=result/all.log
+LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+TEST=$LODASH/tests
+
+for i in "$@"
+do
+case $i in
+  -a|--abstract)
+    TEST=$LODASH/tests-rewritten
+  ;;
+  -a=*|--abstract=*)
+    TEST=$LODASH/tests-rewritten-${i#*=}
+  ;;
+esac
+done
+
+echo > $LOG
+echo "$TEST"
+for file in $TEST/*; do
+  if [ -f "$file" ]; then
+    base=`basename $file`
+    name="${base%.*}"
+    excluded=`grep \"$name\" $LODASH/excluded.json`
+
+    if [ "$excluded" == "" ]; then
+      echo "--------------------------------------------------" | tee -a $LOG
+      echo "- Diff-Testing for $file" | tee -a $LOG
+      echo "--------------------------------------------------" | tee -a $LOG
+
+      START_TIME=$SECONDS
+
+      ./run $@ --lodash $file 2>&1 | tee -a $LOG
+      mkdir -p result/$name
+      mv *.result result/$name
+
+      ELAPSED_TIME=`expr $SECONDS - $START_TIME`
+      echo "$ELAPSED_TIME seconds elapsed." | tee -a $LOG
+
+      node summary.js $@
+    fi
+  fi
+done
+
+TOTAL_ELAPSED_TIME=`expr $SECONDS - $TOTAL_START_TIME`
+echo "--------------------------------------------------" | tee -a $LOG
+echo "Total $TOTAL_ELAPSED_TIME seconds elapsed." | tee -a $LOG

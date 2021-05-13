@@ -15,6 +15,8 @@ import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.util.{ PredAllocSite, HashMap }
 
+import spray.json._
+
 package object domain {
   ////////////////////////////////////////////////////////////////
   // value alias
@@ -187,7 +189,12 @@ package object domain {
   type AbsDesc = DefaultDesc.Elem
 
   // absent value for parital map
-  object AbsAbsent extends SimpleDomain[None.type]
+  object AbsAbsent extends SimpleDomain[None.type] {
+    def fromJSON(json: JsValue): Elem = json match {
+      case JsString(str) if (str == "__TOP__") => Top
+      case _ => Bot
+    }
+  }
   type AbsAbsent = AbsAbsent.Elem
 
   // execution context
@@ -228,4 +235,9 @@ package object domain {
 
   type Map[K, V] = HashMap[K, V]
   val Map = HashMap
+
+  // cache for JSON of GLOBAL_LOC
+  var globalLocJSON: JsValue = null
+
+  def debug(msg: String): Unit = System.err.println(msg)
 }

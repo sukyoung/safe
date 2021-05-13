@@ -1,0 +1,44 @@
+QUnit.module('sum methods');
+lodashStable.each([
+    'sum',
+    'sumBy'
+], function (methodName) {
+    var array = [
+            __num_top__,
+            4,
+            2
+        ], func = _[methodName];
+    QUnit.test(__str_top__ + methodName + __str_top__, function (assert) {
+        assert.expect(1);
+        assert.strictEqual(func(array), 12);
+    });
+    QUnit.test('`_.' + methodName + '` should return `0` when passing empty `array` values', function (assert) {
+        assert.expect(1);
+        var expected = lodashStable.map(empties, stubZero);
+        var actual = lodashStable.map(empties, function (value) {
+            return func(value);
+        });
+        assert.deepEqual(actual, expected);
+    });
+    QUnit.test('`_.' + methodName + '` should skip `undefined` values', function (assert) {
+        assert.expect(1);
+        assert.strictEqual(func([
+            1,
+            undefined
+        ]), 1);
+    });
+    QUnit.test('`_.' + methodName + '` should not skip `NaN` values', function (assert) {
+        assert.expect(1);
+        assert.deepEqual(func([
+            __num_top__,
+            NaN
+        ]), NaN);
+    });
+    QUnit.test(__str_top__ + methodName + '` should not coerce values to numbers', function (assert) {
+        assert.expect(1);
+        assert.strictEqual(func([
+            '1',
+            '2'
+        ]), '12');
+    });
+});

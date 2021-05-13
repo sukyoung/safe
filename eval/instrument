@@ -1,0 +1,21 @@
+#!/bin/bash
+
+TARGET=target.js
+REV_JSON=target_jalangi_.json
+REV_JS=target_jalangi_.js
+
+echo "Generating $REV_JSON and $REV_JS..."
+node $JALANGI_HOME/src/js/commands/esnstrument_cli.js --inlineIID --inlineSource $TARGET
+
+echo "Generating cfgSpanInfo.json and fidToName.json ..."
+$SAFE_HOME/bin/safe cfgSpanInfo $TARGET
+mv fidToName.json $DS_HOME
+
+echo "Generating iidMap.json and iidToLocation.json... @ $DS_HOME"
+node $DS_HOME/IID2CFGSpan.js $REV_JSON cfgSpanInfo.json
+
+echo "Generating function.json ... @ $DS_HOME"
+node $DS_HOME/instrument.js $REV_JS
+
+echo "Generating direct_vanilla.js... @ $DS_HOME"
+node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js

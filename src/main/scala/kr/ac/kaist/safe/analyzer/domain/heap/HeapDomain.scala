@@ -41,6 +41,7 @@ trait HeapDomain extends AbsDomain[Heap] {
     def alloc(loc: Loc): Elem
 
     def getLocSet: LocSet
+    def getMerged: LocSet
 
     def domIn(loc: Loc): Boolean
 
@@ -69,14 +70,5 @@ trait HeapDomain extends AbsDomain[Heap] {
 
     // location concrete check
     def isConcrete(loc: Loc): Boolean
-
-    // location changed check
-    def isChanged(loc: Loc): Boolean
-
-    // delete changed info
-    def cleanChanged: Elem
-
-    // applied changed information
-    def <<(that: Elem): Elem
   }
 }

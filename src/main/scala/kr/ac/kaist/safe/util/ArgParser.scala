@@ -80,9 +80,8 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
         Source.fromFile(fileName)("UTF-8").mkString.parseJson match {
           case (obj: JsObject) => obj.fields.foreach {
             case (phase, value: JsObject) => {
-              if (Safe.phases.map(_.name).contains(phase))
+              if (cmd.phaseNameList.contains(phase))
                 value.fields.foreach(addArg(s"$phase:", _))
-              else throw NoPhaseError(phase)
             }
             case ("file", JsArray(lst)) => lst.foreach {
               case JsString(fileName) => jsonArgs ::= fileName

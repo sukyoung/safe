@@ -15,6 +15,8 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.SimpleParser
 
+import spray.json._
+
 // analysis sensitivity
 sealed trait Sensitivity {
   val initTP: TracePartition
@@ -42,6 +44,14 @@ trait TracePartition {
   ): List[TracePartition]
 
   def toStringList: List[String]
+
+  def toJSON: JsValue
+}
+object TracePartition {
+  def apply(str: String)(implicit givenCfg: CFG): TracePartition = {
+    val parser = new TracePartitionParser { val cfg = givenCfg }
+    parser.parse(parser.tp, str).get
+  }
 }
 
 // trace partition parser
@@ -86,11 +96,15 @@ case object EmptyTP extends TracePartition {
   override def toString: String = s"Empty"
 
   def toStringList: List[String] = Nil
+
+  def toJSON: JsValue = JsArray()
 }
 
 case object Insensitive extends Sensitivity {
   val initTP: TracePartition = EmptyTP
   def isInsensitive: Boolean = true
+
+  def toJSON: JsValue = JsNull
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -115,6 +129,8 @@ case class ProductTP(
   override def toString: String = s"($ltp|$rtp)"
 
   def toStringList: List[String] = ltp.toStringList ++ rtp.toStringList
+
+  def toJSON: JsValue = JsArray(Vector(ltp.toJSON, rtp.toJSON))
 }
 
 case class ProductSensitivity(
@@ -123,6 +139,7 @@ case class ProductSensitivity(
 ) extends Sensitivity {
   val initTP = ProductTP(lsens.initTP, rsens.initTP)
   def isInsensitive: Boolean = lsens.isInsensitive && rsens.isInsensitive
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +170,8 @@ case class CallSiteContext(callsiteList: List[Call], depth: Int) extends TracePa
     val span = call.span
     s"Call[$bid] of function[$fid] $fname @ $span"
   })
+
+  def toJSON: JsValue = JsObject("k" -> JsNumber(depth), "callsiteList" -> JsArray(callsiteList.toVector.map(call => JsString(s"${call.func.id}:${call.id}"))))
 }
 
 case class CallSiteSensitivity(depth: Int) extends Sensitivity {
@@ -243,6 +262,12 @@ case class LoopContext(
     val span = head.span
     s"LoopHead[$bid] ($iter/$maxIter) function[$fid] $fname @ $span"
   })
+
+  def toJSON: JsValue = JsObject(
+    "i" -> JsNumber(maxDepth),
+    "j" -> JsNumber(maxIter),
+    "iterList" -> JsArray(iterList.toVector.map({ case LoopIter(head, iter) => JsString(s"${head.func.id}:${head.id}($iter)") }))
+  )
 }
 
 case class LoopSensitivity(maxIter: Int, maxDepth: Int) extends Sensitivity {

@@ -11,6 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+import kr.ac.kaist.safe.util.UIdObjMap
+
 // number abstract domain
 trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
   def Inf: Elem = alpha(Num.PosInf, Num.NegInf)
@@ -138,4 +141,6 @@ trait NumDomain extends AbsDomain[Num] { domain: NumDomain =>
     def sqrt: Elem
     def tan: Elem
   }
+
+  def fromJSON(json: JsValue)(implicit uomap: UIdObjMap): Elem
 }

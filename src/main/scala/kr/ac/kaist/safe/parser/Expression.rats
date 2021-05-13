@@ -511,7 +511,7 @@ constant inline Action<LHS> MemberBracket =
                  SourceLoc loc = base.span().begin();
                  Span span = new Span(base.span().fileName(), loc.line(),
                                                a1.info().span().end().line(),
-                                               loc.column()+1, a1.span().end().column()+1,
+                                               loc.column(), a1.span().end().column()+1,
                                                base.info().span().begin().offset(), a1.info().span().end().offset()+1);
                  return new Bracket(NodeUtil.makeASTNodeInfo(span), (LHS)base, a1);
              }};

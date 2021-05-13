@@ -1,0 +1,57 @@
+#!/bin/bash
+
+NO_INSTRUMENT=
+ABSTRACT=
+TIME_LIMIT=5m
+SAFE_OPTION="-analyzer:dynamicShortcut -analyzer:exitReachable"
+SERVER_OPTION=
+CONSOLE=
+
+for i in "$@"
+do
+case $i in
+  --no-instrument)
+    NO_INSTRUMENT=$i
+  ;;
+  -a|--abstract|-a=*|--abstract=*)
+    ABSTRACT=$i
+  ;;
+  -t=*|--time=*)
+    TIME_LIMIT="${i#*=}"
+  ;;
+  -c|--console)
+    CONSOLE=$i
+    SAFE_OPTION="-analyzer:console $SAFE_OPTION"
+  ;;
+  -d|--debug)
+    SERVER_OPTION="-v"
+    SAFE_OPTION="-analyzer:debug $SAFE_OPTION"
+  ;;
+esac
+done
+
+if ! [ $NO_INSTRUMENT ]; then
+  echo "Generating direct_vanilla.js... @ $DS_HOME"
+  node $JALANGI_HOME/generate_direct_vanilla.js --analysis src/js/sample_analyses/ChainedAnalyses.js --analysis src/js/sample_analyses/dlint/DynamicShortcut.js $DS_HOME/engine.js
+fi
+
+echo "Start server..."
+cd $DS_HOME
+node server.js $SERVER_OPTION &
+pid=$!
+cd $SAFE_HOME/eval
+
+echo "Analyzing with SAFE + DynamicShortcut..."
+echo > $DS_HOME/ds-jalangi.result
+if [ $CONSOLE ]; then
+  $SAFE_HOME/bin/safe bugDetect $SAFE_OPTION target.js | tee ds-safe.result
+else
+  timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect $SAFE_OPTION target.js > ds-safe.result
+fi
+if [ $? -eq 124 ]; then
+  echo "[Timeout] $TIME_LIMIT" >> ds-safe.result
+fi
+mv $DS_HOME/ds-jalangi.result .
+
+echo "Killing the server..."
+kill -9 $pid

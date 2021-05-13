@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.console
 import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.{ ControlPoint, Semantics, Worklist }
-import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGBlock }
+import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGBlock, ExitExc }
 import kr.ac.kaist.safe.phase.HeapBuildConfig
 import scala.collection.immutable.TreeSet
 
@@ -59,7 +59,14 @@ trait Interactive {
       case _ => false
     })
     val breakB = breakList(block)
-    targetB || breakB
+    val excStop = (debugMode || stopExitExc) && (block match {
+      case ExitExc(f) =>
+        val exitCP = ControlPoint(f.exit, cur.tracePartition)
+        val exitSt = sem.getState(exitCP)
+        exitSt.isBottom
+      case _ => false
+    })
+    targetB || breakB || excStop
   }
 
   def runCmd(line: String): CmdResult = {

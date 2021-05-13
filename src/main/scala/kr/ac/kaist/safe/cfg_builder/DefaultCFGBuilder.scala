@@ -142,14 +142,14 @@ class DefaultCFGBuilder(
 
   /* translate IRFunctional */
   private def translateFunctional(functional: IRFunctional): CFGFunction = functional match {
-    case IRFunctional(_, _, name, params, args, fds, vds, body) =>
+    case IRFunctional(ast, _, name, params, args, fds, vds, body) =>
       val argVars: List[CFGId] = namesOfArgs(args)
       val localVars: List[CFGId] = (namesOfFunDecls(fds) ++ namesOfVars(vds)).filterNot(argVars.contains)
       // TODO: reorder to make argumentsName to the top
       val argumentsName: String = id2cfgId(params(1)).toString
       val nameStr: String = name.originalName
 
-      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, true)
+      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, true, Some(ast))
       val oldFunc: CFGFunction = currentFunc
       currentFunc = newFunc
 
@@ -426,6 +426,7 @@ class DefaultCFGBuilder(
           case INTERNAL_SPLIT => (Some(newASite), lmap)
           case INTERNAL_TO_OBJ => (Some(newASite), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case INTERNAL_ITER_INIT => (Some(newASite), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_REGEX_EXEC => (Some(newASite), lmap)
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = args.map(ir2cfgExpr)
@@ -636,12 +637,12 @@ class DefaultCFGBuilder(
       case IRBin(_, first, op, second) =>
         CFGBin(expr, ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
       /* PEI : id lookup */
-      case IRUn(_, op, expr) =>
-        CFGUn(expr, op.kind, ir2cfgExpr(expr))
+      case IRUn(_, op, subexpr) =>
+        CFGUn(expr, op.kind, ir2cfgExpr(subexpr))
       case id: IRId => id2cfgExpr(id)
       case IRThis(_) => CFGThis(expr)
       case IRInternalValue(_, n) => CFGInternalValue(expr, n)
-      case IRVal(v) => CFGVal(v)
+      case IRVal(_, v) => CFGVal(v)
     }
   }
 

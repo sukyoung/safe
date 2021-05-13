@@ -12,6 +12,9 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util._
+
+import spray.json._
 
 // partial map abstract domain
 case class PMapDomain[K, V, VD <: AbsDomain[V]](
@@ -132,5 +135,12 @@ case class PMapDomain[K, V, VD <: AbsDomain[V]](
 
     // contain check
     def contains(f: AbsV => Boolean)(k: K): AbsBool = this(k).exists(f)
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = {
+      if (!default.isAbsent) fail
+      else JsObject(map.map {
+        case (k, v) => k.toString -> v.toJSON
+      })
+    }
   }
 }

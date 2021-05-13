@@ -45,7 +45,7 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     // display duration time
     if (config.time) {
       println(s"iteration number: $iters")
-      println(f"The analysis took $duration%.9f s.")
+      println(f"The analysis took ${duration / 1000.0}%.2f s.")
     }
 
     // Report errors.
@@ -61,11 +61,14 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
       HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
     })
 
-    // dump exit state
-    if (config.exitDump) {
-      val state = sem.getState(exitCP)
-      println(state.toString)
+    // check the exit block reachability
+    val exitSt = sem.getState(exitCP)
+    if (config.exitReachable && !exitSt.isBottom) {
+      println("[ExitReachable] exit block is reachable")
     }
+
+    // dump exit state
+    if (config.exitDump) println(exitSt.toString)
 
     Success((cfg, iters, initTP, sem))
   }
@@ -85,7 +88,17 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
-      "the resulting CFG with states will be drawn to the {string}.html")
+      "the resulting CFG with states will be drawn to the {string}.html"),
+    ("stopAlreadyVisited", BoolOption(_ => stopAlreadyVisited = true),
+      "stop when it creates multiple traces."),
+    ("stopExitExc", BoolOption(_ => stopExitExc = true),
+      "stop when it throw an exception."),
+    ("exitReachable", BoolOption(c => c.exitReachable = true),
+      "check whether the exit block is reachable."),
+    ("debug", BoolOption(c => analysisDebug = true),
+      "turn on the debug mode."),
+    ("dynamicShortcut", BoolOption(c => dynamicShortcut = true),
+      "utilize dynamic shortcut.")
   )
 }
 
@@ -97,5 +110,6 @@ case class AnalyzeConfig(
   var timeLog: Boolean = false,
   var exitDump: Boolean = false,
   var outFile: Option[String] = None,
-  var htmlName: Option[String] = None
+  var htmlName: Option[String] = None,
+  var exitReachable: Boolean = false
 ) extends Config

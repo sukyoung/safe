@@ -49,6 +49,17 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
           case None =>
         }
 
+        // Raw print to file.
+        config.rawFile match {
+          case Some(out) => {
+            val (fw, writer) = Useful.fileNameToWriters(out)
+            writer.write(program.toString)
+            writer.close; fw.close
+            println("Dumped parsed JavaScript code to " + out)
+          }
+          case None =>
+        }
+
         program
       }
     }
@@ -57,11 +68,14 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
   def defaultConfig: ParseConfig = ParseConfig()
   val options: List[PhaseOption[ParseConfig]] = List(
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the parsed JavaScript code will be written to the outfile.")
+      "the parsed JavaScript code will be written to the outfile."),
+    ("raw", StrOption((c, s) => c.rawFile = Some(s)),
+      "raw AST of the parsed JavaScript code will be written to the outfile.")
   )
 }
 
 // Parse phase config
 case class ParseConfig(
-  var outFile: Option[String] = None
+  var outFile: Option[String] = None,
+  var rawFile: Option[String] = None
 ) extends Config

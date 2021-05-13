@@ -85,6 +85,12 @@ sealed trait CFGBlock {
     s.toString
   }
 
+  def toCode(): (Map[CFGEdgeType, List[BlockId]], String) = {
+    (succs.toMap.map({
+      case (edgeType, blocks) => (edgeType, blocks.map(block => block.id))
+    }), "")
+  }
+
   // span
   def span: Span
 
@@ -212,6 +218,18 @@ case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CF
       }
     }
     s.toString
+  }
+
+  override def toCode(): (Map[CFGEdgeType, List[BlockId]], String) = {
+    val s: StringBuilder = new StringBuilder
+    insts.reverseIterator.foreach({
+      case inst => s.append(inst.ir.ast.toString(0)).append(LINE_SEP)
+    })
+    val code = s.toString
+
+    (succs.toMap.map({
+      case (edgeType, blocks) => (edgeType, blocks.map(block => block.id))
+    }), code)
   }
 
   // span

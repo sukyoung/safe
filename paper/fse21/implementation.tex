@@ -1,0 +1,99 @@
+\section{Implementation}\label{sec:implementation}
+We implemented JavaScript static analysis using dynamic shortcuts
+presented in Section~\ref{sec:javascript} in a prototype implementation dubbed
+$\tool$.  The tool is an extension of an existing state-of-the-art JavaScript
+static analyzer SAFE~\cite{safe, safe2} with a dynamic analyzer
+Jalangi~\cite{jalangi}, and it is an open-source project and available online~\footnote{The
+URL of the tool is anonymized due to a double-blind review process.}.  In this
+section, we introduce challenges and solutions in implementing dynamic
+shortcuts on existing JavaScript analyzers.
+
+\paragraph{{\SealeD} Values.}
+The main challenge of implementing dynamic shortcuts is to support {\sealed} execution on an existing JavaScript engine.  To represent an abstract
+value, we use the \jscode{Proxy} object introduced in ECMAScript 6
+(2015, ES6)~\cite{es6}, which allows developers to handle internal behaviors
+of specific objects such as property reads and writes and implicit conversions.
+We are inspired by \textsc{Mimic}~\cite{mimic}, which used \jscode{Proxy} to
+capture accesses from internals of opaque functions.  When the dynamic analyzer
+constructs an execution environment at the start of a dynamic shortcut, it
+creates \jscode{Proxy} objects to represent abstract values via the
+following \jscode{getSealedValue} function:
+\begin{lstlisting}[style=myJSstyle]
+function getSealedValue() {
+  function detect() { /* access detection */ }
+  return new Proxy(function() {}, {
+    getPrototypeOf: detect,  ...
+    construct     : detect
+  }); }
+var x = getSealedValue();
+var y = x;
+var z = x + 1;
+\end{lstlisting}
+The function creates a sealed value as a proxy object with a dummy
+function object and a handler for all 13 traps using an access detection
+function \jscode{detect}.  A sealed value invokes the function \jscode{detect}
+when any of 13 pre-defined traps are operated on the object, which enables us to
+determine whether an object is sealed or not.  For example, the variable
+\jscode{y} successfully points to the same sealed value stored in \jscode{x}, but the
+program invokes the function \jscode{detect} on line 9 because \jscode{x + 1} requires
+the actual value of the sealed value.  In addition, we instrument unary and binary
+operations in Jalangi so that we can detect all the accesses on the
+sealed value beyond the 13 traps provided by \jscode{Proxy}.
+Using this idea, we successfully extended the
+JavaScript engine to support {\sealed} execution.
+
+\paragraph{Synchronization of Control Points.}
+For seamless interaction between static analysis and {\sealed} execution,
+synchronization of control points in both sides is necessary.
+The SAFE static analyzer and the Jalangi dynamic analyzer
+have their own notations for control points that are not directly
+compatible.
+We use the source-code location of a target program as a key to synchronize.
+Even though they use different parsers and we faced numerous location mismatches for corner cases,
+we could synchronize control points of two analyzers by using the closest match
+of their source-code locations rather than using their exact match.
+
+\paragraph{Function-Level Dynamic Shortcut.}
+A dynamic shortcut is activated when the current abstract state passes the
+filter $\checker$.  If the filter admits dynamic shortcuts generously, the
+analysis may suffer from frequent communications between static and dynamic
+analyzers.  To adjust such a burden, $\tool$ supports only \textit{function-level} dynamic
+shortcuts by activating dynamic shortcuts in function entries and deactivating them
+in their corresponding function exits.
+
+\paragraph{Termination.}
+To guarantee the termination of static analysis using dynamic shortcuts, the
+converter $\asconverter$ should pass an analysis element $(\view, \abselem)$
+only when it terminates in a time bound $N$.  Since statically checking the
+termination property is difficult, we simply perform {\sealed}
+execution with a pre-determined time limit of 5 seconds.
+When it times out, we treat it as a failure in conversion;
+otherwise, we use the result of {\sealed} execution.
+
+
+% \paragraph{Communication between Analyzers.}
+% To perform dynamic shortcut, the static analyzer should communicate with the the
+% dynamic analyzer by passing the current abstract state and receiving the final
+% result of the {\sealed} execution.  However, The static analyzer SAFE and
+% the dynamic analyzer Jalangi are implemented in different languages Scala and
+% JavaScript, respectively.  To overcome the difference, we represent abstract
+% states as JSON objects and communicate between analyzers by passing them.  For
+% each dynamic shortcut, Jalangi constructs the execution environments based on
+% the given JSON object and executes the dynamic analysis from the target program
+% points.  After finishing the {\sealed} execution, it sends a newly
+% constructed JSON object to SAFE to update the abstract states in the function
+% exit point.
+
+
+%\paragraph{Abstract Locations for Objects.}
+%During dynamic analysis, each JavaScript object should be designated by the
+%corresponding abstract location used in the static analysis.  In this paper, we
+%define abstract locations using the allocation site
+%abstraction~\cite{allocation-site} with heap cloning~\cite{heap-cloning} for
+%each abstract context in the static analyzer.  Thus, we instrument the given
+%JavaScript program to annotate each object created during dynamic analysis with
+%its allocation site and context information.  After the {\sealed}
+%execution, the dynamic analyzer collects the objects based on their annotated
+%information for each abstract location.
+
+

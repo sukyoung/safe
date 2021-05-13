@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.nodes.ast
 
 trait ASTWalker {
   def walk(info: ASTNodeInfo): ASTNodeInfo = info match {
-    case ASTNodeInfo(span, comment) =>
-      ASTNodeInfo(span, comment.map(walk))
+    case ASTNodeInfo(span, comment, blockId) =>
+      ASTNodeInfo(span, comment.map(walk), blockId)
   }
 
   def walk(node: ASTNode): ASTNode = node match {

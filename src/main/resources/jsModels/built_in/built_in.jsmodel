@@ -323,8 +323,6 @@ Heap: {
     "encodeURIComponent": <#Global.encodeURIComponent, T, F, T>,
     "EvalError": <#EvalError, T, F, T>,
     "encodeURI": <#Global.encodeURI, T, F, T>,
-    "escape": <#Global.escape, T, F, T>,
-    "unescape": <#Global.unescape, T, F, T>,
     "eval": <#Global.eval, T, F, T>,
     "isFinite": <#Global.isFinite, T, F, T>,
     "Object": <#Object, T, F, T>,
@@ -340,7 +338,12 @@ Heap: {
     "Infinity": <Infinity, F, F, F>,
     "SyntaxError": <#SyntaxError, T, F, T>,
     "<>Global<>true": <true, F, F, F>,
-    "undefined": <undefined, F, F, F>
+    "undefined": <undefined, F, F, F>,
+    "global": <#Global, T, T, T>,
+    "__print__": <#Global.__print__, F, F, F>,
+    "__num_top__": <number, F, F, F>,
+    "__str_top__": <string, F, F, F>,
+    "__bool_top__": <bool, F, F, F>
   },
   #Math.min: {
     [[Class]]: "Function",
@@ -817,14 +820,6 @@ Heap: {
     [[Call]]: fun(49),
     "length": <0.0, F, F, F>
   },
-  #Number.prototype.constructor: {
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    [[Call]]: fun(39),
-    "length": <1.0, F, F, F>
-  },
   #Date.prototype.getDate: {
     [[Class]]: "Function",
     [[Extensible]]: true,
@@ -887,6 +882,14 @@ Heap: {
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null,
     [[Call]]: fun(4),
+    "length": <1.0, F, F, F>
+  },
+  #Global.__print__: {
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    [[Call]]: fun(142),
     "length": <1.0, F, F, F>
   },
   #RegExp.prototype.toString: {
@@ -1201,22 +1204,6 @@ Heap: {
     [[Call]]: fun(6),
     "length": <1.0, F, F, F>
   },
-  #Global.escape: {
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    [[Call]]: fun(38),
-    "length": <1.0, F, F, F>
-  },
-  #Global.unescape: {
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    [[Call]]: fun(39),
-    "length": <1.0, F, F, F>
-  },
   #Date.prototype.toLocaleTimeString: {
     [[Class]]: "Function",
     [[Extensible]]: true,
@@ -1302,18 +1289,16 @@ Heap: {
 
 Function: {
   1: [\\
-  function eval (x) {
-    @NotYetImplemented("eval");
+  function () {
   }
   \\],
   2: [\\
-  function parseInt (string, radix) {
-    @NotYetImplemented("parseInt");
+  function parseInt () {
+    return @NumTop;
   }
   \\],
   3: [\\
-  function parseFloat (string) {
-    @NotYetImplemented("parseFloat");
+  function () {
   }
   \\],
   4: [\\
@@ -1334,23 +1319,19 @@ Function: {
   }
   \\],
   6: [\\
-  function decodeURI (encodedURI) {
-    @NotYetImplemented("decodeURI");
+  function () {
   }
   \\],
   7: [\\
-  function decodeURIComponent (encodedURIComponent) {
-    @NotYetImplemented("decodeURIComponent");
+  function () {
   }
   \\],
   8: [\\
-  function encodeURI (uri) {
-    @NotYetImplemented("encodeURI");
+  function () {
   }
   \\],
   9: [\\
-  function encodeURIComponent (uriComponent) {
-    @NotYetImplemented("encodeURIComponent");
+  function () {
   }
   \\],
   10: [\\
@@ -1675,7 +1656,8 @@ Function: {
   32: [\\
   function toString() {
     if (typeof this !== 'function') throw new TypeError();
-    return @StrTop;
+    if (@IsNative(this)) return 'function () { [native code] }';
+    else return @StrTop;
   }
   \\],
   33: [\\
@@ -1702,6 +1684,7 @@ Function: {
       // d. Set index to index + 1.
       argList[index] = argArray[index];
     }
+    @Class(argList, "Arguments");
     // 9. Return the result of calling the [[Call]] internal method of func, providing thisArg as the this value and argList as the list of arguments.
     return @Call(this, thisArg, argList);
   }
@@ -1777,23 +1760,19 @@ Function: {
   }
   \\],
   36: [\\
-  function Function () {
-    @NotYetImplemented("Function");
+  function () {
   }
   \\],
   37: [\\
-  function Function () {
-    @NotYetImplemented("Function");
+  function () {
   }
   \\],
   38: [\\
-  function escape (string) {
-    @NotYetImplemented("escape");
+  function () {
   }
   \\],
   39: [\\
-  function unescape (string) {
-    @NotYetImplemented("unescape");
+  function () {
   }
   \\],
   40: [\\
@@ -4016,8 +3995,7 @@ Function: {
   }
   \\],
   91: [\\
-  function toJSON (key) {
-    @NotYetImplemented("Date.prototype.toJSON")
+  function () {
   }
   \\],
   92: [\\
@@ -4694,13 +4672,13 @@ Function: {
   \\],
   96: [\\
   function now () {
-    // TODO
-    return @NumTop;
+    if (Date.__now__) return Date.__now__ += 10;
+    else return Date.__now__ = 0;
   }
   \\],
   97: [\\
-  function exec (string) {
-    @NotYetImplemented("RegExp.prototype.exec");
+  function exec (str) {
+    return @regexExec(this, str);
   }
   \\],
   98: [\\
@@ -5052,13 +5030,11 @@ Function: {
   }
   \\],
   135: [\\
-  function parse (text, reviver) {
-    @NotYetImplemented("JSON.parse")
+  function () {
   }
   \\],
   136: [\\
-  function stringify (value, replacer, space) {
-    @NotYetImplemented("JSON.stringify")
+  function () {
   }
   \\],
   137: [\\
@@ -5138,8 +5114,8 @@ Function: {
   }
   \\],
   142: [\\
-  function ToNumber (v) {
-    return @ToNumber(@getLoc('ToPrimitive')(v, 'number'));
+  function __print__ (v) {
+    return @Print(v);
   }
   \\]
 }

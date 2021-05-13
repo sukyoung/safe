@@ -94,5 +94,21 @@ case class NoFuncIdError(fid: Int) extends AnalyzeError({
 case object IllFormedBlockStr extends AnalyzeError("")
 
 case class NotYetDefined(name: String) extends AnalyzeError(
-  "[NotYetDefined] $name"
+  s"[NotYetDefined] $name"
+)
+
+case class StopAnalysis(msg: String) extends AnalyzeError(
+  s"[StopAnalysis] $msg"
+)
+
+case class Timeout(timeLimit: Int) extends AnalyzeError(
+  s"[Timeout] $timeLimit seconds."
+)
+
+case class WrongUId(uid: Int) extends AnalyzeError(
+  s"[WrongUId] uid $uid does not exist."
+)
+
+case class ToJSONFail(target: String) extends AnalyzeError(
+  s"[ToJSONFail] fail to convert to JSON for dynamic shortcut."
 )

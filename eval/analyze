@@ -1,0 +1,81 @@
+#!/bin/bash
+
+DS=
+ABSTRACT=
+WRAPPED=
+NAME=
+TIME_LIMIT=5m
+LODASH=
+SAFE_OPTION="-analyzer:exitReachable"
+CONSOLE=
+
+for i in "$@"
+do
+case $i in
+  -w|--wrapped)
+    WRAPPED=$i
+  ;;
+  -ds|--dynamic-shortcut)
+    DS=$i
+  ;;
+  -a|--abstract|-a=*|--abstract=*)
+    ABSTRACT=$i
+  ;;
+  --name=*)
+    NAME="${i#*=}"
+  ;;
+  -t=*|--time=*)
+    TIME_LIMIT="${i#*=}"
+  ;;
+  -l|--lodash)
+    LODASH=$SAFE_HOME/tests/benchmarks/lodash4
+    shift
+  ;;
+  -c|--console)
+    SAFE_OPTION="-analyzer:console $SAFE_OPTION"
+    CONSOLE=$i
+  ;;
+  -d|--debug)
+    SAFE_OPTION="-analyzer:debug $SAFE_OPTION"
+  ;;
+esac
+done
+
+if [ $DS ]; then
+  ./ds --no-instrument $@
+  if ! [ $ABSTRACT ]; then
+    echo "Analyzing with Jalangi..."
+    node $JALANGI_HOME/src/js/commands/direct.js \
+      --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+      --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
+      target_jalangi_.js > jalangi.result
+    exit
+  fi
+else
+  echo "Analyzing with SAFE..."
+  if [ $CONSOLE ]; then
+    $SAFE_HOME/bin/safe bugDetect $SAFE_OPTION target.js | tee safe.result
+  else
+    timeout $TIME_LIMIT $SAFE_HOME/bin/safe bugDetect $SAFE_OPTION target.js > safe.result
+  fi
+  if [ $? -eq 124 ]; then
+    echo "[Timeout] $TIME_LIMIT" >> safe.result
+  fi
+fi
+
+if [ $ABSTRACT ]; then
+  if [[ ! $NAME ]] || [[ ! $LODASH ]]; then
+    exit
+  fi
+  JALANGI_TARGET=jalangi_target
+  ./merge --target=$JALANGI_TARGET.js --lodash $WRAPPED $LODASH/tests/$NAME.js
+else
+  JALANGI_TARGET=target
+fi
+
+echo "Analyzing with Jalangi..."
+node $JALANGI_HOME/src/js/commands/jalangi.js --inlineIID --inlineSource \
+  --analysis $JALANGI_HOME/src/js/sample_analyses/ChainedAnalyses.js \
+  --analysis $JALANGI_HOME/src/js/sample_analyses/pldi16/BranchCoverage.js \
+  $JALANGI_TARGET.js > jalangi.result
+cp ${JALANGI_TARGET}_jalangi_.json target_jalangi_.json

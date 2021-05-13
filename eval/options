@@ -1,0 +1,9 @@
+(-w|--wrapped)      wrapping script with a function call
+(-l|--lodash)       Lodash mode
+(--target=*)        setting the target of the merge
+(--no-instrument)   no additional instrument for ./ds
+(-a=*|--abstract=*) abstraction mode with the number of abstraction
+                    (no number denotes inifnite abstraction)
+(-t=*|--time=*)     time limit (e.g. 5m = 5 minutes, 10s = 10 seconds)
+(--name=*)          name of the test
+(-c|--console)      analyzer console mode

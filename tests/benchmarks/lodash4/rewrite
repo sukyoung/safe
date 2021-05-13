@@ -1,0 +1,24 @@
+#!/bin/sh
+
+sample=-1
+if [ "${#}" -eq 1 ]; then
+  sample=$1
+fi
+
+dir="tests-rewritten"
+if (( ${sample} > -1 )); then
+  dir="tests-rewritten-$sample"
+fi
+
+mkdir -p $dir
+
+echo $sample
+
+for file in tests/*; do
+  if [ -f "$file" ]; then
+    base=`basename "$file"`
+    to="$dir/$base"
+    echo "Rewriting $file to $to..."
+    node $DS_HOME/rewrite.js $file $to $sample
+  fi
+done

@@ -13,10 +13,11 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.analyzer.model._
-import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+
+import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain with concrete keys
@@ -73,6 +74,20 @@ object CKeyObject extends ObjDomain {
         .append(nmap)
       s.toString
     }
+
+    def toJSON(implicit uomap: UIdObjMap): JsValue = resolve(
+      if (this(IClass).isBottom) fail
+      else {
+        this(IPrimitiveValue).getSingle match {
+          case ConOne(_) | ConZero =>
+            JsObject(
+              "nmap" -> nmap.toJSON,
+              "imap" -> imap.toJSON
+            )
+          case _ => fail
+        }
+      }
+    )
 
     ////////////////////////////////////////////////////////////////
     // Additional untility functions
@@ -453,17 +468,31 @@ object CKeyObject extends ObjDomain {
 
     private def DefaultValueAsString(h: AbsHeap): AbsPValue = {
       val toString = Get("toString", h)
-      val isCallable = TypeConversionHelper.IsCallable(toString, h)
-      val str =
-        if (AbsBool.True ⊑ isCallable) AbsPValue(strval = AbsStr.Top)
-        else AbsPValue.Bot
-      if (AbsBool.False ⊑ isCallable) {
-        val valueOf = Get("valueOf", h)
-        val value =
-          if (AbsBool.True ⊑ TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
+      if (toString == AbsValue(Loc("Object.prototype.toString"))) {
+        val className = this(IClass).value.pvalue.strval
+        AbsStr("[object ") concat className concat AbsStr("]")
+      } else if (toString == AbsValue(Loc("Function.prototype.toString"))) {
+        val fidset = this(ICall).fidset
+        val abool = AbsBool(fidset.foldLeft(Set[Boolean]()) {
+          case (set, fid) => set + (fid < 0)
+        })
+        var str = AbsStr.Bot
+        if (AbsBool.True ⊑ abool) str = str ⊔ AbsStr("function () { [native code] }")
+        if (AbsBool.False ⊑ abool) str = str ⊔ AbsStr.Top
+        str
+      } else {
+        val isCallable = TypeConversionHelper.IsCallable(toString, h)
+        val str =
+          if (AbsBool.True ⊑ isCallable) AbsPValue(strval = AbsStr.Top)
           else AbsPValue.Bot
-        str ⊔ value
-      } else str
+        if (AbsBool.False ⊑ isCallable) {
+          val valueOf = Get("valueOf", h)
+          val value =
+            if (AbsBool.True ⊑ TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
+            else AbsPValue.Bot
+          str ⊔ value
+        } else str
+      }
     }
 
     private def DefaultValueAsNumber(h: AbsHeap): AbsPValue = {
@@ -752,4 +781,35 @@ object CKeyObject extends ObjDomain {
     val (obj4, _, excSet4) = put(obj3, "configurable", toValue(desc.configurable))
     (obj4, excSet1 ++ excSet2 ++ excSet3 ++ excSet4)
   }
+
+  def fromJSON(json: JsValue, cfg: CFG)(implicit uomap: UIdObjMap): Elem = uomap.symbolCheck(json, {
+    val fields = json.asJsObject().fields
+    val nmap = fields("nmap").asJsObject.fields
+    val nmapMap = nmap("map").asJsObject.fields
+    val nmapDefault = nmap("default").asJsObject.fields
+    val ndv = NVOpt(AbsDataProp.fromJSON(nmapDefault("value"), cfg), AbsAbsent.fromJSON(nmapDefault("absent")))
+
+    val imap = fields("imap").asJsObject.fields
+    val imapMap = imap("map").asJsObject.fields
+    val imapDefault = imap("default").asJsObject.fields
+    val idv = IVOpt(AbsIValue.fromJSON(imapDefault("value"), cfg), AbsAbsent.fromJSON(imapDefault("absent")))
+    Elem(
+      NMap.Bot.copy(
+        map = nmapMap.foldLeft[Map[String, NVOpt]](Map())({
+          case (acc, (k, v)) =>
+            val f = v.asJsObject.fields
+            acc + (k -> NVOpt(AbsDataProp.fromJSON(f("value"), cfg), AbsAbsent.fromJSON(f("absent"))))
+        }),
+        default = ndv
+      ),
+      IMap.Bot.copy(
+        map = imapMap.foldLeft[Map[IName, IVOpt]](Map())({
+          case (acc, (k, v)) =>
+            val f = v.asJsObject.fields
+            acc + (IName.parse(k) -> IVOpt(AbsIValue.fromJSON(f("value"), cfg), AbsAbsent.fromJSON(f("absent"))))
+        }),
+        default = idv
+      )
+    )
+  })
 }

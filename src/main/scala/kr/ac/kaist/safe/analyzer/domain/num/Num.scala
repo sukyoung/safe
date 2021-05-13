@@ -127,7 +127,9 @@ case class Num(num: Double) extends PValue {
   override def equals(that: Any): Boolean = that match {
     case Num(k) => (Num.isNegZero(k), Num.isNegZero(num)) match {
       case (true, true) => true
-      case (false, false) => k == num
+      case (false, false) =>
+        if (k.isNaN && num.isNaN) true
+        else k == num
       case _ => false
     }
     case _ => false

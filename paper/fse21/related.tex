@@ -1,0 +1,88 @@
+\section{Related Work}\label{sec:related}
+%Researchers have introduced various techniques to utilize dynamic
+%analysis for static analysis in three ways: combined analysis,
+%automatic modeling, and pruning analysis scope.
+
+
+\paragraph{Combined Analysis}
+The most related previous work is combined analysis that utilizes dynamic
+analysis during Java static analysis introduced by \citet{concerto}.
+They proved that their combined analysis is sound and showed that it could
+significantly improve the precision and performance of Java static analysis by
+evaluating their tool, \concerto.  However, their approach has several
+limitations compared with dynamic shortcuts.  First, it syntactically
+divides a given program to \textit{applications} parts for static
+analysis and \textit{frameworks} parts for dynamic analysis.  Thus, it cannot
+freely switch between static analysis and dynamic analysis.  It is
+even impossible to perform both static and dynamic analysis of 
+the same program part in different contexts.  In addition, while they
+introduced \textit{mostly-concrete interpretation} similar to our
+{\sealed} execution, it supports only a special \textit{unknown}
+value that represents any possible value.  Thus, it cannot preserve
+the precision of complex abstract domains~\cite{revisit-recency,
+  regex, weaklySPE} frequently used in JavaScript static analysis.
+On the contrary, {\sealed} execution automatically detects when
+to switch to static analysis to use abstract semantics for abstract values.
+Finally, \concerto\ preserves the soundness when a program satisfies
+the \textit{state separation hypothesis}.  It assumes that the states
+of application parts and framework parts are not interrogated
+or manipulated by each other.  While the assumption may be reasonable
+for static analysis of Java applications using external libraries, it
+is not satisfied for JavaScript programs in general.  Unlike their
+approach, our approach does not have any assumptions between static and
+dynamic analysis parts.
+
+
+\paragraph{Automatic Modeling}
+For static analysis of JavaScript programs, modeling behaviors of built-in
+libraries or host-dependent functions is necessary because they are opaque code.
+Since manual modeling is error-prone and labor-intensive,
+researchers~\cite{safewapi, safets} have utilized type information to
+automatically model their behaviors.  However, type is not enough
+to reflect complex semantics and side-effects.
+To alleviate the problem, \citet{mimic} introduced a technique
+to infer JavaScript code for opaque code using concrete execution.
+They leveraged ES6 \jscode{Proxy} objects to collect partial execution traces
+from opaque code and synthesized JavaScript code using the extracted behaviors.
+Instead of synthesizing JavaScript code,
+\citet{opaque-model} presented a \textit{Sample-Run-Abstract (SRA)} approach for
+on-demand modeling focusing on the current abstract states during static analysis
+by sampling well-distributed concrete states.
+However, all the previous work sacrifice the soundness of static analysis.
+On the contrary, while dynamic shortcuts is not always applicable to opaque
+functions, it is sound if it is applicable.
+
+
+\paragraph{Pruning Analysis Scope}
+Another approach to utilize dynamic analysis for JavaScript static analysis is
+to prune the scope of analysis.  \citet{determinacy} proposed dynamic
+determinacy analysis.  They specialized target source code with determinacy
+facts so that static analysis can get benefits from elimination of \jscode{eval}
+and constant property names.
+\citet{blended} introduced \textit{blended taint analysis}, which specializes JavaScript dynamic
+language features such as dynamic code generation or variadic function calls.
+It first performs dynamic analysis to collect traces with concrete values used
+in dynamic language features and restricts the semantics of features based on the
+collected traces during static analysis.  \citet{battles, eha} utilize three points to reduce
+analysis scope: initial states, dynamically loaded files, and event handlers.
+Unfortunately, all the above approaches except~\cite{determinacy} do not preserve
+soundness of static analysis unlike our approach using dynamic shortcuts.
+
+
+% \subsection{Abstract Counting}
+% 
+% \begin{itemize}
+%   \item Improving flow analyses via $\Gamma$CFA: Abstract garbage collection and
+%     counting~\cite{abstract-gc-counting}
+%   \item Revisiting recency abstraction for JavaScript: towards an intuitive,
+%     compositional, and efficient heap abstraction~\cite{revisit-recency}
+% \end{itemize}
+
+% \subsection{Access Analysis}
+% 
+% \begin{itemize}
+%   \item Access Analysis-Based Tight Localization of Abstract
+%     Memories~\cite{func-local}
+%   \item Design and implementation of sparse global analyses for C-like
+%     languages~\cite{sparse}
+% \end{itemize}

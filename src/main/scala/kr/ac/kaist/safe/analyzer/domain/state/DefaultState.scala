@@ -18,6 +18,8 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.PipeOps._
 import kr.ac.kaist.safe.util._
 
+import spray.json._
+
 // default state abstract domain
 object DefaultState extends StateDomain {
   lazy val Bot: Elem = Elem(AbsHeap.Bot, AbsContext.Bot, AllocLocSet.Bot)
@@ -99,14 +101,6 @@ object DefaultState extends StateDomain {
       val newAllocs = allocs.alloc(loc)
       Elem(newHeap, newCtxt, newAllocs)
     }
-
-    def afterCall(info: CallInfo): Elem = this.prunedChanged(info.state)
-
-    // pruning based on changed locations
-    private def prunedChanged(callerSt: Elem): Elem = callerSt << this
-
-    def <<(that: Elem): Elem =
-      Elem(this.heap << that.heap, this.context << that.context, that.allocs)
 
     def setAllocLocSet(allocs: AllocLocSet): Elem = copy(allocs = allocs)
 
@@ -233,6 +227,11 @@ object DefaultState extends StateDomain {
       case some => some
     }
 
+    def toJSON(implicit uomap: UIdObjMap): JsValue = JsObject(
+      "heap" -> this.heap.toJSON,
+      "context" -> this.context.toJSON
+    )
+
     private def toString(all: Boolean): String = {
       "** heap **" + LINE_SEP +
         (if (all) heap.toStringAll else heap.toString) + LINE_SEP +
@@ -243,8 +242,21 @@ object DefaultState extends StateDomain {
         "** allocated location set **" + LINE_SEP +
         allocs.toString
     }
+  }
 
-    def cleanChanged: Elem =
-      Elem(heap.cleanChanged, context.cleanChanged, allocs)
+  def fromJSON(
+    json: JsValue,
+    cfg: CFG,
+    prev: AbsState
+  )(implicit uomap: UIdObjMap): Elem = json match {
+    case JsString(str) if (str == "__BOT__") => Bot
+    case _ =>
+      val fields = json.asJsObject().fields
+      val locset = LocSet.fromJSON(fields("allocs"), cfg)
+      Elem(
+        AbsHeap.fromJSON(fields("heap"), cfg, prev, locset),
+        AbsContext.fromJSON(fields("context"), cfg, prev, locset),
+        prev.allocs.alloc(locset)
+      )
   }
 }

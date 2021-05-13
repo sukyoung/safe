@@ -21,8 +21,12 @@ import kr.ac.kaist.safe.util.ArgParser
 
 import scala.util.Try
 
+import spray.json._
+import DefaultJsonProtocol._
+
 sealed trait Command {
   val name: String
+  def phaseNameList: List[String]
   def apply(args: List[String], testMode: Boolean): Try[Any]
 }
 
@@ -31,6 +35,7 @@ class CommandObj[Result](
     pList: PhaseList[Result],
     modeMap: Map[String, PhaseList[Result]] = Map[String, PhaseList[Result]]()
 ) extends Command {
+  def phaseNameList: List[String] = pList.nameList
   def apply(
     args: List[String],
     testMode: Boolean = false
@@ -75,6 +80,11 @@ case object CmdASTRewrite extends CommandObj("astRewrite", CmdParse >> ASTRewrit
   override def display(program: Program): Unit = println(program.toString(0))
 }
 
+// blockIdInstrument
+case object CmdBlockIdInstrument extends CommandObj("blockIdInstrument", CmdASTRewrite >> BlockIdInstrument) {
+  override def display(program: Program): Unit = println(program.toString(0))
+}
+
 // translate
 case object CmdTranslate extends CommandObj("translate", CmdASTRewrite >> Translate) {
   override def display(ir: IRRoot): Unit = println(ir.toString(0))
@@ -83,6 +93,21 @@ case object CmdTranslate extends CommandObj("translate", CmdASTRewrite >> Transl
 // cfgBuild
 case object CmdCFGBuild extends CommandObj("cfgBuild", CmdTranslate >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
+}
+
+// ccfgBuild
+case object CmdCCFGBuild extends CommandObj("ccfgBuild", CmdCFGBuild >> CCFGBuild) {
+  override def display(ccfg: CCFG): Unit = println(ccfg.toString())
+}
+
+// cfgSpanInfo
+case object CmdCFGSpanInfo extends CommandObj("cfgSpanInfo", CmdHeapBuild >> CFGSpanInfo) {
+  override def display(span: CFGSpanList): Unit = println(span.toJson.prettyPrint)
+}
+
+// labelBuild
+case object CmdLabelBuild extends CommandObj("labelBuild", CmdCCFGBuild >> LabelBuild) {
+  override def display(program: String): Unit = println(program)
 }
 
 // heapBuild
